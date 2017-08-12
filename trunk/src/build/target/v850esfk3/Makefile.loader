@@ -1,0 +1,47 @@
+ROOTDIR		:= ../../..
+ARCH		:= v850esfk3
+
+include Makefile.env
+
+LIBTARGET	:= libloader.a
+
+IFLAGS	:= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/lib
+IFLAGS	+= -I$(ROOTDIR)/lib/dwarf
+IFLAGS	+= -I$(ROOTDIR)/config
+
+VPATH	:=	$(ROOTDIR)/lib
+VPATH	+=	$(ROOTDIR)/lib/dwarf
+VPATH	+=	$(ROOTDIR)/lib/dwarf/data_type
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+OBJS	:= elf_section.o
+OBJS	+= elf_dwarf_line.o
+OBJS	+= elf_dwarf_info.o
+OBJS	+= elf_dwarf_abbrev.o
+OBJS	+= elf_dwarf_util.o
+OBJS	+= elf_dwarf_data_type.o
+OBJS	+= elf_dwarf_base_type.o
+OBJS	+= elf_dwarf_typedef_type.o
+OBJS	+= elf_dwarf_pointer_type.o
+OBJS	+= elf_dwarf_struct_type.o
+OBJS	+= elf_dwarf_enum_type.o
+OBJS	+= elf_dwarf_array_type.o
+OBJS	+= elf_dwarf_variable_type.o
+OBJS	+= elf_dwarf_info_ops.o
+OBJS	+= file_address_mapping.o
+OBJS	+= symbol_ops.o
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+

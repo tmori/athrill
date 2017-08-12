@@ -1,0 +1,234 @@
+
+Allocating common symbols
+Common symbol       size              file
+
+stack_data          0x400             main.o
+test_data_uint32    0x4               main.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+INTROM           0x00000000         0x00080000         axrl
+INTRAM           0x03ff7000         0x00008000         axw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD start.o
+LOAD vector.o
+LOAD main.o
+LOAD test_suite.o
+LOAD test_instruction.o
+
+.vector         0x00000000      0x7d0
+ *(.vectors)
+ .vectors       0x00000000      0x7d0 vector.o
+                0x00000000                __reset
+
+.text           0x000007d0     0x2ee0
+                0x000007d0                __tp = .
+ *(.text)
+ .text          0x000007d0       0x30 start.o
+                0x000007d0                _start
+                0x000007f0                _default_int_handler
+ .text          0x00000800        0x0 vector.o
+ .text          0x00000800       0x7e main.o
+                0x00000800                _test_print
+                0x00000862                _main
+ .text          0x0000087e     0x1318 test_suite.o
+                0x0000087e                _test_suite
+ *fill*         0x00001b96        0xa 
+ .text          0x00001ba0     0x1b10 test_instruction.o
+                0x00001ba0                _do_test_add1_1
+                0x00001bf0                _do_test_add1_2
+                0x00001c40                _do_test_add1_3
+                0x00001c90                _do_test_add1_4
+                0x00001ce8                _do_test_add1_5
+                0x00001d40                _do_test_add1_6
+                0x00001d90                _do_test_add1_7
+                0x00001de0                _do_test_add1_8
+                0x00001e38                _do_test_add1_9
+                0x00001e90                _do_test_add1_10
+                0x00001ee0                _do_test_add1_11
+                0x00001f30                _do_test_add1_12
+                0x00001f80                _do_test_add1_13
+                0x00001fd8                _do_test_add1_14
+                0x00002030                _do_test_add1_15
+                0x00002080                _do_test_add1_16
+                0x000020d0                _do_test_add1_17
+                0x00002128                _do_test_add1_18
+                0x00002180                _do_test_add1_19
+                0x000021d0                _do_test_add1_20
+                0x00002220                _do_test_add1_21
+                0x00002270                _do_test_add1_22
+                0x000022c8                _do_test_add1_23
+                0x00002320                _do_test_add1_24
+                0x00002370                _do_test_add1_25
+                0x000023c0                _do_test_add1_26
+                0x00002418                _do_test_add1_27
+                0x00002470                _do_test_add1_28
+                0x000024c8                _do_test_add1_29
+                0x00002520                _do_test_add1_30
+                0x00002578                _do_test_add1_31
+                0x000025d0                _do_test_add1_32
+                0x00002628                _do_test_add1_33
+                0x00002680                _do_test_add1_34
+                0x000026d8                _do_test_add1_35
+                0x00002730                _do_test_add1_36
+                0x00002788                _do_test_add1_37
+                0x000027e0                _do_test_add1_38
+                0x00002838                _do_test_add1_39
+                0x00002890                _do_test_add1_40
+                0x000028e8                _do_test_add1_41
+                0x00002940                _do_test_add1_42
+                0x00002998                _do_test_add1_43
+                0x000029f0                _do_test_add1_44
+                0x00002a48                _do_test_add1_45
+                0x00002aa0                _do_test_add1_46
+                0x00002af0                _do_test_add1_47
+                0x00002b40                _do_test_add1_48
+                0x00002b90                _do_test_add1_49
+                0x00002be8                _do_test_add1_50
+                0x00002c40                _do_test_add1_51
+                0x00002c90                _do_test_add1_52
+                0x00002ce0                _do_test_add1_53
+                0x00002d38                _do_test_add1_54
+                0x00002d90                _do_test_add1_55
+                0x00002de0                _do_test_add1_56
+                0x00002e30                _do_test_add1_57
+                0x00002e80                _do_test_add1_58
+                0x00002ed8                _do_test_add1_59
+                0x00002f30                _do_test_add1_60
+                0x00002f80                _do_test_add1_61
+                0x00002fd0                _do_test_add1_62
+                0x00003028                _do_test_add1_63
+                0x00003080                _do_test_add1_64
+                0x000030d8                _do_test_add1_65
+                0x00003130                _do_test_add1_66
+                0x00003188                _do_test_add1_67
+                0x000031e0                _do_test_add1_68
+                0x00003238                _do_test_add1_69
+                0x00003290                _do_test_add1_70
+                0x000032e8                _do_test_add1_71
+                0x00003340                _do_test_add1_72
+                0x00003398                _do_test_add1_73
+                0x000033f0                _do_test_add1_74
+                0x00003448                _do_test_add1_75
+                0x000034a0                _do_test_add1_76
+                0x000034f8                _do_test_add1_77
+                0x00003550                _do_test_add1_78
+                0x000035a8                _do_test_add1_79
+                0x00003600                _do_test_add1_80
+                0x00003658                _do_test_add1_81
+
+.rodata         0x000036b0      0xfc0
+ *(.rodata)
+ .rodata        0x000036b0      0xfc0 test_suite.o
+                0x00004670                . = ALIGN (0x4)
+                0x00004670                __idata_start = .
+
+.data           0x03ff7000        0x0 load address 0x00004670
+                0x03ff7000                . = ALIGN (0x4)
+                0x03ff7000                __data_start = .
+ *(.data)
+ .data          0x03ff7000        0x0 start.o
+ .data          0x03ff7000        0x0 vector.o
+ .data          0x03ff7000        0x0 main.o
+ .data          0x03ff7000        0x0 test_suite.o
+ .data          0x03ff7000        0x0 test_instruction.o
+                0x03ff7000                . = ALIGN (0x4)
+                0x03ff7000                _edata = .
+                0x00004670                __idata_end = (__idata_start + SIZEOF (.data))
+
+.bss            0x03ff7000      0x404 load address 0x00004670
+                0x03ff7000                . = ALIGN (0x4)
+                0x03ff7000                __bss_start = .
+ *(.bss)
+ .bss           0x03ff7000        0x0 start.o
+ .bss           0x03ff7000        0x0 vector.o
+ .bss           0x03ff7000        0x0 main.o
+ .bss           0x03ff7000        0x0 test_suite.o
+ .bss           0x03ff7000        0x0 test_instruction.o
+ *(COMMON)
+ COMMON         0x03ff7000      0x404 main.o
+                0x03ff7000                _stack_data
+                0x03ff7400                _test_data_uint32
+                0x03ff7404                . = ALIGN (0x4)
+                0x03ff7404                __bss_end = .
+
+.comment        0x00000000       0x29
+ *(.comment)
+ .comment       0x00000000       0x29 main.o
+                                 0x2a (size before relaxing)
+ .comment       0x00000000       0x2a test_suite.o
+
+.note.renesas   0x00000000       0xb4
+ .note.renesas  0x00000000       0xb4 start.o
+ .note.renesas  0x00000000       0xb4 vector.o
+ .note.renesas  0x00000000       0xb4 main.o
+ .note.renesas  0x00000000       0xb4 test_suite.o
+ .note.renesas  0x00000000       0xb4 test_instruction.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x00000000       0xa0
+ *(.debug_aranges)
+ .debug_aranges
+                0x00000000       0x20 start.o
+ .debug_aranges
+                0x00000020       0x20 vector.o
+ .debug_aranges
+                0x00000040       0x20 main.o
+ .debug_aranges
+                0x00000060       0x20 test_suite.o
+ .debug_aranges
+                0x00000080       0x20 test_instruction.o
+
+.debug_pubnames
+ *(.debug_pubnames)
+OUTPUT(test_main.elf elf32-v850-rh850)
+
+.debug_line     0x00000000     0x112c
+ .debug_line    0x00000000       0x48 start.o
+ .debug_line    0x00000048      0x3af vector.o
+ .debug_line    0x000003f7       0x5e main.o
+ .debug_line    0x00000455      0x45c test_suite.o
+ .debug_line    0x000008b1      0x87b test_instruction.o
+
+.debug_info     0x00000000      0x2bd
+ .debug_info    0x00000000       0x8e start.o
+ .debug_info    0x0000008e       0x8f vector.o
+ .debug_info    0x0000011d       0xd8 main.o
+ .debug_info    0x000001f5       0x3c test_suite.o
+ .debug_info    0x00000231       0x8c test_instruction.o
+
+.debug_abbrev   0x00000000      0x117
+ .debug_abbrev  0x00000000       0x14 start.o
+ .debug_abbrev  0x00000014       0x14 vector.o
+ .debug_abbrev  0x00000028       0xaf main.o
+ .debug_abbrev  0x000000d7       0x2c test_suite.o
+ .debug_abbrev  0x00000103       0x14 test_instruction.o
+
+.debug_frame    0x00000000       0x74
+ .debug_frame   0x00000000       0x48 main.o
+ .debug_frame   0x00000048       0x2c test_suite.o
+
+.debug_loc      0x00000000       0x84
+ .debug_loc     0x00000000       0x58 main.o
+ .debug_loc     0x00000058       0x2c test_suite.o
+
+.debug_str      0x00000000      0x12e
+ .debug_str     0x00000000      0x116 main.o
+                                0x11b (size before relaxing)
+ .debug_str     0x00000116       0x18 test_suite.o
+                                 0xca (size before relaxing)

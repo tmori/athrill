@@ -1,0 +1,91 @@
+Elf loading was succeeded:0x0 - 0x4620 : 17.544 KB
+Elf loading was succeeded:0x4620 - 0x4620 : 0.0 KB
+ELF SYMBOL SECTION LOADED:index=15
+ELF SYMBOL SECTION LOADED:sym_num=198
+ELF STRING TABLE SECTION LOADED:index=16
+[DBG>
+HIT break:0x0
+[NEXT> pc=0x0 vector.S 6
+[CPU>PASSED : do_test_addi_1
+PASSED : do_test_addi_2
+PASSED : do_test_addi_3
+PASSED : do_test_addi_4
+PASSED : do_test_addi_5
+PASSED : do_test_addi_6
+PASSED : do_test_addi_7
+PASSED : do_test_addi_8
+PASSED : do_test_addi_9
+PASSED : do_test_addi_10
+PASSED : do_test_addi_11
+PASSED : do_test_addi_12
+PASSED : do_test_addi_13
+PASSED : do_test_addi_14
+PASSED : do_test_addi_15
+PASSED : do_test_addi_16
+PASSED : do_test_addi_17
+PASSED : do_test_addi_18
+PASSED : do_test_addi_19
+PASSED : do_test_addi_20
+PASSED : do_test_addi_21
+PASSED : do_test_addi_22
+PASSED : do_test_addi_23
+PASSED : do_test_addi_24
+PASSED : do_test_addi_25
+PASSED : do_test_addi_26
+PASSED : do_test_addi_27
+PASSED : do_test_addi_28
+PASSED : do_test_addi_29
+PASSED : do_test_addi_30
+PASSED : do_test_addi_31
+PASSED : do_test_addi_32
+PASSED : do_test_addi_33
+PASSED : do_test_addi_34
+PASSED : do_test_addi_35
+PASSED : do_test_addi_36
+PASSED : do_test_addi_37
+PASSED : do_test_addi_38
+PASSED : do_test_addi_39
+PASSED : do_test_addi_40
+PASSED : do_test_addi_41
+PASSED : do_test_addi_42
+PASSED : do_test_addi_43
+PASSED : do_test_addi_44
+PASSED : do_test_addi_45
+PASSED : do_test_addi_46
+PASSED : do_test_addi_47
+PASSED : do_test_addi_48
+PASSED : do_test_addi_49
+PASSED : do_test_addi_50
+PASSED : do_test_addi_51
+PASSED : do_test_addi_52
+PASSED : do_test_addi_53
+PASSED : do_test_addi_54
+PASSED : do_test_addi_55
+PASSED : do_test_addi_56
+PASSED : do_test_addi_57
+PASSED : do_test_addi_58
+PASSED : do_test_addi_59
+PASSED : do_test_addi_60
+PASSED : do_test_addi_61
+PASSED : do_test_addi_62
+PASSED : do_test_addi_63
+PASSED : do_test_addi_64
+PASSED : do_test_addi_65
+PASSED : do_test_addi_66
+PASSED : do_test_addi_67
+PASSED : do_test_addi_68
+PASSED : do_test_addi_69
+PASSED : do_test_addi_70
+PASSED : do_test_addi_71
+PASSED : do_test_addi_72
+PASSED : do_test_addi_73
+PASSED : do_test_addi_74
+PASSED : do_test_addi_75
+PASSED : do_test_addi_76
+PASSED : do_test_addi_77
+PASSED : do_test_addi_78
+PASSED : do_test_addi_79
+PASSED : do_test_addi_80
+PASSED : do_test_addi_81
+[NEXT> pc=0x87c main.c 24
+[DBG>

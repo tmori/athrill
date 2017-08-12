@@ -1,0 +1,61 @@
+ROOTDIR		:= ../../..
+ARCH		:= v850esfk3
+
+include Makefile.env
+include make_conf/disable_device.def
+
+LIBTARGET	:= libdevice.a
+
+IFLAGS	:= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/cpu
+IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/mpu
+IFLAGS	+= -I$(ROOTDIR)/device/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/intc/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target/$(ARCH)/inc
+IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target
+IFLAGS	+= -I$(ROOTDIR)/config
+IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/debugger/executor
+IFLAGS	+= -I$(ROOTDIR)/lib
+IFLAGS  += -I$(CAN_DBG_INCLUDE)
+
+VPATH	:=	$(ROOTDIR)/device/intc/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/adc
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/timer
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/timer_m
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/serial
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/comm
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/can
+VPATH	+=	$(ROOTDIR)/device/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/debugger/executor/concrete_executor/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/debugger/device/target/$(ARCH)/can/$(CAN_DEVICE_TYPE)
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+OBJS	:=	device.o
+OBJS	+=	adc.o
+OBJS	+=	timer.o
+OBJS	+=	timer_m.o
+OBJS	+=	serial.o
+OBJS	+=	comm.o
+OBJS	+=	can.o
+OBJS	+=	dbg_target_serial.o
+OBJS	+=	dbg_target_cpu.o
+OBJS	+=	dbg_can.o
+OBJS	+=	intc.o
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+

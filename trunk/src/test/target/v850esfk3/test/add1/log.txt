@@ -1,0 +1,16 @@
+[DONE> pc=0x0 null(null) 0x0: JR disp22(2000):0x7d0
+[DONE> pc=0x7d0 start(+0) 0x7d0: MOVHI imm16(1023),r0(0) r3(0):67043328
+[DONE> pc=0x7d4 start(+4) 0x7d4: MOVEA imm16(28672),r3(67043328) r3(67043328):67072000
+[DONE> pc=0x7d8 start(+8) 0x7d8: ADDI imm5(1024),r3(67072000) r3(67072000):67073024
+[DONE> pc=0x7dc start(+c) 0x7dc: EI
+[DONE> pc=0x7e0 start(+10) 0x7e0: B cond(0x5):0x862
+[DONE> pc=0x862 main(+0) 0x862: ADD imm5(-8),r3(67073024):67073016
+[DONE> pc=0x864 main(+2) 0x864: ST.W r31(0x0), disp16(4) r3(0x3ff73f8):0x0
+[DONE> pc=0x868 main(+6) 0x868: ST.W r29(0x0), disp16(0) r3(0x3ff73f8):0x0
+[DONE> pc=0x86c main(+a) 0x86c: MOV r3(67073016),r29(0)
+[DONE> pc=0x86e main(+c) 0x86e: MOV imm32(2174),r10(0):2174
+[DONE> pc=0x874 main(+12) 0x874: JARL disp22(4):0x878 r31(0x878)
+[DONE> pc=0x878 main(+16) 0x878: ADD imm5(4),r31(2168):2172
+[DONE> pc=0x87a main(+18) 0x87a: JMP r10(0x87e)
+[DONE> pc=0x87e test_suite(+0) 0x87e: ADD imm5(-8),r3(67073016):67073008
+[DONE> pc=0x880 test_suite(+2) 0x880: ST.W r31(0x87c), disp16(4) r3(0x3ff73f0):0x87c

@@ -1,0 +1,24 @@
+<%-
+    spec = TestObjectCreator.ref()
+-%>
+#include "test_check.h"
+
+<%-
+    spec.items.each { |item|
+-%>
+extern int do_test_<%= spec.name %>_<%= spec.items.index(item) + 1 %>(void);
+<%-
+    }
+-%>
+
+void test_suite(void)
+{
+<%-
+    spec.items.each { |item|
+-%>
+    DO_TEST(do_test_<%= spec.name %>_<%= spec.items.index(item) + 1 %>);
+<%-
+    }
+-%>
+	return;
+}

@@ -1,0 +1,2 @@
+WFLAGS			+= -pg
+LFLAGS			+= -pg

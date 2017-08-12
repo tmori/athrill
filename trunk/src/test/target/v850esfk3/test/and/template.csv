@@ -1,0 +1,2 @@
+../target/v850esfk3/test/and/test_suite.c,../target/v850esfk3/common/test_suite_c.erb
+../target/v850esfk3/test/and/test_instruction.S,../target/v850esfk3/test/and/test_instruction_S.erb

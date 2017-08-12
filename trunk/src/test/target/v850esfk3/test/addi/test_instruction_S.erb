@@ -1,0 +1,90 @@
+<%-
+    spec = TestObjectCreator.ref()
+-%>
+#include "test_data.h"
+#include "test_reg.h"
+#include "v850asm.inc"
+
+/*
+ * <%= spec.form %>
+ */
+
+.section	".text" , "ax"
+.align	4
+
+<%-
+	regs = spec.target.getGeneralRegisters
+	stack_size = regs.length * 4
+    spec.items.each { |item|
+    	funcname = "_do_test_" + spec.name + "_" + (spec.items.index(item) + 1).to_s
+-%>
+
+.global	<%= funcname %>
+.type   <%= funcname %>, @function
+<%= funcname %>:
+	addi	-<%= stack_size %>, sp, sp
+<%-
+	stack_off = 0
+	regs.each { |r|
+-%>
+	st.w	<%= r %>, <%= stack_off %>[sp]
+<%-
+		stack_off += 4
+	}
+-%>
+	/*
+	 * prepare
+	 */
+	mov -1, r10
+	 
+	/* set input */
+	mov 0x<%= item.inp[1].value %>,  <%= spec.target.inp[1].elm.name %>
+
+	/* set expect */
+<%-
+	item.out.each { |out|
+-%>
+	mov 0x<%= out.value %>, <%= spec.target.out[item.out.index(out)].reg_expect.name %>
+<%-
+	}
+-%>
+	ldsr r0, psw
+
+	/*
+	 * do test
+	 */
+	addi <%= item.inp[0].value %>, <%= spec.target.inp[1].elm.name %>, <%= spec.target.out[0].test_output.name %>
+
+	/*
+	 * done
+	 */
+	 /* get test results*/
+	 stsr <%= spec.target.out[1].test_output.name %>, <%= spec.target.out[1].reg_output.name %>
+<%-
+	spec.target.out.each { |elm|
+-%>
+	 cmp <%= elm.reg_output.name %>, <%= elm.reg_expect.name %>
+	 bne <%= item.name %>_test_fail
+<%-
+	}
+-%>
+
+	mov r0, r10
+
+<%= item.name + "_test_fail:" %>
+<%-
+	stack_off = 0
+	regs.each { |r|
+-%>
+	ld.w	<%= stack_off %>[sp], <%= r %>
+<%-
+		stack_off += 4
+	}
+-%>	
+	addi	<%= stack_size %>, sp, sp
+	jmp		[lp]
+.size		<%= funcname %>, .-<%= funcname %>
+
+<%-
+    }
+-%>
