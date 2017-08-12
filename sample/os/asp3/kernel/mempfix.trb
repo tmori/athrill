@@ -1,0 +1,105 @@
+# -*- coding: utf-8 -*-
+#
+#   TOPPERS/ASP Kernel
+#       Toyohashi Open Platform for Embedded Real-Time Systems/
+#       Advanced Standard Profile Kernel
+# 
+#   Copyright (C) 2015 by FUJI SOFT INCORPORATED, JAPAN
+#   Copyright (C) 2015,2016 by Embedded and Real-Time Systems Laboratory
+#               Graduate School of Information Science, Nagoya Univ., JAPAN
+# 
+#   上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#   ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+#   変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+#   (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+#       権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+#       スコード中に含まれていること．
+#   (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+#       用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+#       者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+#       の無保証規定を掲載すること．
+#   (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+#       用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+#       と．
+#     (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+#         作権表示，この利用条件および下記の無保証規定を掲載すること．
+#     (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+#         報告すること．
+#   (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+#       害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+#       また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+#       由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+#       免責すること．
+# 
+#   本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+#   よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+#   に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+#   アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+#   の責任を負わない．
+# 
+#   $Id: mempfix.trb 672 2016-03-05 15:33:08Z ertl-hiro $
+# 
+
+#
+#		固定長メモリプール機能の生成スクリプト
+#
+
+class MempfixObject < KernelObject
+  def initialize()
+    super("mpf", "mempfix")
+  end
+
+  def prepare(key, params)
+    # パラメータが省略された時のデフォルト値の設定
+    params[:mpf] ||= "NULL"
+    params[:mpfmb] ||= "NULL"
+
+    # mpfatrが無効の場合（E_RSATR）［NGKI2225］
+    #（TA_TPRI以外のビットがセットされている場合）
+    if (params[:mpfatr] & ~($TA_TPRI)) != 0
+      error_illegal_id("E_RSATR", params, :mpfatr, :mpfid)
+    end
+
+    # blkcntが0の場合（E_PAR）［NGKI2229］
+    if params[:blkcnt] == 0
+      error_illegal_id("E_PAR", params, :blkcnt, :mpfid)
+    end
+
+    # blkszが0の場合（E_PAR）［NGKI2230］
+    if params[:blksz] == 0
+      error_illegal_id("E_PAR", params, :blksz, :mpfid)
+    end
+
+    # 固定長メモリプール領域
+    if params[:mpf] == "NULL"
+      mpfName = "_kernel_mpf_#{params[:mpfid]}"
+      $kernelCfgC.add("static MPF_T #{mpfName}" \
+				"[#{params[:blkcnt]} * COUNT_MPF_T(#{params[:blksz]})];")
+      params[:mpfinib_mpf] = mpfName
+    else
+      params[:mpfinib_mpf] = "(void *)(#{params[:mpf]})"
+    end
+
+    # mpfmbがNULLでない場合（E_NOSPT）［ASPS0166］
+    if params[:mpfmb] != "NULL"
+      error_illegal_id("E_NOSPT", params, :mpfmb, :mpfid)
+    end
+
+    # 固定長メモリプール管理領域
+    mpfmbName = "_kernel_mpfmb_#{params[:mpfid]}"
+    $kernelCfgC.add("static MPFMB #{mpfmbName}[#{params[:blkcnt]}];")
+    params[:mpfinib_mpfmb] = mpfmbName
+  end
+
+  def generateInib(key, params)
+    return("(#{params[:mpfatr]}), (#{params[:blkcnt]}), " \
+			"ROUND_MPF_T(#{params[:blksz]}), #{params[:mpfinib_mpf]}, " \
+			"#{params[:mpfinib_mpfmb]}")
+  end
+end
+
+#
+#  固定長メモリプールに関する情報の生成
+#
+$kernelCfgC.comment_header("Fixed-sized Memorypool Functions")
+MempfixObject.new.generate()

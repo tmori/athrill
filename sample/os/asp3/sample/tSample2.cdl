@@ -1,0 +1,200 @@
+/*
+ *		サンプルプログラム(2)のコンポーネント記述ファイル
+ *
+ *  $Id: tSample2.cdl 550 2016-01-17 04:16:26Z ertl-hiro $
+ */
+/*
+ *  カーネルオブジェクトの定義
+ */
+import("kernel.cdl");
+
+/*
+ *  ターゲット非依存のセルタイプの定義
+ */
+import("syssvc/tSerialPort.cdl");
+import("syssvc/tSysLog.cdl");
+import("syssvc/tLogTask.cdl");
+import("syssvc/tBanner.cdl");
+
+/*
+ *  ターゲット依存部の取り込み
+ */
+import("target.cdl");
+
+/*
+ *  「セルの組上げ記述」とは，"cell"で始まる行から，それに対応する"};"
+ *  の行までのことを言う．
+ */
+
+/*
+ *  システムログ機能の組上げ記述
+ *
+ *  システムログ機能を外す場合には，以下のセルの組上げ記述を削除し，コ
+ *  ンパイルオプションに-DTOPPERS_OMIT_SYSLOGを追加すればよい．ただし，
+ *  システムログタスクはシステムログ機能を使用するため，それも外すこと
+ *  が必要である．また，システムログ機能のアダプタも外さなければならな
+ *  い．tecsgenが警告メッセージを出すが，無視してよい．
+ */
+cell tSysLog SysLog {
+	logBufferSize = 32;					/* ログバッファのサイズ */
+	initLogMask = C_EXP("LOG_UPTO(LOG_NOTICE)");
+										/* ログバッファに記録すべき重要度 */
+	initLowMask = C_EXP("LOG_UPTO(LOG_EMERG)");
+									   	/* 低レベル出力すべき重要度 */
+
+	/* 低レベル出力との結合 */
+	cPutLog = PutLogTarget.ePutLog;
+};
+
+/*
+ *  シリアルインタフェースドライバの組上げ記述
+ *
+ *  シリアルインタフェースドライバを外す場合には，以下のセルの組上げ記
+ *  述を削除すればよい．ただし，システムログタスクはシリアルインタフェー
+ *  スドライバを使用するため，それも外すことが必要である．また，シリア
+ *  ルインタフェースドライバのアダプタも外さなければならない．
+ */
+cell tSerialPort SerialPort1 {
+	receiveBufferSize = 256;			/* 受信バッファのサイズ */
+	sendBufferSize    = 256;			/* 送信バッファのサイズ */
+
+	/* ターゲット依存部との結合 */
+	cSIOPort = SIOPortTarget1.eSIOPort;
+	eiSIOCBR <= SIOPortTarget1.ciSIOCBR;	/* コールバック */
+};
+
+/*
+ *  システムログタスクの組上げ記述
+ *
+ *  システムログタスクを外す場合には，以下のセルの組上げ記述を削除すれ
+ *  ばよい．
+ */
+cell tLogTask LogTask {
+	priority  = 3;					/* システムログタスクの優先度 */
+	stackSize = LogTaskStackSize;	/* システムログタスクのスタックサイズ */
+
+	/* シリアルインタフェースドライバとの結合 */
+	cSerialPort        = SerialPort1.eSerialPort;
+	cnSerialPortManage = SerialPort1.enSerialPortManage;
+
+	/* システムログ機能との結合 */
+	cSysLog = SysLog.eSysLog;
+
+	/* 低レベル出力との結合 */
+	cPutLog = PutLogTarget.ePutLog;
+};
+
+/*
+ *  カーネル起動メッセージ出力の組上げ記述
+ *
+ *  カーネル起動メッセージの出力を外す場合には，以下のセルの組上げ記述
+ *  を削除すればよい．
+ */
+cell tBanner Banner {
+	/* 属性の設定 */
+	targetName      = BannerTargetName;
+	copyrightNotice = BannerCopyrightNotice;
+};
+
+/*
+ *  サンプルプログラムの定義
+ */
+[singleton]
+celltype tSample2 {
+	require tKernel.eKernel;			/* 呼び口名なし（例：delay）*/
+	/*require cKernel = tKernel.eKernel;/* 呼び口名あり（例：cKernel_delay）*/
+	require ciKernel = tKernel.eiKernel;/* 呼び口名あり（例：ciKernel_）*/
+
+	call sTask		    cTask[4];		/* タスク操作 */
+	call sTask 			cExceptionTask;
+	call sCyclic        cCyclic;
+	call sAlarm         cAlarm;
+
+	[optional] call sSerialPort	cSerialPort;/* シリアルドライバとの接続 */
+	call sSysLog		cSysLog;		/* システムログ機能との接続 */
+	
+	entry sTaskBody		eMainTask;	  	/* Mainタスク */
+	entry sTaskBody		eSampleTask[3];	/* 並行実行されるタスク */
+	entry sTaskBody		eExceptionTask;	/* 例外処理タスク */
+	
+	entry siHandlerBody eiCyclicHandler;/* 周期ハンドラ*/
+	entry siHandlerBody eiAlarmHandler; /* アラームハンドラ */
+};
+
+/*
+ *  組み上げ記述
+ */
+
+/* Sample2のプロトタイプ宣言 */
+cell tSample2 Sample2;
+
+cell tKernel ASPKernel{
+};
+
+cell tTask MainTask {
+	/* 呼び口の結合 */
+	cTaskBody = Sample2.eMainTask;
+	/* 属性の設定 */
+	attribute = C_EXP("TA_ACT");
+	priority = C_EXP("MAIN_PRIORITY");
+	stackSize = C_EXP("STACK_SIZE");
+};
+
+cell tTask Task1 {
+	/* 呼び口の結合 */
+	cTaskBody = Sample2.eSampleTask[0];
+	  /* 属性の設定 */
+	priority = C_EXP("MID_PRIORITY");
+	stackSize = C_EXP("STACK_SIZE");
+};
+
+cell tTask Task2 {
+	/* 呼び口の結合 */
+	cTaskBody = Sample2.eSampleTask[1];
+	/* 属性の設定 */
+	priority = C_EXP("MID_PRIORITY");
+	stackSize = C_EXP("STACK_SIZE");
+};
+
+cell tTask Task3 {
+	/* 呼び口の結合 */
+	cTaskBody = Sample2.eSampleTask[2];
+	/* 属性の設定 */
+	priority = C_EXP("MID_PRIORITY");
+	stackSize = C_EXP("STACK_SIZE");
+};
+
+cell tTask ExceptionTask {
+	/* 呼び口の結合 */
+	cTaskBody = Sample2.eExceptionTask;
+	/* 属性の設定 */
+	priority = C_EXP("EXC_PRIORITY");
+	stackSize = C_EXP("STACK_SIZE");
+};
+
+cell tCyclicHandler CyclicHandler {
+	/* 呼び口の結合 */
+	ciHandlerBody = Sample2.eiCyclicHandler;
+	/* 属性の設定 */
+	cycleTime = 2000000;
+};
+
+cell tAlarmHandler AlarmHandler {
+	ciHandlerBody = Sample2.eiAlarmHandler;
+};
+
+cell tSample2 Sample2 {
+	/* 呼び口の結合 */
+	cTask[ 0 ] = MainTask.eTask;
+	cTask[ 1 ] = Task1.eTask;
+	cTask[ 2 ] = Task2.eTask;
+	cTask[ 3 ] = Task3.eTask;
+
+	cExceptionTask = ExceptionTask.eTask;
+
+	cCyclic = CyclicHandler.eCyclic;
+	cAlarm  = AlarmHandler.eAlarm;
+
+	cSerialPort = SerialPort1.eSerialPort;
+	cSysLog = SysLog.eSysLog;
+};

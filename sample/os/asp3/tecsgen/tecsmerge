@@ -1,0 +1,6 @@
+#! /bin/sh
+
+# $Id: tecsmerge 1138 2010-10-08 03:10:44Z okuma-top $
+
+tecsmerge.rb $*
+

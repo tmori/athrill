@@ -1,0 +1,10 @@
+/*
+ *		C言語で記述されたアプリケーションから，TECSベースのシステムログ
+ *		機能を呼び出すためのアダプタ用セルタイプの定義
+ *
+ *  $Id: tSysLogAdapter.cdl 509 2016-01-12 06:06:14Z ertl-hiro $
+ */
+[singleton, active]
+celltype tSysLogAdapter {
+	call	sSysLog		cSysLog;
+};

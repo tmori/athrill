@@ -1,0 +1,77 @@
+/*
+ *		テスト用プラットフォームのコンポーネント記述ファイル
+ *
+ *  $Id: test_pf.cdl 756 2016-10-03 10:47:38Z ertl-hiro $
+ */
+
+/*
+ *  カーネルオブジェクトの定義
+ */
+import(<kernel.cdl>);
+
+/*
+ *  ターゲット非依存のセルタイプの定義
+ */
+import("syssvc/tSerialPort.cdl");
+import("syssvc/tSysLog.cdl");
+import("syssvc/tSysLogAdapter.cdl");
+import("syssvc/tBanner.cdl");
+import("syssvc/tTestService.cdl");
+
+/*
+ *  自己診断サービスのセルタイプの定義
+ */
+import("test/tBitKernel.cdl");  
+import("test/tBitMutex.cdl");  
+
+/*
+ *  ターゲット依存部の取り込み
+ */
+import("target.cdl");
+
+/*
+ *  システムログ機能の組上げ記述
+ */
+cell tSysLog SysLog {
+	logBufferSize = 32;					/* ログバッファのサイズ */
+	initLogMask = 0;					/* ログバッファに記録すべき重要度 */
+	initLowMask = C_EXP("LOG_UPTO(LOG_DEBUG)");
+									   	/* 低レベル出力すべき重要度 */
+	/* 低レベル出力との結合 */
+	cPutLog = PutLogTarget.ePutLog;
+};
+
+/*
+ *  C言語で記述されたアプリケーションから，TECSベースのシステムログ機能
+ *  を呼び出すためのアダプタの組上げ記述
+ */
+cell tSysLogAdapter SysLogAdapter {
+	cSysLog = SysLog.eSysLog;
+};
+
+/*
+ *  カーネル起動メッセージ出力の組上げ記述
+ */
+cell tBanner Banner {
+	/* 属性の設定 */
+	targetName      = BannerTargetName;
+	copyrightNotice = BannerCopyrightNotice;
+};
+
+/*
+ *  テストサービスの組上げ記述
+ */
+cell tTestService TestService {
+	cSysLog = SysLog.eSysLog;
+};
+
+cell tBitKernel BitKernel {
+};
+
+cell tBitMutex BitMutex {
+};
+
+cell tBuiltInTestAdaptor BuiltInTestAdaptor {
+	cBuiltInTest[0] = BitKernel.eBuiltInTest;
+	cBuiltInTest[1] = BitMutex.eBuiltInTest;
+};

@@ -1,0 +1,8 @@
+MANIFEST
+cfg.rb
+pass1.rb
+pass2.rb
+GenFile.rb
+SRecord.rb
+
+doc/cfg_user.txt

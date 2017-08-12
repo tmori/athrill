@@ -1,0 +1,174 @@
+/*
+ *  TECS Generator
+ *      Generator for TOPPERS Embedded Component System
+ *  
+ *   Copyright (C) 2008-2013 by TOPPERS Project
+ *--
+ *   上記著作権者は，以下の(1)(4)の条件を満たす場合に限り，本ソフトウェ
+ *   ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+ *   変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ *   (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+ *       権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+ *       スコード中に含まれていること．
+ *   (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+ *       用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+ *       者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+ *       の無保証規定を掲載すること．
+ *   (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+ *       用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+ *       と．
+ *     (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+ *         作権表示，この利用条件および下記の無保証規定を掲載すること．
+ *     (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+ *         報告すること．
+ *   (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+ *       害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+ *       また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+ *       由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+ *       免責すること．
+ *  
+ *   本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+ *   よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+ *   に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+ *   アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+ *   の責任を負わない．
+ *  
+ *   $Id: TDR.cdl 2640 2017-06-03 11:27:12Z okuma-top $
+ */
+
+import_C( "tecs_rpc.h" );
+
+// Straight Order TDR
+const uint32_t TDR_SOP_MAGIC1   = (0x672A);  // Client to Server
+const uint32_t TDR_SOP_MAGIC2   = (0x561E);  // Server to Client
+const uint32_t TDR_EOP_MAGIC1   = (0x5A3C);  // 返信を待つ (同期呼出し)
+const uint32_t TDR_EOP_MAGIC2   = (0x6D5E);  // 返信を待たない(非同期呼出しまたはリターン)
+
+// Straight Order TDR for SharedChannel
+const uint32_t TDR_SHSOP_MAGIC1   = (0x98D5);  // Client to Server
+const uint32_t TDR_SHSOP_MAGIC2   = (0xA9E1);  // Server to Client
+const uint32_t TDR_SHEOP_MAGIC1   = (0xB5C3);  // 返信を待つ (同期呼出し)
+const uint32_t TDR_SHEOP_MAGIC2   = (0x92A1);  // 返信を待たない(非同期呼出しまたはリターン)
+
+/*
+ * TDR: TECS Data Representation layer
+ */
+[deviate]         /* get_intptr が逸脱になる */
+signature sTDR {  /* TECS Data Representation */
+
+	/* 制御関数 */
+
+	/* チャンネルのリセット */
+	ER	reset( void );	/* 通信チャンネルのリセット */
+						/* 途中でエラーが発生し、送信または受信を続行できなかったときはリセットする */
+						/* 一方がリセットをかけると、他方は RESET エラーを返す */
+						/* 確認できないときは、このチャネルは放棄するしかない */
+
+	/* マジックコードの送受信 */
+	ER	sendSOP( [in]bool_t b_client );     /* StartOfPacket magic を送信 */
+	ER	receiveSOP( [in]bool_t b_client );  /* StartOfPacket magic を受信 */
+						 /* b_client: クライアント側なら true, サーバー側なら false */
+
+	/* マジックコードの送受信 */
+	//	ER	sendSHSOP( [in]bool_t b_client );     /* StartOfPacket magic を送信 */
+	//	ER	receiveSHSOP( [in]bool_t b_client );  /* StartOfPacket magic を受信 */
+						 /* b_client: クライアント側なら true, サーバー側なら false */
+
+	ER	sendEOP( [in]bool_t b_continue );   /* EndOfPacket magic を送信（パケットの掃きだしも行う） */
+	ER	receiveEOP( [in]bool_t b_continue );/* EndOfPacket magic を受信 */
+                        /* b_continue: 同期呼び出しのクライアント側なら true,
+                           非同期呼び出しのクライアント側またはサーバー側なら false */
+
+	/* データ送受信関数 */
+
+	/* 整数型 (推奨) */
+	ER	putInt8( [in]int8_t in ); 
+	ER	putInt16( [in]int16_t in ); 
+	ER	putInt32( [in]int32_t in ); 
+	ER	putInt64( [in]int64_t in ); 
+	ER	putInt128( [in]int128_t in ); 
+  
+	ER	getInt8( [out]int8_t *out );
+	ER	getInt16( [out]int16_t *out );
+	ER	getInt32( [out]int32_t *out );
+	ER	getInt64( [out]int64_t *out );
+	ER	getInt128( [out]int128_t *out );
+
+	/* 無符号整数型 (推奨) */
+	ER	putUInt8( [in]uint8_t in ); 
+	ER	putUInt16( [in]uint16_t in ); 
+	ER	putUInt32( [in]uint32_t in ); 
+	ER	putUInt64( [in]uint64_t in ); 
+	ER	putUInt128( [in]uint128_t in ); 
+  
+	ER	getUInt8( [out]uint8_t *out );
+	ER	getUInt16( [out]uint16_t *out );
+	ER	getUInt32( [out]uint32_t *out );
+	ER	getUInt64( [out]uint64_t *out );
+	ER	getUInt128( [out]uint128_t *out );
+
+	/* 文字型（推奨、8bit） */
+	ER	putChar( [in]char_t in ); 
+	ER	getChar( [out]char_t *out ); 
+
+	/* Bool 型 */
+	ER	putBool( [in]bool_t in ); 
+	ER	getBool( [out]bool_t *out ); 
+
+	/* 浮動小数型 */
+	ER	putFloat32( [in]float32_t in );
+	ER	putDouble64( [in]double64_t in );
+	ER	getFloat32( [out]float32_t *out );
+	ER	getDouble64( [out]double64_t *out );
+
+
+	/* 非推奨の型(有符号) */
+	ER	putSChar( [in]schar_t in );
+	ER	putShort( [in]short_t in ); 
+	ER	putInt( [in]int_t in ); 
+	ER	putLong( [in]long_t in ); 
+
+	ER	getSChar( [out]schar_t *out ); 
+	ER	getShort( [out]short_t *out ); 
+	ER	getInt( [out]int_t *out ); 
+	ER	getLong( [out]long_t *out ); 
+
+
+	/* 非推奨の型(無符号) */
+	ER	putUChar( [in]uchar_t in ); 
+	ER	putUShort( [in]ushort_t in ); 
+	ER	putUInt( [in]uint_t in ); 
+	ER	putULong( [in]ulong_t in ); 
+
+	ER	getUChar( [out]unsigned char *out ); 
+	ER	getUShort( [out]ushort_t *out ); 
+	ER	getUInt( [out]uint_t *out ); 
+	ER	getULong( [out]ulong_t *out ); 
+
+	ER	putIntptr( [in]const intptr_t ptr );
+	ER	getIntptr( [out]intptr_t *ptr );
+};
+
+// Straight Order TECS Data Representation (Straight means no endian-conversion is done)
+celltype tTDR {
+	call	sChannel	cChannel;
+	[inline]
+		entry	sTDR	eTDR;
+
+	var {
+		TMO	tmo = C_EXP( "TMO_FEVR" );
+	};
+	require tSysLog.eSysLog;
+};
+
+// Network Byte Order (Big-endian) TECS Data Representation (Data are always sent in big-endian)
+celltype tNBOTDR {
+	call	sChannel	cChannel;
+	[inline]
+		entry	sTDR	eTDR;
+
+	var {
+		TMO	tmo = C_EXP( "TMO_FEVR" );
+	};
+	require tSysLog.eSysLog;
+};

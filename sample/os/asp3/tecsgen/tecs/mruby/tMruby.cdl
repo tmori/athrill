@@ -1,0 +1,148 @@
+/*
+ *  Copyright (C) 2012 by Ubiquitous Computing and Networking Laboratory
+ *                Ritsumeikan Univ., JAPAN
+ *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+ *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+ *      権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+ *      スコード中に含まれていること．
+ *  (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+ *      用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+ *      者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+ *      の無保証規定を掲載すること．
+ *  (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+ *      用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+ *      と．
+ *    (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+ *        作権表示，この利用条件および下記の無保証規定を掲載すること．
+ *    (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+ *        報告すること．
+ *  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+ *      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+ *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+ *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+ *      免責すること．
+ * 
+ *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+ *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+ *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+ *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+ *  の責任を負わない．
+ * 
+ *  @(#) $Id: tMruby.cdl 2640 2017-06-03 11:27:12Z okuma-top $
+ */
+//import(<syssvc/tSerialPort.cdl>);
+//import(<kernel.cdl>);
+
+import(<mruby.cdl>);
+import(<sMruby.cdl>);
+import(<tTLSFMalloc.cdl>);
+
+namespace nMruby{
+
+/*** mruby VM ***/
+  celltype tMrubyVM{
+    entry sMrubyVM eMrubyVM;
+    attr{
+      [omit]char_t *mrubyFile;
+      const uint8_t *irep=C_EXP("$cell_global$_irep");
+    };
+    var{
+      mrb_irep      *var_irep;
+      mrb_state     *mrb;
+      struct RProc  *rproc;
+    };
+
+    /* MrubyBridgePlugin の生成する VM_TECSInitializeer.eInitialize へ結合する */
+    [optional]  call sInitializeBridge cInit;
+    /*
+     * アロケータ 
+     *  他と共有しないのであれば、このアロケータは排他制御される必要はない
+     */
+    call sMalloc cMalloc;
+
+    FACTORY{
+      write("Makefile.tecsgen", "clean_mrb_c :");
+      write("Makefile.tecsgen", "	rm -f $(MRB_C)"); 
+    };
+    factory{
+      write("Makefile.tecsgen", "POST_TECSGEN_TARGET := $(POST_TECSGEN_TARGET) $cell_global$_mrb.c");
+      write("Makefile.tecsgen", "$cell_global$_mrb.c : %s tecs.timestamp Makefile", mrubyFile);
+      write("Makefile.tecsgen", "	$(MRBC) -B$cell_global$_irep -o$cell_global$_mrb.c %s", mrubyFile);
+      write("Makefile.tecsgen", "TECS_COBJS := $(TECS_COBJS) $cell_global$_mrb.o");
+      write("Makefile.tecsgen", "MRB_C := $(MRB_C) $cell_global$_mrb.c");
+      write("$ct_global$_factory.h","extern const uint8_t $cell_global$_irep[];");
+    };
+  };
+
+/*** Standard Task Versoin  ***/
+  /*
+   * tMruby　の eMrubyBody.main が、繰り返し起床されることは想定されていません。
+   */
+  celltype tMrubyTaskBody{
+    entry sTaskBody eMrubyBody;
+    call  sMrubyVM  cMrubyVM;
+  };
+  composite tMruby{
+    entry sTaskBody eMrubyBody;
+    [optional]  call sInitializeBridge cInit;
+    attr{
+      [omit]char_t *mrubyFile;
+      size_t memoryPoolSize = 1024 * 1024;    /** 1MB default **/
+      /* note: this requires enough memory */
+      /* please pay attention to memory layout */
+    };
+
+    /** **/
+    cell tMrubyVM MrubyVM{
+      mrubyFile = composite.mrubyFile;
+      cInit => composite.cInit;
+      cMalloc = TLSFMalloc.eMalloc;
+    };
+    cell tMrubyTaskBody MrubyTaskBody {
+      cMrubyVM = MrubyVM.eMrubyVM;
+    };
+    cell tTLSFMalloc TLSFMalloc {
+      memoryPoolSize = composite.memoryPoolSize;
+    };
+    composite.eMrubyBody => MrubyTaskBody.eMrubyBody;
+  };
+
+/*** Cyclic Task Versoin  ***/
+  /*
+   * tMrubyCyclic の eMrubyBody.main が繰り返し呼び出されることが想定されています。
+   * この実装では mrb_close は呼び出されません (終了は、突然電源が切れることを想定)
+   */
+  celltype tMrubyCyclicTaskBody{
+    entry sTaskBody eMrubyBody;
+    call  sMrubyVM  cMrubyVM;
+    var {
+        bool_t  b_init;
+    };
+  };
+  composite tMrubyCyclic{
+    entry sTaskBody eMrubyBody;
+    [optional]  call sInitializeBridge cInit;
+    attr{
+      [omit]char_t *mrubyFile;
+      size_t memoryPoolSize = 1024 * 1024;    /** 1MB default **/
+      /* note: this requires enough memory */
+      /* please pay attention to memory layout */
+    };
+
+    /** **/
+    cell tMrubyVM MrubyVM{
+      mrubyFile = composite.mrubyFile;
+      cInit => composite.cInit;
+      cMalloc = TLSFMalloc.eMalloc;
+    };
+    cell tMrubyCyclicTaskBody MrubyTaskBody {
+      cMrubyVM = MrubyVM.eMrubyVM;
+    };
+    cell tTLSFMalloc TLSFMalloc {
+      memoryPoolSize = composite.memoryPoolSize;
+    };
+    composite.eMrubyBody => MrubyTaskBody.eMrubyBody;
+  };
+};
