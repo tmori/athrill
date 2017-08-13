@@ -34,9 +34,10 @@ all:	$(TARGET)
 
 $(TARGET):	$(OBJS)
 	$(GCC) -O3 $(LFLAGS) $(OBJS) -o $(TARGET)  $(LIBS)
+	cp $(TARGET) ../../bin/
 
 .c.o:	$<
 	$(GCC) -O3 -c $(CFLAGS) $<
 
 clean:
-	rm -f $(OBJS) $(TARGET).exe
+	rm -f $(OBJS) $(TARGET).exe ../../bin/$(TARGET).exe

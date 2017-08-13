@@ -14,7 +14,7 @@ int main(int argc, const char* argv[])
 	int len;
 
 	if (argc < 2) {
-		printf("Usage: %s command\n", argv[0]);
+		printf("Usage: athrill_remote <athrill debug command>\n");
 		return 1;
 	}
 	for (i = 1; i < argc; i++) {
