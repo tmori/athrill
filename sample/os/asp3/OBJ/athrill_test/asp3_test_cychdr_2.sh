@@ -19,5 +19,12 @@ athrill_remote c
 echo "sleep 60sec"
 wait_athrill 60
 
+athrill_remote "S 0 C"
+athrill_remote c
+
+#wait 60sec
+echo "sleep 60sec"
+wait_athrill 60
+
 echo "## end test"
 deactivate_athrill
