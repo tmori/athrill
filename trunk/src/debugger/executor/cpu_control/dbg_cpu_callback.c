@@ -45,8 +45,9 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 
 	if (need_stop == TRUE) {
 		dbg_cpu_control_print_source(pc);
-		fflush(stdout);
-		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "core[%u].pc = 0x%x\n", cpu_get_core_id(core), pc));
+		//fflush(stdout);
+		//CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "core[%u].pc = 0x%x\n", cpu_get_core_id(core), pc));
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
 		cpuctrl_set_debug_mode(TRUE);
 		dbg_log_sync();
