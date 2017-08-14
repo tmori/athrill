@@ -9,8 +9,8 @@ activate_athrill
 echo "## start test"
 
 athrill_remote c
-sleep 1
-athrill_remote q
+
+wait_athrill 1
 
 #terminate all TASKs
 athrill_remote "S 0 1e"
@@ -19,16 +19,14 @@ athrill_remote "S 0 3e"
 athrill_remote c
 
 #wait 3sec
-sleep 3
-athrill_remote q
+wait_athrill 3
 
 #activate TASK1
 athrill_remote "S 0 1a"
 athrill_remote c
 
 #wait 3sec
-sleep 3
-athrill_remote q
+wait_athrill 3
 
 echo "## end test"
 deactivate_athrill

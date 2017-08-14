@@ -19,6 +19,12 @@ activate_athrill()
 	fi
 }
 
+wait_athrill()
+{
+	sleep ${1}
+	athrill_remote q
+}
+
 deactivate_athrill()
 {
 	athrill_remote "exit"
