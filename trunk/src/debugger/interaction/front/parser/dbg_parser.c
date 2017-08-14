@@ -3,6 +3,7 @@
 #include "front/parser/dbg_parser_config.h"
 #include "concrete_executor/dbg_std_executor.h"
 #include "cpu_control/dbg_cpu_control.h"
+#include "cui/cui_ops.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -80,6 +81,7 @@ DbgCmdExecutorType *dbg_parse(uint8 *str, uint32 len)
 
 	if (can_execute(res, &mode) == FALSE) {
 		printf("ERROR:can not execute command on %s\n", (mode == DBG_MODE_DEBUG) ? "DEBUG_MODE" : "CPU_MODE");
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 		return NULL;
 	}
 	/*

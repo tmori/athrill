@@ -75,6 +75,7 @@ void dbg_std_executor_break(void *executor)
 			 if (err == STD_E_OK) {
 				 printf("candidate : %s %u\n", candidate.file, candidate.line);
 			 }
+			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 		 }
 		 else {
 			 if (cpuctrl_set_break(value.addr, BREAK_POINT_TYPE_FOREVER) == TRUE) {
@@ -337,6 +338,7 @@ void dbg_std_executor_quit(void *executor)
 void dbg_std_executor_list(void *executor)
 {
 	dbg_cpu_control_update_editor();
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	return;
 }
 
@@ -390,6 +392,7 @@ static void print_memory_type(char *variable_name, uint32 vaddr, uint8 *top_addr
 	if (variable_name != NULL) {
 		bool ret = print_variable_with_data_type(variable_name, vaddr, top_addr, size);
 		if (ret == TRUE) {
+			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 			return;
 		}
 	}
@@ -477,8 +480,11 @@ void dbg_std_executor_serialin(void *executor)
 		err = dbg_serial_in(parsed_args->channel, parsed_args->input.str[i]);
 		if (err != STD_E_OK) {
 			printf("ERROR:can not put serial data:%c\n", parsed_args->input.str[i]);
+			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+			return;
 		}
 	}
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 
 	return;
 }
