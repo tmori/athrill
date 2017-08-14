@@ -1,0 +1,22 @@
+asp3移植確認用スクリプト
+
+[1] ディスパッチャ
+[1.1] タスク起動/終了できること
+	asp3_test_dispatcher_1.sh
+
+[1.2] タスクがイベント待ち合わせできること
+	asp3_test_dispatcher_2.sh
+[1.3] タスクがスリープして復帰すること
+	asp3_test_dispatcher_3.sh
+
+[2] 周期ハンドラ
+[2.1] タスク１⇒２⇒３の順番で定期的に切り替わること
+	asp3_test_cychdr_1.sh
+[2.2] タスクの切り替えが停止すること
+	asp3_test_cychdr_2.sh
+
+[3] アラーム
+[3.1] アラームハンドラが5秒後に起動するよこと
+	asp3_test_alarmhdr_1.sh
+[3.2] アラームハンドラが起動しないこと
+	asp3_test_alarmhdr_2.sh
