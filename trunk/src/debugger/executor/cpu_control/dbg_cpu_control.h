@@ -76,11 +76,31 @@ extern char *cpuctrl_get_func_log_trace_info(uint32 bt_number, uint32 *funcpcoff
  * profile機能
  */
 typedef struct {
+	/*
+	 * 呼び出し回数
+	 */
 	uint64 call_num;
+	/*
+	 * 関数呼び出し開始時の時間
+	 */
 	uint64 start_time;
-	uint64 last_time;
+	/*
+	 * 最後にプログラムカウンタが関数内に滞留していた時間
+	 */
 	uint64 func_time;
+	/*
+	 * 関数が他関数を呼び出していた総合時間
+	 * 再起呼び出し時間は含める
+	 */
 	uint64 total_time;
+	/*
+	 * 再起呼び出し回数(一時管理用)
+	 */
+	uint64 recursive_num;
+	/*
+	 * 関数入場時のスタックポインタアドレス
+	 */
+	uint32 sp_func_enter;
 } CpuProfileType;
 extern void cpuctrl_profile_collect(uint32 pc);
 extern void cpuctrl_profile_get(uint32 funcid, CpuProfileType *profile);

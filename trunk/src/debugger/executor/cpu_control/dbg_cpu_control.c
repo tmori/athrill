@@ -1,4 +1,5 @@
 #include "cpu_control/dbg_cpu_control.h"
+#include "cpu.h"
 #include "cpu_config.h"
 #include "symbol_ops.h"
 #include "assert.h"
@@ -534,7 +535,11 @@ void cpuctrl_set_force_break(void)
  * profile機能
  */
 static CpuProfileType *CpuProfile;
-
+typedef struct {
+	uint32	prev_funcid;
+	uint32	current_funcid;
+} CpuProfileCurrentInfoType;
+static CpuProfileCurrentInfoType CpuProfileCurrentInfo;
 
 void cpuctrl_init(void)
 {
@@ -542,6 +547,7 @@ void cpuctrl_init(void)
 	uint32 func_num = symbol_get_func_num();
 	uint32 gl_num = symbol_get_gl_num();
 	CpuProfile = malloc(func_num * sizeof(CpuProfileType));
+	CpuProfileCurrentInfo.current_funcid = func_num;
 	ASSERT(CpuProfile != NULL);
 	memset(CpuProfile, 0, func_num * sizeof(CpuProfileType));
 
@@ -571,15 +577,47 @@ void cpuctrl_profile_collect(uint32 pc)
 	funcpc = symbol_funcid2funcaddr(funcid);
 
 	if (pc == funcpc) {
+		/*
+		 * 関数入場
+		 */
 		CpuProfile[funcid].call_num++;
-		if (CpuProfile[funcid].last_time > 0) {
-			CpuProfile[funcid].total_time +=
-					(CpuProfile[funcid].last_time - CpuProfile[funcid].start_time);
+
+		if (CpuProfile[funcid].recursive_num == 0U) {
+			/*
+			 * 初回入場
+			 */
+			CpuProfile[funcid].sp_func_enter = cpu_get_current_core_sp();
+			CpuProfile[funcid].start_time = elaps.total_clocks;
+			CpuProfile[funcid].recursive_num++;
+			//printf("func_enter:funcid=%s start_time=%I64u\n", symbol_funcid2funcname(funcid), CpuProfile[funcid].start_time);
 		}
-		CpuProfile[funcid].start_time = elaps.total_clocks;
 	}
+	else if (CpuProfileCurrentInfo.current_funcid != funcid) {
+		uint32 i;
+		uint32 func_num = symbol_get_func_num();
+
+		CpuProfileCurrentInfo.prev_funcid = CpuProfileCurrentInfo.current_funcid;
+
+		for (i = 0; i < func_num; i++) {
+			if (CpuProfile[i].recursive_num > 0) {
+				if (cpu_get_current_core_sp() == CpuProfile[i].sp_func_enter) {
+					/*
+					 * 最終退場
+					 */
+					CpuProfile[i].total_time += (elaps.total_clocks - CpuProfile[i].start_time);
+					CpuProfile[i].recursive_num--;
+					//printf("func_exit:funcid=%s ctime=%I64u\n", symbol_funcid2funcname(i), elaps.total_clocks);
+					//printf("func_exit:func_time=%Iu total_time=%Iu\n", CpuProfile[i].func_time, CpuProfile[i].total_time);
+					//printf("func_exit:stime=%I64u ", CpuProfile[i].start_time);
+					//printf("ctime=%I64u ", elaps.total_clocks);
+					//printf("ttime=%I64u\n", CpuProfile[i].total_time);
+					break;
+				}
+			}
+		}
+	}
+	CpuProfileCurrentInfo.current_funcid = funcid;
 	CpuProfile[funcid].func_time++;
-	CpuProfile[funcid].last_time = elaps.total_clocks;
 	return;
 }
 void cpuctrl_profile_get(uint32 funcid, CpuProfileType *profile)
