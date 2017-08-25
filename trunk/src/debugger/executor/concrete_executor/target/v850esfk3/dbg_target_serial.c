@@ -100,18 +100,19 @@ static Std_ReturnType file_read(SerialFileReaderType *rfile, char *c);
 bool dbg_serial_getchar_file(uint8 channel, uint8 *data)
 {
 	char c;
-	if (file_read(&SerialDeviceFile.in, &c) < 0) {
+	if (file_read(&SerialDeviceFile.in, &c) != STD_E_OK) {
 		return FALSE;
 	}
 	else {
 		*data = c;
 	}
+	printf("getchar=%c\n", c);
 	return TRUE;
 }
 bool dbg_serial_putchar_file(uint8 channel, uint8 data)
 {
 	char c = data;
-	if (file_write(&SerialDeviceFile.out, c) < 0) {
+	if (file_write(&SerialDeviceFile.out, c) != STD_E_OK) {
 		return FALSE;
 	}
 	return TRUE;
@@ -154,6 +155,10 @@ static void file_pathset(SerialFileType *file, const char* filename, int filenam
 		memcpy(file->path, path, pathlen);
 		file->path[pathlen] = '/';
 		memcpy(&file->path[pathlen + 1], filename, filenamelen);
+		if (file->path[0] == '/') {
+			file->path[0] = file->path[1];
+			file->path[1] = ':';
+		}
 	}
 	else {
 		memcpy(&file->path, filename, filenamelen);
@@ -195,7 +200,7 @@ static void file_ropen(SerialFileReaderType *rfile)
 	file_pathset(&rfile->file, SERIAL_IN_FILENAME, strlen(SERIAL_IN_FILENAME));
 	rfile->file.fd = open(rfile->file.path, O_RDONLY|O_BINARY);
 	if (rfile->file.fd < 0) {
-		printf("file open error:%s\n", rfile->file.path);
+		printf("file open error:%s errno=%d\n", rfile->file.path, errno);
 		exit(1);
 	}
 	err = fstat(rfile->file.fd, &buf);
