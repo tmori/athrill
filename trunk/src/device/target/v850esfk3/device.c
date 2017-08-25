@@ -2,6 +2,7 @@
 #include "device_ex_serial_ops.h"
 #include "dbg_can.h"
 #include "can.h"
+#include "cpuemu_ops.h"
 #include "concrete_executor/target/dbg_target_serial.h"
 #include <stdio.h>
 
@@ -24,9 +25,14 @@ static DeviceExSerialOpType device_ex_serial_op = {
 		.putchar = dbg_serial_putchar,
 		.getchar = dbg_serial_getchar,
 };
+static DeviceExSerialOpType device_ex_serial_file_op = {
+		.putchar = dbg_serial_putchar_file,
+		.getchar = dbg_serial_getchar_file,
+};
 
 void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 {
+	char *path;
 	dev_clock->clock = 0;
 	dev_clock->intclock = 0;
 
@@ -37,6 +43,10 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 
 	device_init_serial(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
 	device_ex_serial_register_ops(0U, &device_ex_serial_op);
+
+	if (cpuemu_get_devcfg_string("SERIAL_FILE_PATH", &path) == STD_E_OK) {
+		device_ex_serial_register_ops(1U, &device_ex_serial_file_op);
+	}
 
 	device_can_register_ops( NULL, &dbg_can_ops);
 	device_init_can( &mpu_address_map.map[MPU_ADDRESS_REGION_INX_CAN]);

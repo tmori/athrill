@@ -72,6 +72,14 @@
  *  UARTD0送信完了割込み番号
  */
 #define INTNO_INTUD0T	UINT_C(37)
+/*
+ *  UARTD1受信完了割込み番号
+ */
+#define INTNO_INTUD1R	UINT_C(39)
+/*
+ *  UARTD1送信完了割込み番号
+ */
+#define INTNO_INTUD1T	UINT_C(40)
 
 
 #endif /* _SERIAL_H_ */

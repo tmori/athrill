@@ -31,6 +31,6 @@ extern void cpuemu_raise_intr(uint32 intno);
 
 extern Std_ReturnType cpuemu_load_devcfg(const char *path);
 extern Std_ReturnType cpuemu_get_devcfg_value(const char* key, uint32 *value);
-Std_ReturnType cpuemu_get_devcfg_string(const char* key, char **value);
+extern Std_ReturnType cpuemu_get_devcfg_string(const char* key, char **value);
 
 #endif /* _CPUEMU_OPS_H_ */
