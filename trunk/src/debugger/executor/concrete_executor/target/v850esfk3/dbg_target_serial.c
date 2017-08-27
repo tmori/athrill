@@ -106,7 +106,8 @@ bool dbg_serial_getchar_file(uint8 channel, uint8 *data)
 	else {
 		*data = c;
 	}
-	printf("getchar=%c\n", c);
+	//printf("getchar=0x%x\n", c);
+	//fflush(stdout);
 	return TRUE;
 }
 bool dbg_serial_putchar_file(uint8 channel, uint8 data)

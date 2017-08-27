@@ -73,7 +73,7 @@ void device_init_serial(MpuAddressRegionType *region)
 	if (cpuemu_get_devcfg_string("SERIAL_FILE_PATH", &path) == STD_E_OK) {
 		SerialDevice[UDnCH1].is_support_intr = FALSE;
 		SerialDevice[UDnCH1].intno = INTNO_INTUD1R;
-		SerialDevice[UDnCH1].count_base = 10000;
+		SerialDevice[UDnCH1].count_base = 100;
 	}
 	serial_region = region;
 
@@ -103,7 +103,9 @@ void device_do_serial(SerialDeviceType *serial)
 				(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
 				//受信割込みを上げる
 				//printf("serial interrupt:%c\n", data);
-				device_raise_int(serial->intno);
+				if (serial->is_support_intr == TRUE) {
+					device_raise_int(serial->intno);
+				}
 				serial->last_raised_counter = 1000U;
 			}
 		}
