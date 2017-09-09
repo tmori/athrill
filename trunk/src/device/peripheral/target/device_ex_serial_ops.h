@@ -10,6 +10,8 @@ typedef struct {
 	 * シリアル入力をCPUエミュレータの外部から入力する．
 	 */
 	bool (*getchar) (uint8 channel, uint8 *data);
+
+	void (*flush) (uint8 channel);
 } DeviceExSerialOpType;
 extern void device_ex_serial_register_ops(uint8 channel, DeviceExSerialOpType *ops);
 

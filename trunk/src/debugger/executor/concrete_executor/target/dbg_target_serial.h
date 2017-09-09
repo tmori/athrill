@@ -11,5 +11,6 @@ extern bool dbg_serial_putchar(uint8 channel, uint8 data);
 
 extern bool dbg_serial_getchar_file(uint8 channel, uint8 *data);
 extern bool dbg_serial_putchar_file(uint8 channel, uint8 data);
+extern void dbg_serial_flush_file(uint8 channel);
 
 #endif /* _DBG_TARGET_SERIAL_H_ */

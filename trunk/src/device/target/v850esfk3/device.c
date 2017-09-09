@@ -24,10 +24,12 @@ static void device_init_clock(MpuAddressRegionType *region)
 static DeviceExSerialOpType device_ex_serial_op = {
 		.putchar = dbg_serial_putchar,
 		.getchar = dbg_serial_getchar,
+		.flush = NULL,
 };
 static DeviceExSerialOpType device_ex_serial_file_op = {
 		.putchar = dbg_serial_putchar_file,
 		.getchar = dbg_serial_getchar_file,
+		.flush = dbg_serial_flush_file,
 };
 
 void device_init(CpuType *cpu, DeviceClockType *dev_clock)

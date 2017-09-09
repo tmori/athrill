@@ -14,6 +14,7 @@ typedef struct {
 	uint32 count;
 	uint32 bitrate;
 	uint32 count_base;
+	uint32 flush_count;
 	bool   is_send_data;
 	uint8 send_data;
 	DeviceExSerialOpType *ops;
@@ -61,6 +62,7 @@ void device_init_serial(MpuAddressRegionType *region)
 		SerialDevice[i].count = 0;
 		SerialDevice[i].bitrate = 38400; /* bit/sec */
 		SerialDevice[i].count_base = 1;
+		SerialDevice[i].flush_count = 0;
 		SerialDevice[i].ops = NULL;
 
 		SerialDevice[i].last_raised_counter = 0;
@@ -73,7 +75,7 @@ void device_init_serial(MpuAddressRegionType *region)
 	if (cpuemu_get_devcfg_string("SERIAL_FILE_PATH", &path) == STD_E_OK) {
 		SerialDevice[UDnCH1].is_support_intr = FALSE;
 		SerialDevice[UDnCH1].intno = INTNO_INTUD1R;
-		SerialDevice[UDnCH1].count_base = 100;
+		SerialDevice[UDnCH1].count_base = 1;
 	}
 	serial_region = region;
 
@@ -124,7 +126,15 @@ void device_do_serial(SerialDeviceType *serial)
 		//device_raise_int(INTNO_INTUD0T);
 		serial->is_send_data = FALSE;
 	}
-
+	if (serial->ops->flush != NULL) {
+		if (serial->flush_count >= 100) {
+			serial->ops->flush(serial->id);
+			serial->flush_count = 0;
+		}
+		else {
+			serial->flush_count++;
+		}
+	}
 
 	return;
 }
