@@ -37,6 +37,8 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 	char *path;
 	dev_clock->clock = 0;
 	dev_clock->intclock = 0;
+	dev_clock->min_intr_interval = DEVICE_CLOCK_MAX_INTERVAL;
+	dev_clock->can_skip_clock = FALSE;
 
 	device_init_clock(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_intc(cpu, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_INTC]);
@@ -62,6 +64,8 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 
 void device_supply_clock(DeviceClockType *dev_clock)
 {
+	dev_clock->min_intr_interval = DEVICE_CLOCK_MAX_INTERVAL;
+	dev_clock->can_skip_clock = TRUE;
 
 	device_supply_clock_timer(dev_clock);
 #ifndef DISABLE_DEVICE_TIMER_M

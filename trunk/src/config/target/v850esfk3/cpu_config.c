@@ -44,6 +44,10 @@ void cpu_reset(CoreIdType core_id)
 	private_cpu_reset(&virtual_cpu.cores[core_id].core);
 	return;
 }
+bool cpu_is_halt(CoreIdType core_id)
+{
+	return virtual_cpu.cores[core_id].core.is_halt;
+}
 
 Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 {

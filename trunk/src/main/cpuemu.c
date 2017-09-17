@@ -125,17 +125,20 @@ void *cpuemu_thread_run(void* arg)
 	CoreIdType i;
 	Std_ReturnType err;
 	DbgCpuCallbackFuncEnableType enable_dbg;
+	bool is_halt;
 
 	enable_dbg.enable_bt = TRUE;
 	enable_dbg.enable_ft = TRUE;
 	enable_dbg.enable_watch = TRUE;
 	enable_dbg.enable_prof = TRUE;
+	cpuemu_dev_clock.enable_skip = FALSE;
 
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_BT", &enable_dbg.enable_bt);
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_FT", &enable_dbg.enable_ft);
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_PROF", &enable_dbg.enable_watch);
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_WATCH", &enable_dbg.enable_prof);
 
+	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_SKIP_CLOCK", (uint32*)&cpuemu_dev_clock.enable_skip);
 
 
 	while (TRUE) {
@@ -145,7 +148,6 @@ void *cpuemu_thread_run(void* arg)
 			exit(1);
 		}
 
-
 		/**
 		 * デバイス実行実行
 		 */
@@ -154,6 +156,7 @@ void *cpuemu_thread_run(void* arg)
 		/**
 		 * CPU 実行
 		 */
+		is_halt = TRUE;
 		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
 			/*
 			 * バスのアクセスログをクリアする
@@ -178,8 +181,16 @@ void *cpuemu_thread_run(void* arg)
 			 * CPU 実行完了通知
 			 */
 			dbg_notify_cpu_clock_supply_end(&virtual_cpu.cores[i].core, &enable_dbg);
-		}
 
+			if (cpu_is_halt(i) != TRUE) {
+				is_halt = FALSE;
+			}
+		}
+		if (cpuemu_dev_clock.enable_skip == TRUE) {
+			if ((is_halt == TRUE) && (cpuemu_dev_clock.can_skip_clock == TRUE)) {
+				cpuemu_dev_clock.clock += (cpuemu_dev_clock.min_intr_interval - 1);
+			}
+		}
 	}
 
 	return NULL;

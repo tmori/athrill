@@ -11,13 +11,14 @@ typedef struct {
 	uint16 id;
 	uint16 intno;
 	uint32 last_raised_counter;
-	uint32 count;
 	uint32 bitrate;
 	uint32 count_base;
 	uint32 flush_count;
 	bool   is_send_data;
 	uint8 send_data;
 	DeviceExSerialOpType *ops;
+	DeviceClockType *dev_clock;
+	uint64			start_clock;
 } SerialDeviceType;
 
 static SerialDeviceType SerialDevice[UDnChannelNum];
@@ -59,7 +60,7 @@ void device_init_serial(MpuAddressRegionType *region)
 		SerialDevice[i].is_support_intr = FALSE;
 		SerialDevice[i].intno = -1;
 		SerialDevice[i].is_send_data = FALSE;
-		SerialDevice[i].count = 0;
+		SerialDevice[i].start_clock = 0;
 		SerialDevice[i].bitrate = 38400; /* bit/sec */
 		SerialDevice[i].count_base = 1;
 		SerialDevice[i].flush_count = 0;
@@ -81,16 +82,16 @@ void device_init_serial(MpuAddressRegionType *region)
 
 	return;
 }
+
 void device_do_serial(SerialDeviceType *serial)
 {
 	uint8 data;
 	bool ret;
-	serial->count++;
 
 	if (serial->ops == NULL) {
 		return;
 	}
-	if ((serial->count % serial->count_base) != 0) {
+	if ((serial->dev_clock->clock % serial->count_base) != 0) {
 		return;
 	}
 	/*
@@ -142,8 +143,10 @@ void device_do_serial(SerialDeviceType *serial)
 void device_supply_clock_serial(DeviceClockType *dev_clock)
 {
 #if 1
+	SerialDevice[UDnCH0].dev_clock = dev_clock;
 	device_do_serial(&SerialDevice[UDnCH0]);
 	if (SerialDevice[UDnCH1].intno == INTNO_INTUD1R) {
+		SerialDevice[UDnCH1].dev_clock = dev_clock;
 		device_do_serial(&SerialDevice[UDnCH1]);
 	}
 #else
