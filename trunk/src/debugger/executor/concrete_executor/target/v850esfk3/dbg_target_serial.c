@@ -305,7 +305,7 @@ static Std_ReturnType file_write(SerialFileWriterType *wfile, char c)
 }
 #endif
 
-#define DBG_SERIAL_CACHE_BUFFER_SIZE	1024
+#define DBG_SERIAL_CACHE_BUFFER_SIZE	(1024*1024)
 typedef struct {
 	uint32 count;
 	uint32 off;
@@ -417,7 +417,7 @@ static Std_ReturnType file_cache_load(uint8 channel, SerialFileReaderType *rfile
 
 	err = read(rfile->file.fd, (char*)&DbgSerialCacheReadBuffer[channel].buffer[off], read_size);
 	if (err <= 0) {
-		printf("read error:%s\n", rfile->file.path);
+		printf("read error:%s err=%d errno=%d size=%d off=%d\n", rfile->file.path, err, errno, buf.st_size, rfile->read_off);
 		exit(1);
 	}
 	rfile->read_off += err;
