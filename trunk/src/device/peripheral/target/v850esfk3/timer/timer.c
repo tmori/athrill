@@ -68,6 +68,8 @@ static void device_timer_do_mode(DeviceClockType *device, int ch)
 	TimerDeviceType *timer = &(TimerDevice[ch]);
 	uint8 data;
 	uint16 data16;
+	uint16 org_compare0 = timer->compare0;
+	uint16 org_compare1 = timer->compare1;
 
 	org = timer->mode;
 	(void)device_io_read8(timer_region, TAAnCTL0(ch), &data);
@@ -85,6 +87,12 @@ static void device_timer_do_mode(DeviceClockType *device, int ch)
 	 */
 	(void)device_io_read16(timer_region, TAAnCCR0(ch), &timer->compare0);
 	(void)device_io_read16(timer_region, TAAnCCR1(ch), &timer->compare1);
+	if (org_compare0 != timer->compare0) {
+		timer->start_clock = device->clock;//TODO
+	}
+	if (org_compare1 != timer->compare1) {
+		timer->start_clock = device->clock;//TODO
+	}
 
 #if 0
 	if (ch == 6) {
@@ -100,10 +108,13 @@ static void device_timer_do_mode(DeviceClockType *device, int ch)
 	(void)device_io_read16(timer_region, TAAnCNT(ch), &data16);
 	timer->cnt = data16;
 	if (org != timer->mode) {
-		//printf("%d:timer(%d) mode:%d => %d: counter=%d/%d\n", device->clock, ch, org, timer->mode, timer->cnt, timer->compare0);
+		//printf("%I64u:timer(%d) mode(%d => %d) counter=%d/%d\n",
+		//		device->clock, ch, org, timer->mode, timer->cnt, timer->compare0);
 		//fflush(stdout);
 		timer->start_clock = device->clock;
 	}
+	//printf("%I64u:timer(%d) mode(%d => %d) counter=%d/%d\n",
+	//		device->clock, ch, org, timer->mode, timer->cnt, timer->compare0);
 	/*
 	 * TODO クロック設定は省略する
 	 */
@@ -139,10 +150,12 @@ static void device_timer_do_interrupt(DeviceClockType *device, int ch)
 	}
 
 	if (timer->raise_int_compare0 == TRUE) {
-		//printf("%d:device_timer_do_interrupt(%d):compare0=%d intno=%d cnt=%d\n", device->clock, ch, timer->compare0, timer->compare0_intno, timer->cnt);
+		//printf("%I64u:device_timer_do_interrupt(%d):compare0=%d intno=%d cnt=%d\n", device->clock, ch, timer->compare0, timer->compare0_intno, timer->cnt);
 		//fflush(stdout);
 		device_raise_int(timer->compare0_intno);
 		timer->raise_int_compare0 = FALSE;
+
+		timer->start_clock = device->clock;//TODO
 	}
 	if (timer->raise_int_compare1 == TRUE) {
 		//printf("device_timer_do_interrupt(%d):compare1 cnt=%d\n", ch, timer->cnt);
