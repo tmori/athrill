@@ -380,7 +380,7 @@ static Std_ReturnType file_cache_load(uint8 channel, SerialFileReaderType *rfile
 		return STD_E_OK;
 	} else {
 		DbgSerialCacheReadBuffer[channel].rcheck_count++;
-		if (DbgSerialCacheReadBuffer[channel].rcheck_count < 10000) {
+		if (DbgSerialCacheReadBuffer[channel].rcheck_count < 100) {
 			return STD_E_NOENT;
 		}
 		else {

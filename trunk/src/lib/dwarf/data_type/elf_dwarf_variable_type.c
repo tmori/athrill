@@ -37,6 +37,7 @@ void elf_dwarf_build_variable_type(ElfDwarfDieType *die)
 		case DW_AT_abstract_origin:
 		case DW_AT_declaration:
 		case DW_AT_const_value:
+		case DW_AT_artificial:
 			break;
 		default:
 			printf("die=0x%x attr_type=0x%x\n", die->offset, attr_type);
