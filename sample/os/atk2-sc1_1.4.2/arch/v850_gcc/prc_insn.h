@@ -181,8 +181,8 @@ set_intbp(uint32 intbp)
 	psw = current_psw();
 	disable_int();
 
-	Asm("\t ldsr	%1, 4, 1 \n"
-		: "r" (intbp) :);
+	/* TODO Asm("\t ldsr	%1, 4, 1 \n"
+		: "=r" (intbp) :); */
 
 	set_psw_wo_fgs(psw);
 

@@ -235,7 +235,7 @@ extern void _reset(void);
 
 /*
  *  ターゲット依存のハードウェアの初期化
- *  スターアップルーチンから呼び出される． 
+ *  スターアップルーチンから呼び出される．
  */
 void
 target_hardware_initialize(void)
@@ -257,7 +257,7 @@ target_hardware_initialize(void)
 #endif /* !OMIT_CLOCK_INIT */
 
 	/* リセットベクタの初期化 */
-	__LDSR(2,1,(unsigned int)_reset);
+	/* __LDSR(2,1,(unsigned int)_reset); */
 
 	/* ポートの初期設定 */
 	target_port_initialize();

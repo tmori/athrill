@@ -1,4 +1,4 @@
-/* 
+/*
  *  TOPPERS ATK2
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *      Automotive Kernel Version 2
@@ -61,7 +61,6 @@
 #include "asm_config.inc"
 #endif /* USE_ASMCONFIG_INC */
 
-#ifdef __v850e2v3__
 
 /*
  *  V850E2用の割込みコントローラ操作ルーチン
@@ -85,45 +84,7 @@
 	syncm
 .endm
 
-#endif /* __v850e2v3__ */
 
-#ifdef __v850e3v5__
-
-/*
- *  V850E3V5用の割込みコントローラ操作ルーチン
- */
-.macro GET_ISPR reg
-	stsr 10, AMARG(reg), 2
-.endm
-
-.macro SET_ISPR val, reg 
-	movea AMARG(val),r0,AMARG(reg)
-	ldsr AMARG(reg), 10, 2
-.endm
-
-.macro SET_INTCFG val, reg 
-	movea AMARG(val),r0,AMARG(reg)
-	ldsr AMARG(reg), 13, 2
-.endm
-
-.macro CLEAR_ISPR reg1, reg2
-	SET_INTCFG 1, AMARG(reg1) /* ISPR を書き換え可能に */
-	SET_ISPR   0, AMARG(reg1) /* ISPR のクリア */
-	SET_INTCFG 0, AMARG(reg1) /* ISPR を書き換え禁止に(自動更新に) */
-.endm
-
-.macro GET_PMR reg
-	stsr 11, AMARG(reg), 2
-.endm
-
-.macro SET_PMR reg_val, reg_tmp
-	stsr psw, reg_tmp
-	di
-	ldsr AMARG(reg_val), 11, 2
-	ldsr reg_tmp, psw
-.endm
-
-#endif /* !__v850e3v5__ */
 
 
 /*
@@ -135,7 +96,7 @@
     /* pmr_isr2_mask -> PMR */
     Lea     _pmr_isr2_mask, AMARG(reg13)
     ld.h    0[AMARG(reg13)], AMARG(reg13)
-    SET_PMR AMARG(reg13), AMARG(reg12)
+    /* TODO SET_PMR AMARG(reg13), AMARG(reg12) */
 
     /* nested_lock_os_int_cnt = 1 */
     Lea     _nested_lock_os_int_cnt, AMARG(reg12)
@@ -163,12 +124,12 @@
     Lea     _pmr_setting_tbl, AMARG(reg13)
     add     AMARG(reg12), AMARG(reg13)
     ld.h    0[AMARG(reg13)], AMARG(reg13)
-    SET_PMR AMARG(reg13), AMARG(reg12)  /* set interrupt level */
+    /* TODO SET_PMR AMARG(reg13), AMARG(reg12) */ /* set interrupt level */
 
 .endm
 
-	/* 
-	 * 割込み/例外の先頭で実行する処理 
+	/*
+	 * 割込み/例外の先頭で実行する処理
 	*/
 .macro PRE_INT_EXC
 #ifdef _RH850G3M_
@@ -188,7 +149,7 @@
 	addi    -80 , sp , sp
 #endif /* TOPPERS_USE_HFLOAT */
 	st.w    r30, 12[sp]  /* r30(ep) */
-	mov     sp, ep 
+	mov     sp, ep
 	sst.w   r1, 76[ep]
 	sst.w   r5, 72[ep]
 	sst.w   r6, 68[ep]
@@ -219,7 +180,7 @@
 	pushsp  r5-r19
 	pushsp  r30-r31
 	addi    -8, sp , sp
-	mov     sp, ep 
+	mov     sp, ep
 #endif /* TOPPERS_USE_PUSHSP */
 .endm
 
@@ -300,7 +261,7 @@
 .endm
 
 #ifdef __v850e3v5__
-	/* 
+	/*
 	 * V850E3V5用ベクタ
 	 * ここにRBASEが設定されることを想定（ここが電源投入時の開始アドレス）
 	 * (EIレベル割込みはテーブル参照方式を使用するため本ベクタは使用しない)
@@ -480,8 +441,8 @@ FLABEL(_fe_exception_entry)
 	/* 割込み/例外の先頭で実行する処理 */
 	PRE_INT_EXC
 
-	/* 
-	 * レジスタの保存(FEPCとFEPSWも保存) 
+	/*
+	 * レジスタの保存(FEPCとFEPSWも保存)
 	 */
 	FE_SAVEREG
 
@@ -499,7 +460,7 @@ FLABEL(_fe_exception_entry)
 	 * カテゴリ1の割込み以外で例外が発生したかの判断する
 	 * カテゴリ1で例外が発生：fe_exception_1へジャンプ
 	 */
-	GET_ISPR r6
+	/* TODO GET_ISPR r6 */
 	Lea     _pmr_isr1_mask, r7
 	ld.h    0[r7], r7
 	and     r7, r6
@@ -523,7 +484,7 @@ FLABEL(_fe_exception_entry)
 	 */
 	Lea     _pmr_isr2_mask, r7
 	ld.h    0[r7], r7
-	SET_PMR r7, r6  /* pmr_isr2_mask -> PMR */
+	/* TODO SET_PMR r7, r6 */ /* pmr_isr2_mask -> PMR */
 
 FLABEL(fe_exception_1)
 	/*
@@ -532,8 +493,8 @@ FLABEL(fe_exception_1)
 	stsr    feic, r19                   /* 例外要因 */
 	stsr    fepc, r18                   /* 例外発生PC */
 
-	/* 
-	 * C1ISRを受け付けるため，NPbit クリア 
+	/*
+	 * C1ISRを受け付けるため，NPbit クリア
 	 */
 	stsr    psw, r12
 	mov     ~0x0080, r13
@@ -566,7 +527,7 @@ FLABEL(fe_exception_2)
 	/*
 	 * C1ISR実行状態で発生した場合はスタックポインタの入れ替えしない
 	 */
-	GET_ISPR r6
+	/* TODO GET_ISPR r6 */
 	Lea     _pmr_isr1_mask, r7
 	ld.h    0[r7], r7
 	and     r7, r6
@@ -581,13 +542,13 @@ FLABEL(fe_exception_2)
 	mov     r12, sp                         /* スタックポインタの切り替え */
 
 FLABEL(fe_exception_3)
-	/* 
-	 * FEPSW.ID == 1の場合は全割込み禁止状態で例外が発生したので解除しない 
-	 */ 
+	/*
+	 * FEPSW.ID == 1の場合は全割込み禁止状態で例外が発生したので解除しない
+	 */
 	stsr    fepsw, r12
 	mov     0x20, r13
 	tst     r12, r13
-	bne     fe_exception_4 
+	bne     fe_exception_4
 
 	UNLOCK_ALL_INT
 
@@ -671,7 +632,7 @@ FLABEL(fe_ret_exc)
 	 * (1)スタックポインタの入れ替えをしない
 	 * (2)OS割込み禁止状態の解除をしない
 	*/
-	GET_ISPR r6
+	/* TODO GET_ISPR r6 */
 	Lea     _pmr_isr1_mask, r7
 	ld.h    0[r7], r7
 	and     r7, r6
@@ -711,7 +672,7 @@ FLABEL(ret_exc_1)
 	Lea     _pmr_setting_tbl, r13
 	add     r12, r13
 	ld.h    0[r13], r13
-	SET_PMR r13, r12     /* set interrupt level */
+	/* TODO SET_PMR r13, r12  */    /* set interrupt level */
 
 	/*
 	 *  例外発生元へ復帰
@@ -732,8 +693,8 @@ FLABEL(_ei_exception_entry)
 	/* 割込み/例外の先頭で実行する処理 */
 	PRE_INT_EXC
 
-	/* 
-	 * レジスタの保存(EIPCとEIPSWも保存) 
+	/*
+	 * レジスタの保存(EIPCとEIPSWも保存)
 	 */
 	EI_SAVEREG
 
@@ -751,7 +712,7 @@ FLABEL(_ei_exception_entry)
 	 * カテゴリ1の割り込み以外で例外が発生したかの判断する
 	 * カテゴリ1で例外が発生：ei_exception_1へジャンプ
 	 */
-	GET_ISPR r6
+	/* TODO GET_ISPR r6 */
 	Lea     _pmr_isr1_mask, r7
 	ld.h    0[r7], r7
 	and     r7, r6
@@ -775,7 +736,7 @@ FLABEL(_ei_exception_entry)
 	 */
 	Lea     _pmr_isr2_mask, r7
 	ld.h    0[r7], r7
-	SET_PMR r7, r6  /* pmr_isr2_mask -> PMR */
+	/* TODO SET_PMR r7, r6  */ /* pmr_isr2_mask -> PMR */
 
 FLABEL(ei_exception_1)
 	/*
@@ -811,7 +772,7 @@ FLABEL(ei_exception_2)
 	/*
 	 * ISR1実行状態で発生した場合はスタックポインタの入れ替えしない
 	 */
-	GET_ISPR r6
+	/* TODO GET_ISPR r6 */
 	Lea     _pmr_isr1_mask, r7
 	ld.h    0[r7], r7
 	and     r7, r6
@@ -908,7 +869,7 @@ FLABEL(ei_ret_exc)
 	 * (1)スタックポインタの入れ替えをしない
 	 * (2)OS割込み禁止状態の解除をしない
 	*/
-	GET_ISPR r6
+	/* TODO GET_ISPR r6 */
 	Lea     _pmr_isr1_mask, r7
 	ld.h    0[r7], r7
 	and     r7, r6
@@ -948,7 +909,7 @@ FLABEL(ei_ret_exc_1)
 	Lea     _pmr_setting_tbl, r13
 	add     r12, r13
 	ld.h    0[r13], r13
-	SET_PMR r13, r12             /* set interrupt level */
+	/* TODO SET_PMR r13, r12    */          /* set interrupt level */
 
 	/*
 	 *  例外発生元へ復帰
@@ -981,8 +942,8 @@ FLABEL(_interrupt)
 	/* 割込み/例外の先頭で実行する処理 */
 	PRE_INT_EXC
 
-	/* 
-	 * レジスタの保存(EIPCとEIPSWも保存) 
+	/*
+	 * レジスタの保存(EIPCとEIPSWも保存)
 	 */
 	EI_SAVEREG
 
@@ -992,21 +953,21 @@ FLABEL(_interrupt)
 	/* EIC割込みは0x1000 から */
 	addi   -0x1000, r12, r12
 #else /* __v850e2v3__ */
-	/* 
+	/*
 	 * V850E2V3では，Os_Lcfg_asm.xxにより割込み要因がr2に設定され，
 	 * _interrupt が呼び出される．
-	 * r2 は割込みの許可により上書きされるためr12を使用する． 
+	 * r2 は割込みの許可により上書きされるためr12を使用する．
 	 */
 	mov     r2, r12
 #endif /* __v850e3v5__ */
 
 	/* 割込み優先度を取得(r11) */
-	GET_ISPR r13
-	sch1r    r13, r11   
+	/* TODO GET_ISPR r13 */
+	sch1r    r13, r11
 	add      -1,r11
 
-	/* 
-	 *  _current_iintpri の更新 
+	/*
+	 *  _current_iintpri の更新
 	 *  割り込み処理中はISPRが自動的に設定されているため，PMRは設定する必要がない．
 	 */
 	Lea     _current_iintpri, r6
@@ -1080,8 +1041,8 @@ FLABEL(interrupt_1)
 	be      stack_monitoring_exit
 	br      stack_monitoring_error_isr
 
-	/* 
-	 * 多重割込みの場合 
+	/*
+	 * 多重割込みの場合
 	 */
 FLABEL(int_nested)
 	/*
@@ -1267,16 +1228,16 @@ FLABEL(ret_int_task)
 	 *  全割込みを禁止した状態となっている
 	 */
 
-	/* 
-	 *  優先度マスクのクリア 
+	/*
+	 *  優先度マスクのクリア
 	 *  eiretを実行しないため，eiretによる割込みコントローラの優先度マスク
 	 *  (インサービスプライオリティ)のクリアが行われないため，代わりにISPC
 	 *  を用いてクリアする．
-	 *  
+	 *
 	 *  G3M/G3KではINTCFG/INSPRの更新はdi状態で呼び出す必要がある．
 	 *  ここは全割込み禁止状態で呼び出されるため問題ない．
 	 */
-	CLEAR_ISPR r10, r12  
+	/* TODO CLEAR_ISPR r10, r12 */
 
 	/*
 	 *  OS割込み禁止状態に移行する
@@ -1292,7 +1253,7 @@ FLABEL(ret_int_task)
 	UNLOCK_ALL_INT
 
 	/*
-	 * コンテキストの退避 
+	 * コンテキストの退避
 	 */
 #ifndef TOPPERS_USE_PUSHSP
 	addi    -40, sp, sp
@@ -1432,8 +1393,8 @@ FLABEL(_dispatch)
 #endif /* CFG_USE_STACKMONITORING */
 	br      dispatcher
 
-	/* 
-	 * ディスパッチャの復帰ルーチン 
+	/*
+	 * ディスパッチャの復帰ルーチン
 	 */
 FLABEL(dispatch_r)
 #ifndef TOPPERS_USE_PUSHSP
@@ -1555,7 +1516,7 @@ FLABEL(dispatcher_1)
 	cmp     r22, r0
 	be      dispatcher_3
 
-	mov     r22, ep 
+	mov     r22, ep
 	sld.w   TCB_sp[ep], sp
 	Lea     _except_nest_cnt, r20
 	st.w    r0, 0[r20]
@@ -1696,7 +1657,7 @@ FLABEL(_start_r)
 	ld.w    TINIB_task[r22], r10
 	jmp     [r10]
 
-	.global _stack_change_and_call_func_1 
+	.global _stack_change_and_call_func_1
 	.global _stack_change_and_call_func_2
 FLABEL(_stack_change_and_call_func_1)
 FLABEL(_stack_change_and_call_func_2)
@@ -1715,7 +1676,7 @@ FLABEL(_stack_change_and_call_func_2)
 	add     -4, r12
 	st.w    sp, 0[r12]                      /* スタックポインタの保存 */
 	mov     r12, sp                         /* スタックポインタの切り替え */
-    
+
 FLABEL(_stack_change_and_call_func_1_1)
 	Lea     stack_change_and_call_func_r, lp  /* 戻りアドレス */
 	mov     r6, r12

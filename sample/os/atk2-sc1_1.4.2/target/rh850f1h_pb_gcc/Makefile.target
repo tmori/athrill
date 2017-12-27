@@ -61,6 +61,7 @@ GCC_TARGET = v850-elf
 #  アーキテクチャ指定
 #
 ARCH = V850E3V5
+#ARCH = V850E2V3
 
 #
 #  コアタイプ指定
@@ -75,8 +76,8 @@ USE_HARD_FLOAT = true
 #
 #  ボード毎に設定が異なる項目
 #
-CDEFS := $(CDEFS) -DOMIT_DATA_INIT
-LDSCRIPT = $(SRCDIR)/arch/v850_gcc/rh850_f1h_6m.ld
+CDEFS := $(CDEFS) -DOMIT_DATA_INIT -DHWC_USE_UNIT0
+LDSCRIPT = $(SRCDIR)/arch/v850_gcc/v850e2_px4_3507.ld
 
 #
 #  使用するUARTのポート
