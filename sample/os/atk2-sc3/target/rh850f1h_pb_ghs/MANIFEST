@@ -1,0 +1,13 @@
+PACKAGE atk2-sc3
+
+E_PACKAGE
+MANIFEST
+Makefile.target
+target.tf
+target_test.h
+target_user.txt
+target_opt.tf
+target_svc.h
+target_mem.tf
+sample1.arxml.patch
+readme.txt

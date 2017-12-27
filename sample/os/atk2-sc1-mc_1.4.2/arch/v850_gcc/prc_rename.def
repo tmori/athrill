@@ -1,0 +1,31 @@
+# prc_config.c
+v850_cpu_exp_no_table
+v850_cpu_exp_pc_table
+v850_cpu_exp_sp_table
+core_state_table
+pmr_setting_tbl
+prc_hardware_initialize
+prc_initialize
+prc_terminate
+x_config_int
+default_int_handler
+infinite_loop
+target_is_int_controllable
+
+# Os_Lcfg.c
+intbp_table
+pmr_isr2_mask
+pmr_isr1_mask
+ostkpt_table
+
+# prc_support.S
+fe_exception_entry
+ei_exception_entry
+interrupt
+dispatch
+start_dispatch
+exit_and_dispatch
+start_r
+stack_change_and_call_func_1
+stack_change_and_call_func_2
+return_main

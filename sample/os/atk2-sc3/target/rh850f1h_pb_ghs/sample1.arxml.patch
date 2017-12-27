@@ -1,0 +1,11 @@
+--- sample/sample1.arxml
++++ sample/sample1.arxml
+@@ -64,7 +64,7 @@
+ 							<REFERENCE-VALUES>
+ 								<ECUC-REFERENCE-VALUE>
+ 									<DEFINITION-REF DEST="ECUC-REFERENCE-DEF">/AUTOSAR/EcucDefs/Os/OsLinkSection/OsLinkSectionMemoryRegionRef</DEFINITION-REF>
+-									<VALUE-REF DEST="ECUC-CONTAINER-VALUE">/Ecuc/Os/RAM</VALUE-REF>
++									<VALUE-REF DEST="ECUC-CONTAINER-VALUE">/Ecuc/Os/INTRAM</VALUE-REF>
+ 								</ECUC-REFERENCE-VALUE>
+ 							</REFERENCE-VALUES>
+ 						</ECUC-CONTAINER-VALUE>

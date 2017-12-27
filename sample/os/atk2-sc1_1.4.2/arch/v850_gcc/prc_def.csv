@@ -1,0 +1,11 @@
+offsetof_TCB_p_tinib,"offsetof(TCB,p_tinib)"
+offsetof_TCB_curpri,"offsetof(TCB,curpri)"
+offsetof_TCB_sp,"offsetof(TCB,tskctxb.sp)"
+offsetof_TCB_pc,"offsetof(TCB,tskctxb.pc)"
+offsetof_TINIB_exepri,"offsetof(TINIB,exepri)"
+offsetof_INTINIB_remain_stksz,"offsetof(INTINIB,remain_stksz)"
+offsetof_ISRCB_p_intinib,"offsetof(ISRCB,p_intinib)"
+TNUM_INTPRI,TNUM_INTPRI
+TNUM_INT,TNUM_INT
+__v850e2v3__,#defined(__v850e2v3__) 
+__v850e3v5__,#defined(__v850e3v5__) 

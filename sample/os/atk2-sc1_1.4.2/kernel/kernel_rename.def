@@ -1,0 +1,114 @@
+# alarm.c
+alarm_initialize
+alarm_expire
+
+# counter.c
+insert_cnt_expr_que
+delete_cnt_expr_que
+counter_initialize
+counter_terminate
+get_reltick
+get_abstick
+expire_process
+
+# counter_manage.c
+notify_hardware_counter
+incr_counter_action
+
+# event.c
+set_event_action
+
+# interrupt.c
+interrupt_initialize
+release_interrupts
+exit_isr2
+p_runisr
+sus_os_cnt
+sus_all_cnt
+
+# osctl.c
+internal_call_errorhook
+call_posttaskhook
+call_pretaskhook
+init_stack_magic_region
+call_protectionhk_main
+internal_shutdownos
+internal_call_shtdwnhk
+
+# osctl_manage.c
+callevel_stat
+appmodeid
+kerflg
+fatal_file_name
+fatal_line_num
+
+# resource.c
+resource_initialize
+
+# scheduletable.c
+schtbl_initialize
+schtbl_expire
+schtbl_expiry_process
+schtbl_head
+schtbl_exppoint_process
+schtbl_tail
+
+# task.c
+p_runtsk
+p_schedtsk
+nextpri
+ready_queue
+ready_primap
+task_initialize
+search_schedtsk
+make_runnable
+make_non_runnable
+make_active
+preempt
+suspend
+release_taskresources
+exit_task
+
+# task_manage.c
+activate_task_action
+
+# Os_Lcfg.c
+tnum_alarm
+tnum_counter
+tnum_hardcounter
+tnum_isr2
+tnum_stdresource
+tnum_task
+tnum_exttask
+tnum_appmode
+tnum_scheduletable
+tnum_implscheduletable
+tinib_table
+tcb_table
+cntinib_table
+cntcb_table
+hwcntinib_table
+alminib_table
+almcb_table
+schtblinib_table
+schtblcb_table
+resinib_table
+rescb_table
+object_initialize
+object_terminate
+tnum_intno
+intinib_table
+isrcb_table
+ostk
+ostksz
+ostkpt
+appid_str
+tskid_str
+isrid_str
+cntid_str
+almid_str
+resid_str
+schtblid_str
+evtid_str
+
+INCLUDE "target"

@@ -1,0 +1,112 @@
+
+		TOPPERS/ATK2-SC1-MC
+        ＜V850プロセッサ依存部マニュアル(GCC版)＞
+
+このドキュメントはV850プロセッサ依存部のGCC版情報を記述したものである．
+
+----------------------------------------------------------------------
+TOPPERS ATK2
+    Toyohashi Open Platform for Embedded Real-Time Systems
+    Automotive Kernel Version 2
+
+Copyright (C) 2013-2016 by Center for Embedded Computing Systems
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+Copyright (C) 2013-2014 by FUJISOFT INCORPORATED, JAPAN
+Copyright (C) 2013-2014 by Renesas Electronics Corporation, JAPAN
+
+上記著作権者は，以下の (1)～(3)の条件を満たす場合に限り，本ドキュメ
+ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+(1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+    および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+    いること．
+(2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+    を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+    ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+    りではない．
+(3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+    からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+    本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+    く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+本ドキュメントは，AUTOSAR（AUTomotive Open System ARchitecture）仕様
+に基づいている．上記の許諾は，AUTOSARの知的財産権を許諾するものではな
+い．AUTOSARは，AUTOSAR仕様に基づいたソフトウェアを商用目的で利用する
+者に対して，AUTOSARパートナーになることを求めている．
+
+本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+わない．
+
+$Id: prc_user.txt 852 2017-12-21 07:30:44Z ertl-honda $
+----------------------------------------------------------------------
+
+○概要
+
+本依存部は動作確認をしていない．使用する場合は，GHS依存部を使用するこ
+と．
+    
+○変更履歴
+2017/12/21
+・start.S
+  ・bss/dataの初期化において，終了判定ミスで領域+4のアドレスを初期化し
+    ていた問題を修正．
+  ・ターゲット依存でローカルメモリの初期化関数を呼び出すように変更．  
+  
+2017/09/25
+共通部1.4.2への追従
+・uart.yaml/uart0.yaml/uart1.yaml
+  ・ISR2の定義に OsTrusted: true を追加．  
+・prc_rename.def
+  ・リネーム用ヘッダの追加．
+・prc_cfg1_out.h/prc.tf/prc_common.tf
+  ・カーネル内のシンボルにkernel(アセンブリ言語の場合は_kernel)を付加
+    するよう変更．
+・prc_def.csv/prc_offset.tf/prc_support.S
+  p_runosapをp_currentosapにリネーム．
+
+2017/08/28
+・prc_common.tf
+  ・ISR2に設定された割込み優先度が最高値の場合にpmr_isr2_mask が正しく
+    出力されない問題を修正．
+    
+2016/05/26
+・prc_support.S
+  ・割込み入口/出口のレジスタ保存・復帰マクロの整理．
+    ・FEPC/FEPSW,EIPC/EIPSWもマクロ内で保存するよう変更
+    
+2016/01/26
+・prc_support.S
+  ・ret_int/ret_int_rでもpushsp/popspを使用する用変更．
+  ・全割込み禁止状態でFE例外が発生した場合は全割込み許可状態でハンドラ
+    を呼び出さないように変更．
+      
+2016/01/09
+・rh850_f1l.c
+  ・EnableMainOSC()において，クロックが停止するのを確認する前に
+    MOSCC,MOSCSTを設定していた問題を修正．
+  
+2015/12/30
+・共通部 1.4.0 対応．
+
+2015/09/25
+・prc_support.S
+  コンテキストの待避と復帰にpushsp/popspを使用するよう変更．
+
+2015/09/25
+・Platform_Types.h
+  stdint.h をインクルードするよう変更．  
+・割込み優先度のレベルをG3M/E2Mは16段階に，G3K/E2Sは8段階に修正．
+  
+2015/03/31
+・prc_support.S/prc_insn.h
+  PSW.EBV，EBASE，INTBP，ISPR，PMR，ICSR，INTCFG の更新時はdi状態とす
+  る必要があるため，該当箇所を修正．
+  
+2015/01/07
+・prc_support.S
+ ・_ei_exception_entry で保存していないr20を使用していた問題を修正．
+
+以上．

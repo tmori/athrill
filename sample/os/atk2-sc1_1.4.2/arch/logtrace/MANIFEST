@@ -1,0 +1,4 @@
+MANIFEST
+trace_config.c
+trace_config.h
+trace_dump.c

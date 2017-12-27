@@ -1,0 +1,165 @@
+# alarm.c
+alarm_initialize
+alarm_expire
+
+# counter.c
+insert_cnt_expr_que
+delete_cnt_expr_que
+counter_initialize
+counter_terminate
+get_reltick
+get_abstick
+expire_process
+
+# counter_manage.c
+notify_hardware_counter
+incr_counter_action
+
+# event.c
+set_event_action
+
+# interrupt.c
+interrupt_initialize
+release_interrupts
+exit_isr2
+
+# ioc_manage.c
+ioc_initialize
+
+# mc.c
+giant_lock
+spn_lock
+ioc_lock
+shutdown_reqflg
+activated_cores
+ccb_initialize
+ici_handler_main
+dispatch_request
+shutdown_request
+barrier_sync
+internal_shutdownallcores
+acquire_tsk_lock
+release_tsk_lock
+release_tsk_lock_and_dispatch
+acquire_cnt_lock
+release_cnt_lock
+acquire_spn_lock
+release_spn_lock
+try_spn_lock
+acquire_ioc_lock
+release_ioc_lock
+
+
+
+# osctl.c
+p_inib_initialize
+internal_call_errorhook
+call_posttaskhook
+call_pretaskhook
+init_stack_magic_region
+cancel_shutdown_hook
+callevel_chk_shutdown
+call_protectionhk_main
+internal_call_shtdwnhk
+
+# osctl_manage.c
+appmodeid
+fatal_file_name
+fatal_line_num
+
+# resource.c
+resource_initialize
+
+# scheduletable.c
+schtbl_initialize
+schtbl_expire
+schtbl_expiry_process
+schtbl_head
+schtbl_exppoint_process
+schtbl_tail
+
+# spinlock.c
+spinlock_initialize
+wrap_sus_all_int
+wrap_res_all_int
+wrap_sus_os_int
+wrap_res_os_int
+force_release_spinlocks
+
+# task.c
+task_initialize
+search_schedtsk
+make_runnable
+make_non_runnable
+make_active
+preempt
+suspend
+release_taskresources
+exit_task
+
+# task_manage.c
+activate_task_action
+
+# Os_Lcfg.c 
+tnum_alarm
+tnum_counter
+tnum_hardcounter
+tnum_isr2
+tnum_ici
+tnum_stdresource
+tnum_task
+tnum_exttask
+tnum_appmode
+tnum_scheduletable
+tnum_implscheduletable
+tnum_osap
+tnum_spinlock
+p_ccb_table
+tinib_table
+p_tcb_table
+cntinib_table
+p_cntcb_table
+hwcntinib_table
+alminib_table
+p_almcb_table
+schtblinib_table
+p_schtblcb_table
+resinib_table
+p_rescb_table
+isrinib_table
+p_isrcb_table
+iciinib_table
+p_iciinb_table
+tnum_ici_of_core
+ici_remain_stksz
+osapinib_table
+spninib_table
+spncb_table
+object_initialize
+object_terminate
+tnum_intno
+intinib_table
+ostksz_table
+ostk_table
+tnum_ioc
+tnum_queueioc
+tnum_ioc_wrapper_send
+tnum_ioc_wrapper
+ioc_inival_table
+ioccb_table
+iocinib_table
+iocwrpinib_table
+appid_str
+tskid_str
+isrid_str
+cntid_str
+almid_str
+resid_str
+schtblid_str
+evtid_str
+osapid_str
+iocid_str
+isr_table
+isr_p_isrcb_table
+
+INCLUDE "target"

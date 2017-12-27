@@ -1,0 +1,537 @@
+
+		TOPPERS/ATK2-SC3
+        ＜変更履歴＞
+
+このドキュメントは，ATK2-SC3のRelease 1.0.0以降の変更履歴を，新しい方
+から順に記述したものである．
+
+----------------------------------------------------------------------
+TOPPERS ATK2
+    Toyohashi Open Platform for Embedded Real-Time Systems
+    Automotive Kernel Version 2
+
+Copyright (C) 2011-2015 by Center for Embedded Computing Systems
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+Copyright (C) 2011-2015 by FUJI SOFT INCORPORATED, JAPAN
+Copyright (C) 2011-2013 by Spansion LLC, USA
+Copyright (C) 2011-2015 by NEC Communication Systems, Ltd., JAPAN
+Copyright (C) 2011-2015 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
+Copyright (C) 2011-2014 by Renesas Electronics Corporation, JAPAN
+Copyright (C) 2011-2015 by Sunny Giken Inc., JAPAN
+Copyright (C) 2011-2015 by TOSHIBA CORPORATION, JAPAN
+Copyright (C) 2011-2015 by Witz Corporation
+Copyright (C) 2014-2015 by AISIN COMCRUISE Co., Ltd., JAPAN
+Copyright (C) 2014-2015 by eSOL Co.,Ltd., JAPAN
+Copyright (C) 2014-2015 by SCSK Corporation, JAPAN
+Copyright (C) 2015 by SUZUKI MOTOR CORPORATION
+
+上記著作権者は，以下の (1)〜(3)の条件を満たす場合に限り，本ドキュメ
+ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+(1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+    および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+    いること．
+(2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+    を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+    ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+    りではない．
+(3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+    からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+    本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+    く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+本ドキュメントは，AUTOSAR（AUTomotive Open System ARchitecture）仕様
+に基づいている．上記の許諾は，AUTOSARの知的財産権を許諾するものではな
+い．AUTOSARは，AUTOSAR仕様に基づいたソフトウェアを商用目的で利用する
+者に対して，AUTOSARパートナーになることを求めている．
+
+本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+わない．
+
+$Id: version.txt 512 2015-12-24 06:53:31Z nces-okajima $
+----------------------------------------------------------------------
+		ATK2-SC3
+		Release 1.3.2 から 1.4.0 への変更点
+		リリース日 2015-12-25
+
+○変更点のリスト
+
+・非信頼OSAPからDisableAllInterruptsを呼びだした場合，
+　プロテクションフックが呼ばれるように修正
+
+・非信頼OSAPからSuspendAllInterruptsを呼びだした場合，
+　エラーフックが呼ばれるように修正
+
+・DisableInterruptSource，EnableInterruptSourceにおいて，ターゲットが
+　特定の割込みについて，禁止/許可する機能を持っているかのチェック機構追加
+
+・OSAP固有フックの削除
+
+・OSAP強制終了処理の修正
+ - OSAP強制終了とタスク強制終了の処理において，条件が複雑化していたため，処理を分離
+ - 強制終了処理を対象となるOSAPのリスタートタスクで実施するように修正
+ - 強制終了対象になりうるOSAPにリスタートタスクが存在しない場合，
+　 OSのジェネレータでリスタートタスク(OSAP強制終了専用)を生成するように修正
+
+・信頼領域で保護違反が発生した場合，OSシャットダウンするように修正
+
+・フックルーチンに対するサービス保護機能の削除
+
+・コンフィギュレーション時にフックルーチンを使用する設定にしたにも関わらず，
+　フックルーチンを定義していない場合，リンク時にエラーとなるように修正
+
+・文字コードをEUC-JPからUTF-8に変更
+
+・全SCでエラーコードの統一
+
+・ジェネレータで先頭番地についてチェックする対象を，
+　コンフィギュレーションで指定されたスタックの先頭番地のみに修正
+
+・スケジュールテーブルの最終遅延についてジェネレータ不具合を修正
+
+・その他細かい修正
+ - MISRAルール対応
+ - カウンタnspertickの出力を整数化
+ - スタックモニタリング違反の原因を特定するビットの削除
+ - コメントの修正
+
+・バージョン番号の更新
+
+○ターゲット依存部の要修正箇所（1.3.2 → 1.4.0）
+
+・DisableAllInterruptsは非信頼OSAPから呼出しができないようにするため，
+　ソフトウェア割込み経由での呼び出しではなく，
+　カーネル領域のソースコードを直接呼び出すように修正
+
+・Disable/EnableInterruptSourceで，特定の割込み要求ラインを有効/無効に出来るか
+  どうかはターゲットに依存するため，ターゲット依存部に特定の割込み要求ラインが
+  有効/無効に出来るかどうか，チェックする関数としてtarget_is_int_controllableを用意
+
+・フックルーチンが定義されていなかった場合，先頭アドレスに対して0番地を与える処理の削除
+
+・OSが生成したリスタートタスクのMPU設定は信頼タスクと同じとなるよう
+　ターゲット依存部で設定するように修正
+
+・OSが生成したリスタートタスクに対する起動処理として，
+　activate_force_term_osap_mainを用意
+
+・OsMemoryAreaによって指定されたメモリオブジェクトの先頭アドレスが
+　メモリアライメント制約を満たしているかどうかのチェック関数として，
+　HOOK_ERRORCHECK_MEM_PASS4を追加しても良い（オプション）
+
+・OSAP固有フックに関する処理を削除
+
+・信頼領域での保護違反はOSシャットダウンとするため，プロテクションフック呼び出し時に，
+　特権モードで動作している場合はTRUE，非特権モードで動作している場合はFALSEを
+　pre_protection_supervisedに格納する．
+　なお，スタックモニタリング違反時は，信頼領域が既に破壊されているため，
+　pre_protection_supervisedをTRUEにして，プロテクションフックを呼び出すものとする
+
+・スタックモニタリングでの違反が発生した場合，
+　どのスタックモニタリングであるかを特定する処理を削除
+
+----------------------------------------------------------------------
+		ATK2-SC3
+		Release 1.3.1 から 1.3.2 への変更点
+		リリース日 2015-03-30
+
+○変更点のリスト
+
+・信頼関数をネストして呼び出して戻ったときに，信頼関数実行中にタスク
+　コンテキストとプロテクションフックで判定される問題を修正
+
+・t_syslog.hからincludeするターゲット依存部のヘッダファイルを
+　target_syslog.hに修正
+
+・OsMemoryModuleNameの多重度を1..*に修正
+
+・kernel.tfで，OsIsrInterruptSourceにDISABLEを指定した場合にエラー
+　となる問題を修正
+
+・kernel_mem.tfで，標準のdata/bsssec_inibを出力する処理を省略した
+　際に，kernel_mem.cへの変数の出力を抑制するように修正
+
+・タスクディスパッチ発生時のスタックモニタリングなどにおいて，
+　保護違反タスクを強制終了した場合にそのタスクが正常に終了されない
+　問題を修正
+
+・システムサービスIDの振り直し
+
+・ハードウェアカウンタの割込みがセットされなくなる問題を修正
+
+・トレースログを有効化する設定を非依存部のsample/Makefileに移動
+
+・その他細かい修正
+	- コメントの修正など
+    - arch/logtrace/tlv.tfを削除
+    - configureでシリアル通信の有効/無効を切換えられるように修正
+    - sample1の修正
+
+・バージョン番号の更新
+
+○ターゲット依存部の要修正箇所（1.3.1 → 1.3.2）
+
+・割込みの初期状態が割込み禁止の場合でも，x_config_intにおいて
+　割込み優先度設定をするように修正
+
+・信頼関数の入り口でのスタックモニタリング（trustedfunc_stack_check）
+　において，sp == sstk + tf_stksz の場合に E_OS_STACKINSUFFICIENT
+　となるように修正（マジックナンバー領域を考慮）
+
+・ターゲット依存部のヘッダファイル名がprc_syslogであった場合，
+　target_syslog.hにファイル名を修正
+
+・Platform_Types.h で，stdint.h をincludeするように修正
+	- INT64_MAXの定義をターゲット依存で追加する
+
+・トレースログを有効化する設定をターゲット依存部のMakefileから
+　削除
+
+・sample1のために，target_test.hで，sample1で使用するハードウェア
+　カウンタから約1秒でアラームを起動するために，約1秒に相当する
+　ハードウェアカウンタのティック値をCOUNTER_MIN_CYCLEマクロに定義
+
+----------------------------------------------------------------------
+		ATK2-SC3
+		Release 1.3.0 から 1.3.1 への変更点
+		リリース日 2014-09-30
+
+○変更点のリスト
+
+・タスクの強制処理時に，対象タスクが操作中のカウンタの状態を戻す処理を
+  追加
+
+・タスクの強制処理時に，readyキューの状態が不正となる問題を修正
+
+・OSAP強制処理時に，タスク強制処理の合間で割込み禁止状態を解除しないように
+  修正
+
+・TerminateApplication発行時のOSAPの状態をチェックする処理を，OS割込み
+  禁止したあとに実施するように修正
+ 
+・コンパイル時に警告が出る問題への対応
+	- 拡張エラーやエラーフック有効時のみ使用するローカル変数をマクロに
+	  より無効化するように修正
+	- set_event_action，activate_task_actionの返り値の型をStatusTypeとし，
+	  ercdを返すように修正（これらの関数を呼び出す際にはvoidでキャスト）
+	- syslog内部でconstにキャストしている部分を修正
+	- sampleのソースコードから，使用していない関数svc_perrorを削除
+
+・TNUM_QUEUEIOCが0の場合にioccb_tableをTOPPERS_EMPTY_LABELを用いて出力
+  するように修正
+
+・OsMemorySectionInitializeにNO_INITIALIZEを指定した場合に正常に処理されない
+  問題を修正
+
+・標準のdata/bsssec_inibを出力する処理を省略可能とした
+
+・その他細かい修正
+	- コメントの修正など
+
+・バージョン番号の更新
+
+○ターゲット依存部の要修正箇所（1.3.0 → 1.3.1）
+
+・ディスパッチャのアイドルループにおいて，callevelを変更しないように
+　修正
+
+・ターゲット依存部において，独自のdata/bsssec_inibを出力したい場合，
+  OMIT_STANDARD_DATA/BSSSECINIBマクロをそれぞれ定義したうえで，初期化
+  ブロック生成処理を，ターゲット依存部のtfで定義する
+
+----------------------------------------------------------------------
+			ATK2-SC3
+		Release 1.2.1 から 1.3.0 への変更点
+		リリース日 2014-03-12
+
+○変更点のリスト
+
+・ABREX導入
+	- AUTOSAR準拠のコンフィギュレーションファイルはXML形式であり，手動
+	  で作成，編集するのに不向きである．YAML形式で記述したコンフィギュ
+	  レーション情報をXML形式へ変換するツール(ABREX)を開発した
+
+・静的APIの廃止
+	- SC3において，ターゲット依存部で用意するハードウェアカウンタへのア
+	  クセス権設定が困難であることから，ターゲット依存部で用意するコン
+	  フィギュレーション情報は，YAML形式として，ツール(ABREX)を用いて
+	  XMLへ変換する手法を採用した
+	- これに伴い，静的APIの必要性が無くなったため，廃止した
+	- 静的APIに関連するファイルを削除
+
+・複数XML入力対応
+	- 複数のXMLに分けてコンフィギュレーション情報を管理する際，これまで
+	  はプリプロセッサの#include機能をarxmlファイルに使用して実現してい
+	  たが，#includeはXMLとして標準的に使用できない記述であり，他のツー
+	  ルで作成したarxmlでは使用されないものであるので，プリプロセッサ用
+	  の記述を廃止した
+	- プリプロセッサ廃止に伴い，ジェネレータ最新版（1.9.4）でサポートさ
+	  れた，XML複数入力機能を用いて，複数のXMLに分けてコンフィギュレー
+	  ション情報を同時に処理できるように対応した
+	- 編集用として各arxmlファイルに対応するyamlファイルを追加した
+
+・ハードウェアカウンタをターゲット依存部で標準サポートとする
+	- AUTOSARでは，指定した時間で周期的にタスクを起動する使用方法が一般
+	  的であるため，1つ以上のハードウェアカウンタが必須であることから，
+	  ハードウェアカウンタをターゲット依存部で用意することにした
+
+・システムタイマを標準サポートから外す
+	- システムタイマは，主にトレースログや性能評価等で時間を計測するため
+	  に使用することを想定しており，AUTOSARでは必須の機能ではないため，
+	  標準の機能から外した
+
+・廃止コンテナ情報の削除漏れ対応
+	- 不要なOsMemoryRegionAttributeパラメータ設定を削除
+
+・依存部でC1ISR本体のextern宣言を制御できるように変更
+	- 依存部でコンフィギュレーション関数(EXTERN_C1ISR_HANDLER)を実装する
+	  ことで，非依存部で出力するC1ISR本体のextern宣言を変更できるように
+	  対応した
+
+・OS割込み禁止解除漏れバグの修正
+	- GetAlarmBase
+	- AllowAccess
+	- TerminateApplication
+
+・ジェネレータ設定ファイル(kernel.ini)にオプション情報追加
+	- 未定義パラメータチェックオプション：CheckUnknownParameter
+
+・Rte_Type.hインクルード対応
+	- AUTOSARではシステム全体で使用するデータ型を統合して定義する仕組み
+	  があり，定義したデータ型は，RTEジェネレータによって，Rte_Type.hに
+	  出力される
+	- IOC等で，OSからシステム全体で使用するデータ型を使用するために，
+	  Rte_Os_Type.hから，Rte_Type.hをインクルードするよう対応した
+	- RTEジェネレータを使用しない場合や，システム全体で使用するデータ型
+	  を使用しない場合は，空のRte_Type.hを用意する必要がある
+
+・バージョン番号の更新
+
+○ターゲット依存部の要修正箇所（1.2.1 → 1.3.0）
+
+・静的APIに関連するファイル，設定を削除
+
+・複数XML入力対応
+	- 依存部で用意するarxmlファイルに対応するyamlファイルを追加
+	- 統合可能なarxmlファイルを1つにまとめた
+
+・ハードウェアカウンタ追加
+	- target_hw_counter.c|.h|.cfg|.arxml
+	- target_test.c|.h|.cfg|.arxmlで実現している場合，ハードウェアカウ
+	  ンタ部分のみ切り出す
+	- デフォルトでtarget_timer.oをビルド対象としていた箇所を
+	  target_hw_counter.oへ変更
+
+・システムタイマのオプション化
+	- Makefileに新設したENABLE_SYS_TIMERがtrueの場合のみ，システムタイ
+	  マ用オブジェクト(target_timer.o等)をビルド対象とする
+
+----------------------------------------------------------------------
+		ATK2-SC3
+		Release 1.2.0 から 1.2.1 への変更点
+		リリース日 2013-12-26
+
+○変更点のリスト
+
+・システムサービスにおける，ポインタ渡し引数のアラインチェックを追加
+	- ALIGNED_TYPEマクロは，OS以外でも使用できるように定義
+
+・NULLマクロの定義をCompiler_Cfg.hからkernel_impl.hへ移動
+	- AUTOSARでは，NULLポインタ用マクロとして，NULL_PTR(Compiler.h)を
+	  使用する
+
+・kernel.tfで，PLABELを定義するように変更
+	- ターゲットによって，MPUの各領域に設定する値をtfで出力するときに，
+	  データセクションについてはPLABELを使いたい場合がある
+
+・force_terminate_task()からcancel_nontrusted_hook()の呼び出しを削除
+	- call_protectionhk_main()内でforce_terminate_task()を呼び出すケー
+	  スはタスク動作時のみなので，cancel_nontrusted_hook()の呼び出しが
+	  不要である
+
+・割込み禁止中にGet系システムサービス呼び出せるように変更
+	- 対象となるシステムサービスリスト
+	  GetTaskID
+	  GetTaskState
+	  GetISRID
+	  GetApplicationID
+	  GetApplicationState
+
+・割込み禁止状態でStartOSを呼び出した場合における，割込み許可処理の修正
+	- DisableAllInterruptsまたはSuspendAllInterruptsによる割込み禁止状
+	  態で，StartOSを呼び出した場合，EnableAllInterruptsまたは
+	  ResumeAllInterruptsの発行と同等の処理を行なって，割込み許可状態へ
+	  遷移した上で，OSを起動するように修正
+
+・TerminateApplicationの割込み禁止状態への対応
+	- 割込み許可状態での，S_D_CHECK_STATEを呼び出しを，S_CHECK_STATEへ
+	  変更
+	- OS割込み禁止状態でリターンする処理を修正
+
+・OS内部関数名の変更
+	- get_reltick_api → get_reltick
+	- get_abstick_api → get_abstick
+
+・信頼/非信頼マクロ定義の追加
+	- TOPPERS_TRUSTED：関数呼出しによるシステムサービスの実行
+	- TOPPERS_NON_TRUSTED：ソフトウェア割込みによるシステムサービスの
+	                       実行
+	※TOPPERS_TRUSTED，TOPPERS_NON_TRUSTED両方定義時，コンパイルエラー
+
+・OS割込み禁止解除関数が2回呼ばれるバグの修正
+	- GetCounterValue
+	- GetElapsedValue
+
+・IOC初期化ブロックに送受信データのアラインサイズ情報を追加
+	- IOCの送受信時に，アラインサイズ情報を使用してアラインチェックを
+	  行う
+
+・その他細かい修正
+
+・バージョン番号の更新
+
+○ターゲット依存部の要修正箇所（1.2.0 → 1.2.1）
+
+・Compiler_Cfg.hファイルにalignof，ALIGNED_TYPEマクロを定義する
+	- 指定型のアラインのサイズを取得するalignofマクロの定義
+	  定義例：
+	  #ifndef alignof
+	  #define alignof(type)                                     \
+	      offsetof(struct { uint8 field1; type field2; }, field2)
+	  #endif
+
+	- 指定アドレスがアラインされているかをチェックするALIGNED_TYPE
+	  マクロの定義
+	  定義例：
+	  #ifndef ALIGNED_TYPE
+	  #define ALIGNED_TYPE(addr, type)                     \
+	      ((((uintptr)(addr)) & (alignof(type) - 1)) == 0U)
+	  #endif
+
+----------------------------------------------------------------------
+		ATK2-SC3
+		Release 1.1.0 から 1.2.0 への変更点
+		リリース日 2013-06-28
+
+○変更点のリスト
+
+・SC3FL2の機能拡張に伴い，OSAPの終了/再起動をサポート
+	- TerminateApplicationシステムサービス追加
+	- AllowAccessシステムサービス追加
+	- プロテクションフックの戻り値がPRO_TERMINATEAPPL_RESTART/
+	  PRO_TERMINATEAPPL時の処理追加
+
+・コンフィギュレーションにおいて，他のOSAPから非信頼OSAP所属カウンタへ
+  の関連付け禁止するように変更
+
+・AUTOSAR R.4.0.3仕様誤記対応
+	- E_OS_PROTECTION_FATAL定義を追加して，OS_E_PARAM_POINTERを
+	  E_OS_PROTECTION_FATALとして定義するように変更
+
+・XMLコンテナ定義誤記対応
+	- OsSchTblAccesingApplicationをOsSchTblAccessingApplicationへ変更
+	- OsScheduleTableStartValueの多重度を1から0..1へ変更
+
+・Std_Types.hにあるATK2共通定義の移動
+	- ATK2共通定義をStd_Types.hからCompiler_Cfg.hに移動
+
+・OS起動前に参照される可能性がある変数の初期化対応
+	- OS起動前に参照される可能性がある変数を定義時に0初期化して，BSSに
+	  配置するように実装変更
+	- OS起動前に参照される可能性がある変数がOS起動時に再度初期化しない
+	  ように変更
+
+・コンフィギュレーションにおけるバグ修正
+	- USE_TSKINICTXBの条件判定が逆だったので，修正
+	- 変数名の誤記を修正
+	- GENERATE_OSAPINIB_MPUINFOBに引数追加し，引数による処理に変更
+	- cfg2_out.tfにLNK_SECの情報を出力するように変更
+
+・MISRAルール対応により，一部ソースコードを修正した
+
+・その他細かい修正
+
+・バージョン番号の更新
+
+○ターゲット依存部の要修正箇所（1.1.0 → 1.2.0）
+
+・Std_Types.hにあったatk2共通定義の追加
+	- atk2共通定義をCompiler_Cfg.hに追加
+
+----------------------------------------------------------------------
+		ATK2-SC3
+		Release 1.0.1 から 1.1.0 への変更点
+		リリース日 2013-06-28
+
+○変更点のリスト
+
+・StartOSシステムサービスのエラーコード変更
+	- OS起動後のStartOS呼出しによって実行されるエラーフックに
+	  渡すエラーコードを，E_OS_CALLEVELからE_OS_ACCESSへ変更
+
+・IOC機能の追加
+	- OSAP間通信するための機能を新規追加
+
+・ジェネレータ新バージョン（1.9.2）対応
+	- ジェネレータ設定ファイル（kernel_xml.ini）において，
+	 「AUTOSARスキーマのファイル名」設定値の変更
+
+・多重割込み発生時のスタックモニタリング方式変更
+	- スタックポインタチェック方式から
+	  スタック残量チェック方式に変更
+
+・HRP2のメモリ保護ロジックの追従
+	- メモリオブジェクトのメモリ配置方法をHRP2に合わせた
+	- メモリリージョン指定仕様の変更
+
+・ドキュメントの説明追加及び誤記修正
+	- ポーティングガイド
+	- ユーザーズマニュアル
+
+・その他細かい修正
+
+・バージョン番号の更新
+
+○ターゲット依存部の要修正箇所（1.0.1 → 1.1.0）
+
+特になし
+
+----------------------------------------------------------------------
+		ATK2-SC3
+		Release 1.0.0 から 1.0.1 への変更点
+		リリース日 2013-03-29
+
+○変更点のリスト
+
+・MISRAルール対応により，一部ソースコードを修正した
+
+・ジェネレータ新バージョン（1.9.1）対応
+	- ジェネレータ設定ファイル（kernel_xml.ini）の誤記修正
+	- ジェネレータ設定ファイル（kernel_xml.ini）のコメント修正
+
+・その他の修正．
+	- シャットダウンフック中のCPU例外処理の実装漏れ対応
+
+・ドキュメントの充実．コメントの修正
+
+・バージョン番号の更新
+
+○ターゲット依存部の要修正箇所（1.0.0 → 1.0.1）
+
+(1)非信頼シャットダウンフックの実行中かを返す関数
+   is_running_nontrusted_shutdown_hookを
+   is_running_nontrusted_shtdwnhkに修正
+
+(2)MPU依存の信頼OSアプリケーションメモリチェック関数
+   prc_chkmemをprobe_trusted_osap_memに修正
+
+(3)指定領域が非信頼フック用スタックに含まれるかチェック関数
+   prc_chk_nthkstkをprobe_nthkstkに修正
+
+(4)ネストしたOS割込み禁止をクリアする関数x_clear_nested_lock_cntを
+   x_clear_nested_os_intに修正
+
+----------------------------------------------------------------------

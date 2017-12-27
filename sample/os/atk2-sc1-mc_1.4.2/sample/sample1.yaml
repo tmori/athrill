@@ -1,0 +1,536 @@
+#
+#  TOPPERS ATK2
+#      Toyohashi Open Platform for Embedded Real-Time Systems
+#      Automotive Kernel Version 2
+#
+#  Copyright (C) 2013-2017 by Center for Embedded Computing Systems
+#              Graduate School of Information Science, Nagoya Univ., JAPAN
+#  Copyright (C) 2013-2017 by FUJI SOFT INCORPORATED, JAPAN
+#  Copyright (C) 2013-2016 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
+#  Copyright (C) 2013-2014 by Renesas Electronics Corporation, JAPAN
+#  Copyright (C) 2013-2016 by Sunny Giken Inc., JAPAN
+#  Copyright (C) 2013-2017 by TOSHIBA CORPORATION, JAPAN
+#  Copyright (C) 2013-2017 by Witz Corporation
+#  Copyright (C) 2014-2016 by AISIN COMCRUISE Co., Ltd., JAPAN
+#  Copyright (C) 2014-2016 by eSOL Co.,Ltd., JAPAN
+#  Copyright (C) 2014-2017 by NEC Communication Systems, Ltd., JAPAN
+#  Copyright (C) 2014-2017 by SCSK Corporation, JAPAN
+#  Copyright (C) 2015-2017 by SUZUKI MOTOR CORPORATION
+#
+#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+#  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+#  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+#      権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+#      スコード中に含まれていること．
+#  (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+#      用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+#      者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+#      の無保証規定を掲載すること．
+#  (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+#      用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+#      と．
+#    (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+#        作権表示，この利用条件および下記の無保証規定を掲載すること．
+#    (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+#        報告すること．
+#  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+#      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+#      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+#      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+#      免責すること．
+#
+#  本ソフトウェアは，AUTOSAR（AUTomotive Open System ARchitecture）仕
+#  様に基づいている．上記の許諾は，AUTOSARの知的財産権を許諾するもので
+#  はない．AUTOSARは，AUTOSAR仕様に基づいたソフトウェアを商用目的で利
+#  用する者に対して，AUTOSARパートナーになることを求めている．
+#
+#  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+#  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+#  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+#  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+#  の責任を負わない．
+#
+#  $Id: sample1.yaml 727 2017-01-23 09:27:59Z witz-itoyo $
+#
+
+Ecuc:
+  Os:
+    OsInclude:
+      OsIncludeFileName: sample1.h
+    AppMode1:
+      DefinitionRef: OsAppMode
+    AppMode2:
+      DefinitionRef: OsAppMode
+    AppMode3:
+      DefinitionRef: OsAppMode
+    OsOS:
+      OsNumberOfCores: 2
+      OsStackMonitoring: true
+      OsUseGetServiceId: true
+      OsUseParameterAccess: true
+      OsScalabilityClass: SC1
+      OsStatus: EXTENDED
+      OsHooks:
+        OsErrorHook: true
+        OsPostTaskHook: true
+        OsPreTaskHook: true
+        OsProtectionHook: true
+        OsShutdownHook: true
+        OsStartupHook: true
+      OsHookStack:
+        OsHookStackSize: 512
+        OsHookStackCoreAssignment: 0
+    MainEvt0:
+      DefinitionRef: OsEvent
+    MainEvt1:
+      DefinitionRef: OsEvent
+    T2Evt:
+      DefinitionRef: OsEvent
+    T3Evt:
+      DefinitionRef: OsEvent
+      OsEventMask: 65536
+    SampleCnt:
+      DefinitionRef: OsCounter
+      OsCounterMaxAllowedValue: 99
+      OsCounterMinCycle: 10
+      OsCounterTicksPerBase: 10
+      OsCounterType: SOFTWARE
+    MainTask:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 14
+      OsTaskStackSize: 592
+      OsTaskSchedule: NON
+      OsTaskEventRef:
+        - /Ecuc/Os/MainEvt0
+        - /Ecuc/Os/IocEvt
+      OsTaskAutostart:
+        OsTaskAppModeRef:
+          - /Ecuc/Os/AppMode1
+          - /Ecuc/Os/AppMode2
+          - /Ecuc/Os/AppMode3
+    HighPriorityTask:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 15
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+    NonPriTask:
+      DefinitionRef: OsTask
+      OsTaskActivation: 8
+      OsTaskPriority: 1
+      OsTaskStackSize: 592
+      OsTaskSchedule: NON
+    Task1:
+      DefinitionRef: OsTask
+      OsTaskActivation: 8
+      OsTaskPriority: 4
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskResourceRef:
+        - /Ecuc/Os/CntRes
+        - /Ecuc/Os/TskLevelRes
+      OsTaskAutostart:
+        OsTaskAppModeRef: /Ecuc/Os/AppMode2
+    T6Evt:
+      DefinitionRef: OsEvent
+    Task2:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 7
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskResourceRef:
+        - /Ecuc/Os/CntRes
+        - /Ecuc/Os/TskLevelRes
+      OsTaskEventRef: /Ecuc/Os/T2Evt
+    MainCycArm0:
+      DefinitionRef: OsAlarm
+      OsAlarmCounterRef: /Ecuc/Os/MAIN_HW_COUNTER_CORE0
+      OsAlarmAction:
+        OsAlarmSetEvent:
+          OsAlarmSetEventTaskRef: /Ecuc/Os/MainTask
+          OsAlarmSetEventRef: /Ecuc/Os/MainEvt0
+    ActTskArm:
+      DefinitionRef: OsAlarm
+      OsAlarmCounterRef: /Ecuc/Os/MAIN_HW_COUNTER_CORE0
+      OsAlarmAction:
+        OsAlarmActivateTask:
+          OsAlarmActivateTaskRef: /Ecuc/Os/Task1
+    SetEvtArm:
+      DefinitionRef: OsAlarm
+      OsAlarmCounterRef: /Ecuc/Os/MAIN_HW_COUNTER_CORE0
+      OsAlarmAction:
+        OsAlarmSetEvent:
+          OsAlarmSetEventTaskRef: /Ecuc/Os/Task3
+          OsAlarmSetEventRef: /Ecuc/Os/T3Evt
+    CallBackArm:
+      DefinitionRef: OsAlarm
+      OsAlarmCounterRef: /Ecuc/Os/MAIN_HW_COUNTER_CORE0
+      OsAlarmAction:
+        OsAlarmCallback:
+          OsAlarmCallbackName: SysTimerAlmCb
+    MainCycArm1:
+      DefinitionRef: OsAlarm
+      OsAlarmCounterRef: /Ecuc/Os/MAIN_HW_COUNTER_CORE1
+      OsAlarmAction:
+        OsAlarmSetEvent:
+          OsAlarmSetEventTaskRef: /Ecuc/Os/IdleTask
+          OsAlarmSetEventRef: /Ecuc/Os/MainEvt1
+    T7Evt:
+      DefinitionRef: OsEvent
+    T8Evt:
+      DefinitionRef: OsEvent
+    IocEvt:
+      DefinitionRef: OsEvent
+    SmpSpin:
+      DefinitionRef: OsSpinlock
+      OsSpinlockLockMethod: LOCK_NOTHING
+      OsSpinlockAccessingApplication:
+        - /Ecuc/Os/OSAP_CORE0
+        - /Ecuc/Os/OSAP_CORE1
+    IOC:
+      DefinitionRef: OsIoc
+      IOC_QUE:
+        DefinitionRef: OsIocCommunication
+        OsIocBufferLength: 3
+        IOC_QUE_DATA:
+          DefinitionRef: OsIocDataProperties
+          OsIocInitValue: 1U
+          OsIocDataTypeRef: /ImplementationDataTypes/uint8
+        IOC_QUE_RCV:
+          DefinitionRef: OsIocReceiverProperties
+          OsIocFunctionImplementationKind: FUNCTION
+          OsIocReceivingOsApplicationRef: /Ecuc/Os/OSAP_CORE1
+        IOC_QUE_SND0:
+          DefinitionRef: OsIocSenderProperties
+          OsIocSenderId: 0
+          OsIocFunctionImplementationKind: FUNCTION
+          OsIocSendingOsApplicationRef: /Ecuc/Os/OSAP_CORE0
+        IOC_QUE_SND1:
+          DefinitionRef: OsIocSenderProperties
+          OsIocSenderId: 1
+          OsIocFunctionImplementationKind: FUNCTION
+          OsIocSendingOsApplicationRef: /Ecuc/Os/OSAP_CORE0
+      IOC_DEQUE:
+        DefinitionRef: OsIocCommunication
+        IOC_DEQUE_DATA0:
+          DefinitionRef: OsIocDataProperties
+          OsIocDataPropertyIndex: 0
+          OsIocInitValue: 0U
+          OsIocDataTypeRef: /ImplementationDataTypes/uint8
+        IOC_DEQUE_DATA1:
+          DefinitionRef: OsIocDataProperties
+          OsIocDataPropertyIndex: 1
+          OsIocInitValue: 10U
+          OsIocDataTypeRef: /ImplementationDataTypes/uint8
+        IOC_DEQUE_DATA2:
+          DefinitionRef: OsIocDataProperties
+          OsIocDataPropertyIndex: 2
+          OsIocInitValue: 20U
+          OsIocDataTypeRef: /ImplementationDataTypes/uint8
+        IOC_DEQUE_RCV:
+          DefinitionRef: OsIocReceiverProperties
+          OsIocFunctionImplementationKind: FUNCTION
+          OsIocReceivingOsApplicationRef: /Ecuc/Os/OSAP_CORE1
+        IOC_DEQUE_SND:
+          DefinitionRef: OsIocSenderProperties
+          OsIocFunctionImplementationKind: FUNCTION
+          OsIocSendingOsApplicationRef: /Ecuc/Os/OSAP_CORE0
+    Task3:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 12
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskResourceRef: /Ecuc/Os/CntRes
+      OsTaskEventRef: /Ecuc/Os/T3Evt
+      OsTaskAutostart:
+        OsTaskAppModeRef: /Ecuc/Os/AppMode3
+    Task4:
+      DefinitionRef: OsTask
+      OsTaskActivation: 5
+      OsTaskPriority: 6
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskResourceRef:
+        - /Ecuc/Os/GroupRes
+        - /Ecuc/Os/CntRes
+        - /Ecuc/Os/TskLevelRes
+    TskLevelRes:
+      DefinitionRef: OsResource
+      OsResourceProperty: STANDARD
+    CntRes:
+      DefinitionRef: OsResource
+      OsResourceProperty: STANDARD
+    SampleAlm:
+      DefinitionRef: OsAlarm
+      OsAlarmCounterRef: /Ecuc/Os/SampleCnt
+      OsAlarmAction:
+        OsAlarmCallback:
+          OsAlarmCallbackName: SampleAlmCb
+      OsAlarmAutostart:
+        OsAlarmAlarmTime: 10
+        OsAlarmCycleTime: 10
+        OsAlarmAutostartType: ABSOLUTE
+        OsAlarmAppModeRef:
+          - /Ecuc/Os/AppMode1
+          - /Ecuc/Os/AppMode2
+          - /Ecuc/Os/AppMode3
+    scheduletable1:
+      DefinitionRef: OsScheduleTable
+      OsScheduleTableDuration: 60
+      OsScheduleTableRepeating: true
+      OsScheduleTableCounterRef: /Ecuc/Os/SchtblSampleCnt
+      OsScheduleTableExpiryPoint_0:
+        DefinitionRef: OsScheduleTableExpiryPoint
+        OsScheduleTblExpPointOffset: 10
+        OsScheduleTableTaskActivation_0:
+          DefinitionRef: OsScheduleTableTaskActivation
+          OsScheduleTableActivateTaskRef: /Ecuc/Os/Task6
+        OsScheduleTableTaskActivation_1:
+          DefinitionRef: OsScheduleTableTaskActivation
+          OsScheduleTableActivateTaskRef: /Ecuc/Os/Task7
+        OsScheduleTableTaskActivation_2:
+          DefinitionRef: OsScheduleTableTaskActivation
+          OsScheduleTableActivateTaskRef: /Ecuc/Os/Task8
+      OsScheduleTableExpiryPoint_1:
+        DefinitionRef: OsScheduleTableExpiryPoint
+        OsScheduleTblExpPointOffset: 20
+        OsScheduleTableEventSetting_0:
+          DefinitionRef: OsScheduleTableEventSetting
+          OsScheduleTableSetEventRef: /Ecuc/Os/T6Evt
+          OsScheduleTableSetEventTaskRef: /Ecuc/Os/Task6
+        OsScheduleTableEventSetting_1:
+          DefinitionRef: OsScheduleTableEventSetting
+          OsScheduleTableSetEventRef: /Ecuc/Os/T7Evt
+          OsScheduleTableSetEventTaskRef: /Ecuc/Os/Task7
+        OsScheduleTableEventSetting_2:
+          DefinitionRef: OsScheduleTableEventSetting
+          OsScheduleTableSetEventRef: /Ecuc/Os/T8Evt
+          OsScheduleTableSetEventTaskRef: /Ecuc/Os/Task8
+      OsScheduleTableSync:
+        OsScheduleTblSyncStrategy: NONE
+    Task5:
+      DefinitionRef: OsTask
+      OsTaskActivation: 5
+      OsTaskPriority: 9
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskResourceRef:
+        - /Ecuc/Os/GroupRes
+        - /Ecuc/Os/CntRes
+        - /Ecuc/Os/TskLevelRes
+    GroupRes:
+      DefinitionRef: OsResource
+      OsResourceProperty: INTERNAL
+    IocTask1:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 9
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskEventRef: /Ecuc/Os/IocEvt
+    IocTask2:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 9
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskEventRef: /Ecuc/Os/IocEvt
+    scheduletable2:
+      DefinitionRef: OsScheduleTable
+      OsScheduleTableDuration: 50
+      OsScheduleTableRepeating: true
+      OsScheduleTableCounterRef: /Ecuc/Os/SchtblSampleCnt
+      OsScheduleTableExpiryPoint_0:
+        DefinitionRef: OsScheduleTableExpiryPoint
+        OsScheduleTblExpPointOffset: 20
+        OsScheduleTableTaskActivation_0:
+          DefinitionRef: OsScheduleTableTaskActivation
+          OsScheduleTableActivateTaskRef: /Ecuc/Os/Task8
+        OsScheduleTableTaskActivation_1:
+          DefinitionRef: OsScheduleTableTaskActivation
+          OsScheduleTableActivateTaskRef: /Ecuc/Os/Task7
+      OsScheduleTableExpiryPoint_1:
+        DefinitionRef: OsScheduleTableExpiryPoint
+        OsScheduleTblExpPointOffset: 30
+        OsScheduleTableEventSetting_0:
+          DefinitionRef: OsScheduleTableEventSetting
+          OsScheduleTableSetEventRef: /Ecuc/Os/T8Evt
+          OsScheduleTableSetEventTaskRef: /Ecuc/Os/Task8
+      OsScheduleTableExpiryPoint_2:
+        DefinitionRef: OsScheduleTableExpiryPoint
+        OsScheduleTblExpPointOffset: 40
+        OsScheduleTableEventSetting_0:
+          DefinitionRef: OsScheduleTableEventSetting
+          OsScheduleTableSetEventRef: /Ecuc/Os/T7Evt
+          OsScheduleTableSetEventTaskRef: /Ecuc/Os/Task7
+      OsScheduleTableSync:
+        OsScheduleTblSyncStrategy: NONE
+    Task6:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 13
+      OsTaskStackSize: 592
+      OsTaskSchedule: NON
+      OsTaskEventRef: /Ecuc/Os/T6Evt
+    SampleAlm1:
+      DefinitionRef: OsAlarm
+      OsAlarmCounterRef: /Ecuc/Os/SampleCnt2
+      OsAlarmAction:
+        OsAlarmIncrementCounter:
+          OsAlarmIncrementCounterRef: /Ecuc/Os/SampleCnt3
+      OsAlarmAutostart:
+        OsAlarmAlarmTime: 10
+        OsAlarmCycleTime: 10
+        OsAlarmAutostartType: ABSOLUTE
+        OsAlarmAppModeRef:
+          - /Ecuc/Os/AppMode1
+          - /Ecuc/Os/AppMode2
+          - /Ecuc/Os/AppMode3
+    Task7:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 13
+      OsTaskStackSize: 592
+      OsTaskSchedule: NON
+      OsTaskEventRef: /Ecuc/Os/T7Evt
+    SampleCnt2:
+      DefinitionRef: OsCounter
+      OsCounterMaxAllowedValue: 99
+      OsCounterMinCycle: 10
+      OsCounterTicksPerBase: 10
+      OsCounterType: SOFTWARE
+    SampleAlm2:
+      DefinitionRef: OsAlarm
+      OsAlarmCounterRef: /Ecuc/Os/SampleCnt3
+      OsAlarmAction:
+        OsAlarmCallback:
+          OsAlarmCallbackName: SampleAlmCb2
+      OsAlarmAutostart:
+        OsAlarmAlarmTime: 10
+        OsAlarmCycleTime: 10
+        OsAlarmAutostartType: ABSOLUTE
+        OsAlarmAppModeRef:
+          - /Ecuc/Os/AppMode1
+          - /Ecuc/Os/AppMode2
+          - /Ecuc/Os/AppMode3
+    Task8:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 13
+      OsTaskStackSize: 592
+      OsTaskSchedule: NON
+      OsTaskEventRef: /Ecuc/Os/T8Evt
+    SampleCnt3:
+      DefinitionRef: OsCounter
+      OsCounterMaxAllowedValue: 99
+      OsCounterMinCycle: 10
+      OsCounterTicksPerBase: 10
+      OsCounterType: SOFTWARE
+    SchtblSampleCnt:
+      DefinitionRef: OsCounter
+      OsCounterMaxAllowedValue: 99
+      OsCounterMinCycle: 10
+      OsCounterTicksPerBase: 10
+      OsCounterType: SOFTWARE
+    IdleTask:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 5
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskEventRef: /Ecuc/Os/MainEvt1
+      OsTaskAutostart:
+        OsTaskAppModeRef:
+          - /Ecuc/Os/AppMode1
+          - /Ecuc/Os/AppMode2
+          - /Ecuc/Os/AppMode3
+    Task9:
+      DefinitionRef: OsTask
+      OsTaskActivation: 8
+      OsTaskPriority: 6
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+    IocTask3:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 9
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskEventRef: /Ecuc/Os/IocEvt
+    IocTask4:
+      DefinitionRef: OsTask
+      OsTaskActivation: 1
+      OsTaskPriority: 9
+      OsTaskStackSize: 592
+      OsTaskSchedule: FULL
+      OsTaskEventRef: /Ecuc/Os/IocEvt
+    Core0_ICI_1:
+      DefinitionRef: OsInterCoreInterrupt
+      OsInterCoreInterruptStackSize: 512
+    Core0_ICI_2:
+      DefinitionRef: OsInterCoreInterrupt
+      OsInterCoreInterruptStackSize: 512
+    Core1_ICI_1:
+      DefinitionRef: OsInterCoreInterrupt
+      OsInterCoreInterruptStackSize: 512
+    Core1_ICI_2:
+      DefinitionRef: OsInterCoreInterrupt
+      OsInterCoreInterruptStackSize: 512
+    OSAP_CORE0:
+      DefinitionRef: OsApplication
+      OsTrusted: true
+      OsApplicationCoreAssignment: 0
+      OsAppTaskRef:
+        - /Ecuc/Os/MainTask
+        - /Ecuc/Os/HighPriorityTask
+        - /Ecuc/Os/NonPriTask
+        - /Ecuc/Os/Task1
+        - /Ecuc/Os/Task2
+        - /Ecuc/Os/Task3
+        - /Ecuc/Os/Task4
+        - /Ecuc/Os/Task5
+        - /Ecuc/Os/IocTask1
+        - /Ecuc/Os/IocTask2
+        - /Ecuc/Os/Task6
+        - /Ecuc/Os/Task7
+        - /Ecuc/Os/Task8
+      OsAppCounterRef:
+        - /Ecuc/Os/SampleCnt
+        - /Ecuc/Os/SampleCnt2
+        - /Ecuc/Os/SampleCnt3
+        - /Ecuc/Os/SchtblSampleCnt
+      OsAppAlarmRef:
+        - /Ecuc/Os/MainCycArm0
+        - /Ecuc/Os/ActTskArm
+        - /Ecuc/Os/SetEvtArm
+        - /Ecuc/Os/CallBackArm
+        - /Ecuc/Os/SampleAlm
+        - /Ecuc/Os/SampleAlm1
+        - /Ecuc/Os/SampleAlm2
+      OsAppScheduleTableRef:
+        - /Ecuc/Os/scheduletable1
+        - /Ecuc/Os/scheduletable2
+      OsAppInterCoreInterruptRef:
+        - /Ecuc/Os/Core0_ICI_1
+        - /Ecuc/Os/Core0_ICI_2
+    OSAP_CORE1:
+      DefinitionRef: OsApplication
+      OsTrusted: true
+      OsApplicationCoreAssignment: 1
+      OsAppTaskRef:
+        - /Ecuc/Os/IdleTask
+        - /Ecuc/Os/Task9
+        - /Ecuc/Os/IocTask3
+        - /Ecuc/Os/IocTask4
+      OsAppAlarmRef: /Ecuc/Os/MainCycArm1
+      OsAppInterCoreInterruptRef:
+        - /Ecuc/Os/Core1_ICI_1
+        - /Ecuc/Os/Core1_ICI_2
+
+IMPLEMENTATION-DATA-TYPE:
+  uint8:
+    CATEGORY: VALUE

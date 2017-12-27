@@ -1,0 +1,13 @@
+# target_config.c
+target_hardware_initialize
+target_initialize
+target_exit
+
+# trace_dump.c
+trace_dump
+
+# trace_config.c
+log_dsp_enter
+log_dsp_leave
+
+INCLUDE "prc"

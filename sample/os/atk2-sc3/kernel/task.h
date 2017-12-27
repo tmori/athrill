@@ -1,0 +1,336 @@
+/*
+ *  TOPPERS ATK2
+ *      Toyohashi Open Platform for Embedded Real-Time Systems
+ *      Automotive Kernel Version 2
+ *
+ *  Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
+ *                              Toyohashi Univ. of Technology, JAPAN
+ *  Copyright (C) 2004-2015 by Center for Embedded Computing Systems
+ *              Graduate School of Information Science, Nagoya Univ., JAPAN
+ *  Copyright (C) 2011-2015 by FUJI SOFT INCORPORATED, JAPAN
+ *  Copyright (C) 2011-2013 by Spansion LLC, USA
+ *  Copyright (C) 2011-2015 by NEC Communication Systems, Ltd., JAPAN
+ *  Copyright (C) 2011-2015 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
+ *  Copyright (C) 2011-2014 by Renesas Electronics Corporation, JAPAN
+ *  Copyright (C) 2011-2015 by Sunny Giken Inc., JAPAN
+ *  Copyright (C) 2011-2015 by TOSHIBA CORPORATION, JAPAN
+ *  Copyright (C) 2004-2015 by Witz Corporation
+ *  Copyright (C) 2014-2015 by AISIN COMCRUISE Co., Ltd., JAPAN
+ *  Copyright (C) 2014-2015 by eSOL Co.,Ltd., JAPAN
+ *  Copyright (C) 2014-2015 by SCSK Corporation, JAPAN
+ *  Copyright (C) 2015 by SUZUKI MOTOR CORPORATION
+ *
+ *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+ *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+ *      権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+ *      スコード中に含まれていること．
+ *  (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+ *      用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+ *      者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+ *      の無保証規定を掲載すること．
+ *  (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+ *      用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+ *      と．
+ *    (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+ *        作権表示，この利用条件および下記の無保証規定を掲載すること．
+ *    (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+ *        報告すること．
+ *  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+ *      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+ *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+ *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+ *      免責すること．
+ *
+ *  本ソフトウェアは，AUTOSAR（AUTomotive Open System ARchitecture）仕
+ *  様に基づいている．上記の許諾は，AUTOSARの知的財産権を許諾するもので
+ *  はない．AUTOSARは，AUTOSAR仕様に基づいたソフトウェアを商用目的で利
+ *  用する者に対して，AUTOSARパートナーになることを求めている．
+ *
+ *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+ *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+ *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+ *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+ *  の責任を負わない．
+ *
+ *  $Id: task.h 425 2015-12-07 08:06:19Z witz-itoyo $
+ */
+
+/*
+ *		タスク管理機能
+ */
+
+#ifndef TOPPERS_TASK_H
+#define TOPPERS_TASK_H
+
+#include "queue.h"
+#include "resource.h"
+
+typedef struct task_control_block TCB;
+#include "osap.h"
+#include "counter.h"
+
+/*
+ *  イベントマスク値の定義
+ */
+#define EVTMASK_NONE	((EventMaskType) 0) /* イベントなし */
+
+/*
+ *  優先度の範囲（外部表現）
+ */
+#define TMIN_TPRI		UINT_C(0)       /* タスク優先度の最小値（最低値）*/
+#define TMAX_TPRI		UINT_C(15)      /* タスク優先度の最大値（最高値）*/
+
+/*
+ *  優先度の段階数の定義
+ */
+#define TNUM_TPRI		((TMAX_TPRI - TMIN_TPRI) + 1U)
+
+/*
+ *  優先度値の定義（内部表現）
+ */
+#define TPRI_MINTASK	((PriorityType) (TNUM_TPRI - 1U))               /* 最低タスク優先度 */
+#define TPRI_MAXTASK	((PriorityType) (0))                            /* 最高タスク優先度 */
+
+/*
+ *  タスクIDからTCBを取り出すためのマクロ
+ */
+#define get_tcb(tskid)		(&(tcb_table[(tskid)]))
+
+/*
+ *  TCBからタスクIDを取り出すためのマクロ
+ *  p_tcb がNULLの場合は使えない
+ */
+#define TSKID(p_tcb)	((TaskType) ((p_tcb) - tcb_table))
+
+#ifndef OMIT_BITMAP_SEARCH
+#define BITMAP_NUM		15       /* bitmap_search_tableのサイズ */
+#endif /* OMIT_BITMAP_SEARCH */
+
+/*
+ *  タスク数を保持する変数の宣言（Os_Lcfg.c）
+ */
+extern const TaskType	tnum_task;          /* タスクの数 */
+extern const TaskType	tnum_exttask;       /* 拡張タスクの数 */
+
+
+/*
+ *  タスク初期化ブロック
+ *
+ *  タスクに関する情報を，値が変わらないためにROMに置ける部分（タスク
+ *  初期化ブロック）と，値が変化するためにRAMに置かなければならない部
+ *  分（タスク管理ブロック，TCB）に分離し，TCB内に対応するタスク初期化
+ *  ブロックを指すポインタを入れる
+ *  タスク初期化ブロック内に対応するTCBを指すポインタを入れる方法の方が，
+ *  RAMの節約の観点からは望ましいが，実行効率が悪くなるために採用
+ *  していない
+ *  他のオブジェクトについても同様に扱う
+ */
+typedef struct task_initialization_block {
+	FunctionRefType	task;       /* タスクの起動番地 */
+
+#ifdef USE_TSKINICTXB
+	TSKINICTXB tskinictxb;           /* タスク初期化コンテキストブロック */
+#else /* USE_TSKINICTXB */
+	MemorySizeType	sstksz;         /* システムスタック領域のサイズ（丸めた値） */
+	void			*sstk;          /* システムスタック領域のボトム番地(SC3) */
+	MemorySizeType	ustksz;         /* スタック領域のサイズ（丸めた値） */
+	void			*ustk;          /* スタック領域のボトム番地(SC3) */
+#endif /* USE_TSKINICTXB */
+	OSAPCB			*p_osapcb;      /* 所属するOSアプリケーションの管理ブロック */
+	uint32			acsbtmp;        /* アクセス許可OSアプリケーション ビットマップ */
+	PriorityType	inipri;         /* 初期優先度 （内部表現）*/
+	PriorityType	exepri;         /* 実行開始時の優先度 （内部表現）*/
+	uint8			maxact;         /* 多重起動要求の最大数 */
+	AppModeType		autoact;        /* 起動するモード */
+#ifndef OMIT_STKMPUINFOB
+	STKMPUINFOB	stkmpu;             /* スタックのMPU情報 */
+#endif
+} TINIB;
+
+/*
+ *  タスク管理ブロック（Os_Lcfg.c）
+ */
+struct task_control_block {
+	QUEUE			task_queue;     /* タスクキュー(構造体の先頭に入る必要) */
+	const TINIB		*p_tinib;       /* 初期化ブロックへのポインタ */
+	PriorityType	curpri;         /* 現在の優先度（内部表現）*/
+	TaskStateType	tstat;          /* タスク状態（内部表現）*/
+	uint8			actcnt;         /* 多重起動要求数 */
+	EventMaskType	curevt;         /* イベントの現在値 */
+	EventMaskType	waievt;         /* 待っているイベント */
+	RESCB			*p_lastrescb;   /* 最後に獲得したリソース管理ブロックへのポインタ */
+	CNTCB			*p_lastcntcb;   /* 最後に操作したカウンタ管理ブロックへのポインタ */
+	TSKCTXB			tskctxb;        /* タスクコンテキストブロック */
+#ifdef CFG_USE_PROTECTIONHOOK
+	boolean	calltfn;                /* 信頼関数呼び出し中フラグ */
+#endif /* CFG_USE_PROTECTIONHOOK */
+};
+
+/*
+ *  実行状態のタスク
+ *
+ *  実行状態のタスクがない場合には，NULL にする
+ */
+extern TCB			*p_runtsk;
+
+/*
+ *  最高優先順位タスク
+ *
+ *  タスク実行中は，runtsk と一致する
+ *  実行できる状態（実行状態または実行可能状態）のタスクがない場合には，
+ *  NULL にする
+ */
+extern TCB			*p_schedtsk;
+
+/*
+ *  レディキュー中の最高優先度
+ *
+ *  レディキューには実行可能状態のタスクのみを含むので，実行可能状態の
+ *  タスクの中での最高優先度を保持する
+ *  レディキューが空の時（実行可能状態のタスクが無い時）は TPRI_MINTASKにする
+ */
+extern PriorityType	nextpri;
+
+/*
+ *  レディキュー
+ *
+ *  レディキューは，実行できる状態のタスクを管理するためのキューである
+ *  レディキューは，優先度ごとのタスクキューで構成されている
+ *  タスクのTCBは，該当する優先度のキューに登録される
+ */
+extern QUEUE		ready_queue[TNUM_TPRI];
+
+/*
+ *  レディキューサーチのためのビットマップ
+ *
+ *  レディキューのサーチを効率よく行うために，優先度ごとのタスクキュー
+ *  にタスクが入っているかどうかを示すビットマップを用意している
+ *  ビットマップを使うことで，メモリアクセスの回数を減らすことができるが，
+ *  ビット操作命令が充実していないプロセッサで，優先度の段階数が少ない
+ *  場合には，ビットマップ操作のオーバーヘッドのために，逆に効率が落ち
+ *  る可能性もある
+ *
+ *  優先度が16段階であることを仮定しているため，uint16型としている
+ */
+extern uint16		ready_primap;
+
+/*
+ *  タスク初期化ブロックのエリア（kernel_mem.c）
+ */
+extern const TINIB	tinib_table[];
+
+/*
+ *  TCBのエリア（Os_Lcfg.c）
+ */
+extern TCB			tcb_table[];
+
+/*
+ *  タスク管理モジュールの初期化
+ */
+extern void task_initialize(void);
+
+/*
+ *  タスクの起動
+ *
+ *  対象タスク（p_tcbで指定したタスク）を起動する
+ *  （休止状態から実行できる状態に遷移させる）
+ *  タスクの起動時に必要な初期化を行う
+ */
+extern boolean make_active(TCB *p_tcb);
+
+/*
+ *  実行できる状態への移行
+ *
+ *  対象タスク（p_tcbで指定したタスク）を実行できる状態に遷移させる
+ *  対象タスクの優先度が，最高優先度タスク（schedtsk）の優先度よりも高
+ *  い場合には，対象タスクを新しい最高優先度タスクとし，それまでの最高
+ *  優先度タスクをレディキューの先頭に入れる
+ *  そうでない場合には，対象タスクをレディキューの末尾に入れる
+ *  対象タスクを最高優先度タスクとした場合に，TRUE を返す
+ */
+extern boolean make_runnable(TCB *p_tcb);
+
+/*
+ *  実行できる状態から他の状態への遷移
+ */
+extern void make_non_runnable(void);
+
+/*
+ *  最高優先順位タスクのサーチ
+ *
+ *  レディキュー中の最高優先順位のタスクをサーチする
+ *  レディキューが空の場合には，この関数を呼び出してはならない
+ */
+extern void search_schedtsk(void);
+
+/*
+ *  タスクのプリエンプト
+ *
+ *  自タスクを実行可能状態に移行させ，最高優先度タスクを実行状態にする
+ *  この関数から戻った後に，dispatch を呼び出して他のタスクへ切り替える
+ *  ことを想定している
+ */
+extern void preempt(void);
+
+/*
+ *  実行中のタスクをSUSPENDED状態にする
+ */
+extern void suspend(void);
+
+/*
+ *  リソース全解放
+ */
+extern void release_taskresources(TCB *p_tcb);
+
+/*
+ *  カウンタ全初期化
+ */
+extern void cancel_taskcounters(TCB *p_tcb);
+
+/*
+ *  満了処理専用タスクの起動
+ *
+ *  条件：OS割込み禁止状態で呼ばれる
+ */
+extern StatusType activate_task_action(OSAPCB *p_expire_osapcb, TaskType TaskID);
+
+/*
+ *  満了処理専用イベントのセット
+ *
+ *  条件：OS割込み禁止状態で呼ばれる
+ */
+extern StatusType set_event_action(OSAPCB *p_expire_osapcb, TaskType TaskID, EventMaskType Mask);
+
+/*
+ *  レディキューからタスクを削除する
+ */
+extern void remove_task_from_queue(TCB *p_tcb, PriorityType remove_task_pri);
+
+/*
+ *  レディキューに入っているタスクを休止状態にする
+ */
+extern void suspend_ready_task(TCB *p_tcb, PriorityType remove_task_pri);
+
+/*
+ *  自タスクの強制終了
+ */
+extern void force_terminate_task(TCB *p_tcb);
+
+/*
+ *  タスク不正終了時に呼ぶ関数
+ */
+extern void exit_task(void);
+
+/*
+ *  OSAP所属するタスクの強制終了
+ */
+extern void force_term_osap_task(OSAPCB *p_osapcb);
+
+/*
+ *  p_schedtskをレディキューの先頭に退避
+ */
+extern void move_schedtsk(void);
+
+#endif /* TOPPERS_TASK_H_ */

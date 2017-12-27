@@ -1,0 +1,81 @@
+
+		TOPPERS/ATK2-SC1-MCカーネル
+		機能拡張・チューニングガイド
+
+このドキュメントは，ATK2-SC1-MCを，機能拡張・チューニングするための方
+法（またはヒント）を説明するものである．
+
+----------------------------------------------------------------------
+TOPPERS ATK2
+    Toyohashi Open Platform for Embedded Real-Time Systems
+    Automotive Kernel Version 2
+
+Copyright (C) 2011-2017 by Center for Embedded Computing Systems
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+Copyright (C) 2011-2017 by FUJI SOFT INCORPORATED, JAPAN
+Copyright (C) 2011-2013 by Spansion LLC, USA
+Copyright (C) 2011-2017 by NEC Communication Systems, Ltd., JAPAN
+Copyright (C) 2011-2016 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
+Copyright (C) 2011-2014 by Renesas Electronics Corporation, JAPAN
+Copyright (C) 2011-2016 by Sunny Giken Inc., JAPAN
+Copyright (C) 2011-2017 by TOSHIBA CORPORATION, JAPAN
+Copyright (C) 2011-2017 by Witz Corporation
+Copyright (C) 2014-2016 by AISIN COMCRUISE Co., Ltd., JAPAN
+Copyright (C) 2014-2016 by eSOL Co.,Ltd., JAPAN
+Copyright (C) 2014-2017 by SCSK Corporation, JAPAN
+Copyright (C) 2015-2017 by SUZUKI MOTOR CORPORATION
+
+上記著作権者は，以下の (1)〜(3)の条件を満たす場合に限り，本ドキュメ
+ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+(1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+    および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+    いること．
+(2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+    を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+    ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+    りではない．
+(3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+    からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+    本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+    く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+本ドキュメントは，AUTOSAR（AUTomotive Open System ARchitecture）仕様
+に基づいている．上記の許諾は，AUTOSARの知的財産権を許諾するものではな
+い．AUTOSARは，AUTOSAR仕様に基づいたソフトウェアを商用目的で利用する
+者に対して，AUTOSARパートナーになることを求めている．
+
+本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+わない．
+
+$Id: tuning_memo.txt 727 2017-01-23 09:27:59Z witz-itoyo $
+----------------------------------------------------------------------
+
+○目次
+
+・ビットサーチ命令の使用
+・タスク種別毎のTCB生成
+・○最適化するために型の依存部定義
+
+○がついている項目はATK2-SC1から変更があった箇所を，◎はATK2-SC3で新規
+に追加された箇所を示す．
+
+・ビットサーチ命令の使用
+
+ATK2-SC1から変更なし．
+
+・タスク種別毎にTCBを生成する
+
+ATK2-SC1から変更なし．
+
+・最適化するために型の依存部定義
+
+マルチコアの場合，以下の型も含む：
+  typedef uint16	CoreIdType;         /* コアID */
+  typedef uint32	SpinlockIdType;     /* スピンロックID */
+  typedef uint32	IocType;            /* IOC ID */
+  typedef uint8		SenderIdType;       /* Sender ID */
+

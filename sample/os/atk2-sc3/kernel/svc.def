@@ -1,0 +1,143 @@
+#
+#  TOPPERS ATK2
+#      Toyohashi Open Platform for Embedded Real-Time Systems
+#      Automotive Kernel Version 2
+#
+#  Copyright (C) 2001 by Embedded and Real-Time Systems Laboratory
+#                              Toyohashi Univ. of Technology, JAPAN
+#  Copyright (C) 2005-2014 by Center for Embedded Computing Systems
+#              Graduate School of Information Science, Nagoya Univ., JAPAN
+#  Copyright (C) 2011-2014 by FUJI SOFT INCORPORATED, JAPAN
+#  Copyright (C) 2011-2013 by Spansion LLC, USA
+#  Copyright (C) 2011-2013 by NEC Communication Systems, Ltd., JAPAN
+#  Copyright (C) 2011-2014 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
+#  Copyright (C) 2011-2014 by Renesas Electronics Corporation, JAPAN
+#  Copyright (C) 2011-2014 by Sunny Giken Inc., JAPAN
+#  Copyright (C) 2011-2014 by TOSHIBA CORPORATION, JAPAN
+#  Copyright (C) 2011-2014 by Witz Corporation
+#
+#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+#  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+#  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+#      権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+#      スコード中に含まれていること．
+#  (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+#      用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+#      者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+#      の無保証規定を掲載すること．
+#  (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+#      用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+#      と．
+#    (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+#        作権表示，この利用条件および下記の無保証規定を掲載すること．
+#    (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+#        報告すること．
+#  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+#      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+#      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+#      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+#      免責すること．
+#
+#  本ソフトウェアは，AUTOSAR（AUTomotive Open System ARchitecture）仕
+#  様に基づいている．上記の許諾は，AUTOSARの知的財産権を許諾するもので
+#  はない．AUTOSARは，AUTOSAR仕様に基づいたソフトウェアを商用目的で利
+#  用する者に対して，AUTOSARパートナーになることを求めている．
+#
+#  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+#  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+#  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+#  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+#  の責任を負わない．
+#
+#  $Id: svc.def 425 2015-12-07 08:06:19Z witz-itoyo $
+#
+
+#
+#  サービスコール定義ファイル
+#
+#  各行は，機能番号，フラグ，サービスコールのプロトタイプ宣言から構成さ
+#  れる．行頭がスペース（空白またはTAB）で始まる時は，機能コードが省略
+#  されたとみなす．ただし，最初のサービスコールの機能コードは省略できな
+#  い．行末の '\' は継続行を示す．
+#
+#  注意事項：
+#    サービスコールの引数名はすべて小文字であること
+#
+#  フラグの意味は次の通り．
+#
+#	S : ATK2-SC3カーネルがサポート
+#			関数プロトタイプ宣言と呼出しライブラリを生成する
+#	N : 関数プロトタイプ宣言は生成するが，呼出しライブラリは生成しない
+#	I : ユーザからは呼べない(exit_task)
+#	m : メモリをアクセスする ⇒ ポインタをパラメータに持つ場合
+#           呼出元のメモリを変更することをコンパイラに伝える
+#	n : サービスコールの返戻値が void型
+#	- : 未サポート，予約
+#
+
+0		Sn		void		StartOS(AppModeType Mode)
+		Sn		void		ShutdownOS(StatusType Error)
+		S		StatusType	ActivateTask(TaskType TaskID)
+		S		StatusType	TerminateTask()
+		S		StatusType	ChainTask(TaskType TaskID)
+		S		StatusType	Schedule()
+		S		StatusType	GetTaskID(TaskRefType TaskID)
+		S		StatusType	GetTaskState(TaskType TaskID, TaskStateRefType State)
+		Sn		void		EnableAllInterrupts()
+		Sn		void		DisableAllInterrupts()
+		Sn		void		ResumeAllInterrupts()
+		Sn		void		SuspendAllInterrupts()
+		Sn		void		ResumeOSInterrupts()
+		Sn		void		SuspendOSInterrupts()
+		S		ISRType		GetISRID()
+		S		StatusType	DisableInterruptSource(ISRType DisableISR)
+		S		StatusType	EnableInterruptSource(ISRType EnableISR)
+		S		StatusType	GetResource(ResourceType ResID)
+		S		StatusType	ReleaseResource(ResourceType ResID)
+		S		StatusType	SetEvent(TaskType TaskID, EventMaskType Mask)
+		S		StatusType	ClearEvent(EventMaskType Mask)
+		S		StatusType	GetEvent(TaskType TaskID, EventMaskRefType Event)
+		S		StatusType	WaitEvent(EventMaskType Mask)
+		S		StatusType	GetAlarmBase(AlarmType AlarmID, AlarmBaseRefType Info)
+		S		StatusType	GetAlarm(AlarmType AlarmID, TickRefType Tick)
+		S		StatusType	SetRelAlarm(AlarmType AlarmID, TickType increment, TickType cycle)
+		S		StatusType	SetAbsAlarm(AlarmType AlarmID, TickType start, TickType cycle)
+		S		StatusType	CancelAlarm(AlarmType AlarmID)
+		S		StatusType	IncrementCounter(CounterType CounterID)
+		S		StatusType	GetCounterValue(CounterType CounterID, TickRefType Value)
+		S		StatusType	GetElapsedValue(CounterType CounterID, TickRefType Value, TickRefType ElapsedValue)
+		S		AccessType	CheckISRMemoryAccess(ISRType ISRID, MemoryStartAddressType Address, MemorySizeType Size)
+		S		AccessType	CheckTaskMemoryAccess(TaskType TaskID, MemoryStartAddressType Address, MemorySizeType Size)
+		S		ObjectAccessType	CheckTaskAccess(ApplicationType ApplID, TaskType TaskID)
+		S		ObjectAccessType	CheckISRAccess(ApplicationType ApplID, ISRType ISRID)
+		S		ObjectAccessType	CheckAlarmAccess(ApplicationType ApplID, AlarmType AlarmID)
+		S		ObjectAccessType	CheckResourceAccess(ApplicationType ApplID, ResourceType ResID)
+		S		ObjectAccessType	CheckCounterAccess(ApplicationType ApplID, CounterType CounterID)
+		S		ObjectAccessType	CheckScheduleTableAccess(ApplicationType ApplID, ScheduleTableType ScheduleTableID)
+		S		ApplicationType	CheckTaskOwnership(TaskType TaskID)
+		S		ApplicationType	CheckISROwnership(ISRType ISRID)
+		S		ApplicationType	CheckAlarmOwnership(AlarmType AlarmID)
+		S		ApplicationType	CheckCounterOwnership(CounterType CounterID)
+		S		ApplicationType	CheckScheduleTableOwnership(ScheduleTableType ScheduleTableID)
+		S		ApplicationType	GetApplicationID()
+		S		StatusType	CallTrustedFunction(TrustedFunctionIndexType FunctionIndex,	TrustedFunctionParameterRefType FunctionParams)
+		S		StatusType  GetApplicationState(ApplicationType Application, ApplicationStateRefType Value)
+		S		AppModeType	GetActiveApplicationMode()
+		S		StatusType StartScheduleTableRel(ScheduleTableType ScheduleTableID, TickType Offset)
+		S		StatusType StartScheduleTableAbs(ScheduleTableType ScheduleTableID, TickType Start)
+		S		StatusType StopScheduleTable(ScheduleTableType ScheduleTableID)
+		S		StatusType NextScheduleTable(ScheduleTableType ScheduleTableID_From, ScheduleTableType ScheduleTableID_To)
+		S		StatusType GetScheduleTableStatus(ScheduleTableType ScheduleTableID, ScheduleTableStatusRefType ScheduleStatus)
+		S		FaultyContextType	GetFaultyContext()
+		S		Std_ReturnType	ioc_send_generic(IocType IocWrapperId, const void *in)
+		S		Std_ReturnType	ioc_write_generic(IocType IocWrapperId, const void *in)
+		S		Std_ReturnType	ioc_receive_generic(IocType IocId, void *out)
+		S		Std_ReturnType	ioc_read_generic(IocType IocId, void *out)
+		S		Std_ReturnType	ioc_empty_queue_generic(IocType IocId)
+		S		StatusType	AllowAccess()
+		S		StatusType	TerminateApplication(ApplicationType Application, RestartType RestartOption)
+		In		void		exit_task()
+
+# ここまで
+

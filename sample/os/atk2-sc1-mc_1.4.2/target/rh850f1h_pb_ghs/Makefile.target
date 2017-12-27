@@ -1,0 +1,172 @@
+#
+#  TOPPERS ATK2
+#      Toyohashi Open Platform for Embedded Real-Time Systems
+#      Automotive Kernel Version 2
+#
+#  Copyright (C) 2012-2017 by Center for Embedded Computing Systems
+#              Graduate School of Information Science, Nagoya Univ., JAPAN
+#
+#  上記著作権者は，以下の(1)～(4)の条件を満たす場合に限り，本ソフトウェ
+#  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+#  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+#  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+#      権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+#      スコード中に含まれていること．
+#  (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+#      用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+#      者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+#      の無保証規定を掲載すること．
+#  (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+#      用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+#      と．
+#    (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+#        作権表示，この利用条件および下記の無保証規定を掲載すること．
+#    (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+#        報告すること．
+#  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+#      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+#      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+#      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+#      免責すること．
+#
+#  本ソフトウェアは，AUTOSAR（AUTomotive Open System ARchitecture）仕
+#  様に基づいている．上記の許諾は，AUTOSARの知的財産権を許諾するもので
+#  はない．AUTOSARは，AUTOSAR仕様に基づいたソフトウェアを商用目的で利
+#  用する者に対して，AUTOSARパートナーになることを求めている．
+#
+#  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+#  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+#  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+#  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+#  の責任を負わない．
+#
+#  $Id: Makefile.target 852 2017-12-21 07:30:44Z ertl-honda $
+#
+
+#
+#		Makefile のターゲット依存部（FL-850/FL4用）
+#
+
+#
+#  ボード名の定義
+#
+BOARD = rh850f1h_pb
+
+#
+#  GCC用のファイルのディレクトリ
+#
+TARGETDIR_GCC := $(SRCDIR)/target/$(BOARD)_gcc
+
+#
+#  アーキテクチャ指定
+#
+ARCH = V850E3V5
+
+#
+#  コアタイプ指定
+#
+CORETYPE = RH850G3M
+
+#
+#  ハードフロートを使用するか
+#
+USE_HARD_FLOAT = true
+
+
+#
+#  ボード毎に設定が異なる項目
+#
+CDEFS := $(CDEFS)
+LDSCRIPT = $(SRCDIR)/arch/v850_ghs/rh850_f1h_6m.ld
+
+#
+#  同じファイルがあった場合にARMCC依存部のファイルを使用するようにするに，
+#  GCC依存部のファイルを後で指定する．
+#
+INCLUDES := $(INCLUDES) -I$(TARGETDIR) -I$(TARGETDIR_GCC)
+
+#
+#  サポート命令毎のコンパイルオプション
+#
+# ノーマル
+COPTS := $(COPTS)
+
+#
+#  カーネルに関する定義
+#
+KERNEL_DIR := $(KERNEL_DIR) $(TARGETDIR) $(TARGETDIR_GCC)
+KERNEL_ASMOBJS := $(KERNEL_ASMOBJS) target_support.o
+KERNEL_COBJS := $(KERNEL_COBJS) target_config.o tauj_hw_counter.o rh850_f1h.o  target_hw_counter.o
+
+#
+#  システムタイマに関する設定
+#
+ifeq ($(ENABLE_SYS_TIMER),true)
+      CDEFS := $(CDEFS) -DTOPPERS_ENABLE_SYS_TIMER
+      KERNEL_COBJS := $(KERNEL_COBJS) taua_timer.o
+endif
+
+#
+#  システムサービスに関する定義
+#
+SYSMOD_DIR := $(SYSMOD_DIR) $(TARGETDIR) $(TARGETDIR_GCC)
+SYSMOD_COBJS := $(SYSMOD_COBJS) uart_rlin.o
+
+#
+#  トレースログに関する設定
+#
+ifeq ($(ENABLE_TRACE),true)
+      CDEFS := $(CDEFS) -DTCNT_TRACE_BUFFER=2048 -DTOPPERS_ENABLE_TRACE
+      KERNEL_DIR := $(KERNEL_DIR) $(SRCDIR)/arch/logtrace
+      KERNEL_COBJS := $(KERNEL_COBJS) trace_config.o trace_dump.o
+endif
+
+#
+#  コンフィギュレーション設定
+#
+ifeq ($(findstring target_timer,$(CFGNAME)),target_timer)
+  CFGNAME := $(CFGNAME) taua_timer
+endif
+
+ifeq ($(ENABLE_G_SYSLOG),true)
+	 CDEFS := $(CDEFS) -DG_SYSLOG -D$(G_SYSLOG_PORT)
+	ifeq ($(findstring target_serial,$(CFGNAME)),target_serial)
+	  CFGNAME := $(CFGNAME) uart0
+	endif
+else
+	ifeq ($(findstring target_serial,$(CFGNAME)),target_serial)
+	  CFGNAME := $(CFGNAME) uart0 uart1
+	endif
+endif
+
+#
+#  依存関係の定義
+#
+Os_Lcfg.timestamp: $(TARGETDIR_GCC)/target.tf
+$(OBJFILE): $(TARGETDIR_GCC)/target_check.tf
+offset.h: $(TARGETDIR_GCC)/target_offset.tf
+
+#
+#  オフセットファイル生成のための定義
+#
+OFFSET_TF := $(TARGETDIR_GCC)/target_offset.tf
+
+#
+#  ジェネレータ関係の変数の定義
+#
+CFG_TABS := $(CFG_TABS) --cfg1-def-table $(TARGETDIR_GCC)/target_def.csv
+
+#
+#  プロセッサ依存部のインクルード
+#
+include $(SRCDIR)/arch/v850_ghs/Makefile.prc
+
+#
+#  実行モジュールのロード＆実行
+#
+run: $(OBJNAME).exe
+	@sh $(SRCDIR)/arch/v850_gcc/autorun/exe.sh $(SRCDIR) $(TARGET)
+
+urun: $(OBJNAME).exe
+	@sh $(SRCDIR)/arch/v850_gcc/autorun/exe.sh $(SRCDIR) $(TARGET) &
+	@ruby $(SRCDIR)/arch/v850_gcc/autorun/com_port.rb

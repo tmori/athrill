@@ -1,0 +1,21 @@
+# target_config.c
+target_hardware_initialize
+target_initialize
+target_exit
+target_ici_intno_table
+target_ici_intpri_table
+target_port_initialize
+target_fput_str
+target_clock_initialize
+
+# trace_dump.c
+trace_dump
+
+# trace_config.c
+log_dsp_enter
+log_dsp_leave
+
+# target_support.S
+target_lmem_init
+
+INCLUDE "prc"
