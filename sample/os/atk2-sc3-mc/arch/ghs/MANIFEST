@@ -1,0 +1,8 @@
+PACKAGE atk2-sc3-mc
+
+MANIFEST
+Compiler.h
+Compiler_Cfg.h
+ldscript.tf
+tool_svc.h
+

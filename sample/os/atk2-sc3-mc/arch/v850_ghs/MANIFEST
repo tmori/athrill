@@ -1,0 +1,22 @@
+PACKAGE atk2-sc3-mc
+
+MANIFEST
+Makefile.prc
+Makefile.sample
+Platform_Types.h
+ldscript.tf
+prc.tf
+prc_insn.h
+prc_mpu.h
+prc_opt.tf
+prc_svc.h
+prc_tool.S
+prc_user.txt
+rh850_f1h_6m.ld
+rh850_f1h_6m_pe1only.ld
+rh850_f1h_6m_pe2only.ld
+rh850_f1l_1m.ld
+rh850_f1l_2m.ld
+v850asm.inc
+v850e2_fl4_2m.ld
+v850e2_px4_3507.ld
