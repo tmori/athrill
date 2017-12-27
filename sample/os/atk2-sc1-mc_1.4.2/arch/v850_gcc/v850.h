@@ -76,6 +76,17 @@
 #ifndef TOPPERS_MACRO_ONLY
 
 #include "prc_sil.h"
+/*
+ *  INT
+ */
+//#define EIC_BASE			UINT_C(0xffff6000)
+//#define EIC_ADDRESS(intno)	(EIC_BASE + (intno * 2))
+#define PMR					UINT_C(0xFFFF6448)
+#define ISPR_H				UINT_C(0xFFFF6440)
+#define ISPC_H				UINT_C(0xffff6450)
+#define current_peid()		0
+#define acquire_lock_ldlstc(arg) 1
+#define release_lock_ldlstc(arg)
 
 LOCAL_INLINE void
 set_pmr(uint16 pmr)

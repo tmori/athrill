@@ -65,7 +65,7 @@ __start:
 	/*
 	 * 各種ポインタの初期化(SP/TP/EP/GP/CTBP)
 	 */
-	GET_CID r4
+	/* TODO GET_CID r4 */
 	shl     2, r4
 	Lea     _ostkpt_table, r3
 	add     r3, r4
@@ -109,7 +109,7 @@ __start:
 	Lea     hardware_init_hook, r1
 	cmp     r0, r1
 	be      hardware_init_hook_end
-	jarl    [r1], lp
+	/* TODO jarl    [r1], lp */
 hardware_init_hook_end:
 
 __start_1:
@@ -121,7 +121,7 @@ __start_1:
 	/*
 	 *  マスタコア以外は初期化待ち
 	 */
-	GET_CID r6
+	/* TODO GET_CID r6 */
 	cmp     r0, r6
 	bne     slave_start
 
@@ -181,7 +181,7 @@ data_init_end:
 	Lea     software_init_hook, r1
 	cmp     r0, r1
 	be      software_init_hook_end
-	jarl    [r1], lp
+	/* TODO jarl    [r1], lp */
 
 software_init_hook_end:
 
@@ -214,7 +214,7 @@ slave_start:
 	/*
 	 *  StartCore待ち
 	 */
-	GET_CID r6
+	/* GET_CID r6 */
 	Lea     _core_state_table, r9
 	shl     2, r6
 	add     r6, r9

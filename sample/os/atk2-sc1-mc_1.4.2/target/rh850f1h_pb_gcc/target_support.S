@@ -59,16 +59,16 @@ _target_lmem_init:
 	/*
 	 *  コアの判定
 	 */
-	GET_CID r6
+	/* GET_CID r6 */
 	cmp     r0, r6
 	bne     _target_lmem_init_core1
-	Lea     __pe1_lram_start, ep
-	Lea     __pe1_lram_end, r7
+	/* TODO Lea     __pe1_lram_start, ep */
+	/* TODO Lea     __pe1_lram_end, r7 */
 	br      _target_lmem_clear_start
 
 _target_lmem_init_core1:
-	Lea     __pe2_lram_start, ep
-	Lea     __pe2_lram_end, r7
+	/* TODO Lea     __pe2_lram_start, ep */
+	/* TODO Lea     __pe2_lram_end, r7 */
 
 _target_lmem_clear_start:
 	cmp     r7, ep

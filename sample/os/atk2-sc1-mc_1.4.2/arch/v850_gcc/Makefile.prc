@@ -84,7 +84,7 @@ ifeq ($(ARCH),V850E2V3)
 	KERNEL_ASMOBJS := $(KERNEL_ASMOBJS) Os_Lcfg_asm.o
 endif
 ifeq ($(ARCH),V850E3V5)
-	COPTS := $(COPTS) -mv850e3v5
+	COPTS := $(COPTS) -mv850e2v3 -D__v850e2v3__ -D_V850E2M_
 endif
 
 #

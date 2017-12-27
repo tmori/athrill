@@ -120,6 +120,11 @@ clr_bit(uint8 bit_offset, uint32 addr)
 
 #ifdef __v850e2v3__
 
+LOCAL_INLINE void
+set_intbp(uint32 intbp)
+{
+	//TODO
+}
 #elif defined(__v850e3v5__)
 
 /*

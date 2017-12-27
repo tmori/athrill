@@ -84,6 +84,9 @@ extern const uint32	rlin3x_base_table[TNUM_HWCORE];
 #define INTNO_SIO_UART1	(0xffff0000 | (RLIN31_RX_INTNO))            /* 割込み番号 */
 #endif /* G_SYSLOG */
 
+#define INTNO_SIO_CORE0 INTNO_SIO_UART0
+#define INTNO_SIO_CORE1 INTNO_SIO_UART1
+
 /*
  *  割込み優先度
  */
@@ -98,6 +101,9 @@ extern const uint32	rlin3x_base_table[TNUM_HWCORE];
 #define INTPRI_SIO_UART1	2
 #endif /* G_SYSLOG */
 
+
+#define INTPRI_SIO_CORE0 INTPRI_SIO_UART0
+#define INTPRI_SIO_CORE1 INTPRI_SIO_UART1
 /*
  *  プロセッサ依存モジュール
  */
