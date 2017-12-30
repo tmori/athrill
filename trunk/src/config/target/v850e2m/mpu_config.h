@@ -1,0 +1,22 @@
+#ifndef _MPU_CONFIG_H_
+#define _MPU_CONFIG_H_
+
+#include "std_types.h"
+#include "loader/elf.h"
+
+#define MPU_CONFIG_REGION_NUM		UINT_C(9)
+
+#define MPU_ADDRESS_REGION_INX_ROM		(0U)
+#define MPU_ADDRESS_REGION_INX_RAM		(1U)
+#define MPU_ADDRESS_REGION_INX_INTC		(2U)
+#define MPU_ADDRESS_REGION_INX_SERIAL	(3U)
+#define MPU_ADDRESS_REGION_INX_COMM		(4U)
+#define MPU_ADDRESS_REGION_INX_CAN		(5U)
+#define MPU_ADDRESS_REGION_INX_CPU		(6U)
+#define MPU_ADDRESS_REGION_INX_PH0		(7U)
+#define MPU_ADDRESS_REGION_INX_PH1		(8U)
+
+#define ELF_MACHINE_TYPE	EM_V800
+
+
+#endif /* _MPU_CONFIG_H_ */
