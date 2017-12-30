@@ -17,7 +17,6 @@ IFLAGS	+= -I$(ROOTDIR)/config
 IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/debugger/executor
 IFLAGS	+= -I$(ROOTDIR)/lib
-IFLAGS  += -I$(CAN_DBG_INCLUDE)
 
 VPATH	:=	$(ROOTDIR)/device/intc/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)
@@ -30,10 +29,10 @@ CFLAGS	:= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
 
 OBJS	:=	device.o
-OBJS	+=	timer.o
-OBJS	+=	serial.o
-OBJS	+=	dbg_target_serial.o
-OBJS	+=	intc.o
+#OBJS	+=	timer.o
+#OBJS	+=	serial.o
+#OBJS	+=	dbg_target_serial.o
+#OBJS	+=	intc.o
 
 all:	$(LIBTARGET)
 
