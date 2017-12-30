@@ -1,0 +1,54 @@
+ROOTDIR		:= ../../..
+
+include Makefile.env
+
+LIBTARGET	:= libcpu.a
+
+IFLAGS	:= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/cpu
+IFLAGS	+= -I$(ROOTDIR)/bus
+IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/mpu
+IFLAGS	+= -I$(ROOTDIR)/device/intc/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/config
+IFLAGS	+= -I$(ROOTDIR)/lib
+
+VPATH	:=	$(ROOTDIR)/cpu/target/$(ARCH)/cpu_common
+VPATH	+=	$(ROOTDIR)/cpu/target/$(ARCH)/cpu_dec
+VPATH	+=	$(ROOTDIR)/cpu/target/$(ARCH)/cpu_exec
+VPATH	+=	$(ROOTDIR)/config/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/lib
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+OBJS	:=	op_exec.o
+OBJS	+=	op_dec.o
+OBJS	+=	op_format.o
+OBJS	+=	op_exec_bit.o
+OBJS	+=	op_exec_branch.o
+OBJS	+=	op_exec_dbg.o
+OBJS	+=	op_exec_div.o
+OBJS	+=	op_exec_logic.o
+OBJS	+=	op_exec_sat.o
+OBJS	+=	op_exec_arithm.o
+OBJS	+=	op_exec_store.o
+OBJS	+=	op_exec_load.o
+OBJS	+=	op_exec_spec.o
+OBJS	+=	cpu_config.o
+OBJS	+=	dbg_log.o
+
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+
