@@ -97,16 +97,16 @@ task1 is running (049).   |
 task1 is running (050).   |
 task1 is running (051).   |
 + athrill_remote q
-task1 is running (052).   OK
+OK
 + athrill_remote 'S 0 B'
 [DBG>[DBG>OK
 + athrill_remote c
-|[CPU>OK
-
+[CPU>OK
 + echo 'sleep 60sec'
 sleep 60sec
 + wait_athrill 60
 + sleep 60
+task1 is running (052).   |
 #stp_alm(1)
 task1 is running (053).   |
 task1 is running (054).   |
@@ -605,8 +605,10 @@ task1 is running (546).   |
 task1 is running (547).   |
 task1 is running (548).   |
 task1 is running (549).   |
-+ athrill_remote q
 task1 is running (550).   |
+task1 is running (551).   |
+task1 is running (552).   |
++ athrill_remote q
 OK
 + echo '## end test'
 ## end test

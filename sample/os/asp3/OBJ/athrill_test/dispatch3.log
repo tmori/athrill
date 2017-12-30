@@ -45,7 +45,6 @@ task1 is running (006).   |
 task1 is running (007).   |
 task1 is running (008).   |
 + athrill_remote q
-task1 is running (009).   |
 OK
 + athrill_remote 'S 0 1>d'
 [DBG>[DBG>OK
@@ -55,6 +54,7 @@ OK
 sleep 2min
 + wait_athrill 120
 + sleep 120
+task1 is running (009).   |
 #chg_pri(1, HIGH_PRIORITY)
 #1#dly_tsk(10000000)
 task2 is running (001).     +
@@ -865,6 +865,7 @@ task2 is running (805).     +
 task2 is running (806).     +
 task2 is running (807).     +
 task2 is running (808).     +
+task2 is running (809).     +
 task1 is running (010).   |
 task1 is running (011).   |
 task1 is running (012).   |
@@ -1019,8 +1020,36 @@ task1 is running (160).   |
 task1 is running (161).   |
 task1 is running (162).   |
 task1 is running (163).   |
-+ athrill_remote q
 task1 is running (164).   |
+task1 is running (165).   |
+task1 is running (166).   |
+task1 is running (167).   |
+task1 is running (168).   |
+task1 is running (169).   |
+task1 is running (170).   |
+task1 is running (171).   |
+task1 is running (172).   |
+task1 is running (173).   |
+task1 is running (174).   |
+task1 is running (175).   |
+task1 is running (176).   |
+task1 is running (177).   |
+task1 is running (178).   |
+task1 is running (179).   |
+task1 is running (180).   |
+task1 is running (181).   |
+task1 is running (182).   |
+task1 is running (183).   |
+task1 is running (184).   |
+task1 is running (185).   |
+task1 is running (186).   |
+task1 is running (187).   |
+task1 is running (188).   |
+task1 is running (189).   |
+task1 is running (190).   |
+task1 is running (191).   |
+task1 is running (1+ athrill_remote q
+92).   |
 OK
 + echo '## end test'
 ## end test

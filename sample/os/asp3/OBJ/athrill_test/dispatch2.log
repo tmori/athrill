@@ -62,16 +62,14 @@ OK
 [CPU>OK
 + wait_athrill 3
 + sleep 3
-task2 is running (007).     +
 #wup_tsk(1)
 task1 is running (003).   |
 task1 is running (004).   |
 task1 is running (005).   |
 task1 is running (006).   |
 task1 is running (007).   |
-task1 is running (008).   |
-task1 is running (009).   |
 + athrill_remote q
+task1 is running (008).   |
 OK
 + echo '## end test'
 ## end test

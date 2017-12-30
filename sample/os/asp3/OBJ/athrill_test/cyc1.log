@@ -45,7 +45,6 @@ task1 is running (006).   |
 task1 is running (007).   |
 task1 is running (008).   |
 + athrill_remote q
-task1 is running (009).   |
 OK
 + athrill_remote 'S 0 c'
 [DBG>[DBG>OK
@@ -55,6 +54,7 @@ OK
 sleep 60sec
 + wait_athrill 60
 + sleep 60
+task1 is running (009).   |
 #sta_cyc(1)
 task2 is running (001).     +
 task2 is running (002).     +
@@ -555,8 +555,9 @@ task2 is running (172).     +
 task2 is running (173).     +
 task2 is running (174).     +
 task2 is running (175).     +
-+ athrill_remote q
 task2 is running (176).     +
+task2 is running (177).     +
++ athrill_remote q
 OK
 + echo '## end test'
 ## end test

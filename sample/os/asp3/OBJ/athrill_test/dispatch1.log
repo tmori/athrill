@@ -71,7 +71,6 @@ task1 is running (004).   |
 task1 is running (005).   |
 task1 is running (006).   |
 + athrill_remote q
-task1 is running (007).   |
 OK
 + echo '## end test'
 ## end test
