@@ -126,12 +126,15 @@
     ei
 .endm
 
+
+#define PEID_ADDR	0x06FF6490
+
 /*
  *  PEIDの取得(1オリジン)
  */
 .macro GET_PEID reg
-	stsr sr0, \reg, 2
-	sar  16, \reg
+	mov PEID_ADDR, \reg
+	ld.w 0[\reg], \reg
 .endm
 
 /*

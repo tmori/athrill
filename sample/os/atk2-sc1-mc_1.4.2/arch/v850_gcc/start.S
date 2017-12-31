@@ -65,7 +65,7 @@ __start:
 	/*
 	 * 各種ポインタの初期化(SP/TP/EP/GP/CTBP)
 	 */
-	/* TODO GET_CID r4 */
+	GET_CID r4
 	shl     2, r4
 	Lea     _ostkpt_table, r3
 	add     r3, r4
@@ -121,7 +121,7 @@ __start_1:
 	/*
 	 *  マスタコア以外は初期化待ち
 	 */
-	/* TODO GET_CID r6 */
+	GET_CID r6
 	cmp     r0, r6
 	bne     slave_start
 
@@ -214,7 +214,7 @@ slave_start:
 	/*
 	 *  StartCore待ち
 	 */
-	/* GET_CID r6 */
+	GET_CID r6
 	Lea     _core_state_table, r9
 	shl     2, r6
 	add     r6, r9

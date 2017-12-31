@@ -4,8 +4,8 @@
 
 MEMORY
 {
-	INTROM(raxi) : org = 0x00000000, len = 4M
-	INTRAM(wax)  : org = 0xfef00000, len = 192k
+	INTROM(raxi) : org = 0x00000000, len = 512k
+	INTRAM(wax)  : org = 0x05FF0000, len = 10M
 };
 
 PROVIDE(hardware_init_hook = 0);
