@@ -73,7 +73,7 @@ INCLUDES := $(INCLUDES) -I$(PRCDIR) -I$(SRCDIR)/arch/$(TOOL)
 COPTS := $(COPTS) -mdisable-callt -mno-app-regs -mtda=0
 CDEFS := $(CDEFS) -DTOPPERS_LABEL_ASM
 LIBS := $(LIBS) -lgcc -lc
-LDFLAGS :=  $(LDFLAGS) -Wl,-S # for CuteSuite+ debugger
+#LDFLAGS :=  $(LDFLAGS) -Wl,-S # for CuteSuite+ debugger
 
 
 #
@@ -114,7 +114,7 @@ KERNEL_COBJS := $(KERNEL_COBJS) prc_config.o
 HIDDEN_OBJS = start.o
 
 $(HIDDEN_OBJS): %.o: %.S
-	$(CC) -c $(CFLAGS) $(KERNEL_CFLAGS) $<
+	$(CC) -g -c $(CFLAGS) $(KERNEL_CFLAGS) $<
 
 $(HIDDEN_OBJS:.o=.d): %.d: %.S
 	@$(PERL) $(SRCDIR)/utils/makedep -C $(CC) \

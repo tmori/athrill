@@ -125,6 +125,20 @@ set_intbp(uint32 intbp)
 {
 	//TODO
 }
+//TODO
+#define PEID_ADDR	0x06FF6490
+
+LOCAL_INLINE uint32
+current_peid(void)
+{
+	uint32 *peidaddr;
+	uint32 peid;
+
+	Asm("mov %1, %0" : "=r" (peidaddr) : "0" (PEID_ADDR));
+	Asm("ld.w 0[%1], %0" : "=r" (peidaddr) : "r" (&peid));
+	return peid;
+}
+
 #elif defined(__v850e3v5__)
 
 /*

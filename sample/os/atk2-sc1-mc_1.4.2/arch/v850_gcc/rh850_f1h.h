@@ -59,7 +59,7 @@
 /*
  * MEVのベースアドレス
  */
-#define MEV_BASE	0xfffeec00
+#define MEV_BASE		0x06FF6900
 
 /*
  * 保護コマンドレジスタ

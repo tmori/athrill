@@ -84,9 +84,10 @@
 #define PMR					UINT_C(0xFFFF6448)
 #define ISPR_H				UINT_C(0xFFFF6440)
 #define ISPC_H				UINT_C(0xffff6450)
-#define current_peid()		0
-#define acquire_lock_ldlstc(arg) 1
-#define release_lock_ldlstc(arg)
+
+
+#define acquire_lock_ldlstc(arg) 1	//TODO
+#define release_lock_ldlstc(arg)		//TODO
 
 LOCAL_INLINE void
 set_pmr(uint16 pmr)

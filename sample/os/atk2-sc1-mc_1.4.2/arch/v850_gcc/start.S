@@ -76,30 +76,6 @@ __start:
 	Lea     __ctbp, r6
 	ldsr    r6, 20
 
-#ifdef TOPPERS_USE_HFLOAT
-	/* 
-	 *  FPUを有効に
-	 */
-	stsr psw, r12       /* load psw */
-	mov  0x00010000,r13 /* PSW.CU0(PSW[16]) = 1 */
-	or   r13, r12
-	ldsr r12, psw       /* store psw */
-#endif /* TOPPERS_USE_HFLOAT */
-
-	/* permit local ram access */
-	mov 0xfffee600, r20 -- PEG #0 base
-	mov 0x0001, r21 -- PEGG1SP val / All SPID is permit
-	mov 0xffffffff, r22 -- PEGG1MK val / All Address Masked
-	mov 0x00000077, r23 -- PEGG1BA val / Enable, Read/Write permit, Non-Lock, Base=0
-
-	st.h    r21, 0x0c[r20]   -- set PEGGSP
-	st.w    r22, 0x80[r20]   -- set PEGG1MK
-	st.w    r23, 0x84[r20]   -- set PEGG1BA
-
-	-- Store completion barrier
-	ld.w    0x84[r20], r0
-	syncp
-
 	/*
 	 *  hardware_init_hook の呼出し（0 でない場合）
 	 *
@@ -109,15 +85,10 @@ __start:
 	Lea     hardware_init_hook, r1
 	cmp     r0, r1
 	be      hardware_init_hook_end
-	/* TODO jarl    [r1], lp */
+	jarl    hardware_init_hook, lp
 hardware_init_hook_end:
 
 __start_1:
-	/*
-	 *  各コアのローカルメモリの初期化
-	 */
-	jarl    _target_lmem_init, r31
-
 	/*
 	 *  マスタコア以外は初期化待ち
 	 */
@@ -181,12 +152,12 @@ data_init_end:
 	Lea     software_init_hook, r1
 	cmp     r0, r1
 	be      software_init_hook_end
-	/* TODO jarl    [r1], lp */
+	jarl    software_init_hook, lp
 
 software_init_hook_end:
 
 __start_4:
-	jarl    _target_hardware_initialize, r31
+	/* jarl    _target_hardware_initialize, r31 */
 
 	/*
 	 * メモリ初期化終了の通知

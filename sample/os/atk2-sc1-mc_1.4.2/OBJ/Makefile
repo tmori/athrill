@@ -189,7 +189,7 @@ ifndef OMIT_WARNING_ALL
   COPTS := $(COPTS) -Wall -Wno-unused-label -Wpointer-arith
 endif
 ifndef OMIT_OPTIMIZATION
-  COPTS := $(COPTS) -O2
+  COPTS := $(COPTS) -O0 -gdwarf-2
 endif
 CDEFS := $(CDEFS) 
 INCLUDES := -I. -I$(SRCDIR)/include -I$(SRCDIR)/arch -I$(SRCDIR) $(INCLUDES)
