@@ -13,7 +13,6 @@
 extern void device_init_intc(CpuType *cpu, MpuAddressRegionType *region);
 extern void device_init_timer(MpuAddressRegionType *region);
 extern void device_init_serial(MpuAddressRegionType *region);
-extern void device_init_can(MpuAddressRegionType *region);
 
 /*
  * デバイスクロック供給
@@ -42,6 +41,6 @@ extern int device_io_read32(MpuAddressRegionType *region, uint32 addr, uint32 *d
  * 割込みコントローラAPI
  */
 extern void intc_clr_nmi(TargetCoreType *cpu);
-extern void intc_clr_currlvl_ispr(TargetCoreType *cpu);
+extern void intc_clr_currlvl_ispr(CoreIdType core_id);
 
 #endif /* _DEVICE_H_ */

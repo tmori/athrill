@@ -32,7 +32,7 @@ OBJS	:=	device.o
 #OBJS	+=	timer.o
 #OBJS	+=	serial.o
 #OBJS	+=	dbg_target_serial.o
-#OBJS	+=	intc.o
+OBJS	+=	intc.o
 
 all:	$(LIBTARGET)
 
