@@ -31,7 +31,7 @@ MpuAddressRegionOperationType cpu_register_operation = {
 		.put_data16 = NULL,
 		.put_data32 = cpu_put_data32,
 };
-static uint32 *get_cpu_register_addr(TargetCoreType *core, uint32 addr)
+static uint32 *get_cpu_register_addr(MpuAddressRegionType *region, TargetCoreType *core, uint32 addr)
 {
 	uint32 inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR) / sizeof(uint32);
 
@@ -39,21 +39,36 @@ static uint32 *get_cpu_register_addr(TargetCoreType *core, uint32 addr)
 	if (inx >= 0 && inx <= 31) {
 		return (uint32*)&core->reg.r[inx];
 	}
+	else if (addr == CPU_CONFIG_ADDR_PEID) {
+		inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR) * core->core_id;
+		return (uint32*)&region->data[inx];
+	}
+	else if ((addr >= CPU_CONFIG_ADDR_MEV_0) && (addr <= CPU_CONFIG_ADDR_MEV_7)) {
+		inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR) * core->core_id;
+		return (uint32*)&region->data[inx];
+	}
 	return NULL;
 }
 static Std_ReturnType cpu_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data)
 {
-	uint32 *registerp = get_cpu_register_addr(&virtual_cpu.current_core->core, addr);
+	uint32 *registerp = get_cpu_register_addr(region, &virtual_cpu.current_core->core, addr);
 	if (registerp == NULL) {
 		return STD_E_SEGV;
+	}
+	else if (addr == CPU_CONFIG_ADDR_PEID) {
+		*registerp = (core_id + 1);
 	}
 	*data = *registerp;
 	return STD_E_OK;
 }
+
 static Std_ReturnType cpu_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data)
 {
-	uint32 *registerp = get_cpu_register_addr(&virtual_cpu.current_core->core, addr);
+	uint32 *registerp = get_cpu_register_addr(region, &virtual_cpu.current_core->core, addr);
 	if (registerp == NULL) {
+		return STD_E_SEGV;
+	}
+	else if (addr == CPU_CONFIG_ADDR_PEID) {
 		return STD_E_SEGV;
 	}
 	*registerp = data;
