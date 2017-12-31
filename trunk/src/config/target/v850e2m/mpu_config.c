@@ -72,7 +72,7 @@ MpuAddressMapType mpu_address_map = {
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_SERIAL,
 						.mask		= MPU_ADDRESS_REGION_MASK_PH,
 						.data		= memory_data_SERIAL,
-						.ops		= &serial_memory_operation
+						.ops		= NULL //TODO &serial_memory_operation
 				},
 
 

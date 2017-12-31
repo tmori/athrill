@@ -23,6 +23,7 @@ VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/timer
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/serial
 VPATH	+=	$(ROOTDIR)/device/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/debugger/executor/concrete_executor/target/$(ARCH)
 
 
 CFLAGS	:= $(WFLAGS)
@@ -31,7 +32,8 @@ CFLAGS	+= $(IFLAGS)
 OBJS	:=	device.o
 #OBJS	+=	timer.o
 #OBJS	+=	serial.o
-#OBJS	+=	dbg_target_serial.o
+OBJS	+=	dbg_target_serial.o
+OBJS	+=	dbg_target_cpu.o
 OBJS	+=	intc.o
 
 all:	$(LIBTARGET)
