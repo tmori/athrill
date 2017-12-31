@@ -44,7 +44,7 @@ static uint32 *get_cpu_register_addr(MpuAddressRegionType *region, TargetCoreTyp
 		return (uint32*)&region->data[inx];
 	}
 	else if ((addr >= CPU_CONFIG_ADDR_MEV_0) && (addr <= CPU_CONFIG_ADDR_MEV_7)) {
-		inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR) * core->core_id;
+		inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR);
 		return (uint32*)&region->data[inx];
 	}
 	return NULL;

@@ -77,7 +77,7 @@ static char *search_filepath(char *dir, char *file)
 	if (err != STD_E_OK) {
 		return NULL;
 	}
-	//printf("param_num=%d\n", param_num);
+	printf("param_num=%d\n", param_num);
 	for (i = 0; i < param_num; i++) {
 		snprintf(parameter, sizeof(parameter), "EDITOR_SEARCH_PATH_%d", i);
 		err = cpuemu_get_devcfg_string(parameter, &candiate_path);
@@ -90,7 +90,7 @@ static char *search_filepath(char *dir, char *file)
 			candiate_path[0] = candiate_path[1];
 			candiate_path[1] = ':';
 		}
-		//printf("%s = %s %s\n", parameter, candiate_path, buffer);
+		printf("%s = %s %s\n", parameter, candiate_path, buffer);
 		if (file_exist(buffer) == TRUE) {
 			return buffer;
 		}
@@ -119,6 +119,9 @@ void dbg_cpu_control_print_source(uint32 pc)
 			 */
 			//dbg_cpu_control_update_editor();
 		}
+	}
+	else {
+		printf("Not found symbole pc=0x%x\n", pc);
 	}
 	return;
 }

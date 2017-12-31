@@ -32,6 +32,7 @@ static void file_address_mapping_build(void)
 	ElfDwarfLineType *edl = elf_dwarf_line_get_ElfDwarfLine();
 
 	if (edl == NULL) {
+		printf("Not found: ElfDwarfLine\n");
 		return;
 	}
 	//printf("edl=0x%p\n", edl);
