@@ -299,6 +299,7 @@ target_initialize(void)
 	coreid = x_core_id();
 	x_config_int(target_ici_intno_table[coreid], ENABLE, target_ici_intpri_table[coreid], coreid);
 
+#if 0
 	/* コア0(PE1)なら，PE2用にIBDを設定する */
 	if (coreid == 0) {
 		for (j = 0U; j < tnum_intno; j++) {
@@ -307,6 +308,7 @@ target_initialize(void)
 			}
 		}
 	}
+#endif
 }
 
 /*

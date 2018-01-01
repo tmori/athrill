@@ -532,7 +532,7 @@ FLABEL(_fe_exception_entry)
 	/*
 	 *  ISR1実行状態以外で発生した場合
 	 */
-	/* TODO MYCCB   r16, r12 */
+	MYCCB   r16, r12
 	ld.b    CCB_nested_lock_os_int_cnt[r16], r13
 	mov     1, r14
 	add     r14, r13
@@ -617,7 +617,7 @@ FLABEL(fe_exception_4)
 	addi    -12, sp, sp
 
 	/* オフセットの生成 */
-	/* TODO GET_CID r11 */
+	GET_CID r11
 	shl     2,  r11
 
 	/* v850_cpu_exp_spの退避と設定 */
@@ -656,7 +656,7 @@ FLABEL(fe_exception_4)
 	mov     sp, ep
 
 	/* オフセットの生成 */
-	/* GET_CID r11 */
+	GET_CID r11
 	shl     2,  r11
 
 	/* v850_cpu_exp_noを復帰 */
@@ -687,7 +687,7 @@ FLABEL(fe_ret_exc)
 	/*
 	 * プロテクションフックはOS割込み禁止状態で実行する
 	 */
-	/* TODO MYCCB   r16, r12 */
+	MYCCB   r16, r12
 
 	/*
 	 *  割込み・例外のネスト回数のデクリメント
@@ -769,7 +769,7 @@ FLABEL(_ei_exception_entry)
 	 */
 	EI_SAVEREG
 
-	/* TODO MYCCB   r16, r12 */
+	MYCCB   r16, r12
 
 	/*
 	 * プロテクションフックはOS処理レベルで実行するためOS割込み禁止状態にする
@@ -863,7 +863,7 @@ FLABEL(ei_exception_3)
 	addi    -12, sp, sp
 
 	/* オフセットの生成 */
-	/* TODO GET_CID r11 */
+	GET_CID r11
 	shl     2,  r11
 
 	/* v850_cpu_exp_spの退避と設定 */
@@ -902,7 +902,7 @@ FLABEL(ei_exception_3)
 	mov     sp, ep
 
 	/* オフセットの生成 */
-	/* TODO GET_CID r11 */
+	GET_CID r11
 	shl     2,  r11
 
 	/* v850_cpu_exp_noを復帰 */
@@ -933,7 +933,7 @@ FLABEL(ei_ret_exc)
 	/*
 	 * プロテクションフックはOS割込み禁止状態で実行する
 	 */
-	/* TODO MYCCB   r16, r12 */
+	MYCCB   r16, r12
 
 	/*
 	 *  割込み・例外のネスト回数のデクリメント
@@ -1040,7 +1040,7 @@ FLABEL(_interrupt)
 	add      -1,r11
 
 	/* 自コアのCCBを取得 */
-	/* TODO MYCCB    r16, r19 */
+	MYCCB    r16, r19
 
 	/* 
 	 *  _current_iintpri の更新
@@ -1124,7 +1124,7 @@ FLABEL(int_nested)
 	/*
 	 *  ICIの場合はC2ISR用の
 	 */
-	/* TODO GET_CID r11 */
+	GET_CID r11
 	shl     2, r11
 	Lea     _target_ici_intno_table, r6
 	add     r11, r6
@@ -1184,7 +1184,7 @@ FLABEL(stack_monitoring_exit)
 	 *  r3(my_ccb)の値はret_int_ici_dispatchにも使用する
 	 */
 #ifdef USE_ICI_DIS_HANDER_BYPASS
-	/* TODO GET_CID r11 */
+	GET_CID r11
 	shl     2, r11
 	Lea     _target_ici_intno_table, r6
 	add     r11, r6
@@ -1228,7 +1228,7 @@ FLABEL(not_ici)
 	/*
 	 * p_runisr 設定
 	 */
-	/* TODO GET_CID r11 */
+	GET_CID r11
 	shl     2, r11
 	Lea     _isr_p_isrcb_table, r6          /* テーブルのアドレスの取得 */
 	add     r11, r6
@@ -1275,7 +1275,7 @@ FLABEL(end_int_handler)
 	/*
 	 * マジックナンバーチェック方式
 	 */
-	/* TODO GET_CID r11 */
+	GET_CID r11
 	shl     2, r11
 	Lea     _ostk_table, r6                 /* 割込みスタックの先頭アドレス取得 */
 	add     r11, r6
@@ -1289,14 +1289,14 @@ FLABEL(end_int_handler)
 	/*
 	 * ISR2の不正終了チェック
 	 */
-	/* TODO MYCCB   r16, r7 */
+	MYCCB   r16, r7
 	ld.w    CCB_p_runisr[r16], r7
 	cmp     r0, r7
 	be      end_int_handler_1 
 	jarl    _exit_isr2, r31
 
 FLABEL(end_int_handler_1)
-	/* TODO MYCCB   r16, r6 */
+	MYCCB   r16, r6
 
 	/*
 	 * p_runisr の復帰
@@ -1543,7 +1543,7 @@ FLABEL(_dispatch)
 	/* TODO pushsp  r20-r31 */
 #endif /* TOPPERS_USE_PUSHSP */
 
-	/* TODO MYCCB   r16, r10 */
+	MYCCB   r16, r10
 
 	/* スタックと次の起動番地を保存 */
 	ld.w    CCB_p_runtsk[r16], ep
@@ -1608,7 +1608,7 @@ FLABEL(_start_dispatch)
 	 *
 	 *  dispatcherは，OS割込み禁止状態で呼び出す．
 	 */
-	/* TODO MYCCB   r16, r12 */
+	MYCCB   r16, r12
 	/* OS割込み禁止状態 */
 	OUTER_LOCK_OS_INT r12, r13, r16
 	/* 全割込み禁止解除状態へ */
@@ -1624,7 +1624,7 @@ FLABEL(_exit_and_dispatch)
 	/*
 	 *  実行中のタスクスタックのオーバフローチェック
 	 */
-	/*TODO MYCCB   r16, r6 */
+	MYCCB   r16, r6
 
 	/*
 	 *  スタックポインタチェック方式
@@ -1661,7 +1661,7 @@ FLABEL(dispatcher_0)
 	 *  れる．実行再開番地へもこの状態のまま分岐する
 	 */
 #ifdef LOG_DSP_ENTER
-	/* TODO MYCCB   r16, r21 */
+	MYCCB   r16, r21
 	ld.w    CCB_p_runtsk[r16], r21
 	cmp     r0, r21
 	be      dispatcher_0_1
@@ -1670,7 +1670,7 @@ FLABEL(dispatcher_0)
 FLABEL(dispatcher_0_1)
 #endif	/* LOG_DSP_ENTER */
 
-	/*TODO MYCCB   r16, r22 */
+	MYCCB   r16, r22
 	ld.h    CCB_callevel_stat[r16], r22
 	mov     TSYS_DISALLINT, r20
 	and     r22, r20
@@ -1712,7 +1712,7 @@ FLABEL(pretaskhook_call)
 #endif /* CFG_USE_PRETASKHOOK */
 
 FLABEL(dispatcher_2)
-	/*TODO MYCCB   r16, r22 */
+	MYCCB   r16, r22
 	ld.w    CCB_p_runtsk[r16], r22
 	mov     r22, ep
 	sld.w   TCB_pc[ep], r31
@@ -1778,7 +1778,7 @@ FLABEL(dispatcher_3)
 	 */
     .global _stack_monitoring_error_isr
 FLABEL(_stack_monitoring_error_isr)
-	/*TODO MYCCB   r16, r12 */
+	MYCCB   r16, r12
 	OUTER_LOCK_OS_INT r12, r13, r16             /* ISRから来た場合はOS割込み禁止になっていない */
 
 FLABEL(stack_monitoring_error)
@@ -1837,7 +1837,7 @@ FLABEL(_stack_change_and_call_func_2)
 
 	push    lp
 
-	/*TODO MYCCB   r16, r13 */
+	MYCCB   r16, r13
 
 	ld.w    CCB_except_nest_cnt[r16], r13
 	add     1, r13
@@ -1859,7 +1859,7 @@ FLABEL(_stack_change_and_call_func_1_1)
 	jmp     [r12]
 
 FLABEL(stack_change_and_call_func_r)
-	/*TODO MYCCB   r16, r13 */
+	MYCCB   r16, r13
 	ld.w    CCB_except_nest_cnt[r16], r13
 	add     -1, r13
 	st.w    r13, CCB_except_nest_cnt[r16]
@@ -1910,7 +1910,7 @@ FLABEL(_call_trusted_hook)
 	/* TODO pushsp  r20-r31 */
 #endif /* TOPPERS_USE_PUSHSP */
 
-	/*TODO MYCCB   r16, r20 */
+	MYCCB   r16, r20
 
 	ld.h  CCB_callevel_stat[r16], r20
 	sst.h r20, 48[ep]
@@ -1930,7 +1930,7 @@ FLABEL(_call_trusted_hook)
 	 */
 	.global _exit_trusted_shutdown_hook
 FLABEL(_exit_trusted_shutdown_hook)
-	/*TODO MYCCB   r16, r20 */
+	MYCCB   r16, r20
 	ld.w  CCB_trusted_hook_savedsp[r16], sp
 	ld.h  48[sp], r20
 	st.h  r20, CCB_callevel_stat[r16]
@@ -1940,7 +1940,7 @@ FLABEL(_exit_trusted_shutdown_hook)
 	st.w  r20, CCB_trusted_hook_savedsp[r16]
 
 FLABEL(trusted_hook_ret)
-	/* TODO MYCCB r16, r20 */
+	MYCCB r16, r20
 	st.w  r16, CCB_trusted_hook_savedsp[r16]
 #ifndef TOPPERS_USE_PUSHSP
 	mov     sp, ep

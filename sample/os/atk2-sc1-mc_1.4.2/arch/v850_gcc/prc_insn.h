@@ -135,7 +135,7 @@ current_peid(void)
 	uint32 peid;
 
 	Asm("mov %1, %0" : "=r" (peidaddr) : "0" (PEID_ADDR));
-	Asm("ld.w 0[%1], %0" : "=r" (peidaddr) : "r" (&peid));
+	Asm("ld.w 0[%1], %0" : "=r" (peid) : "r" (peidaddr));
 	return peid;
 }
 

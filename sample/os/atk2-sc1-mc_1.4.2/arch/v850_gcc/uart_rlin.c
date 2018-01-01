@@ -78,10 +78,12 @@ LOCAL_INLINE uint8 uart_getchar(void);
 void
 uart_putc(char8 c)
 {
+#if 0
 	uint32 base = GET_RLIN_BASE();
 
 	while ((sil_reb_mem((void *) (base + RLIN3xLST_B)) & 0x10) == 0x10) ;
 	sil_wrb_mem((void *) (base + RLIN3xLUTDRL_B), c);
+#endif
 }
 
 /*
@@ -90,8 +92,12 @@ uart_putc(char8 c)
 LOCAL_INLINE uint8
 uart_getchar(void)
 {
+#if 0
 	uint32 base = GET_RLIN_BASE();
 	return(sil_reb_mem((void *) (base + RLIN3xLURDRL_B)));
+#else
+	return '\0';
+#endif
 }
 
 /*
@@ -100,6 +106,7 @@ uart_getchar(void)
 void
 InitHwSerial(void)
 {
+#if 0
 	uint32 base = GET_RLIN_BASE();
 
 	/* Uart Mode を有効(ノイズフィルタも有効) */
@@ -127,6 +134,7 @@ InitHwSerial(void)
 
 	/* 送受信動作許可 */
 	sil_wrb_mem((void *) (base + RLIN3xLUOER_B), 0x03);
+#endif
 }
 
 /*

@@ -180,6 +180,7 @@ prc_terminate(void)
 void
 x_config_int(InterruptNumberType intno, AttributeType intatr, PriorityType intpri, CoreIdType coreid)
 {
+#if 0
 	uint32 eic_address;
 
 	ASSERT(VALID_INTNO(intno));
@@ -211,6 +212,7 @@ x_config_int(InterruptNumberType intno, AttributeType intatr, PriorityType intpr
 		 */
 		(void) x_enable_int(INTNO_MASK(intno));
 	}
+#endif
 }
 
 #ifndef OMIT_DEFAULT_INT_HANDLER

@@ -88,7 +88,7 @@
 LOCAL_INLINE void
 set_pmr(uint16 pmr)
 {
-	sil_wrh_mem((void *) PMR, pmr);
+	//sil_wrh_mem((void *) PMR, pmr);
 }
 
 LOCAL_INLINE uint16
@@ -100,8 +100,8 @@ get_ispr(void)
 LOCAL_INLINE void
 clear_ispr(void)
 {
-	sil_wrh_mem((void *) ISPC_H, 0xffff);
-	sil_wrh_mem((void *) ISPR_H, 0x0000);
+	//sil_wrh_mem((void *) ISPC_H, 0xffff);
+	//sil_wrh_mem((void *) ISPR_H, 0x0000);
 }
 
 #endif /* TOPPERS_MACRO_ONLY */

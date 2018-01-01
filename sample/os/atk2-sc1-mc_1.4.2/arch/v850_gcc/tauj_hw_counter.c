@@ -99,6 +99,7 @@
 void
 init_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType maxval, TimeType nspertick, TickRefType cycle)
 {
+#if 0
 	uint16 wk;
 	*cycle = maxval;
 
@@ -140,6 +141,7 @@ init_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType maxva
 
 	/* タイマカウント周期設定 */
 	sil_wrw_mem((void *) TAUJCDR(n_c, ch_c), maxval);
+#endif
 }
 
 /*
@@ -148,8 +150,10 @@ init_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType maxva
 void
 start_hwcounter_tauj(uint8 n_c, uint8 ch_c)
 {
+#if 0
 	/* 現在値タイマ開始 */
 	SetTimerStartTAUJ(n_c, ch_c);
+#endif
 }
 
 /*
@@ -162,6 +166,7 @@ start_hwcounter_tauj(uint8 n_c, uint8 ch_c)
 void
 stop_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c)
 {
+#if 0
 	/* 差分タイマの停止 */
 	SetTimerStopTAUJ(n_d, ch_d);
 
@@ -177,6 +182,7 @@ stop_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c)
 	/* HwcounterDisableInterrupt(TAUJ_INTNO(tauj_id + 1)); */
 	/* 現在値タイマの割込み要求のクリア */
 	HwcounterClearInterrupt(TAUJ_INTNO(n_c, ch_c));
+#endif
 }
 
 /*
@@ -189,6 +195,7 @@ stop_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c)
 void
 set_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType exprtick, TickType maxval)
 {
+#if 0
 	TickType	curr_time;
 	TickType	value;
 
@@ -223,6 +230,7 @@ set_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType exprti
 	 * カウント開始
 	 */
 	SetTimerStartTAUJ(n_d, ch_d);
+#endif
 }
 
 /*
@@ -240,8 +248,10 @@ get_hwcounter_tauj(uint8 n_c, uint8 ch_c, TickType maxval)
 void
 cancel_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
+#if 0
 	/* 差分タイマの停止 */
 	SetTimerStopTAUJ(n_d, ch_d);
+#endif
 }
 
 /*
@@ -250,6 +260,7 @@ cancel_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 void
 trigger_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
+#if 0
 	/* 差分タイマ停止 */
 	SetTimerStopTAUJ(n_d, ch_d);
 
@@ -263,6 +274,7 @@ trigger_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 
 	/*  差分タイマ開始 */
 	SetTimerStartTAUJ(n_d, ch_d);
+#endif
 }
 
 /*
@@ -271,8 +283,10 @@ trigger_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 void
 int_clear_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
+#if 0
 	/* 割込み要求クリア */
 	HwcounterClearInterrupt(TAUJ_INTNO(n_d, ch_d));
+#endif
 }
 
 /*
@@ -282,8 +296,10 @@ int_clear_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 void
 int_cancel_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
+#if 0
 	/* 割込み要求クリア */
 	HwcounterClearInterrupt(TAUJ_INTNO(n_d, ch_d));
+#endif
 }
 
 /*
