@@ -34,13 +34,16 @@ int op_exec_ldsr(TargetCoreType *cpu)
 	uint32 reg2 = cpu->decoded_code.type9.gen;
 
 	if (reg2 >= CPU_GREG_NUM) {
+		printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
 		return -1;
 	}
-	if (regid >= CPU_SYSREG_NUM) {
+	if (regid >= CPU_GREG_NUM) {
+		printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
 		return -1;
 	}
 	ret = get_sysreg(&cpu->reg, regid, &sysreg);
 	if (ret < 0) {
+		printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
 		return -1;
 	}
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LDSR r%d(0x%x) regID(%d):0x%x\n", cpu->reg.pc, reg2, cpu->reg.r[reg2], regid, *sysreg));
