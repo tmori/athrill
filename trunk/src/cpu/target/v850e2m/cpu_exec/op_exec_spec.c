@@ -416,6 +416,8 @@ int op_exec_caxi(TargetCoreType *cpu)
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: CAXI r%d(%d),r%d(0x%x), r%d(0x%x):0x%x\n",
 			cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], reg3, cpu->reg.r[reg3], token));
 
+	cpu->reg.pc += 4;
+
 	return 0;
 }
 
