@@ -54,6 +54,7 @@
 
 
 #define SOP_CODE_CMOV_11		(0b011001)	/* format11 */
+#define SOP_CODE_CAXI_11		(0b000111)	/* format11 */
 
 #define SOP_CODE_DIVHX1_11		(0b010100)
 #define SOP_CODE_DIVHX2_11		(0b010101)

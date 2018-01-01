@@ -157,6 +157,19 @@ int OpDecode(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code)
 				id = OP_CODE_FORMAT_13;
 			}
 		}
+		else if (id == OP_CODE_FORMAT_9) {
+			/*
+			 * この時点でFORMAT9と判断された場合，
+			 * FORMAT11判定が必要となる．
+			 */
+			uint16 bit20 = (code[1] & 0x0008);
+			//printf("code0=0x%x\n", code[0]);
+			//printf("code1=0x%x\n", code[1]);
+			if (bit20 != 0) {
+				id = OP_CODE_FORMAT_11;
+				//printf("CAXI\n");
+			}
+		}
 	}
 	decoded_code->type_id = id;
 	return OpDecoder[id].decode(code, decoded_code);

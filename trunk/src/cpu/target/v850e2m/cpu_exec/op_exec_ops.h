@@ -135,6 +135,7 @@ extern int op_exec_trap(TargetCoreType *cpu);
 extern int op_exec_switch(TargetCoreType *cpu);
 extern int op_exec_prepare(TargetCoreType *cpu);
 extern int op_exec_dispose(TargetCoreType *cpu);
+extern int op_exec_caxi(TargetCoreType *cpu);
 
 
 

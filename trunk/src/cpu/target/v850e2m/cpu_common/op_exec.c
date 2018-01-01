@@ -595,6 +595,9 @@ static int OpExec11(TargetCoreType *cpu)
 			ret = op_exec_divh_11(cpu);
 		}
 		break;
+	case SOP_CODE_CAXI_11:
+		ret = op_exec_caxi(cpu);
+		break;
 	default:
 		printf("OpExec11 Error:Unknown sub1=0x%x sub2=0x%x\n", cpu->decoded_code.type11.sub1, cpu->decoded_code.type11.sub2);
 		break;
