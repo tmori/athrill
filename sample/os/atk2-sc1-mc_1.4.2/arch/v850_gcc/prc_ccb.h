@@ -68,7 +68,7 @@
 /*
  *  ロックの型
  */
-typedef uint32 LockType;
+typedef uint16 LockType;
 
 /*
  *  前方参照
