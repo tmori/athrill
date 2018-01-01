@@ -85,7 +85,7 @@
 #define DEFAULT_OSSTKSZ		(8192U) /* 8K bytes */
 
 /* コンテキストの保存復帰にPUSHSP/POPSPを使用 */
-#define TOPPERS_USE_PUSHSP
+//#define TOPPERS_USE_PUSHSP
 
 /*
  *  プロセッサで共通な定義

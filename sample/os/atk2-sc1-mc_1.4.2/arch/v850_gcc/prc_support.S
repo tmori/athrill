@@ -595,7 +595,7 @@ FLABEL(fe_exception_2)
 	bne     fe_exception_3
 
 	/* スタックポインタの保存と入れ替え */
-	/* TODO MYOSTKPT r12, r17 */
+	MYOSTKPT r12, r17
 	add     -4, r12
 	st.w    sp, 0[r12]                      /* スタックポインタの保存 */
 	mov     r12, sp                         /* スタックポインタの切り替え */
@@ -850,7 +850,7 @@ FLABEL(ei_exception_2)
 	bne     ei_exception_3
 
 	/* スタックポインタの保存と入れ替え */
-	/* TODO MYOSTKPT r12, r17 */
+	MYOSTKPT r12, r17
 	add     -4, r12
 	st.w    sp, 0[r12]                      /* スタックポインタの保存 */
 	mov     r12, sp                         /* スタックポインタの切り替え */
@@ -1067,7 +1067,7 @@ FLABEL(_interrupt)
 	 *  スタックポインタの保存と入れ替え
 	 */
 	mov     sp , r13
-	/* TODO MYOSTKPT sp, r14 */
+	MYOSTKPT sp, r14
 	add     -4, sp
 	st.w    r13, 0[sp]
 
@@ -1730,7 +1730,7 @@ FLABEL(dispatcher_3)
 	 *  と，割込みハンドラ内でのタスクディスパッチの防止という2つの意
 	 *  味がある
 	 */
-	/* TODO MYOSTKPT sp, r20	*/		/* 非タスクコンテキスト用のスタックの読み込みスタックポインタの入れ替え */
+	MYOSTKPT sp, r20			/* 非タスクコンテキスト用のスタックの読み込みスタックポインタの入れ替え */
 
 	mov     TCL_ISR2, r20		/* _callevel_stat をISR2に */
 	st.h    r20, CCB_callevel_stat[r16]
@@ -1786,7 +1786,7 @@ FLABEL(stack_monitoring_error)
 	add     1, r13
 	st.w    r13, 0[r12]
 
-	/* TODO MYOSTKPT sp, r12   */                         /* スタックを更に壊さないため，割込みスタックの初期値を使用する */
+	MYOSTKPT sp, r12                          /* スタックを更に壊さないため，割込みスタックの初期値を使用する */
 
 	mov     E_OS_STACKFAULT, r6                 /* プロテクションフックの引数を設定 */
 	jarl    _call_protectionhk_main, r31        /* プロテクションフックを呼び出し */
@@ -1846,7 +1846,7 @@ FLABEL(_stack_change_and_call_func_2)
 	bne     _stack_change_and_call_func_1_1
 
 	/* スタックポインタの保存と入れ替え */
-	/* TODO MYOSTKPT r12, r11 */
+	MYOSTKPT r12, r11
 	add     -4, r12
 	st.w    sp, 0[r12]                      /* スタックポインタの保存 */
 	mov     r12, sp                         /* スタックポインタの切り替え */

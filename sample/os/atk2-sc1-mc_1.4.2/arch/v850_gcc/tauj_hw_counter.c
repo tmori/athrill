@@ -239,7 +239,11 @@ set_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType exprti
 TickType
 get_hwcounter_tauj(uint8 n_c, uint8 ch_c, TickType maxval)
 {
+#if 0
 	return(GetCurrentTimeTAUJ(n_c, ch_c, maxval));
+#else
+	return 0;
+#endif
 }
 
 /*

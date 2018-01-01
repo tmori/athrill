@@ -144,8 +144,7 @@ acquire_lock_ldlstc(uint16 *p_lock)
 {
 	uint16 locked = 1;
 	Asm("caxi [%1], r0, %0"
-		: "=r" (locked)
-		: "r" (p_lock));
+		: "+r" (locked), "+r" (p_lock));
 
 	return (locked == 0);
 }
