@@ -75,8 +75,7 @@ typedef uint16 LockType;
  */
 typedef struct core_control_block CCB;
 
-#define IMR_SIZE		8U
-#define IINTPRI_SIZE	8U
+
 /*
  *  ターゲット依存 コアコントロールブロック(V850)
  */
@@ -92,7 +91,7 @@ typedef struct target_core_control_block {
 	 */
 	uint8 current_iintpri;
 	uint8 c2isr_iintpri;
-	uint16 imr_table[IINTPRI_SIZE][IMR_SIZE];
+	uint16 imr_table[TNUM_INTPRI][IMR_SIZE];
 
 	/*
 	 *  x_nested_lock_os_int()のネスト回数

@@ -99,6 +99,10 @@ extern void _reset(void);
  */
 extern const uint32 intbp_table[TotalNumberOfCores];
 
+extern const uint16_t kernel_core0_imr_table[][IMR_SIZE];
+extern const uint16_t kernel_core1_imr_table[][IMR_SIZE];
+extern const uint8 kernel_core0_c2isr_iintpri;
+extern const uint8 kernel_core1_c2isr_iintpri;
 /*
  *  プロセッサ依存の初期化
  */
@@ -106,6 +110,9 @@ void
 prc_initialize(void)
 {
 	TCCB *p_tccb = &(get_my_p_ccb()->target_ccb);
+	CoreIdType coreId = x_core_id();
+	uint8 pri;
+	uint8 imr;
 
 	/*
 	 *  カーネル起動時は非タスクコンテキストとして動作させるため1に
@@ -119,6 +126,22 @@ prc_initialize(void)
 
 	p_tccb->trusted_hook_savedsp = 0U;
 
+	if (coreId == 0) {
+		for (pri = 0; pri < TNUM_INTPRI; pri++) {
+			for (imr = 0; imr < IMR_SIZE; imr++) {
+				p_tccb->imr_table[pri][imr] = kernel_core0_imr_table[pri][imr];
+			}
+		}
+		p_tccb->c2isr_iintpri = kernel_core0_c2isr_iintpri;
+	}
+	else {
+		for (pri = 0; pri < TNUM_INTPRI; pri++) {
+			for (imr = 0; imr < IMR_SIZE; imr++) {
+				p_tccb->imr_table[pri][imr] = kernel_core1_imr_table[pri][imr];
+			}
+		}
+		p_tccb->c2isr_iintpri = kernel_core1_c2isr_iintpri;
+	}
 
 }
 
@@ -178,7 +201,6 @@ x_config_int(InterruptNumberType intno, AttributeType intatr, PriorityType intpr
 	}
 #else
 
-#if 0
 	uint32 eic_address;
 
 	ASSERT(VALID_INTNO(intno));
@@ -209,7 +231,6 @@ x_config_int(InterruptNumberType intno, AttributeType intatr, PriorityType intpr
 		 */
 		(void) x_enable_int(intno);
 	}
-#endif
 
 #endif
 }

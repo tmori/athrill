@@ -293,16 +293,6 @@
 #define UC_CLKNOTSTAB		7
 
 /*
- *  RLIN3
- */
-#define RLIN30_BASE	0xffce2000
-#define RLIN31_BASE	0xffce2040
-#define RLIN32_BASE	0xffce2080
-#define RLIN33_BASE	0xffce20c0
-#define RLIN34_BASE	0xffce2100
-#define RLIN35_BASE	0xffce2140
-
-/*
  *  TAUJ関連レジスタ
  */
 #define TAUJ_BASE(n)	((uint32) (0xffe50000U + (n * 0x1000U)))

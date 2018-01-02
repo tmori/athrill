@@ -317,15 +317,18 @@ x_get_ipm(void)
 LOCAL_INLINE boolean
 x_disable_int(InterruptNumberType intno)
 {
-	uint32 eic_address = EIC_ADDRESS(INTNO_MASK(intno));
+	uint32 eic_address = EIC_ADDRESS(intno);
+	SIL_PRE_LOC;
 
 	if (!VALID_INTNO(intno)) {
 		return(FALSE);
 	}
 
-	/* 割込みの禁止(7bit目をセット) */
-	sil_wrh_mem((uint16 *) eic_address,
-				sil_reh_mem((uint16 *) eic_address) | (0x01U << 7));
+	SIL_LOC_INT();
+	sil_wrb_mem((void *) eic_address,
+				sil_reb_mem((void *) eic_address) | (0x01U << 6));
+
+	SIL_UNL_INT();
 
 	return(TRUE);
 }
@@ -339,15 +342,16 @@ x_disable_int(InterruptNumberType intno)
 LOCAL_INLINE boolean
 x_enable_int(InterruptNumberType intno)
 {
-	uint32 eic_address = EIC_ADDRESS(INTNO_MASK(intno));
+	uint32 eic_address = EIC_ADDRESS(intno);
+	SIL_PRE_LOC;
 
 	if (!VALID_INTNO(intno)) {
 		return(FALSE);
 	}
-
-	/* 7bit目をクリア */
-	sil_wrh_mem((uint16 *) eic_address,
-				sil_reh_mem((uint16 *) eic_address) & ~(0x01U << 7));
+	SIL_LOC_INT();
+	sil_wrb_mem((void *) eic_address,
+				sil_reb_mem((void *) eic_address) & ~(0x01U << 6));
+	SIL_UNL_INT();
 
 	return(TRUE);
 }
@@ -358,15 +362,14 @@ x_enable_int(InterruptNumberType intno)
 LOCAL_INLINE boolean
 x_clear_int(InterruptNumberType intno)
 {
-	uint32 eic_address = EIC_ADDRESS(INTNO_MASK(intno));
+	uint32 eic_address = EIC_ADDRESS(intno);
 
 	if (!VALID_INTNO(intno)) {
 		return(FALSE);
 	}
 
-	/* 割込みのクリア(12bit目をクリア) */
-	sil_wrh_mem((void *) eic_address,
-				sil_reh_mem((void *) eic_address) & ~(0x01U << 12));
+	sil_wrb_mem((void *) eic_address,
+				sil_reb_mem((void *) eic_address) & ~(0x01U << 7));
 
 	return(TRUE);
 }

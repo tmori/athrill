@@ -493,9 +493,10 @@ FLABEL(_interrupt_isr2)
 	EI_SAVEREG
 
 	/* 割込み優先度を取得(r11) */
-	GET_ISPR r13
+	/* TODO GET_ISPR r13
 	sch1r    r13, r11
 	add      -1,r11
+	*/
 
 	/* 自コアのCCBを取得 */
 	MYCCB    r16, r19

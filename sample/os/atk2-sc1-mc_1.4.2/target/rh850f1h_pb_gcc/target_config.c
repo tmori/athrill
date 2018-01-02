@@ -69,6 +69,7 @@
 #include "logtrace/trace_config.h"
 #endif /* TOPPERS_ENABLE_TRACE */
 
+#if 0
 /*
  *  UARTのベースアドレス
  */
@@ -76,6 +77,7 @@ const uint32	rlin3x_base_table[TotalNumberOfCores] = {
 	RLIN30_BASE,
 	RLIN31_BASE
 };
+#endif
 
 /*
  *  コア間割込み番号
@@ -115,8 +117,8 @@ target_fput_str(const char8 *c)
 void
 target_port_initialize(void)
 {
+#if 0
 	uint16 wk;
-
 	/*
 	 * PORT10(RLIN30)
 	 */
@@ -194,6 +196,7 @@ target_port_initialize(void)
 	wk &= ~RLIN31_P0_MASK;
 	wk |= (RLIN31_PIBC0_INIT & RLIN31_P0_MASK);
 	sil_wrh_mem((void *) PIBC(0), wk);
+#endif
 }
 
 /*
@@ -202,6 +205,7 @@ target_port_initialize(void)
 void
 target_clock_initialize(void)
 {
+#if 0
 	uint32 errcnt = 0;
 
 	/* Init Main Clock */
@@ -249,6 +253,7 @@ target_clock_initialize(void)
 	if (errcnt > 0) {
 		infinite_loop();
 	}
+#endif
 }
 
 /*
@@ -280,8 +285,8 @@ hardware_init_hook(void)
 void
 target_initialize(void)
 {
-	uint32				coreid;
-	InterruptNumberType	j;
+	//uint32				coreid;
+	//InterruptNumberType	j;
 
 	/*
 	 *  V850依存の初期化
@@ -295,11 +300,11 @@ target_initialize(void)
 	trace_initialize((uintptr) (TRACE_AUTOSTOP));
 #endif /* TOPPERS_ENABLE_TRACE */
 
+#if 0
 	/* 自コアのコア間割込みのための初期化 */
 	coreid = x_core_id();
 	x_config_int(target_ici_intno_table[coreid], ENABLE, target_ici_intpri_table[coreid], coreid);
 
-#if 0
 	/* コア0(PE1)なら，PE2用にIBDを設定する */
 	if (coreid == 0) {
 		for (j = 0U; j < tnum_intno; j++) {

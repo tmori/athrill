@@ -143,9 +143,11 @@ InitHwSerial(void)
 void
 TermHwSerial(void)
 {
+#if 0
 	uint32 base = GET_RLIN_BASE();
 	/* 受信割込みの禁止 */
 	sil_wrb_mem((void *) (base + RLIN3xLIE_B), 0x00);
+#endif
 }
 
 /*

@@ -66,12 +66,14 @@
 LOCAL_INLINE void
 target_ici_raise(CoreIdType coreid)
 {
+#if 0
 	if (coreid == 0) {
 		sil_wrw_mem((void *) IPIC_ADDR(ICI_IPIC_CH), 1);
 	}
 	else {
 		sil_wrw_mem((void *) IPIC_ADDR(ICI_IPIC_CH), 2);
 	}
+#endif
 }
 
 LOCAL_INLINE void
