@@ -56,6 +56,14 @@ $
 $ V850ではリセット，NMI，WDTは割込みに分類されるが，リセットは
 $ カーネルが用いるため除外する
 
+$INTNO_VALID = {}$
+$INTNO_CREISR2_VALID = {}$
+$INTNO_INVALID = 54 $
+$FOREACH intno RANGE(0, TNUM_INT - 1)$
+	$INTNO_VALID = APPEND(INTNO_VALID, intno)$
+	$INTNO_CREISR2_VALID = APPEND(INTNO_CREISR2_VALID, intno)$
+$END$
+
 $EXCNO_VALID = {1,2,3,4,5,7}$
 
 $TNUM_EXC = {1,2,3,4,5,6,7}$
@@ -119,15 +127,65 @@ $ ICIの優先度を考慮する必要があるため,MAX_PRI_ISR1を使用す�
 $min_pri_isr2_system = MAX_PRI_ISR1 + 1$
 
 $n = +0$
-$pmr_isr2_mask = +0xffff$
+$pmr_isr2_mask = +0xff$
 $WHILE (n < (min_pri_isr2_system + TNUM_INTPRI))$
 $pmr_isr2_mask = pmr_isr2_mask & ~(0x01 << n)$
 $n = n + 1$
 $END$
-$pmr_isr1_mask = ~pmr_isr2_mask & 0xffff $
+$pmr_isr1_mask = ~pmr_isr2_mask & 0xff $
 
-const uint16 kernel_pmr_isr2_mask = $FORMAT("0x%x",pmr_isr2_mask)$;$NL$
-const uint16 kernel_pmr_isr1_mask = $FORMAT("0x%x",pmr_isr1_mask)$;$NL$$NL$
+const uint8 kernel_pmr_isr2_mask = $FORMAT("0x%x",pmr_isr2_mask)$;$NL$
+const uint8 kernel_pmr_isr1_mask = $FORMAT("0x%x",pmr_isr1_mask)$;$NL$$NL$
+
+
+
+$CPU_INTPRI_MAX = 0$
+$CPU_INTPRI_MIN = 8$
+$CPU_INTPRI_RANGE = {0,1, ... ,8}$
+$IMR_RANGE = {0,1,2,3,4,5,6,7}$
+$C2ISR_IINTPRI = 8$
+
+$FOREACH coreid RANGE(0, TMAX_COREID)$
+const uint16_t kernel_core$coreid$_imr_table[][IMR_SIZE] = $NL$
+{$NL$
+$JOINEACH intlvl CPU_INTPRI_RANGE " , \n"$
+	$FOREACH imrno IMR_RANGE$
+		$IMRn[imrno] = 0xFFFF$
+	$END$
+	
+	$FOREACH intno INTNO_VALID$
+		$isrid = INT.ISRID[intno]$
+		$IF (LENGTH(isrid)  && (OSAP.CORE[ISR.OSAPID[isrid]] == coreid))$
+		  $IF ((EQ(ISR.CATEGORY[isrid], "CATEGORY_1")) || (ISR.INTPRI[isrid]) > (CPU_INTPRI_MIN - intlvl))$
+			$OFFSET = (intno) / 16$
+			$BITPOS = (intno) % 16$
+			$IMRn[OFFSET] = IMRn[OFFSET] & ~(1 << BITPOS)$
+		    $FORMAT ("/**** BG:intno=%d, prio=%d ****/", intno, ISR.INTPRI[isrid])$
+		  $ELSE$
+		    $FORMAT ("/**** LE:intno=%d, prio=%d ****/", intno, ISR.INTPRI[isrid])$
+		  $END$
+		  
+		  $IF ((EQ(ISR.CATEGORY[isrid], "CATEGORY_2")))$
+		  	$IF ( (ISR.INTPRI[isrid]) > (CPU_INTPRI_MIN - C2ISR_IINTPRI) )$
+		  		$C2ISR_IINTPRI = (CPU_INTPRI_MIN - ISR.INTPRI[isrid])$
+		 	$END$
+		  $END$
+		  
+		$END$
+	$END$
+	$TAB${$SPC$
+	$JOINEACH imrno IMR_RANGE " , "$
+		$FORMAT("0x%1$x" , +IMRn[imrno])$
+	$END$
+	$SPC$} $TAB$$FORMAT("/* CPU_INTPRI:%d, ATK2_EXT_INTPRI:%d */", intlvl, (CPU_INTPRI_MIN - intlvl))$
+$END$
+$NL$};$NL$
+
+const uint8 kernel_core$coreid$_c2isr_iintpri  = $C2ISR_IINTPRI$;$NL$
+$END$
+
+
+
 
 $
 $  割込みハンドラテーブル
@@ -135,13 +193,9 @@ $
 $FOREACH coreid RANGE(0, TMAX_COREID)$
 const FunctionRefType kernel_core$coreid$_isr_tbl[TNUM_INT] = {$NL$
 $FOREACH intno INTNO_VALID$
-	$IF (((intno & 0xffff0000) == ((coreid+1) << 16)) || ((intno & 0xffff0000) == 0xffff0000))$
 		$isrid = INT.ISRID[intno]$
 		$IF LENGTH(isrid) && EQ(ISR.CATEGORY[isrid], "CATEGORY_2")  && (OSAP.CORE[ISR.OSAPID[isrid]] == coreid)$
 			$TAB$&$ISR.INT_ENTRY[isrid]$
-		$ELIF LENGTH(FIND(INTNO_ICI_LIST, intno))$
-$			//コア間割割込みハンドラ
-			$TAB$&$CONCAT("kernel_inthdr_", FORMAT("0x%x",+intno))$
 		$ELSE$
 			$TAB$&kernel_default_int_handler
 		$END$
@@ -151,7 +205,6 @@ $		//カンマの出力（最後の要素の後ろに出力しない）
 		$END$
 		$TAB$$FORMAT("/* 0x%x */", +intno)$$NL$
 	$END$
-$END$
 };$NL$
 $NL$
 $END$
@@ -170,7 +223,6 @@ $
 $FOREACH coreid RANGE(0, TMAX_COREID)$
 ISRCB * const kernel_core$coreid$_isr_p_isrcb_tbl[TNUM_INT] = {$NL$
 $FOREACH intno INTNO_VALID$
-	$IF ((intno & 0xffff0000) == ((coreid+1) << 16)) || ((intno & 0xffff0000) == 0xffff0000) $
 		$isrid = INT.ISRID[intno]$
 		$IF LENGTH(isrid) && EQ(ISR.CATEGORY[isrid], "CATEGORY_2") && (OSAP.CORE[ISR.OSAPID[isrid]] == coreid)$
 			$TAB$&kernel_isrcb_$isrid$
@@ -183,7 +235,6 @@ $		//カンマの出力（最後の要素の後ろに出力しない）
 		$END$
 		$TAB$$FORMAT("/* 0x%x */", +intno)$$NL$
 	$END$
-$END$
 };$NL$
 $NL$
 $END$

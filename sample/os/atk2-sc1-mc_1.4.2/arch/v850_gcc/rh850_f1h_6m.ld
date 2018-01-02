@@ -16,8 +16,14 @@ OUTPUT_FORMAT("elf32-v850-rh850", "elf32-v850-rh850",
 	      "elf32-v850-rh850")
 OUTPUT_ARCH(v850-rh850)
 STARTUP(start.o)
+ENTRY(__reset)
 SECTIONS
 {
+	.vector : AT(0)
+	{
+		*(.vectors)
+	} > INTROM
+	
 	.text :	
 	{
 		__text = . ;

@@ -119,17 +119,12 @@
 /*
  *  カーネル管理内（カテゴリ2）の割込みを禁止するためのPMRの設定値
  */
-extern const uint16	pmr_isr2_mask;
+extern const uint8	pmr_isr2_mask;
 
 /*
  *  カーネル管理外（カテゴリ1）の割込みとなる優先度のPMRのビット
  */
-extern const uint16	pmr_isr1_mask;
-
-/*
- * 割り込み要求マスクテーブル（PMRへの設定値）
- */
-extern const uint16	pmr_setting_tbl[];
+extern const uint8	pmr_isr1_mask;
 
 /*
  *  無限ループ処理
@@ -165,6 +160,10 @@ x_unlock_all_int(void)
 	enable_int();
 }
 
+extern void set_intpri(uint8_t intpri);
+extern void set_intpri_lock_os_int(void);
+extern void set_intpri_unlock_os_int(void);
+
 /*
  *  OS割込み禁止
  *  API実行時に呼び出される
@@ -180,7 +179,7 @@ x_nested_lock_os_int(void)
 	 *  一段目なら割込みの禁止レベルに設定割込み優先度マスクの値を保存
 	 */
 	if (p_ccb->target_ccb.nested_lock_os_int_cnt == 0U) {
-		set_pmr(pmr_isr2_mask);   /* OS割り込み禁止に設定 */
+		set_intpri_lock_os_int();   /* OS割り込み禁止に設定 */
 	}
 	p_ccb->target_ccb.nested_lock_os_int_cnt++;
 
@@ -206,8 +205,17 @@ x_nested_unlock_os_int(void)
 	 *  一番外側なら割込み優先度マスクを更新
 	 */
 	if (p_ccb->target_ccb.nested_lock_os_int_cnt == 0U) {
-		set_pmr(pmr_setting_tbl[p_ccb->target_ccb.current_iintpri]);
+		set_intpri(p_ccb->target_ccb.current_iintpri);
 	}
+}
+
+LOCAL_INLINE uint16
+get_ispr(void)
+{
+	uint8 data;
+
+	data = sil_reb_mem((void*)INTC_ISPR);
+	return data;
 }
 
 /*
@@ -229,7 +237,7 @@ x_suspend_lock_os_int(void)
 		 *  カテゴリ1 ISRから呼ばれた場合は何もしない
 		 */
 		if (p_ccb->target_ccb.nested_lock_os_int_cnt == 0U) {
-			set_pmr(pmr_isr2_mask);   /* OS割り込み禁止に設定 */
+			set_intpri_lock_os_int();   /* OS割り込み禁止に設定 */
 		}
 		p_ccb->target_ccb.nested_lock_os_int_cnt++;
 		V850_MEMORY_CHANGED
@@ -262,7 +270,7 @@ x_resume_unlock_os_int(void)
 		 *  一番外側なら割込み優先度マスクを更新
 		 */
 		if (p_ccb->target_ccb.nested_lock_os_int_cnt == 0U) {
-			set_pmr(pmr_setting_tbl[p_ccb->target_ccb.current_iintpri]);
+			set_intpri(p_ccb->target_ccb.current_iintpri);
 		}
 	}
 }

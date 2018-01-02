@@ -120,11 +120,7 @@ clr_bit(uint8 bit_offset, uint32 addr)
 
 #ifdef __v850e2v3__
 
-LOCAL_INLINE void
-set_intbp(uint32 intbp)
-{
-	//TODO
-}
+
 //TODO
 #define PEID_ADDR	0x06FF6490
 

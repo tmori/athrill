@@ -62,13 +62,6 @@
 
 #ifdef __v850e2v3__
 
-#ifdef _V850E2M_
-#define TNUM_INTPRI	16
-#elif defined(_V850E2S_)
-#define TNUM_INTPRI	8
-#else
-#error please define ether _V850E2M_ or _V850E2S_
-#endif /* _V850E2M_ */
 
 /*
  *  V850E2用の割込みコントローラ操作ルーチン
@@ -76,33 +69,7 @@
 #ifndef TOPPERS_MACRO_ONLY
 
 #include "prc_sil.h"
-/*
- *  INT
- */
-//#define EIC_BASE			UINT_C(0xffff6000)
-//#define EIC_ADDRESS(intno)	(EIC_BASE + (intno * 2))
-#define PMR					UINT_C(0xFFFF6448)
-#define ISPR_H				UINT_C(0xFFFF6440)
-#define ISPC_H				UINT_C(0xffff6450)
 
-LOCAL_INLINE void
-set_pmr(uint16 pmr)
-{
-	//sil_wrh_mem((void *) PMR, pmr);
-}
-
-LOCAL_INLINE uint16
-get_ispr(void)
-{
-	return(sil_reh_mem((void *) ISPR_H));
-}
-
-LOCAL_INLINE void
-clear_ispr(void)
-{
-	//sil_wrh_mem((void *) ISPC_H, 0xffff);
-	//sil_wrh_mem((void *) ISPR_H, 0x0000);
-}
 
 #endif /* TOPPERS_MACRO_ONLY */
 
@@ -119,6 +86,25 @@ clear_ispr(void)
 #else /* __v850e3v5__ */
 #error please define ether __v850e2v3__ or __v850e3v5__
 #endif /* __v850e2v3__ */
+
+
+#define TMIN_INTNO			0U
+#define TMAX_INTNO			116U
+/*
+ * <TRACE> 7.1 設定ファイルとターゲット依存部の位置付け (b) 値取得シンボルテーブル
+ *
+ * 割込み番号54は欠番であるため，
+ * 使用可能な総数は116個．
+ */
+#define TNUM_INT			117U
+
+/*
+ * <TRACE> 7.1 設定ファイルとターゲット依存部の位置付け (b) 値取得シンボルテーブル
+ * <TRACE> (7-2-1-3) TNUM_INTPRI
+ *
+ * 割込み優先度の数
+ */
+#define TNUM_INTPRI			8
 
 /*
  * 割込みコントローラ
@@ -141,4 +127,10 @@ clear_ispr(void)
  * ISPR
  */
 #define INTC_ISPR	UINT_C(0xFFFFF1FA)
+
+/*
+ *  V850ESFK3用の割込みコントローラ操作ルーチン
+ */
+ /* intno は unsigned を想定 */
+#define EIC_ADDRESS(intno)	(INTC_BASE + (intno * 2U))
 #endif /* TOPPERS_V850_H */

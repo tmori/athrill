@@ -1,5 +1,6 @@
 TNUM_INTPRI,TNUM_INTPRI
 TMAX_INTNO,TMAX_INTNO
+TNUM_INT,TNUM_INT
 offsetof_TCB_p_tinib,"offsetof(TCB,p_tinib)"
 offsetof_TCB_curpri,"offsetof(TCB,curpri)"
 offsetof_TCB_sp,"offsetof(TCB,tskctxb.sp)"

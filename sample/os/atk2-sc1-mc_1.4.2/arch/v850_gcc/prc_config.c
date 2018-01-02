@@ -76,41 +76,6 @@ volatile uint32 core_state_table[TNUM_HWCORE];
  */
 uint32			TOPPERS_spn_var;
 
-/* 割り込み要求マスクテーブル */
-const uint16	pmr_setting_tbl[] =
-{
-#if TNUM_INTPRI == 16
-	0xffff, /* ISR2 LEVEL -16 MASK */
-	0xfffe, /* ISR2 LEVEL -15 MASK */
-	0xfffc, /* ISR2 LEVEL -14 MASK */
-	0xfff8, /* ISR2 LEVEL -13 MASK */
-	0xfff0, /* ISR2 LEVEL -12 MASK */
-	0xffe0, /* ISR2 LEVEL -11 MASK */
-	0xffc0, /* ISR2 LEVEL -10 MASK */
-	0xff80, /* ISR2 LEVEL -9 MASK */
-	0xff00, /* ISR2 LEVEL -8 MASK */
-	0xfe00, /* ISR2 LEVEL -7 MASK */
-	0xfc00, /* ISR2 LEVEL -6 MASK */
-	0xf800, /* ISR2 LEVEL -5 MASK */
-	0xf000, /* ISR2 LEVEL -4 MASK */
-	0xe000, /* ISR2 LEVEL -3 MASK */
-	0xc000, /* ISR2 LEVEL -2 MASK */
-	0x8000, /* ISR2 LEVEL -1 MASK */
-	0x0000  /* Dummy			  */
-#elif TNUM_INTPRI == 8
-	0x00ff, /* ISR2 LEVEL -8 MASK */
-	0x00fe, /* ISR2 LEVEL -7 MASK */
-	0x00fc, /* ISR2 LEVEL -6 MASK */
-	0x00f8, /* ISR2 LEVEL -5 MASK */
-	0x00f0, /* ISR2 LEVEL -4 MASK */
-	0x00e0, /* ISR2 LEVEL -3 MASK */
-	0x00c0, /* ISR2 LEVEL -2 MASK */
-	0x0080, /* ISR2 LEVEL -1 MASK */
-	0x0000  /* Dummy			  */
-#else
-#error TNUM_INTPRI is illegal.
-#endif /* TNUM_INTPRI == 16 */
-};
 
 /*
  *  起動時のハードウェア初期化
@@ -154,8 +119,7 @@ prc_initialize(void)
 
 	p_tccb->trusted_hook_savedsp = 0U;
 
-	/* テーブル参照方式のINTBPアドレス設定 */
-	set_intbp((uint32) intbp_table[x_core_id()]);
+
 }
 
 /*
@@ -165,7 +129,7 @@ void
 prc_terminate(void)
 {
 	/* 割り込み処理中で終了した場合を想定してISPRをクリアする */
-	clear_ispr();
+	//clear_ispr();
 
 	/* 例外処理から終了した場合を想定してNP/EPビットをクリアする */
 	set_psw(current_psw() & ~(0x0080 | 0x0040));
@@ -212,6 +176,41 @@ x_config_int(InterruptNumberType intno, AttributeType intatr, PriorityType intpr
 		 */
 		(void) x_enable_int(INTNO_MASK(intno));
 	}
+#else
+
+#if 0
+	uint32 eic_address;
+
+	ASSERT(VALID_INTNO(intno));
+
+	eic_address = EIC_ADDRESS(intno);
+
+	/*
+	 *  割込みのマスク
+	 *
+	 *  割込みを受け付けたまま，レベルトリガ／エッジトリガの設定や，割
+	 *  込み優先度の設定を行うのは危険なため，割込み属性にかかわらず，
+	 *  一旦マスクする．
+	 */
+	(void) x_disable_int(intno);
+
+
+
+	/*
+	 *  割込み優先度の設定
+	 */
+	sil_wrb_mem((void *)eic_address ,
+		((sil_reb_mem((void *)eic_address) & ~0x7) | (INT_IPM((volatile PriorityType)intpri)))
+	);
+
+	if ((intatr & ENABLE) != 0U) {
+		/*
+		 *  割込みのマスク解除
+		 */
+		(void) x_enable_int(intno);
+	}
+#endif
+
 #endif
 }
 

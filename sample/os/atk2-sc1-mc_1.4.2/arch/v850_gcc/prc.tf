@@ -49,65 +49,207 @@ $
 
 $INCLUDE "arch/v850_gcc/prc_common.tf"$
 
+
 $
-$ テーブル参照方式用ベクタテーブル(v850e3v5)
+$ 割込みベクタと各割込み入口処理
 $
 
-$FOREACH coreid RANGE(0, TMAX_COREID)$
+$FILE "Os_Lcfg_asm.S"$
 
-$	// ハードウェア上の割込み番号毎にC1ISRの関数名を取得する
 
-$	// "interrupt"で初期化
-$int_init = {}$
-$FOREACH intno INTNO_VALID$
-	$IF ((intno & 0xffff0000) == ((coreid+1) << 16))$
-		$int_init = APPEND(int_init, VALUE("interrupt", intno))$
+$
+$ アセンブラ出力用の関数群
+$
 
-	$END$
-$END$
-$FOREACH intno INTNO_VALID$
-	$IF ((intno & 0xffff0000) == 0xffff0000)$
-		$int_init = APPEND(int_init, VALUE("interrupt", intno))$
-	$END$
+
+$FUNCTION ASM_GLOBAL$
+	$TAB$.global $ARGV[1]$
 $END$
 
-$int_handler = {}$
-$FOREACH inthdr int_init$
-	$c1isr_cnt = 0$
-	$intno = inthdr$
+$FUNCTION ASM_COMMENT$
+	//
+$END$
+
+
+#include <v850asm.inc>$NL$$NL$
+
+$TAB$.section .vectors,"ax"$NL$
+$TAB$.align	4$NL$
+
+$
+$ 割込みベクタと各割込み入口処理
+$
+$ASM_GLOBAL("__reset")$
+$NL$
+__reset:
+$NL$
+$TAB$$ASM_COMMENT()$
+$FORMAT(" Exception(RESET) 0x%x ", 0)$$NL$
+$TAB$jr __start$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+
+$
+$ ベクタテーブル(例外 No1-7)
+$
+$ 例外 No1
+$TAB$$ASM_COMMENT()$$FORMAT(" Exception(NMI) 0x%x ", 1)$$NL$
+$TAB$jr _default_int_handler$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+
+$ 例外 No2
+$TAB$$ASM_COMMENT()$$FORMAT(" Exception(INTWDT2) 0x%x ", 2)$$NL$
+$TAB$jr _default_int_handler$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+
+$ 例外 No3
+$TAB$$ASM_COMMENT()$$FORMAT(" Exception(NOP) 0x%x", 3)$$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+
+$ 例外 No4
+$TAB$$ASM_COMMENT()$$FORMAT(" Exception(TRAP0) 0x%x ", 4)$$NL$
+$TAB$jr _ei_exception_entry$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+
+$ 例外 No5
+$TAB$$ASM_COMMENT()$$FORMAT(" Exception(TRAP1) 0x%x ", 5)$$NL$
+$TAB$jr _ei_exception_entry$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+
+$ 例外 No6
+$TAB$$ASM_COMMENT()$$FORMAT(" Exception(ILGOP/DBG0) 0x%x ", 6)$$NL$
+$TAB$jr _ei_exception_entry$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+
+$ 例外 No7
+$TAB$$ASM_COMMENT()$$FORMAT(" Exception(NOP) 0x%x ", 7)$$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+$TAB$nop$NL$
+
+$
+$ ベクタテーブル(マスカブル割込み用)
+$
+$NL$$FOREACH intno INTNO_VALID$
+$TAB$$ASM_COMMENT()$$FORMAT("0x%x",intno*16 + 0x80)$ $NL$
 	$isrid = INT.ISRID[intno]$
-	$IF LENGTH(isrid) && EQ(ISR.CATEGORY[isrid], "CATEGORY_1") && (OSAP.CORE[ISR.OSAPID[isrid]] == coreid)$
-		$c1isr_cnt = c1isr_cnt + 1$
-		$c1isr_info = VALUE(ISR.INT_ENTRY[isrid], +inthdr)$
-	$END$
-
-	$IF c1isr_cnt == 0$
-		$int_handler = APPEND(int_handler, VALUE("kernel_interrupt", +inthdr))$
-	$ELIF c1isr_cnt == 1$
-		$int_handler = APPEND(int_handler, c1isr_info)$
-	$ELSE$
-		$ERROR$$FORMAT(_("intno:%1% is conflicted"), +inthdr)$$END$
-	$END$
-$END$
-
-extern void kernel_interrupt(void);$NL$
-const uint32 __attribute__((aligned(512))) kernel_core$coreid$_intbp_tbl[TNUM_INT] = {$NL$
-$JOINEACH inthdr int_handler "\n"$
-	$TAB$(uint32)&$inthdr$
-$	//カンマの出力（最後の要素の後ろに出力しない）
-		$IF (inthdr & 0xffff) < TMAX_INTNO$
-			,
+	$IF LENGTH(isrid)$
+		$IF EQ(ISR.CATEGORY[isrid], "CATEGORY_2")$
+			$TAB$$FORMAT("jr __kernel_c2isr_interrupt_%d",intno)$$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+		$ELSE$
+			$TAB$$FORMAT("jr __kernel_c1isr_interrupt_%d",intno)$$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
 		$END$
-	$TAB$$FORMAT("/* 0x%x */", +inthdr)$
-$END$
-$NL$};$NL$
-
+	$ELSE$
+$		// 割込みハンドラの登録がない場合
+			$TAB$jr _default_int_handler$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+			$TAB$nop$NL$
+	$END$
 $END$
 
 $NL$
-const uint32 kernel_intbp_table[TotalNumberOfCores] = {$NL$
-$JOINEACH coreid RANGE(0, TMAX_COREID) ",\n"$
-	$TAB$(const uint32) kernel_core$coreid$_intbp_tbl
+
+$TAB$.section .text , "ax"$NL$
+$TAB$.align 4$NL$
+
+$FOREACH intno INTNO_VALID$
+	$isrid = INT.ISRID[intno]$
+	$IF LENGTH(isrid)$
+		$IF EQ(ISR.CATEGORY[isrid], "CATEGORY_2")$
+			$TAB$.globl	_$ISR.INT_ENTRY[isrid]$$NL$
+			$TAB$.globl	$FORMAT("__kernel_c2isr_interrupt_%d",intno)$$NL$
+			$FORMAT("__kernel_c2isr_interrupt_%d",intno)$:$NL$
+			$TAB$addi	-80 , sp , sp$NL$
+			$TAB$st.w	r10 , 52[sp]$NL$
+			$TAB$st.w	r11 , 48[sp]$NL$
+			$TAB$st.w	r12 , 44[sp]$NL$
+			$TAB$st.w	r13 , 40[sp]$NL$
+$ r10に割込みハンドラアドレス
+$ r11に割込みレベル(CPU割込み優先度)
+$ r12に割込みハンドラ番号
+			$TAB$Lea 	$+intno$, r10 $NL$
+			$TAB$shl 	2, r10 $NL$
+			$TAB$add 	r10, r13$NL$
+			$TAB$ld.w 	0[r13], r13$NL$
+			$TAB$Lea	_$ISR.INT_ENTRY[isrid]$ , r10$NL$
+			$TAB$mov	$CPU_INTPRI_MIN - ISR.INTPRI[isrid]$ , r11 $ASM_COMMENT()$$FORMAT("ext_prio=%d cpu_intr_prio=%d",ISR.INTPRI[isrid], CPU_INTPRI_MIN - ISR.INTPRI[isrid])$$NL$
+			$TAB$Lea	$+intno$ , r12 $ASM_COMMENT()$$FORMAT("intno=%d",intno)$$NL$
+			$TAB$jr		_interrupt_isr2$NL$
+		$END$
+
+		$IF EQ(ISR.CATEGORY[isrid], "CATEGORY_1")$
+			$TAB$.globl	_$ISR.INT_ENTRY[isrid]$$NL$
+			$TAB$.globl	$FORMAT("__kernel_c1isr_interrupt_%d",intno)$$NL$
+			$FORMAT("__kernel_c1isr_interrupt_%d",intno)$:$NL$
+			$TAB$addi	-80 , sp , sp$NL$
+			$TAB$st.w	r10 , 52[sp]$NL$
+			$TAB$st.w	r11 , 48[sp]$NL$
+			$TAB$st.w	r12 , 44[sp]$NL$
+			$TAB$st.w	r13 , 40[sp]$NL$
+$ r10に割込みハンドラアドレス
+$ r12に割込みハンドラ番号
+			$TAB$Lea	_$ISR.INT_ENTRY[isrid]$ , r10$NL$
+			$TAB$Lea	$+intno$ , r12 $ASM_COMMENT()$$FORMAT("intno=%d",intno)$$NL$
+			$TAB$jr		_interrupt_isr1$NL$
+		$END$
+
+		$NL$
+	$END$
 $END$
-$NL$};
-$NL$

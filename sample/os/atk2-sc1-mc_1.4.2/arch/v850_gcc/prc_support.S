@@ -482,8 +482,8 @@ FLABEL(infinity_loop)
 	 *   ベクターテーブルから直接実行されるため，スタックの確保やレジスタの保存は
 	 *   特に行われていない状態で実行される
 	 */
-	.global _interrupt
-FLABEL(_interrupt)
+	.global _interrupt_isr2
+FLABEL(_interrupt_isr2)
 	/* 割込み/例外の先頭で実行する処理 */
 	PRE_INT_EXC
 

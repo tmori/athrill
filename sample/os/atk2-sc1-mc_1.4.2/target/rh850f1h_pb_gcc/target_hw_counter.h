@@ -83,8 +83,8 @@
 /*
  *  割込み番号
  */
-#define HWC_DTIM_CORE0_INTNO	(0xffff0000 | (TAUFJ0I0_INTNO + HWC_DTIM_CORE0_ID))
-#define HWC_DTIM_CORE1_INTNO	(0xffff0000 | (TAUFJ1I0_INTNO + HWC_DTIM_CORE1_ID))
+#define HWC_DTIM_CORE0_INTNO	22
+#define HWC_DTIM_CORE1_INTNO	23
 
 /*
  *  タイマクロック周波数（Hz）（8MHz）

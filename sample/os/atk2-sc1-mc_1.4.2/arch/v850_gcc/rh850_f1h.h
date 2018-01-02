@@ -324,16 +324,12 @@
 #define INTC2_EIBD	0x880
 #define INTC2_INTNO_OFFSET	32
 
-/* intno は unsigned を想定 */
-#define EIC_ADDRESS(intno)	(intno <= 31) ? (INTC1_BASE + (intno * 2)) : (INTC2_BASE + INTC2_EIC  + ((intno - INTC2_INTNO_OFFSET) * 2))
 
-#define INTC_HAS_IBD
-
-#define IBD_ADDRESS(intno)	(intno <= 31) ? (0xFFFEEB00 + (intno * 4)) : (0xFFFFB880 + ((intno - INTC2_INTNO_OFFSET) * 4))
-
+#if 0
 #define TMIN_INTNO	UINT_C(0)
 #define TMAX_INTNO	UINT_C(350)
 #define TNUM_INT	UINT_C(351)
+#endif
 
 /*
  *  INTNO

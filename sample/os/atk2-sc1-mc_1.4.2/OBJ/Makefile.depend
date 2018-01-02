@@ -51,6 +51,24 @@ target_support.o: ../arch/gcc/Compiler_Cfg.h ../arch/v850_gcc/v850.h \
 	../kernel/allfunc.h ../target/rh850f1h_pb_gcc/target_ccb.h \
 	../kernel/ccb.h ../kernel/kernel_impl.h \
 	../arch/gcc/Compiler.h 
+Os_Lcfg_asm.o: ../arch/gcc/Compiler_Cfg.h ../arch/v850_gcc/v850.h \
+	../arch/v850_gcc/prc_rename.h ../arch/v850_gcc/v850asm.inc \
+	../arch/v850_gcc/prc_sil.h ../arch/v850_gcc/prc_ccb.h \
+	Os_Lcfg_asm.S ../target/rh850f1h_pb_gcc/target_ici.h \
+	../include/MemMap.h \
+	../target/rh850f1h_pb_gcc/target_rename.h \
+	../include/Rte_Os_Type.h \
+	../target/rh850f1h_pb_gcc/target_config.h \
+	../arch/v850_gcc/Platform_Types.h ../kernel/kernel_rename.h \
+	../arch/v850_gcc/prc_kernel.h ../arch/v850_gcc/rh850_f1h.h \
+	../include/Os.h ../target/rh850f1h_pb_gcc/rh850f1h_pb.h \
+	../arch/v850_gcc/prc_config.h ./Os_Cfg.h \
+	../arch/v850_gcc/prc_ici.h ../include/Std_Types.h \
+	../arch/v850_gcc/prc_insn.h \
+	../target/rh850f1h_pb_gcc/target_kernel.h \
+	../kernel/allfunc.h ../target/rh850f1h_pb_gcc/target_ccb.h \
+	../kernel/ccb.h ../kernel/kernel_impl.h \
+	../arch/gcc/Compiler.h 
 prc_support.o: ../arch/gcc/Compiler_Cfg.h ../arch/v850_gcc/v850.h \
 	../arch/v850_gcc/prc_rename.h ../arch/v850_gcc/v850asm.inc \
 	../arch/v850_gcc/prc_sil.h ../arch/v850_gcc/prc_ccb.h \
