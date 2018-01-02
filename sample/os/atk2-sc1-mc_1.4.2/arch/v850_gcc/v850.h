@@ -120,4 +120,25 @@ clear_ispr(void)
 #error please define ether __v850e2v3__ or __v850e3v5__
 #endif /* __v850e2v3__ */
 
+/*
+ * 割込みコントローラ
+ */
+/*
+ * IMR0-IMR7
+ */
+#define INTC_BASE	UINT_C(0xFFFFF110)
+#define INTC_IMR0	UINT_C(0xFFFFF100)
+#define INTC_IMR1	UINT_C(0xFFFFF102)
+#define INTC_IMR2	UINT_C(0xFFFFF104)
+#define INTC_IMR3	UINT_C(0xFFFFF106)
+#define INTC_IMR4	UINT_C(0xFFFFF108)
+#define INTC_IMR5	UINT_C(0xFFFFF10A)
+#define INTC_IMR6	UINT_C(0xFFFFF10C)
+#define INTC_IMR7	UINT_C(0xFFFFF10E)
+
+
+/*
+ * ISPR
+ */
+#define INTC_ISPR	UINT_C(0xFFFFF1FA)
 #endif /* TOPPERS_V850_H */

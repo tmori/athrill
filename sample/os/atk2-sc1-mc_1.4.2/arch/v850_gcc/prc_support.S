@@ -61,72 +61,14 @@
 #include "asm_config.inc"
 #endif /* USE_ASMCONFIG_INC */
 
-#ifdef __v850e2v3__
-
 /*
  *  V850E2用の割込みコントローラ操作ルーチン
  */
 .macro GET_ISPR reg
-	mov		ISPR_H, AMARG(reg)
-	ld.h	0[AMARG(reg)],AMARG(reg)
+	Lea		INTC_ISPR, AMARG(reg)
+	ld.b	0[AMARG(reg)],AMARG(reg)
+	andi    255, AMARG(reg), AMARG(reg)
 .endm
-
-.macro CLEAR_ISPR reg1, reg2
-	mov		ISPC_H,AMARG(reg1)
-	mov		0xffff,AMARG(reg2)
-	st.h	AMARG(reg2),0[AMARG(reg1)]
-	mov		ISPR_H, AMARG(reg1)
-	st.h	r0,0[AMARG(reg1)]
-.endm
-
-.macro SET_PMR reg_val, reg_tmp
-	mov     PMR, AMARG(reg_tmp)
-	st.h    AMARG(reg_val), 0[AMARG(reg_tmp)]  /* set interrupt level */
-.endm
-
-#endif /* __v850e2v3__ */
-
-#ifdef __v850e3v5__
-
-/*
- *  V850E3V5用の割込みコントローラ操作ルーチン
- */
-.macro GET_ISPR reg
-	stsr 10, AMARG(reg), 2
-.endm
-
-.macro SET_ISPR val, reg 
-	movea AMARG(val),r0,AMARG(reg)
-	ldsr AMARG(reg), 10, 2
-.endm
-
-.macro SET_INTCFG val, reg 
-	movea AMARG(val),r0,AMARG(reg)
-	ldsr AMARG(reg), 13, 2
-.endm
-
-.macro CLEAR_ISPR reg1, reg2
-	SET_INTCFG 1, AMARG(reg1) /* ISPR を書き換え可能に */
-	SET_ISPR   0, AMARG(reg1) /* ISPR のクリア */
-	SET_INTCFG 0, AMARG(reg1) /* ISPR を書き換え禁止に(自動更新に) */
-.endm
-
-.macro GET_PMR reg
-	stsr 11, AMARG(reg), 2
-.endm
-
-.macro SET_PMR reg_val, reg_tmp
-	stsr psw, reg_tmp
-	di
-	ldsr AMARG(reg_val), 11, 2
-	ldsr reg_tmp, psw
-.endm
-
-.macro GET_ICSR reg
-	stsr sr12, AMARG(reg), 2
-.endm
-
-#endif /* __v850e3v5__ */
 
 /*
  *  自コアのCCBの取得
@@ -144,11 +86,7 @@
  *  ネストの一番外側で呼び出されることを想定している
  */
 .macro OUTER_LOCK_OS_INT  reg12, reg13, reg_myccb
-
-    /* pmr_isr2_mask -> PMR */
-    Lea     _pmr_isr2_mask, AMARG(reg13)
-    ld.h    0[AMARG(reg13)], AMARG(reg13)
-    /* TODO SET_PMR AMARG(reg13), AMARG(reg12) */
+	jarl	_set_intpri_lock_os_int, lp
 
     /* nested_lock_os_int_cnt = 1 */
     mov     1, AMARG(reg13)
@@ -164,13 +102,7 @@
     /* nested_lock_os_int_cnt = 0 */
     st.b    r0, CCB_nested_lock_os_int_cnt[AMARG(reg_myccb)]
 
-    /* pmr_setting_tbl[current_iintpri] -> PMR */
-    ld.bu   CCB_current_iintpri[AMARG(reg_myccb)], AMARG(reg12)
-    shl     1, AMARG(reg12)
-    Lea     _pmr_setting_tbl, AMARG(reg13)
-    add     AMARG(reg12), AMARG(reg13)
-    ld.h    0[AMARG(reg13)], AMARG(reg13)
-    /* TODO SET_PMR AMARG(reg13), AMARG(reg12) */ /* set interrupt level */
+	jarl	_set_intpri_unlock_os_int, lp
 
 .endm
 
@@ -189,22 +121,14 @@
 	 * 割込み/例外の先頭で実行する処理
 	 */
 .macro PRE_INT_EXC
-#ifdef _RH850G3M_
-	/* 一部中断型例外ハンドラでのみ必要だが一律実行する */
-	syncp
-#endif /* _RH850G3M_ */
+	nop
 .endm
 
 	/*
 	 * 割込み例外入り口でのレジスタの保存マクロ
 	 */
 .macro INT_EXC_SAVEREG
-#ifndef TOPPERS_USE_PUSHSP
-#ifdef TOPPERS_USE_HFLOAT
-	addi    -84 , sp , sp
-#else /* !TOPPERS_USE_HFLOAT */
 	addi    -80 , sp , sp
-#endif /* TOPPERS_USE_HFLOAT */
 	st.w    r30, 12[sp]  /* r30(ep) */
 	mov     sp, ep 
 	sst.w   r1, 76[ep]
@@ -224,32 +148,33 @@
 	sst.w   r18, 20[ep]
 	sst.w   r19, 16[ep]
 	sst.w   r31, 8[ep]
-#ifdef TOPPERS_USE_HFLOAT
-	stsr    fpsr, r19     /* load FPSR */
-	sst.w   r19, 80[ep]
-#endif /* TOPPERS_USE_HFLOAT */
-#else /* TOPPERS_USE_PUSHSP */
-	/* TODO pushsp  r1-r1 */
-#ifdef TOPPERS_USE_HFLOAT
-	stsr    fpsr, r1     /* load FPSR */
-	/* TODO pushsp  r1-r1 */
-#endif /* TOPPERS_USE_HFLOAT */
-	/* TODO pushsp  r5-r19 */
-	/* TODO pushsp  r30-r31 */
-	addi    -8, sp , sp
-	mov     sp, ep 
-#endif /* TOPPERS_USE_PUSHSP */
+.endm
+
+	/*
+	 * 割込み入り口でのレジスタの保存マクロ
+	 */
+.macro INT_EXC_SAVEREG_ISR
+	st.w    r30, 12[sp]  /* r30(ep) */
+	mov     sp, ep
+	sst.w   r1, 76[ep]
+	sst.w   r5, 72[ep]
+	sst.w   r6, 68[ep]
+	sst.w   r7, 64[ep]
+	sst.w   r8, 60[ep]
+	sst.w   r9, 56[ep]
+	sst.w   r14, 36[ep]
+	sst.w   r15, 32[ep]
+	sst.w   r16, 28[ep]
+	sst.w   r17, 24[ep]
+	sst.w   r18, 20[ep]
+	sst.w   r19, 16[ep]
+	sst.w   r31, 8[ep]
 .endm
 
 	/*
 	 * 割込み例外入り口でのレジスタの復帰マクロ
 	 */
 .macro INT_EXC_RESTOREREG
-#ifndef TOPPERS_USE_PUSHSP
-#ifdef TOPPERS_USE_HFLOAT
-	sld.w   80[ep], r19
-	ldsr    r19, fpsr     /* store FPSR */
-#endif /* TOPPERS_USE_HFLOAT */
 	sld.w   76[ep], r1
 	sld.w   72[ep], r5
 	sld.w   68[ep], r6
@@ -267,22 +192,8 @@
 	sld.w   20[ep], r18
 	sld.w   16[ep], r19
 	sld.w    8[ep], r31
-#ifdef TOPPERS_USE_HFLOAT
-	addi    84, ep, sp
-#else /* !TOPPERS_USE_HFLOAT */
 	addi    80, ep, sp
-#endif /* TOPPERS_USE_HFLOAT */
 	sld.w   12[ep], r30 /* r30(ep) */
-#else /* TOPPERS_USE_PUSHSP */
-	addi    8, sp , sp
-	/* TODO popsp   r30-r31 */
-	/* TODO popsp   r5-r19 */
-#ifdef TOPPERS_USE_HFLOAT
-	/* TODO popsp   r1-r1 */
-	ldsr    r1, fpsr     /* store FPSR */
-#endif /* TOPPERS_USE_HFLOAT */
-	/*TODO popsp   r1-r1 */
-#endif /* TOPPERS_USE_PUSHSP */
 .endm
 
 .macro FE_SAVEREG
@@ -317,445 +228,6 @@
 	INT_EXC_RESTOREREG
 .endm
 
-#ifdef __v850e3v5__
-	/* 
-	 * V850E3V5用ベクタ
-	 * ここにRBASEが設定されることを想定（ここが電源投入時の開始アドレス）
-	 * (EIレベル割込みはテーブル参照方式を使用するため本ベクタは使用しない)
-	 */
-    .section .reset.text
-    .global __reset
-__reset:
-    jr __start
-    .rept 6
-    nop
-    .endr
-__syserr: /* 0x0010 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__hvtrap: /* 0x0020 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__fetrap: /* 0x0030 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__trap0:  /* 0x0040 */
-    jr _ei_exception_entry
-    .rept 6
-    nop
-    .endr
-__trap1:  /* 0x0050 */
-    jr _ei_exception_entry
-    .rept 6
-    nop
-    .endr
-__rie:    /* 0x0060 */
-    jr _ei_exception_entry
-    .rept 6
-    nop
-    .endr
-__fppfpi: /* 0x0070 */
-    jr _ei_exception_entry
-    .rept 6
-    nop
-    .endr
-__ucpop:  /* 0x0080 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__mip:    /* 0x0090 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__pie:    /* 0x00a0 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__debug:  /* 0x00b0 */
-    jr __debug
-    .rept 6
-    nop
-    .endr
-__mae:    /* 0x00c0 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__rfu:    /* 0x00d0 */
-    jr __rfu
-    .rept 6
-    nop
-    .endr
-__fenmi:  /* 0x00e0 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__feint:  /* 0x00f0 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__eiintn0:  /*（優先度0） 0x0100 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn1:  /*（優先度1） 0x0110 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn2:  /*（優先度2） 0x0120 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn3:  /*（優先度3） 0x0130 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn4:  /*（優先度4） 0x0140 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn5:  /*（優先度5） 0x0150 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn6:  /*（優先度6） 0x0160 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn7:  /*（優先度7） 0x0170 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn8:  /*（優先度8） 0x0180 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn9:  /*（優先度9） 0x0190 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn10: /*（優先度10） 0x01a0 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn11: /*（優先度11） 0x01b0 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn12: /*（優先度12） 0x01c0 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn13: /*（優先度13） 0x01d0 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn14: /*（優先度14） 0x01e0 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-__eiintn15: /*（優先度15） 0x01f0 */
-    jr _default_int_handler
-    .rept 6
-    nop
-    .endr
-    jarl    __reset_pe2, r31  /* __reset_pe2をリンクするためのダミーコール */
-
-__terminate:
-    /* 終了:無限ループ */
-    br __terminate
-
-#endif /* __v850e3v5__ */
-
-	/*
-	 *  例外エントリ（feretでリターンする例外用）
-	 */
-	.section .text
-	.align 2
-	.global _fe_exception_entry
-FLABEL(_fe_exception_entry)
-	/* 割込み/例外の先頭で実行する処理 */
-	PRE_INT_EXC
-
-	/* 
-	 * レジスタの保 (FEPC/FEPSWも保存)
-	 */
-	FE_SAVEREG
-
-	/*
-	 * プロテクションフックはOS処理レベルで実行するためOS割込み禁止状態にする
-	 * OS割込み禁止状態で例外が発生する可能性があるため，ネスト管理を行う．
-	 * 例外は次の条件で発生する
-	 *  ・ISR1実行状態で発生した場合
-	 *  ・ISR1実行状態以外で発生した場合
-	 *  ・OS割込み解除状態で発生した場合
-	 *  ・OS割込み禁止状態で発生した場合
-	 */
-
-	/*
-	 * カテゴリ1の割込み以外で例外が発生したかの判断する
-	 * カテゴリ1で例外が発生：fe_exception_1へジャンプ
-	 */
-	/* TODO GET_ISPR r6 */
-	Lea     _pmr_isr1_mask, r7
-	ld.h    0[r7], r7
-	and     r7, r6
-	cmp     r0, r6
-	bne     fe_exception_1
-
-	/*
-	 *  ISR1実行状態以外で発生した場合
-	 */
-	MYCCB   r16, r12
-	ld.b    CCB_nested_lock_os_int_cnt[r16], r13
-	mov     1, r14
-	add     r14, r13
-	st.b    r13, CCB_nested_lock_os_int_cnt[r16]
-	cmp     1, r13
-	bne     fe_exception_1
-
-	/*
-	 * OS割込み解除状態で発生した場合
-	 * OS割込み禁止状態とする
-	 */
-	Lea     _pmr_isr2_mask, r7
-	ld.h    0[r7], r7
-	/* TODO SET_PMR r7, r6 */ /* pmr_isr2_mask -> PMR */
-
-FLABEL(fe_exception_1)
-	/*
-	 *  割込み発生時に変更されるので割込み解除前に取得
-	 */
-	stsr    feic, r19                   /* 例外要因 */
-	stsr    fepc, r18                   /* 例外発生PC */
-
-	/* 
-	 * C1ISRを受け付けるため，NPbit クリア
-	 */
-	stsr    psw, r12
-	mov     ~0x0080, r13
-	and     r12, r13
-	ldsr    r13, psw
-
-FLABEL(fe_exception_2)
-	/*
-	 *  カーネル起動していない場合に起きたCPU例外は，無限ループへ
-	 */
-	ld.b  CCB_kerflg[r16], r12  /* kerflgがFALSEなら無限ループ */
-	cmp   r0, r12
-	be    infinity_loop
-
-	/*
-	 * 多重割込みか判定
-	 */
-	ld.w    CCB_except_nest_cnt[r16], r13
-	mov     1, r14                      /*  割込み・例外のネスト回数のインクリメント */
-	add     r14, r13
-	st.w    r13, CCB_except_nest_cnt[r16]
-
-	mov     sp, r9                      /* sp をr9に退避 */
-
-	cmp     1, r13
-	bne     fe_exception_3              /* _nested_lock_os_int_cnt > 1 -> fe_exception_3 */
-
-	/*
-	 * C1ISR実行状態で発生した場合はスタックポインタの入れ替えしない
-	 */
-	/* TODO GET_ISPR r6 */
-	Lea     _pmr_isr1_mask, r7
-	ld.h    0[r7], r7
-	and     r7, r6
-	cmp     r0, r6
-	bne     fe_exception_3
-
-	/* スタックポインタの保存と入れ替え */
-	MYOSTKPT r12, r17
-	add     -4, r12
-	st.w    sp, 0[r12]                      /* スタックポインタの保存 */
-	mov     r12, sp                         /* スタックポインタの切り替え */
-
-FLABEL(fe_exception_3)
-	/* 
-	 * FEPSW.ID == 1の場合は全割込み禁止状態で例外が発生したので解除しない
-	 */ 
-	stsr    fepsw, r12
-	mov     0x20, r13
-	tst     r12, r13
-	bne     fe_exception_4 
-
-	UNLOCK_ALL_INT
-
-FLABEL(fe_exception_4)
-#ifdef CFG_USE_PROTECTIONHOOK
-	/* v850_cpu_exp_*を退避するスペースを確保 */
-	addi    -12, sp, sp
-
-	/* オフセットの生成 */
-	GET_CID r11
-	shl     2,  r11
-
-	/* v850_cpu_exp_spの退避と設定 */
-	Lea     _v850_cpu_exp_sp_table, r12
-	add     r11, r12
-	st.w    r9, 0[r12]
-	st.w    ep, 0[sp]
-	mov     sp, ep
-
-	/* v850_cpu_exp_noの退避と設定 */
-	Lea     _v850_cpu_exp_no_table, r12
-	add     r11, r12
-	ld.w    0[r12], r13
-	sst.w   r13, 8[ep]
-	st.w    r19, 0[r12]                     /* r19 例外要因 */
-
-	/* v850_cpu_exp_pcの退避と設定 */
-	Lea     _v850_cpu_exp_pc_table, r12
-	add     r11, r12
-	ld.w    0[r12], r13
-	sst.w   r13, 4[ep]
-	mov     r18, r17                        /* r18:fepc */
-	add     -4, r17
-	st.w    r17, 0[r12]
-
-#endif /* CFG_USE_PROTECTIONHOOK */
-
-	/*
-	 * CPU例外が発生した場合，OSはE_OS_PROTECTION_EXCEPTIONをパラメータとして
-	 * プロテクションフックを呼び出す
-	 */
-	mov     E_OS_PROTECTION_EXCEPTION, r6
-	jarl    _call_protectionhk_main, r31
-
-#ifdef CFG_USE_PROTECTIONHOOK
-	mov     sp, ep
-
-	/* オフセットの生成 */
-	GET_CID r11
-	shl     2,  r11
-
-	/* v850_cpu_exp_noを復帰 */
-	Lea     _v850_cpu_exp_no_table, r12
-	add     r11, r12
-	sld.w   8[ep], r13
-	st.w    r13, 0[r12]
-
-	/* v850_cpu_exp_pcを復帰 */
-	Lea     _v850_cpu_exp_pc_table, r12
-	add     r11, r12
-	sld.w   4[ep], r13
-	st.w    r13, 0[r12]
-
-	/* v850_cpu_exp_sp退避 */
-	Lea     _v850_cpu_exp_sp_table, r12
-	add     r11, r12
-	sld.w   0[ep], r13
-	st.w    r13, 0[r12]
-
-	/* v850_cpu_exp_*を退避したスペースを戻す */
-	addi    12, sp, sp
-#endif /* CFG_USE_PROTECTIONHOOK */
-
-FLABEL(fe_ret_exc)
-	LOCK_ALL_INT
-
-	/*
-	 * プロテクションフックはOS割込み禁止状態で実行する
-	 */
-	MYCCB   r16, r12
-
-	/*
-	 *  割込み・例外のネスト回数のデクリメント
-	 */
-	ld.w    CCB_except_nest_cnt[r16], r13
-	mov     -1, r14
-	add     r14, r13
-	st.w    r13, CCB_except_nest_cnt[r16]
-
-	/*
-	 *  OS割込み禁止状態の解除
-	 */
-	/*
-	 * ISR1実行状態で発生した場合は
-	 * (1)スタックポインタの入れ替えをしない
-	 * (2)OS割込み禁止状態の解除をしない
-	*/
-	/* TODO GET_ISPR r6 */
-	Lea     _pmr_isr1_mask, r7
-	ld.h    0[r7], r7
-	and     r7, r6
-	cmp     r0, r6
-	bne     ret_exc_2
-
-	/*
-	 *  ネスト回数が1以上なら割込み元がISRなため例外発生元へ復帰
-	 *  スタックポインタの入れ替えしない
-	 */
-	cmp     r0, r13
-	bne     ret_exc_1
-
-	/*
-	 *  戻り先がタスクなためスタックを戻す
-	 */
-	ld.w    0[sp], sp
-
-FLABEL(ret_exc_1)
-	/*
-	 *  ISR1実行状態以外で発生した場合，OS割込み禁止状態の解除
-	 */
-	ld.b    CCB_nested_lock_os_int_cnt[r16], r13
-	mov     -1, r14
-	add     r14, r13
-	st.b    r13, CCB_nested_lock_os_int_cnt[r16]
-	cmp     r0, r13
-	bne     ret_exc_2
-
-	/* OS割込みを解除 */
-	/* pmr_setting_tbl[current_iintpri] -> PMR */
-	ld.bu   CCB_current_iintpri[r16], r12
-	shl     1, r12
-
-	Lea     _pmr_setting_tbl, r13
-	add     r12, r13
-	ld.h    0[r13], r13
-	/* TODO SET_PMR r13, r12  */    /* set interrupt level */
-
-	/*
-	 *  例外発生元へ復帰
-	 */
-FLABEL(ret_exc_2)
-	/*
-	 * レジスタを復帰(FEPC/FEPSWも復帰)
-	 */
-	FE_RESTOREREG
-
-	feret
-
 	/*
 	 *  例外エントリ（eiretでリターンする例外用）
 	 */
@@ -785,7 +257,7 @@ FLABEL(_ei_exception_entry)
 	 * カテゴリ1の割り込み以外で例外が発生したかの判断する
 	 * カテゴリ1で例外が発生：ei_exception_1へジャンプ
 	 */
-	/* TODO GET_ISPR r6 */
+	GET_ISPR r6
 	Lea     _pmr_isr1_mask, r7
 	ld.h    0[r7], r7
 	and     r7, r6
@@ -803,12 +275,10 @@ FLABEL(_ei_exception_entry)
 	bne     ei_exception_1
 
 	/*
-	 * OS割込み解除状態で発生した場合
-	 * OS割込み禁止状態とする
+	 * OS割込み禁止(OS割込み禁止ネストカウント=1)
+	 * ※OS割込み解除状態で発生した場合
 	 */
-	Lea     _pmr_isr2_mask, r7
-	ld.h    0[r7], r7
-	/* TODO SET_PMR r7, r6  */ /* pmr_isr2_mask -> PMR */
+	jarl	_set_intpri_lock_os_int, lp
 
 FLABEL(ei_exception_1)
 	/*
@@ -842,7 +312,7 @@ FLABEL(ei_exception_2)
 	/*
 	 * ISR1実行状態で発生した場合はスタックポインタの入れ替えしない
 	 */
-	/* TODO GET_ISPR r6 */
+	GET_ISPR r6
 	Lea     _pmr_isr1_mask, r7
 	ld.h    0[r7], r7
 	and     r7, r6
@@ -951,7 +421,7 @@ FLABEL(ei_ret_exc)
 	 * (1)スタックポインタの入れ替えをしない
 	 * (2)OS割込み禁止状態の解除をしない
 	*/
-	/* TODO GET_ISPR r6 */
+	GET_ISPR r6
 	Lea     _pmr_isr1_mask, r7
 	ld.h    0[r7], r7
 	and     r7, r6
@@ -981,15 +451,10 @@ FLABEL(ei_ret_exc_1)
 	cmp     r0, r13
 	bne     ei_ret_exc_2
 
-	/* OS割込みを解除 */
-	/* pmr_setting_tbl[current_iintpri] -> PMR */
-	ld.bu   CCB_current_iintpri[r16], r12
-	shl     1, r12
-
-	Lea     _pmr_setting_tbl, r13
-	add     r12, r13
-	ld.h    0[r13], r13
-	/* TODO SET_PMR r13, r12    */          /* set interrupt level */
+	/*
+	 * OS割込み禁止解除
+	 */
+	 jarl	_set_intpri_unlock_os_int, lp
 
 	/*
 	 *  例外発生元へ復帰
@@ -1027,15 +492,8 @@ FLABEL(_interrupt)
 	 */
 	EI_SAVEREG
 
-#ifdef __v850e3v5__
-	/* 割込み要因の特定 */
-	stsr	eiic,   r12
-	/* EIC割込みは0x1000 から */
-	addi   -0x1000, r12, r12
-#endif /* __v850e3v5__ */
-
 	/* 割込み優先度を取得(r11) */
-	/* TODO GET_ISPR r13 */
+	GET_ISPR r13
 	sch1r    r13, r11
 	add      -1,r11
 
@@ -1408,7 +866,6 @@ FLABEL(ret_int_task)
 	/*
 	 * コンテキストの退避
 	 */
-#ifndef TOPPERS_USE_PUSHSP
 	addi    -40, sp, sp
 	mov     sp, ep
 	sst.w   r20, 36[ep]
@@ -1421,16 +878,21 @@ FLABEL(ret_int_task)
 	sst.w   r27, 8[ep]
 	sst.w   r28, 4[ep]
 	sst.w   r29, 0[ep]
-#else /* TOPPERS_USE_PUSHSP */
-	/* TODO pushsp  r20-r29 */
-#endif /* TOPPERS_USE_PUSHSP */
 
 	/* スタックと次の起動番地を保存 */
 	ld.w    CCB_p_runtsk[r16], ep
 	sst.w   sp, TCB_sp[ep]
 	Lea     ret_int_r, r6
 	sst.w   r6, TCB_pc[ep]
-	br      dispatcher
+
+	/*
+	 * タスクディパッチする
+	 * ※ISPRをクリアするために，retiを使用すること
+	 */
+	ldsr	r0, eipsw	/* 割込みは許可状態でよい */
+	Lea		dispatcher, r10
+	ldsr	r10, eipc
+	reti
 
 	/*
 	 *  割込み・例外でコンテキスト保存した場合の復帰ルーチン
@@ -1439,7 +901,6 @@ FLABEL(ret_int_r)
 	/*
 	 * コンテキストの復帰
 	 */
-#ifndef TOPPERS_USE_PUSHSP
 	mov     sp, ep
 	sld.w   36[ep], r20
 	sld.w   32[ep], r21
@@ -1452,9 +913,6 @@ FLABEL(ret_int_r)
 	sld.w   4[ep], r28
 	sld.w   0[ep], r29
 	addi    40, ep, sp
-#else /* TOPPERS_USE_PUSHSP */
-	/* TODO popsp   r20-r29 */
-#endif /* TOPPERS_USE_PUSHSP */
 
 	LOCK_ALL_INT
 
@@ -1462,29 +920,29 @@ FLABEL(ret_int_r)
 	 *  割込みからの復帰ルーチン
 	 */
 FLABEL(ret_int_1)
+
 	/*
-	 * レジスタを復帰
+	 * EIPCとEIPSWを復帰
 	 */
 	mov     sp, ep
 
-	/* 割込み優先度マスクを変えるAPIがないためATK2では割込み優先度マスクの復帰不要 */
-
 	/*
-	 *  PMRを元に戻す．
-	 *  割込みハンドラ実行時には，ISPRの優先度が自動的に上がるため
-	 *  PMRは変更していないが，割り込みハンドラ内で x_nested_unlock_os_int() を
-	 *  呼び出すとPMRが書き換わるためここで元の値に戻す．
-	 *  OUTER_UNLOCK_OS_INT は nested_lock_os_int_cnt を0にするが，
-	 *  ここでは既に0であるため問題ない．
+	 *  割込み優先度マスク(current_iintpri)に従って，割込みマスクを復帰する
 	 */
 	OUTER_UNLOCK_OS_INT  r7, r6, r16
 
-	/*
-	 * レジスタを復帰(EIPC/EIPSWも復帰)
-	 */
-	EI_RESTOREREG
+	sld.w    4[ep], r10
+	ldsr    r10, eipc
+	sld.w    0[ep], r10
+	ldsr    r10, eipsw
 
-	eiret
+	/*
+	 * Caller-Savedレジスタ復帰
+	 */
+	INT_EXC_RESTOREREG
+
+	reti
+
 
 
 /*
@@ -1524,7 +982,6 @@ FLABEL(_dispatch)
 	 *  許可状態・（モデル上の）割込み優先度マスク全解除状態で呼び出さ
 	 *  れる
 	 */
-#ifndef TOPPERS_USE_PUSHSP
 	addi    -48, sp, sp
 	st.w    r30,  4[sp] /* r30(ep) */
 	mov     sp,  ep
@@ -1539,9 +996,6 @@ FLABEL(_dispatch)
 	sst.w   r28, 12[ep]
 	sst.w   r29, 8[ep]
 	sst.w   r31, 0[ep]
-#else /* TOPPERS_USE_PUSHSP */
-	/* TODO pushsp  r20-r31 */
-#endif /* TOPPERS_USE_PUSHSP */
 
 	MYCCB   r16, r10
 
@@ -1576,7 +1030,6 @@ FLABEL(_dispatch)
 	 * ディスパッチャの復帰ルーチン
 	 */
 FLABEL(dispatch_r)
-#ifndef TOPPERS_USE_PUSHSP
 	mov     sp, ep
 	sld.w   44[ep], r20
 	sld.w   40[ep], r21
@@ -1591,9 +1044,6 @@ FLABEL(dispatch_r)
 	sld.w    0[ep], r31
 	addi    48, ep, sp
 	ld.w     4[ep], r30  /* r30(ep) */
-#else /* TOPPERS_USE_PUSHSP */
-	/* TODO popsp  r20-r31 */
-#endif /* TOPPERS_USE_PUSHSP */
 	jmp     [lp]
 
 /*
@@ -1755,6 +1205,15 @@ FLABEL(dispatcher_3)
 	di
 	OUTER_UNLOCK_OS_INT r12, r13, r16
 	halt
+	/*
+	 * HALT命令後には，NOP命令を5命令以上挿入する必要がある
+	 * 4.3.3 スタンバイ機能の説明：注意1を参照のこと
+	 */
+	nop
+	nop
+	nop
+	nop
+	nop
 	ei
 
 	/*
@@ -1872,16 +1331,6 @@ FLABEL(stack_change_and_call_func_r_1)
 	jmp     [lp]
 
 
-#ifdef ENABLE_RETURN_MAIN
-/*
- *  AKTSP用のmain()へのリターンコード
- */
-	.global _return_main
-FLABEL(_return_main)
-	Lea   _ostkpt, sp
-	ld.w  0[sp],sp
-	jarl  _main, r31
-#endif /* ENABLE_RETURN_MAIN */
 
 
 	/*
@@ -1962,159 +1411,5 @@ FLABEL(trusted_hook_ret)
 #endif /* TOPPERS_USE_PUSHSP */
 
 	jmp     [lp]
-
-
-	.section .pe2_reset
-	.align  4
-	.global  __reset_pe2
- __reset_pe2:
-    jr __start
-    .rept 6
-    nop
-    .endr
-__syserr_pe2: /* 0x0010 */
-    .rept 8
-    nop
-    .endr
-__hvtrap_pe2: /* 0x0020 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__fetrap_pe2: /* 0x0030 */
-    jr _fe_exception_entry
-    .rept 6
-    nop
-    .endr
-__trap0_pe2:  /* 0x0040 */
-    jr _ei_exception_entry
-    .rept 6
-    nop
-    .endr
-__trap1_pe2:  /* 0x0050 */
-    jr _ei_exception_entry
-    .rept 6
-    nop
-    .endr
-__rie_pe2:    /* 0x0060 */
-    .rept 8
-    nop
-    .endr
-__fppfpi_pe2: /* 0x0070 */
-    .rept 8
-    nop
-    .endr
-__ucpop_pe2:  /* 0x080 */
-    .rept 8
-    nop
-    .endr
-__mip_pe2:    /* 0x0090 */
-    .rept 8
-    nop
-    .endr
-__pie_pe2:    /* 0x00a0 */
-    .rept 8
-    nop
-    .endr
-__debug_pe2:  /* 0x00b0 */
-    .rept 8
-    nop
-    .endr
-__mae_pe2:    /* 0x00c0 */
-    .rept 8
-    nop
-    .endr
-__rfu_pe2:    /* 0x00d0 */
-    .rept 8
-    nop
-    .endr
-__fenmi_pe2:  /* 0x00e0 */
-    .rept 8
-    nop
-    .endr
-__feint_pe2:  /* 0x00f0 */
-    .rept 8
-    nop
-    .endr
-__eiintn0_pe2:  /*（優先度0） 0x0100 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn1_pe2:  /*（優先度1） 0x0110 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn2_pe2:  /*（優先度2） 0x0120 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn3_pe2:  /*（優先度3） 0x0130 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn4_pe2:  /*（優先度4） 0x0140 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn5_pe2:  /*（優先度5） 0x0150 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn6_pe2:  /*（優先度6） 0x0160 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn7_pe2:  /*（優先度7） 0x0170 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn8_pe2:  /*（優先度8） 0x0180 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn9_pe2:  /*（優先度9） 0x0190 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn10_pe2: /*（優先度10） 0x01a0 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn11_pe2: /*（優先度11） 0x01b0 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn12_pe2: /*（優先度12） 0x01c0 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn13_pe2: /*（優先度13） 0x01d0 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn14_pe2: /*（優先度14） 0x01e0 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
-__eiintn15_pe2: /*（優先度15） 0x01f0 */
-    jr _interrupt
-    .rept 6
-    nop
-    .endr
 
 

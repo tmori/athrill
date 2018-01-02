@@ -276,3 +276,44 @@ target_is_int_controllable(InterruptNumberType intno)
 	 */
 	return(TRUE);
 }
+
+
+
+/*
+ *	現在の割込み優先度の値(CPU割込み優先度)の設定
+ *
+ *	インライン関数でないのは，アセンブラからも使用するためである．
+ */
+void
+set_intpri(uint8_t intpri)
+{
+	TCCB *my_tccb = &get_my_p_ccb()->target_ccb;
+	SIL_PRE_LOC;
+
+
+	SIL_LOC_INT();
+	sil_wrh_mem((void *)(INTC_IMR0) , my_tccb->imr_table[intpri][0]);
+	sil_wrh_mem((void *)(INTC_IMR1) , my_tccb->imr_table[intpri][1]);
+	sil_wrh_mem((void *)(INTC_IMR2) , my_tccb->imr_table[intpri][2]);
+	sil_wrh_mem((void *)(INTC_IMR3) , my_tccb->imr_table[intpri][3]);
+	sil_wrh_mem((void *)(INTC_IMR4) , my_tccb->imr_table[intpri][4]);
+	sil_wrh_mem((void *)(INTC_IMR5) , my_tccb->imr_table[intpri][5]);
+	sil_wrh_mem((void *)(INTC_IMR6) , my_tccb->imr_table[intpri][6]);
+	sil_wrb_mem((void *)(INTC_IMR7) , (uint8)( my_tccb->imr_table[intpri][7]) );
+	SIL_UNL_INT();
+}
+
+void
+set_intpri_lock_os_int(void)
+{
+	TCCB *my_tccb = &get_my_p_ccb()->target_ccb;
+
+	set_intpri(my_tccb->c2isr_iintpri);
+}
+void
+set_intpri_unlock_os_int(void)
+{
+	TCCB *my_tccb = &get_my_p_ccb()->target_ccb;
+
+	set_intpri(my_tccb->current_iintpri);
+}
