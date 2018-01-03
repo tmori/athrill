@@ -167,40 +167,6 @@ prc_terminate(void)
 void
 x_config_int(InterruptNumberType intno, AttributeType intatr, PriorityType intpri, CoreIdType coreid)
 {
-#if 0
-	uint32 eic_address;
-
-	ASSERT(VALID_INTNO(intno));
-
-	eic_address = EIC_ADDRESS(INTNO_MASK(intno));
-
-	/*
-	 *  割込みのマスク
-	 *
-	 *  割込みを受け付けたまま，レベルトリガ／エッジトリガの設定や，割
-	 *  込み優先度の設定を行うのは危険なため，割込み属性にかかわらず，
-	 *  一旦マスクする．
-	 */
-	(void) x_disable_int(INTNO_MASK(intno));
-
-	/*
-	 *  割込み優先度の設定
-	 */
-	sil_wrh_mem((uint16 *) eic_address,
-				((sil_reh_mem((uint16 *) eic_address) & ~0x0f) | INT_IPM(intpri)));
-
-	/* テーブル参照方式 */
-	sil_wrh_mem((uint16 *) eic_address,
-				(sil_reh_mem((uint16 *) eic_address) | (1 << 6)));
-
-	if ((intatr & ENABLE) != 0U) {
-		/*
-		 *  割込みのマスク解除
-		 */
-		(void) x_enable_int(INTNO_MASK(intno));
-	}
-#else
-
 	uint32 eic_address;
 
 	ASSERT(VALID_INTNO(intno));
@@ -232,7 +198,6 @@ x_config_int(InterruptNumberType intno, AttributeType intatr, PriorityType intpr
 		(void) x_enable_int(intno);
 	}
 
-#endif
 }
 
 #ifndef OMIT_DEFAULT_INT_HANDLER
