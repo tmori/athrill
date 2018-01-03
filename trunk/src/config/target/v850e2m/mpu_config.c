@@ -7,6 +7,7 @@
 #define MPU_ADDRESS_REGION_SIZE_INX_RAM		(1024U * 10240U)
 #define MPU_ADDRESS_REGION_SIZE_INX_INTC	(0xFFFFF1FB - 0xFFFFF100)
 #define MPU_ADDRESS_REGION_SIZE_INX_SERIAL	(0xFFFFFA78 - 0xFFFFFA00)
+#define MPU_ADDRESS_REGION_SIZE_INX_TIMER	(0xFFFFF5B0 - 0xFFFFF590)
 #define MPU_ADDRESS_REGION_SIZE_INX_CPU		(1024U * 1024U)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH0		(1024U * 4U)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH1		(1024U * 12U)
@@ -17,10 +18,12 @@ static uint8 memory_data_RAM[MPU_ADDRESS_REGION_SIZE_INX_RAM];
 static uint8 memory_data_CPU[MPU_ADDRESS_REGION_SIZE_INX_CPU * CPU_CONFIG_CORE_NUM];
 static uint8 memory_data_INTC[MPU_ADDRESS_REGION_SIZE_INX_INTC * CPU_CONFIG_CORE_NUM];
 static uint8 memory_data_SERIAL[MPU_ADDRESS_REGION_SIZE_INX_SERIAL];
+static uint8 memory_data_TIMER[MPU_ADDRESS_REGION_SIZE_INX_TIMER];
 static uint8 memory_data_PH0[MPU_ADDRESS_REGION_SIZE_INX_PH0];
 static uint8 memory_data_PH1[MPU_ADDRESS_REGION_SIZE_INX_PH1];
 
 extern MpuAddressRegionOperationType	serial_memory_operation;
+extern MpuAddressRegionOperationType	timer_memory_operation;
 extern MpuAddressRegionOperationType	intc_memory_operation;
 extern MpuAddressRegionOperationType	cpu_register_operation;
 
@@ -62,6 +65,19 @@ MpuAddressMapType mpu_address_map = {
 						.data		= memory_data_INTC,
 						.ops		= &intc_memory_operation
 				},
+				/*
+				 * TIMER
+				 */
+				{
+						.type		= DEVICE,
+						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
+						.start		= 0x03FFF590,
+						.size		= MPU_ADDRESS_REGION_SIZE_INX_TIMER,
+						.mask		= MPU_ADDRESS_REGION_MASK_PH,
+						.data		= memory_data_TIMER,
+						.ops		= &timer_memory_operation
+				},
+
 				/*
 				 * SERIAL
 				 */
