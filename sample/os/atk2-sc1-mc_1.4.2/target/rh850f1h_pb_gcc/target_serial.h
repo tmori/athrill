@@ -58,48 +58,14 @@
 #ifndef TOPPERS_TARGET_SERIAL_H
 #define TOPPERS_TARGET_SERIAL_H
 
-/*
- *  PE 毎に使用するチャネルのベースアドレス
- *  target_config.c で定義
- */
-extern const uint32	rlin3x_base_table[TNUM_HWCORE];
-
-/*
- *   ボーレートレジスタへの設定値 MainOSC=16MHz, 115200bps
- */
-#define RLIN3xLWBR_VAL	0xf0    /* 1/1 分周 */
-#define RLIN3xLBRP01_VAL	8   /* 9(9+1)分周  source clock / プリスケーラ / BRP01 / 16*/
-
-/*
- *  SIOの割込みハンドラのベクタ番号
- */
-#ifdef G_SYSLOG
-#ifdef G_SYSLOG_RLIN30
-#define INTNO_SIO_UART0	(0xffff0000 | (RLIN30_RX_INTNO))         /* 割込み番号 */
-#else /* G_SYSLOG_RLIN31 */
-#define INTNO_SIO_UART0	(0xffff0000 | (RLIN31_RX_INTNO))         /* 割込み番号 */
-#endif /* G_SYSLOG_RLIN30 */
-#else /* !G_SYSLOG */
-#define INTNO_SIO_UART0	(0xffff0000 | (RLIN30_RX_INTNO))            /* 割込み番号 */
-#define INTNO_SIO_UART1	(0xffff0000 | (RLIN31_RX_INTNO))            /* 割込み番号 */
-#endif /* G_SYSLOG */
-
 #define INTNO_SIO_CORE0 10
 #define INTNO_SIO_CORE1 11
 
 /*
  *  割込み優先度
  */
-#ifdef G_SYSLOG
-#ifdef G_SYSLOG_RLIN30
-#define INTPRI_SIO_UART0	2
-#else /* G_SYSLOG_RLIN31 */
-#define INTPRI_SIO_UART0	2
-#endif /* G_SYSLOG_RLIN30 */
-#else /* !G_SYSLOG */
 #define INTPRI_SIO_UART0	2
 #define INTPRI_SIO_UART1	2
-#endif /* G_SYSLOG */
 
 
 #define INTPRI_SIO_CORE0 INTPRI_SIO_UART0

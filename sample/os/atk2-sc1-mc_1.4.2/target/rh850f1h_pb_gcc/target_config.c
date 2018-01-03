@@ -69,15 +69,6 @@
 #include "logtrace/trace_config.h"
 #endif /* TOPPERS_ENABLE_TRACE */
 
-#if 0
-/*
- *  UARTのベースアドレス
- */
-const uint32	rlin3x_base_table[TotalNumberOfCores] = {
-	RLIN30_BASE,
-	RLIN31_BASE
-};
-#endif
 
 /*
  *  コア間割込み番号

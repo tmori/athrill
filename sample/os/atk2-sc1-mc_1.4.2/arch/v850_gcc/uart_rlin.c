@@ -53,24 +53,58 @@
 #include "Os_Lcfg.h"
 
 
-/* 内部関数のプロトタイプ宣言 */
-LOCAL_INLINE uint8 uart_getchar(void);
+#define UART_TX_BUFSIZE		UINT_C(81920)
+/*
+ * 送信用バッファ
+ */
+static char8 uart_tx_buf[TNUM_HWCORE][UART_TX_BUFSIZE];
 
-#ifdef G_SYSLOG
+/*
+ * バッファリングサイズ
+ */
+static uint16 uart_tx_count[TNUM_HWCORE] = { UINT_C(0), UINT_C(0) };
+/*
+ * 読み込み可能な先頭番地
+ */
+static uint16 uart_tx_rp[TNUM_HWCORE] = { UINT_C(0), UINT_C(0) };
+/*
+ * 書き込み可能な先頭番地
+ */
+static uint16 uart_tx_wp[TNUM_HWCORE] = { UINT_C(0), UINT_C(0) };
 
-#ifdef G_SYSLOG_RLIN30
-#define GET_RLIN_BASE()	RLIN30_BASE
-#elif defined(G_SYSLOG_RLIN31)  /* !G_SYSLOG_RLIN0 */
-#define GET_RLIN_BASE()	RLIN31_BASE
-#else
-#error please define G_SYSLOG_RLIN30 or G_SYSLOG_RLIN31
-#endif /* G_SYSLOG_RLIN30 */
+#define UART_TX_IS_BUFF_EMPTY(coreId)	(uart_tx_count[(coreId)] == 0U)
+#define UART_TX_IS_BUFF_FULL(coreId)	(uart_tx_count[(coreId)] == UART_TX_BUFSIZE)
 
-#else /* !G_SYSLOG */
+boolean
+uart_tx_buf_put(uint32 coreId, char8 c)
+{
+	if (UART_TX_IS_BUFF_FULL(coreId)) {
+		return FALSE;
+	}
+	uart_tx_buf[coreId][uart_tx_wp[coreId]] = c;
+	uart_tx_wp[coreId]++;
+	uart_tx_count[coreId]++;
+	if (uart_tx_wp[coreId] == UART_TX_BUFSIZE) {
+		uart_tx_wp[coreId] = 0U;
+	}
+	return TRUE;
+}
 
-#define GET_RLIN_BASE()	rlin3x_base_table[current_peid() - 1]
+boolean
+uart_tx_buf_get(uint32 coreId, char8 *c)
+{
+	if (UART_TX_IS_BUFF_EMPTY(coreId)) {
+		return FALSE;
+	}
+	*c = uart_tx_buf[coreId][uart_tx_rp[coreId]];
+	uart_tx_rp[coreId]++;
+	uart_tx_count[coreId]--;
+	if (uart_tx_rp[coreId] == UART_TX_BUFSIZE) {
+		uart_tx_rp[coreId] = 0U;
+	}
+	return TRUE;
+}
 
-#endif /* G_SYSLOG */
 
 /*
  *  カーネルの低レベル出力用関数
@@ -78,27 +112,30 @@ LOCAL_INLINE uint8 uart_getchar(void);
 void
 uart_putc(char8 c)
 {
-#if 0
-	uint32 base = GET_RLIN_BASE();
-
-	while ((sil_reb_mem((void *) (base + RLIN3xLST_B)) & 0x10) == 0x10) ;
-	sil_wrb_mem((void *) (base + RLIN3xLUTDRL_B), c);
-#endif
+	boolean ret;
+	uint32 coreId = current_peid() - 1U;
+	SuspendAllInterrupts();
+	(void)uart_tx_buf_put(coreId, c);
+	if (coreId == 0U) {
+		if ((sil_reb_mem((void *)UDnSTR(UDnCH0)) & 0x80) == 0x00) {
+			ret = uart_tx_buf_get(coreId, &c);
+			if (ret == TRUE) {
+				sil_wrb_mem((void *)UDnTX(UDnCH0), c);
+			}
+		}
+	}
+	else {
+		if ((sil_reb_mem((void *)UDnSTR(UDnCH1)) & 0x80) == 0x00) {
+			ret = uart_tx_buf_get(coreId, &c);
+			if (ret == TRUE) {
+				sil_wrb_mem((void *)UDnTX(UDnCH1), c);
+			}
+		}
+	}
+	ResumeAllInterrupts();
 }
 
-/*
- *  受信した文字の取り出し
- */
-LOCAL_INLINE uint8
-uart_getchar(void)
-{
-#if 0
-	uint32 base = GET_RLIN_BASE();
-	return(sil_reb_mem((void *) (base + RLIN3xLURDRL_B)));
-#else
-	return '\0';
-#endif
-}
+
 
 /*
  *  初期化処理
@@ -106,35 +143,56 @@ uart_getchar(void)
 void
 InitHwSerial(void)
 {
-#if 0
-	uint32 base = GET_RLIN_BASE();
+	/*
+	 * 通信設定
+	 *
+	 * UARTD0制御レジスタ0(UD0CTL0)
+	 * UARTD0動作許可、送受信禁止、転送方向：LSB、パリティ：なし、データ：８ビット、ストップビット：１ビット
+	 */
+	sil_wrb_mem((void *) UDnCTL0(UDnCH0), 0x92);
+	sil_wrb_mem((void *) UDnCTL0(UDnCH1), 0x92);
 
-	/* Uart Mode を有効(ノイズフィルタも有効) */
-	sil_wrb_mem((void *) (base + RLIN3xLMD_B), 0x01);
+	/*
+	 * ボーレート設定
+	 *
+	 * UARTD0制御レジスタ1(UD0CTL1)
+	 *  UARTD0クロック：fxx/2 (PRSI =0)
+	 *
+	 * UARTD0制御レジスタ2(UD0CTL2)
+	 *  規定値：130(0x82) 、シリアルクロック：fuclk/130
+	 */
+	sil_wrb_mem((void *) UDnCTL1(UDnCH0), 0x01);
+	sil_wrb_mem((void *) UDnCTL2(UDnCH0), 0x82);
 
-	/* ボーレート設定 */
-	sil_wrb_mem((void *) (base + RLIN3xLWBR_B), RLIN3xLWBR_VAL);
-	sil_wrh_mem((void *) (base + RLIN3xLBRP01_H), RLIN3xLBRP01_VAL);
+	sil_wrb_mem((void *) UDnCTL1(UDnCH1), 0x01);
+	sil_wrb_mem((void *) UDnCTL2(UDnCH1), 0x82);
 
-	/* エラー検出許可 */
-	sil_wrb_mem((void *) (base + RLIN3xLEDE_B), 0x0d);
+	/*
+	 * オプション設定
+	 *
+	 * UARTD0オプション制御レジスタ0(UD0OPT0)
+	 *  送信データ通常出力、受信データ通常入力
+	 *
+	 * UARTD0オプション制御レジスタ1(UD0OPT1)
+	 *  データ一貫性チェックなし
+	 */
+	sil_wrb_mem((void *) UDnOPT0(UDnCH0), 0x14);
+	sil_wrb_mem((void *) UDnOPT1(UDnCH0), 0x00);
 
-	/* データ フォーマット */
-	sil_wrb_mem((void *) (base + RLIN3xLBFC_B), 0x00);
+	sil_wrb_mem((void *) UDnOPT0(UDnCH1), 0x14);
+	sil_wrb_mem((void *) UDnOPT1(UDnCH1), 0x00);
+	/*
+	 * 割込み許可設定
+	 */
+	/* 本API終了後，OS側で割り込み許可するためNOP */
 
-	/* リセット解除 */
-	sil_wrb_mem((void *) (base + RLIN3xLCUC_B), 0x01);
+	/*
+	 * 送受信の許可
+	 * UARTD0動作許可、送受信許可、転送方向：LSB、パリティ：なし、データ：８ビット、ストップビット：１ビット
+	 */
+	sil_wrb_mem((void *) UDnCTL0(UDnCH0), 0xF2);
+	sil_wrb_mem((void *) UDnCTL0(UDnCH1), 0xF2);
 
-	/* 受信割込み許可 */
-	sil_wrb_mem((void *) (base + RLIN3xLIE_B), 0x02);
-
-	/* リセット解除待ち */
-	while (sil_reb_mem((void *) (base + RLIN3xLMST_B)) == 0x00) {
-	}
-
-	/* 送受信動作許可 */
-	sil_wrb_mem((void *) (base + RLIN3xLUOER_B), 0x03);
-#endif
 }
 
 /*
@@ -171,12 +229,17 @@ x_clear_int(uint32 intno)
  */
 ISR(RxHwSerialInt0)
 {
-	/*
-	 *  受信通知コールバックルーチンを呼び出す
-	 */
-	//RxSerialInt(uart_getchar());
-	x_clear_int(10);//TODO
+	uint8 dat;
+	uint8 str;
 
+	dat = sil_reb_mem((void *) UDnRX(UDnCH0)); /* 受信データを読み込み */
+
+	str = sil_reb_mem((void *)UDnSTR(UDnCH0));
+	str &= ~0x10;
+	sil_wrb_mem((void *)UDnSTR(UDnCH0), str);
+	x_clear_int(INTNO_SIO_CORE0);
+
+	RxSerialInt(dat);
 }
 
 
@@ -185,9 +248,15 @@ ISR(RxHwSerialInt0)
  */
 ISR(RxHwSerialInt1)
 {
-	/*
-	 *  受信通知コールバックルーチンを呼び出す
-	 */
-	//RxSerialInt(uart_getchar());
-	x_clear_int(11);//TODO
+	uint8 dat;
+	uint8 str;
+
+	dat = sil_reb_mem((void *) UDnRX(UDnCH1)); /* 受信データを読み込み */
+
+	str = sil_reb_mem((void *)UDnSTR(UDnCH1));
+	str &= ~0x10;
+	sil_wrb_mem((void *)UDnSTR(UDnCH1), str);
+	x_clear_int(INTNO_SIO_CORE1);
+
+	RxSerialInt(dat);
 }
