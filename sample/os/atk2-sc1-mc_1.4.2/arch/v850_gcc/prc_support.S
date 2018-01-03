@@ -169,6 +169,10 @@
 	sst.w   r18, 20[ep]
 	sst.w   r19, 16[ep]
 	sst.w   r31, 8[ep]
+	stsr    eipc, r6
+	sst.w   r6, 4[ep]
+	stsr    eipsw, r6
+	sst.w   r6, 0[ep]
 .endm
 
 	/*
@@ -490,7 +494,7 @@ FLABEL(_interrupt_isr2)
 	/* 
 	 * レジスタの保 (EIPC/EIPSWも保存)
 	 */
-	EI_SAVEREG
+	INT_EXC_SAVEREG_ISR
 
 	/* 割込み優先度を取得(r11) */
 	/* TODO GET_ISPR r13
@@ -921,16 +925,15 @@ FLABEL(ret_int_r)
 	 *  割込みからの復帰ルーチン
 	 */
 FLABEL(ret_int_1)
+	/*
+	 *  割込み優先度マスク(current_iintpri)に従って，割込みマスクを復帰する
+	 */
+	OUTER_UNLOCK_OS_INT  r7, r6, r16
 
 	/*
 	 * EIPCとEIPSWを復帰
 	 */
 	mov     sp, ep
-
-	/*
-	 *  割込み優先度マスク(current_iintpri)に従って，割込みマスクを復帰する
-	 */
-	OUTER_UNLOCK_OS_INT  r7, r6, r16
 
 	sld.w    4[ep], r10
 	ldsr    r10, eipc
