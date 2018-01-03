@@ -3,23 +3,24 @@
 #include <stdio.h>
 
 typedef enum {
-	TIMER_MODE_STOP,
-	TIMER_MODE_RUN
+	TIMER_STATE_STOP,
+	TIMER_STATE_READY,
+	TIMER_STATE_RUNNING
+} TimerStateType;
+
+typedef enum {
+	TIMER_MODE_FREERUN,
+	TIMER_MODE_INTERVAL
 } TimerModeType;
 
 typedef struct {
-	uint16 cnt;
-	TimerModeType mode;
-	uint16 compare0;
-	uint16 compare1;
-	uint16 compare0_intno;
-	uint16 compare1_intno;
-	uint16 overflow_intno;
-	bool raise_int_compare0;
-	bool raise_int_compare1;
-	bool raise_int_overflow;
-	uint64 start_clock;
-	uint16 fd;
+	uint16 				cnt;
+	TimerStateType 		state;
+	TimerModeType 		mode;
+	uint16 				compare0;
+	uint16 				compare0_intno;
+	uint64 				start_clock;
+	uint16 				fd;
 } TimerDeviceType;
 
 static Std_ReturnType timer_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
@@ -57,134 +58,47 @@ void device_init_timer(MpuAddressRegionType *region)
 
 	for (i = 0; i < TAAnChannelNum; i++) {
 		TimerDevice[i].cnt = 0;
-		TimerDevice[i].mode = TIMER_MODE_STOP;
+		TimerDevice[i].state = TIMER_STATE_STOP;
+		TimerDevice[i].mode = TIMER_MODE_FREERUN;
 		TimerDevice[i].compare0 = 0;
-		TimerDevice[i].compare1 = 0;
-		//TimerDevice[i].fd = 32;
 		TimerDevice[i].fd = value;
 		TimerDevice[i].start_clock = 0;
 	}
 
 	for (i = 0; i < 5; i++) {
 		base = 15 + (i * 3);
-		TimerDevice[i].overflow_intno = base + 0;
 		TimerDevice[i].compare0_intno = base + 1;
-		TimerDevice[i].compare1_intno = base + 2;
 	}
 	for (i = 5; i < TAAnChannelNum; i++) {
 		base = 96 + ((i - 5) * 3) + 1;
-		TimerDevice[i].overflow_intno = base + 0;
 		TimerDevice[i].compare0_intno = base + 1;
-		TimerDevice[i].compare1_intno = base + 2;
 	}
 
 	return;
 }
 
-static void device_timer_do_mode(DeviceClockType *device, int ch)
-{
-	TimerModeType org;
-	TimerDeviceType *timer = &(TimerDevice[ch]);
-	uint8 data;
-	uint16 data16;
-	uint16 org_compare0 = timer->compare0;
-	uint16 org_compare1 = timer->compare1;
-
-	org = timer->mode;
-	(void)device_io_read8(timer_region, TAAnCTL0(ch), &data);
-	if ((data & (1 << 7)) == (1 << 7)) {
-		timer->mode = TIMER_MODE_RUN;
-	}
-	else {
-		timer->mode = TIMER_MODE_STOP;
-		timer->cnt = 0;
-		(void)device_io_write16(timer_region, TAAnCNT(ch), 0);
-	}
-
-	/*
-	 * コンペア値の取得
-	 */
-	(void)device_io_read16(timer_region, TAAnCCR0(ch), &timer->compare0);
-	(void)device_io_read16(timer_region, TAAnCCR1(ch), &timer->compare1);
-	if (org_compare0 != timer->compare0) {
-		timer->start_clock = device->clock;//TODO
-	}
-	if (org_compare1 != timer->compare1) {
-		timer->start_clock = device->clock;//TODO
-	}
-
-#if 0
-	if (ch == 6) {
-		printf("TAAnCTL0=0x%x\n", data);
-		printf("TAAnCCR0=%d\n", timer->compare0);
-		fflush(stdout);
-	}
-#endif
-
-	/*
-	 * カウンタ値の取得
-	 */
-	(void)device_io_read16(timer_region, TAAnCNT(ch), &data16);
-	timer->cnt = data16;
-	if (org != timer->mode) {
-		//printf("%I64u:timer(%d) mode(%d => %d) counter=%d/%d\n",
-		//		device->clock, ch, org, timer->mode, timer->cnt, timer->compare0);
-		//fflush(stdout);
-		timer->start_clock = device->clock;
-	}
-	//printf("%I64u:timer(%d) mode(%d => %d) counter=%d/%d\n",
-	//		device->clock, ch, org, timer->mode, timer->cnt, timer->compare0);
-	/*
-	 * TODO クロック設定は省略する
-	 */
-	return;
-}
 static void device_timer_do_update(DeviceClockType *device, int ch)
 {
 	TimerDeviceType *timer = &(TimerDevice[ch]);
 
-	if (timer->mode == TIMER_MODE_STOP) {
+	if (timer->state == TIMER_STATE_STOP) {
 		return;
+	}
+	else if (timer->state == TIMER_STATE_READY) {
+		timer->state = TIMER_STATE_RUNNING;
+		timer->start_clock = device->clock;
 	}
 
 	timer->cnt = (device->clock - timer->start_clock) / timer->fd;
-	if (timer->cnt == timer->compare1) {
-		timer->raise_int_compare1 = TRUE;
+	if (timer->mode == TIMER_MODE_INTERVAL) {
+		if (timer->cnt == timer->compare0) {
+			device_raise_int(timer->compare0_intno);
+			timer->state = TIMER_STATE_READY;
+		}
 	}
-	if (timer->cnt == timer->compare0) {
-		//timer->cnt = 0;
-		timer->raise_int_compare0 = TRUE;
-	}
-
-	(void)device_io_write16(timer_region, TAAnCNT(ch), timer->cnt);
-
 	return;
 }
-static void device_timer_do_interrupt(DeviceClockType *device, int ch)
-{
-	TimerDeviceType *timer = &(TimerDevice[ch]);
 
-	if (ch != 2) {
-		return;
-	}
-
-	if (timer->raise_int_compare0 == TRUE) {
-		//printf("%I64u:device_timer_do_interrupt(%d):compare0=%d intno=%d cnt=%d\n", device->clock, ch, timer->compare0, timer->compare0_intno, timer->cnt);
-		//fflush(stdout);
-		device_raise_int(timer->compare0_intno);
-		timer->raise_int_compare0 = FALSE;
-
-		timer->start_clock = device->clock;//TODO
-	}
-	if (timer->raise_int_compare1 == TRUE) {
-		//printf("device_timer_do_interrupt(%d):compare1 cnt=%d\n", ch, timer->cnt);
-		//fflush(stdout);
-		//device_raise_int(device, timer->compare1_intno);
-		timer->raise_int_compare1 = FALSE;
-	}
-
-	return;
-}
 
 static void device_timer_do_calc_min_interval(DeviceClockType *device, int ch)
 {
@@ -199,7 +113,6 @@ static void device_timer_do_calc_min_interval(DeviceClockType *device, int ch)
 	}
 
 	interval = (timer->compare0 - timer->cnt) * timer->fd;
-	//interval = timer->fd;
 
 	if ((interval > 0) && (interval < device->min_intr_interval)) {
 		device->min_intr_interval = interval;
@@ -211,9 +124,7 @@ static void device_timer_do_calc_min_interval(DeviceClockType *device, int ch)
 #define INLINE_device_supply_clock_timer(dev_clock, ch)	\
 do {	\
 	if ((dev_clock->clock % TimerDevice[ch].fd) == 0) {	\
-		device_timer_do_mode(dev_clock, ch);	\
 		device_timer_do_update(dev_clock, ch);	\
-		device_timer_do_interrupt(dev_clock, ch);	\
 		device_timer_do_calc_min_interval(dev_clock, ch);	\
 	}	\
 	else {	\
@@ -223,27 +134,10 @@ do {	\
 
 void device_supply_clock_timer(DeviceClockType *dev_clock)
 {
-#if 1
+	INLINE_device_supply_clock_timer(dev_clock, 1);
 	INLINE_device_supply_clock_timer(dev_clock, 2);
 	INLINE_device_supply_clock_timer(dev_clock, 3);
-#else
-	int ch;
-
-
-	for (ch = 0; ch < TAAnChannelNum; ch++) {
-		if ((dev_clock->clock % TimerDevice[ch].fd) != 0) {
-			continue;
-		}
-		//モード設定
-		device_timer_do_mode(dev_clock, ch);
-
-		//カウンタ更新
-		device_timer_do_update(dev_clock, ch);
-
-		//割込み生成
-		device_timer_do_interrupt(dev_clock, ch);
-	}
-#endif
+	INLINE_device_supply_clock_timer(dev_clock, 4);
 	return;
 }
 
@@ -256,9 +150,14 @@ static Std_ReturnType timer_get_data8(MpuAddressRegionType *region, CoreIdType c
 }
 static Std_ReturnType timer_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data)
 {
-	uint32 off = (addr - region->start);
-	*data = *((uint16*)(&region->data[off]));
-	return STD_E_OK;
+	uint8 ch;
+	for (ch = 0; ch < TAAnChannelNum; ch++) {
+		if (addr == (TAAnCNT(ch) & region->mask)) {
+			*data = TimerDevice[ch].cnt;
+			return STD_E_OK;
+		}
+	}
+	return STD_E_SEGV;
 }
 static Std_ReturnType timer_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data)
 {
@@ -268,14 +167,46 @@ static Std_ReturnType timer_get_data32(MpuAddressRegionType *region, CoreIdType 
 }
 static Std_ReturnType timer_put_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 data)
 {
+	uint8 ch;
 	uint32 off = (addr - region->start);
 	*((uint8*)(&region->data[off])) = data;
+
+	for (ch = 0; ch < TAAnChannelNum; ch++) {
+		if (addr == (TAAnCTL0(ch) & region->mask)) {
+			if ((data & (1 << 7)) == (1 << 7)) {
+				TimerDevice[ch].state = TIMER_STATE_READY;
+			}
+			else {
+				TimerDevice[ch].state = TIMER_STATE_STOP;
+				TimerDevice[ch].cnt = 0;
+			}
+			break;
+		}
+		else if (addr == (TAAnCTL1(ch) & region->mask)) {
+			uint8 mode = (data & 0x07);
+			if (mode == 0x00) {
+				TimerDevice[ch].mode = TIMER_MODE_INTERVAL;
+			}
+			else {
+				TimerDevice[ch].mode = TIMER_MODE_FREERUN;
+			}
+			break;
+		}
+	}
 	return STD_E_OK;
 }
 static Std_ReturnType timer_put_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 data)
 {
+	uint8 ch;
 	uint32 off = (addr - region->start);
 	*((uint16*)(&region->data[off])) = data;
+	for (ch = 0; ch < TAAnChannelNum; ch++) {
+		if (addr == (TAAnCCR0(ch) & region->mask)) {
+			TimerDevice[ch].compare0 = data;
+			TimerDevice[ch].state = TIMER_STATE_READY;
+			break;
+		}
+	}
 	return STD_E_OK;
 }
 static Std_ReturnType timer_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data)
