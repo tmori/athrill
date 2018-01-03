@@ -27,6 +27,8 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 
 	device_init_clock(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_intc(cpu, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_INTC]);
+	device_init_timer(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+	device_init_serial(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
 
 	return;
 }
@@ -36,6 +38,8 @@ void device_supply_clock(DeviceClockType *dev_clock)
 	dev_clock->min_intr_interval = DEVICE_CLOCK_MAX_INTERVAL;
 	dev_clock->can_skip_clock = TRUE;
 
+	device_supply_clock_timer(dev_clock);
+	device_supply_clock_serial(dev_clock);
 	device_supply_clock_intc(dev_clock);
 	return;
 }

@@ -30,8 +30,8 @@ CFLAGS	:= $(WFLAGS)
 CFLAGS	+= $(IFLAGS)
 
 OBJS	:=	device.o
-#OBJS	+=	timer.o
-#OBJS	+=	serial.o
+OBJS	+=	timer.o
+OBJS	+=	serial.o
 OBJS	+=	dbg_target_serial.o
 OBJS	+=	dbg_target_cpu.o
 OBJS	+=	intc.o
