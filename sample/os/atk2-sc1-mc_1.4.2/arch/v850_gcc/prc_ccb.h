@@ -91,7 +91,7 @@ typedef struct target_core_control_block {
 	 */
 	uint8 current_iintpri;
 	uint8 c2isr_iintpri;
-	uint16 imr_table[TNUM_INTPRI][IMR_SIZE];
+	uint16 imr_table[TNUM_INTPRI + 1U][IMR_SIZE];
 
 	/*
 	 *  x_nested_lock_os_int()のネスト回数

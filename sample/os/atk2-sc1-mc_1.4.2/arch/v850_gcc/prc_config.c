@@ -127,7 +127,7 @@ prc_initialize(void)
 	p_tccb->trusted_hook_savedsp = 0U;
 
 	if (coreId == 0) {
-		for (pri = 0; pri < TNUM_INTPRI; pri++) {
+		for (pri = 0; pri < TNUM_INTPRI + 1U; pri++) {
 			for (imr = 0; imr < IMR_SIZE; imr++) {
 				p_tccb->imr_table[pri][imr] = kernel_core0_imr_table[pri][imr];
 			}
@@ -135,7 +135,7 @@ prc_initialize(void)
 		p_tccb->c2isr_iintpri = kernel_core0_c2isr_iintpri;
 	}
 	else {
-		for (pri = 0; pri < TNUM_INTPRI; pri++) {
+		for (pri = 0; pri < TNUM_INTPRI + 1U; pri++) {
 			for (imr = 0; imr < IMR_SIZE; imr++) {
 				p_tccb->imr_table[pri][imr] = kernel_core1_imr_table[pri][imr];
 			}

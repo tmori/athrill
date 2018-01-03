@@ -104,7 +104,7 @@
  *
  * 割込み優先度の数
  */
-#define TNUM_INTPRI			9
+#define TNUM_INTPRI			8U
 #define IMR_SIZE		8U
 
 /*

@@ -281,6 +281,21 @@ trigger_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 #endif
 }
 
+/* TODO
+ *  割込み要求のクリア
+ */
+static boolean
+x_clear_int(uint32 intno)
+{
+	uint32 eic_address = EIC_ADDRESS(intno);
+
+
+	sil_wrb_mem((void *) eic_address,
+				sil_reb_mem((void *) eic_address) & ~(0x01U << 7));
+
+	return(TRUE);
+}
+
 /*
  *  割込み要求のクリア
  */
@@ -290,6 +305,13 @@ int_clear_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 #if 0
 	/* 割込み要求クリア */
 	HwcounterClearInterrupt(TAUJ_INTNO(n_d, ch_d));
+#else
+	if (n_d == 0) {
+		x_clear_int(22);//TODO
+	}
+	else {
+		x_clear_int(23);//TODO
+	}
 #endif
 }
 
