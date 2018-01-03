@@ -225,6 +225,7 @@ static int get_maxpri_itno(TargetCoreType *cpu)
 		 * マスクされているものは対象外とする
 		 */
 		if (is_masked(cpu, i) == TRUE) {
+			//printf("cpu(%d) intno(%d) is masked\n", cpu->core_id, i);
 			continue;
 		}
 		/*
@@ -301,6 +302,7 @@ static void intc_raise(TargetCoreType *cpu, uint32 intno)
 
 	cpu->reg.pc = INTC_MASK_INTR_ADDR(intno);
 
+	//printf("intc_raise:cpu(%d) intno(%d)\n", cpu->core_id, intno);
 	//if (intno >= 20) {
 	//	printf("RAISED INT(%d):waiting_num=%d\n", intno, intc_control.waiting_lvl_num[intno]);
 	//}
@@ -385,11 +387,11 @@ void intc_clr_currlvl_ispr(CoreIdType core_id)
 	if (intc_control.work[core_id].saved_intno_off > 0) {
 		intc_control.work[core_id].saved_intno_off--;
 		intc_control.work[core_id].current_intno = intc_control.work[core_id].saved_intno_stack[intc_control.work[core_id].saved_intno_off];
-		//printf("current_intno_changed off=%u:%d\n", intc_control.saved_intno_off, intc_control.current_intno);
+		//printf("current_intno_changed1 off=%u:%d\n", intc_control.work[core_id].saved_intno_off, intc_control.work[core_id].current_intno);
 	}
 	else {
 		intc_control.work[core_id].current_intno = -1;
-		//printf("current_intno_changed off=%u:%d\n", intc_control.saved_intno_off, intc_control.current_intno);
+		//printf("current_intno_changed2 off=%u:%d\n", intc_control.work[core_id].saved_intno_off, intc_control.work[core_id].current_intno);
 	}
 	return;
 }
