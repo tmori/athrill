@@ -150,6 +150,22 @@ TermHwSerial(void)
 #endif
 }
 
+
+/* TODO
+ *  割込み要求のクリア
+ */
+static boolean
+x_clear_int(uint32 intno)
+{
+	uint32 eic_address = EIC_ADDRESS(intno);
+
+
+	sil_wrb_mem((void *) eic_address,
+				sil_reb_mem((void *) eic_address) & ~(0x01U << 7));
+
+	return(TRUE);
+}
+
 /*
  *  SIOの割込みハンドラ
  */
@@ -158,7 +174,9 @@ ISR(RxHwSerialInt0)
 	/*
 	 *  受信通知コールバックルーチンを呼び出す
 	 */
-	RxSerialInt(uart_getchar());
+	//RxSerialInt(uart_getchar());
+	x_clear_int(10);//TODO
+
 }
 
 
@@ -170,5 +188,6 @@ ISR(RxHwSerialInt1)
 	/*
 	 *  受信通知コールバックルーチンを呼び出す
 	 */
-	RxSerialInt(uart_getchar());
+	//RxSerialInt(uart_getchar());
+	x_clear_int(11);//TODO
 }
