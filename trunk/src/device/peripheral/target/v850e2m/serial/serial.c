@@ -7,18 +7,13 @@
 #include <stdio.h>
 
 typedef struct {
-	bool   is_support_intr;
-	uint16 id;
-	uint16 intno;
-	uint32 last_raised_counter;
-	uint32 bitrate;
-	uint32 count_base;
-	uint32 flush_count;
-	bool   is_send_data;
-	uint8 send_data;
-	DeviceExSerialOpType *ops;
-	DeviceClockType *dev_clock;
-	uint64			start_clock;
+	uint16 					id;
+	uint16 					intno;
+	bool   					is_send_data;
+	uint8 					send_data;
+	DeviceExSerialOpType 	*ops;
+	DeviceClockType 		*dev_clock;
+	uint64					start_clock;
 } SerialDeviceType;
 
 static SerialDeviceType SerialDevice[UDnChannelNum];
@@ -47,37 +42,22 @@ MpuAddressRegionOperationType	serial_memory_operation = {
 };
 
 
-#define CLOCK_PER_SEC	10000000U	/* 10MHz */
 static MpuAddressRegionType *serial_region;
 
 void device_init_serial(MpuAddressRegionType *region)
 {
 	int i = 0;
-	char *path;
 
 	for (i = 0; i < UDnChannelNum; i++) {
 		SerialDevice[i].id = i;
-		SerialDevice[i].is_support_intr = FALSE;
 		SerialDevice[i].intno = -1;
 		SerialDevice[i].is_send_data = FALSE;
 		SerialDevice[i].start_clock = 0;
-		SerialDevice[i].bitrate = 38400; /* bit/sec */
-		SerialDevice[i].count_base = 1;
-		SerialDevice[i].flush_count = 0;
 		SerialDevice[i].ops = NULL;
-
-		SerialDevice[i].last_raised_counter = 0;
 	}
 
-	SerialDevice[UDnCH0].is_support_intr = TRUE;
 	SerialDevice[UDnCH0].intno = INTNO_INTUD0R;
-	SerialDevice[UDnCH0].count_base = 1;
-
-	if (cpuemu_get_devcfg_string("SERIAL_FILE_PATH", &path) == STD_E_OK) {
-		SerialDevice[UDnCH1].is_support_intr = FALSE;
-		SerialDevice[UDnCH1].intno = INTNO_INTUD1R;
-		SerialDevice[UDnCH1].count_base = 1;
-	}
+	SerialDevice[UDnCH1].intno = INTNO_INTUD1R;
 	serial_region = region;
 
 	return;
@@ -91,29 +71,21 @@ void device_do_serial(SerialDeviceType *serial)
 	if (serial->ops == NULL) {
 		return;
 	}
-	if ((serial->dev_clock->clock % serial->count_base) != 0) {
-		return;
-	}
-	/*
-	 * 受信データチェック：存在している場合は，割り込みを上げる．
-	 */
 	if (serial_isset_str_ssf(serial->id) == FALSE) {
-		if (serial->last_raised_counter == 0U) {
-			ret = serial->ops->getchar(serial->id, &data);
-			if (ret == TRUE) {
-				serial_set_str_ssf(serial->id);
-				//受信データをセットする．
-				(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
-				//受信割込みを上げる
-				//printf("serial interrupt:%c\n", data);
-				if (serial->is_support_intr == TRUE) {
-					device_raise_int(serial->intno);
-				}
-				serial->last_raised_counter = 1000U;
-			}
-		}
-		else {
-			serial->last_raised_counter--;
+		/*
+		 * ユーザがレディ状態
+		 */
+		ret = serial->ops->getchar(serial->id, &data);
+		if (ret == TRUE) {
+			/*
+			 * 受信データチェック：存在している場合は，割り込みを上げる．
+			 */
+			serial_set_str_ssf(serial->id);
+			//受信データをセットする．
+			(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
+			//受信割込みを上げる
+			//printf("serial interrupt:%c\n", data);
+			device_raise_int(serial->intno);
 		}
 	}
 
@@ -122,44 +94,18 @@ void device_do_serial(SerialDeviceType *serial)
 	 */
 	if (serial->is_send_data) {
 		//送信割込みを上げる
-		//TODO 送信割り込みｋを上げるとサンプルプログラムがエラー終了してしまうため，一旦，コメントアウトした．
 		serial_set_str(FALSE, serial->id);
-		//device_raise_int(INTNO_INTUD0T);
 		serial->is_send_data = FALSE;
 	}
-	if (serial->ops->flush != NULL) {
-		if (serial->flush_count >= 100) {
-			serial->ops->flush(serial->id);
-			serial->flush_count = 0;
-		}
-		else {
-			serial->flush_count++;
-		}
-	}
-
 	return;
 }
 
 void device_supply_clock_serial(DeviceClockType *dev_clock)
 {
-#if 1
 	SerialDevice[UDnCH0].dev_clock = dev_clock;
+	SerialDevice[UDnCH1].dev_clock = dev_clock;
 	device_do_serial(&SerialDevice[UDnCH0]);
-	if (SerialDevice[UDnCH1].intno == INTNO_INTUD1R) {
-		SerialDevice[UDnCH1].dev_clock = dev_clock;
-		device_do_serial(&SerialDevice[UDnCH1]);
-	}
-#else
-	int i = 0;
-
-	for (i = 0; i < UDnChannelNum; i++) {
-		if ((dev_clock->clock % SerialDevice[i].fd) != 0) {
-			continue;
-		}
-		device_do_serial(&SerialDevice[i]);
-	}
-	return;
-#endif
+	device_do_serial(&SerialDevice[UDnCH1]);
 }
 
 
