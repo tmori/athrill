@@ -58,7 +58,7 @@
 #ifndef TOPPERS_TARGET_HW_COUNTER_H
 #define TOPPERS_TARGET_HW_COUNTER_H
 
-#include "rh850_f1h.h"
+#include "tauj_hw_counter.h"
 
 
 /*
@@ -83,133 +83,13 @@
 /*
  *  割込み番号
  */
-#define HWC_DTIM_CORE0_INTNO	22
-#define HWC_DTIM_CORE1_INTNO	23
+#define HWC_DTIM_CORE0_INTNO	CORE0_HWC_DTIM_INTNO
+#define HWC_DTIM_CORE1_INTNO	CORE1_HWC_DTIM_INTNO
 
-/*
- *  タイマクロック周波数（Hz）（8MHz）
- */
-#define TIMER_CLOCK_HZ		((uint32) 8000000)
-
-/*
- *  設定値
- */
-#define MCU_TAUJ_MASK_CK0				((uint16) 0xfff0)
-#define MCU_TAUJ_CK0_0					((uint16) 0x0000) /* 分周なし */
-#define MCU_TAUJ00_CMOR					((uint16) 0x0000)
-#define MCU_TAUJ00_CMUR					((uint8) 0x01)
-
-/*
- *  TAUJのユニット番号とチャネルから入力割込み番号への変換
- */
-#define TAUJ_INTNO(n, ch)	(n == 0) ? ((uint32) ((TAUFJ0I0_INTNO + ch))) : ((uint32) (TAUFJ1I0_INTNO + ch))
-
-/*
- *  割込み要求のクリア
- */
-LOCAL_INLINE void
-HwcounterClearInterrupt(uint32 intno)
-{
-	/* 割込み制御レジスタ */
-	uint32 eic_address = EIC_ADDRESS(intno);
-
-	/* 割込み要求ビットのクリア */
-	sil_wrh_mem((void *) eic_address,
-				sil_reh_mem((void *) eic_address) & ~EIRFn);
-}
-
-/*
- *  割込み禁止／許可設定
- */
-LOCAL_INLINE void
-HwcounterDisableInterrupt(uint32 intno)
-{
-	/* 割込み制御レジスタ */
-	uint32 eic_address = EIC_ADDRESS(intno);
-
-	/* 割込みマスクビットのセット */
-	sil_wrh_mem((void *) eic_address,
-				sil_reh_mem((void *) eic_address) | EIMKn);
-}
-
-LOCAL_INLINE void
-HwcounterEnableInterrupt(uint32 intno)
-{
-	/* 割込み制御レジスタ */
-	uint32 eic_address = EIC_ADDRESS(intno);
-
-	/* 割込みマスクビットのセット */
-	sil_wrh_mem((void *) eic_address,
-				sil_reh_mem((void *) eic_address) & ~EIMKn);
-}
-
-/*
- *  TAUJn タイマの動作開始／停止処理
- */
-LOCAL_INLINE void
-SetTimerStartTAUJ(uint8 n, uint8 ch)
-{
-	/* タイマ開始処理 */
-	sil_wrh_mem((void *) TAUJTS(n), (1 << ch));
-}
-
-LOCAL_INLINE void
-SetTimerStopTAUJ(uint8 n, uint8 ch)
-{
-	/* タイマ停止処理 */
-	sil_wrh_mem((void *) TAUJTT(n), (1 << ch));
-}
-
-/*
- *  TAUJnハードウェアカウンタ現在ティック値取得
- */
-LOCAL_INLINE TickType
-GetCurrentTimeTAUJ(uint8 n, uint8 ch, TickType maxval)
-{
-	TickType	count;
-	TickType	curr_time = 0U;
-
-	count = sil_rew_mem((void *) (TAUJCNT(n, ch)));
-
-	/* ダウンカウンタの為，現在チック値に変換 */
-	curr_time = maxval - count;
-	curr_time = (curr_time % maxval);
-
-	return(curr_time);
-}
-
-
-/*
- * MAIN_HW_COUNTER_PE1の定義
- */
-extern void init_hwcounter_MAIN_HW_COUNTER_PE1(TickType maxval, TimeType nspertick);
-extern void start_hwcounter_MAIN_HW_COUNTER_PE1(void);
-extern void stop_hwcounter_MAIN_HW_COUNTER_PE1(void);
-extern void set_hwcounter_MAIN_HW_COUNTER_PE1(TickType exprtick);
-extern TickType get_hwcounter_MAIN_HW_COUNTER_PE1(void);
-extern void cancel_hwcounter_MAIN_HW_COUNTER_PE1(void);
-extern void trigger_hwcounter_MAIN_HW_COUNTER_PE1(void);
-extern void int_clear_hwcounter_MAIN_HW_COUNTER_PE1(void);
-extern void int_cancel_hwcounter_MAIN_HW_COUNTER_PE1(void);
-extern void increment_hwcounter_MAIN_HW_COUNTER_PE1(void);
-
-/*
- * MAIN_HW_COUNTER_PE2の定義
- */
-extern void init_hwcounter_MAIN_HW_COUNTER_PE2(TickType maxval, TimeType nspertick);
-extern void start_hwcounter_MAIN_HW_COUNTER_PE2(void);
-extern void stop_hwcounter_MAIN_HW_COUNTER_PE2(void);
-extern void set_hwcounter_MAIN_HW_COUNTER_PE2(TickType exprtick);
-extern TickType get_hwcounter_MAIN_HW_COUNTER_PE2(void);
-extern void cancel_hwcounter_MAIN_HW_COUNTER_PE2(void);
-extern void trigger_hwcounter_MAIN_HW_COUNTER_PE2(void);
-extern void int_clear_hwcounter_MAIN_HW_COUNTER_PE2(void);
-extern void int_cancel_hwcounter_MAIN_HW_COUNTER_PE2(void);
-extern void increment_hwcounter_MAIN_HW_COUNTER_PE2(void);
 
 /*
  *  10msと一致するティック値(サンプルプログラム用)
  */
-#define TICK_FOR_10MS	TIMER_CLOCK_HZ / 100
+#define TICK_FOR_10MS	10U
 
 #endif /* TOPPERS_TARGET_HW_COUNTER_H */

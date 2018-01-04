@@ -96,52 +96,72 @@
  *   n_c  : 現在値タイマのユニット番号
  *   ch_c : 現在値タイマのチャネル
  */
+/* カウンタの最大値の2倍+1 */
+static TickType MAIN_HW_COUNTER_maxval[TNUM_HWCORE];
+typedef struct {
+	uint8	ctim_id;
+	uint8	dtim_id;
+	uint8	dtim_intno;
+} HwCounterIdType;
+static const HwCounterIdType HwCounterId[TNUM_HWCORE] = {
+		{
+				CORE0_HWC_CTIM_ID,
+				CORE0_HWC_DTIM_ID,
+				CORE0_HWC_DTIM_INTNO,
+		},
+		{
+				CORE1_HWC_CTIM_ID,
+				CORE1_HWC_DTIM_ID,
+				CORE1_HWC_DTIM_INTNO,
+		},
+};
 void
 init_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType maxval, TimeType nspertick, TickRefType cycle)
 {
-#if 0
-	uint16 wk;
-	*cycle = maxval;
+	uint8 wk;
+	uint16 coreId = current_peid() - 1U;
 
-	/* assert((tauj_id + 1) < TAUJ_MAX); */
+	MAIN_HW_COUNTER_maxval[coreId] = maxval;
+	/********************************************************
+	 * 差分タイマ初期化
+	 ********************************************************/
+	/* 差分タイマ停止 */
+	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
 
-	/* 差分タイマ停止処理 */
-	SetTimerStopTAUJ(n_d, ch_d);
-	/* 割込み禁止 */
-	HwcounterDisableInterrupt(TAUJ_INTNO(n_d, ch_d));
-	/* 割込み要求クリア */
-	HwcounterClearInterrupt(TAUJ_INTNO(n_d, ch_d));
+	/* 差分タイマ割込み禁止 */
+	HwcounterDisableInterrupt(HwCounterId[coreId].dtim_id);
 
-	/* 差分タイマのプリスケーラを設定 PCLK/2^0 */
-	wk = sil_reh_mem((void *) TAUJTPS(n_d));
-	wk &= MCU_TAUJ_MASK_CK0;
-	wk |= MCU_TAUJ_CK0_0;
-	sil_wrh_mem((void *) TAUJTPS(n_d), wk);
+	/* 差分タイマ割込み要求クリア */
+	HwcounterClearInterrupt(HwCounterId[coreId].dtim_intno);
 
-	/* 現在値タイマのプリスケーラを設定 PCLK/2^0 */
-	wk = sil_reh_mem((void *) TAUJTPS(n_c));
-	wk &= MCU_TAUJ_MASK_CK0;
-	wk |= MCU_TAUJ_CK0_0;
-	sil_wrh_mem((void *) TAUJTPS(n_c), wk);
+	/* 差分タイマのプリスケーラ設定 */
+	wk = sil_reb_mem((void *) TAAnCTL0(HwCounterId[coreId].dtim_id));
+	wk &= ~0x07;
+	wk |= 0x05;//PLK5
+	sil_wrb_mem((void *) TAAnCTL0(HwCounterId[coreId].dtim_id), wk);
 
-	/* 差分タイマをインターバルタイマとして設定 */
-	sil_wrh_mem((void *) TAUJCMOR(n_d, ch_d), MCU_TAUJ00_CMOR);
-	sil_wrb_mem((void *) TAUJCMUR(n_d, ch_d), MCU_TAUJ00_CMUR);
+	/* 差分タイマのインターバルタイマモード設定 */
+	wk = sil_reb_mem((void *) TAAnCTL1(HwCounterId[coreId].dtim_id));
+	wk = 0x00;
+	sil_wrb_mem((void *) TAAnCTL1(HwCounterId[coreId].dtim_id), wk);
 
-	/* 現在値タイマ停止処理 */
-	SetTimerStopTAUJ(n_c, ch_c);
-	/* 割込み禁止 */
-	HwcounterDisableInterrupt(TAUJ_INTNO(n_c, ch_c));
-	/* 割込み要求クリア */
-	HwcounterClearInterrupt(TAUJ_INTNO(n_c, ch_c));
 
-	/* 現在値タイマをインターバルタイマとして設定 */
-	sil_wrh_mem((void *) TAUJCMOR(n_c, ch_c), MCU_TAUJ00_CMOR);
-	sil_wrb_mem((void *) TAUJCMUR(n_c, ch_c), MCU_TAUJ00_CMUR);
+	/*******************************************************
+	 * 現在値タイマ初期化
+	 *******************************************************/
+	/* 現在値タイマ停止 */
+	SetTimerStopTAA(HwCounterId[coreId].ctim_id);
 
-	/* タイマカウント周期設定 */
-	sil_wrw_mem((void *) TAUJCDR(n_c, ch_c), maxval);
-#endif
+	/* 現在値タイマのプリスケーラ設定 */
+	wk = sil_reb_mem((void *) TAAnCTL0(HwCounterId[coreId].ctim_id));
+	wk &= ~0x07;
+	wk |= 0x05;//PLK5
+	sil_wrb_mem((void *) TAAnCTL0(HwCounterId[coreId].ctim_id), wk);
+
+	/* 現在値タイマのフリー・ランニング・モードモード設定 */
+	wk = sil_reb_mem((void *) TAAnCTL1(HwCounterId[coreId].ctim_id));
+	wk = 0x05;
+	sil_wrb_mem((void *) TAAnCTL1(HwCounterId[coreId].ctim_id), wk);
 }
 
 /*
@@ -150,10 +170,15 @@ init_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType maxva
 void
 start_hwcounter_tauj(uint8 n_c, uint8 ch_c)
 {
-#if 0
-	/* 現在値タイマ開始 */
-	SetTimerStartTAUJ(n_c, ch_c);
-#endif
+	uint16 coreId = current_peid() - 1U;
+	/* 現在値タイマカウント周期設定 */
+	/*
+	 * TAAnCCR1は未使用とするため，FFFFを設定する．
+	 */
+	sil_wrh_mem((void *) TAAnCCR0(HwCounterId[coreId].ctim_id), (uint16)MAIN_HW_COUNTER_maxval[coreId]);
+	sil_wrh_mem((void *) TAAnCCR1(HwCounterId[coreId].ctim_id), 0xFFFF);
+
+	SetTimerStartTAA(HwCounterId[coreId].ctim_id);
 }
 
 /*
@@ -166,23 +191,20 @@ start_hwcounter_tauj(uint8 n_c, uint8 ch_c)
 void
 stop_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c)
 {
-#if 0
-	/* 差分タイマの停止 */
-	SetTimerStopTAUJ(n_d, ch_d);
+	uint16 coreId = current_peid() - 1U;
 
-	/* 差分タイマの割込み禁止 */
-	HwcounterDisableInterrupt(TAUJ_INTNO(n_d, ch_d));
-	/* 差分タイマの割込み要求のクリア */
-	HwcounterClearInterrupt(TAUJ_INTNO(n_d, ch_d));
+	/* 差分タイマ停止 */
+	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
 
-	/* 現在値タイマの停止 */
-	SetTimerStopTAUJ(n_c, ch_c);
+	/* 差分タイマ割込み禁止 */
+	HwcounterDisableInterrupt(HwCounterId[coreId].dtim_intno);
 
-	/* 現在値タイマの割込み禁止 */
-	/* HwcounterDisableInterrupt(TAUJ_INTNO(tauj_id + 1)); */
-	/* 現在値タイマの割込み要求のクリア */
-	HwcounterClearInterrupt(TAUJ_INTNO(n_c, ch_c));
-#endif
+	/* 差分タイマ割込み要求クリア */
+	HwcounterClearInterrupt(HwCounterId[coreId].dtim_intno);
+
+	/* 現在値タイマ停止 */
+	SetTimerStopTAA(HwCounterId[coreId].ctim_id);
+
 }
 
 /*
@@ -195,24 +217,27 @@ stop_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c)
 void
 set_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType exprtick, TickType maxval)
 {
-#if 0
 	TickType	curr_time;
 	TickType	value;
+	uint16 coreId = current_peid() - 1U;
 
 	/* 差分タイマの割込み要求のクリア */
-	HwcounterClearInterrupt(TAUJ_INTNO(n_d, ch_d));
-	/* 差分タイマの割込み許可 */
-	HwcounterEnableInterrupt(TAUJ_INTNO(n_d, ch_d));
+	HwcounterClearInterrupt(HwCounterId[coreId].dtim_intno);
 
-	/* 現在時刻の取得 */
-	curr_time = GetCurrentTimeTAUJ(n_c, ch_c, maxval);
+	/* 差分タイマ停止 */
+	/*
+	 * TAAnCE=0にすると，TAAnCNT=FFFFになる．
+	 */
+	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
 
-	/* タイマに設定する値を算出	*/
+	exprtick = exprtick * 2;
+	/* 差分タイマに設定する値を算出	*/
+	curr_time = GetCurrentTimeTAA(HwCounterId[coreId].ctim_id, MAIN_HW_COUNTER_maxval[coreId]);
 	if (exprtick >= curr_time) {
 		value = exprtick - curr_time;
 	}
 	else {
-		value = (exprtick - curr_time) + (maxval + 1U);
+		value = (exprtick - curr_time) + (MAIN_HW_COUNTER_maxval[coreId] + 1U);
 	}
 
 	/*
@@ -224,13 +249,14 @@ set_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType exprti
 	}
 
 	/* 差分タイマのタイマ値設定 */
-	sil_wrw_mem((void *) TAUJCDR(n_d, ch_d), (value));
+	sil_wrh_mem((void *) TAAnCCR0(HwCounterId[coreId].dtim_id), value);
 
+	/* 差分タイマの割込み許可 */
+	HwcounterEnableInterrupt(HwCounterId[coreId].dtim_intno);
 	/*
 	 * カウント開始
 	 */
-	SetTimerStartTAUJ(n_d, ch_d);
-#endif
+	SetTimerStartTAA(HwCounterId[coreId].dtim_id);
 }
 
 /*
@@ -239,11 +265,8 @@ set_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType exprti
 TickType
 get_hwcounter_tauj(uint8 n_c, uint8 ch_c, TickType maxval)
 {
-#if 0
-	return(GetCurrentTimeTAUJ(n_c, ch_c, maxval));
-#else
-	return 0;
-#endif
+	uint16 coreId = current_peid() - 1U;
+	return (GetCurrentTimeTAA(HwCounterId[coreId].ctim_id, MAIN_HW_COUNTER_maxval[coreId])/2);
 }
 
 /*
@@ -252,10 +275,8 @@ get_hwcounter_tauj(uint8 n_c, uint8 ch_c, TickType maxval)
 void
 cancel_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
-#if 0
-	/* 差分タイマの停止 */
-	SetTimerStopTAUJ(n_d, ch_d);
-#endif
+	uint16 coreId = current_peid() - 1U;
+	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
 }
 
 /*
@@ -264,36 +285,22 @@ cancel_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 void
 trigger_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
-#if 0
+	uint16 coreId = current_peid() - 1U;
+
 	/* 差分タイマ停止 */
-	SetTimerStopTAUJ(n_d, ch_d);
+	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
 
 	/* 差分タイマの割込み要求のクリア */
-	HwcounterClearInterrupt(TAUJ_INTNO(n_d, ch_d));
-	/* 差分タイマの割込み許可 */
-	HwcounterEnableInterrupt(TAUJ_INTNO(n_d, ch_d));
+	HwcounterClearInterrupt(HwCounterId[coreId].dtim_intno);
 
-	/* 差分タイマカウンターに0x01をセットすることで，すぐ満了 */
-	sil_wrw_mem((void *) TAUJCDR(n_d, ch_d), (1));
+	/* 差分タイマの割込み許可 */
+	HwcounterEnableInterrupt(HwCounterId[coreId].dtim_intno);
+
+	sil_wrh_mem((void *) TAAnCCR0(HwCounterId[coreId].dtim_id), 1);
+	sil_wrh_mem((void *) TAAnCCR1(HwCounterId[coreId].dtim_id), 0xFFFF);
 
 	/*  差分タイマ開始 */
-	SetTimerStartTAUJ(n_d, ch_d);
-#endif
-}
-
-/* TODO
- *  割込み要求のクリア
- */
-static boolean
-x_clear_int(uint32 intno)
-{
-	uint32 eic_address = EIC_ADDRESS(intno);
-
-
-	sil_wrb_mem((void *) eic_address,
-				sil_reb_mem((void *) eic_address) & ~(0x01U << 7));
-
-	return(TRUE);
+	SetTimerStartTAA(HwCounterId[coreId].dtim_id);
 }
 
 /*
@@ -302,17 +309,12 @@ x_clear_int(uint32 intno)
 void
 int_clear_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
-#if 0
-	/* 割込み要求クリア */
-	HwcounterClearInterrupt(TAUJ_INTNO(n_d, ch_d));
-#else
-	if (n_d == 0) {
-		x_clear_int(22);//TODO
-	}
-	else {
-		x_clear_int(23);//TODO
-	}
-#endif
+	uint16 coreId = current_peid() - 1U;
+	/* 差分タイマ停止 */
+	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
+
+	/* 差分タイマの割込み要求のクリア */
+	HwcounterClearInterrupt(HwCounterId[coreId].dtim_intno);
 }
 
 /*
@@ -322,10 +324,12 @@ int_clear_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 void
 int_cancel_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
-#if 0
-	/* 割込み要求クリア */
-	HwcounterClearInterrupt(TAUJ_INTNO(n_d, ch_d));
-#endif
+	uint16 coreId = current_peid() - 1U;
+	/* 差分タイマ停止 */
+	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
+
+	/* 差分タイマの割込み要求のクリア */
+	HwcounterClearInterrupt(HwCounterId[coreId].dtim_intno);
 }
 
 /*
