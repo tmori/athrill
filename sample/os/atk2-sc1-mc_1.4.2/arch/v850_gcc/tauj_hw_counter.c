@@ -277,7 +277,8 @@ void
 cancel_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
 	uint16 coreId = current_peid() - 1U;
-	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
+	//SetTimerStopTAA(HwCounterId[coreId].dtim_id);
+	HwcounterClearInterrupt(HwCounterId[coreId].dtim_intno);
 }
 
 /*
@@ -312,7 +313,7 @@ int_clear_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
 	uint16 coreId = current_peid() - 1U;
 	/* 差分タイマ停止 */
-	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
+	//SetTimerStopTAA(HwCounterId[coreId].dtim_id);
 
 	/* 差分タイマの割込み要求のクリア */
 	HwcounterClearInterrupt(HwCounterId[coreId].dtim_intno);
@@ -327,7 +328,7 @@ int_cancel_hwcounter_tauj(uint8 n_d, uint8 ch_d)
 {
 	uint16 coreId = current_peid() - 1U;
 	/* 差分タイマ停止 */
-	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
+	//SetTimerStopTAA(HwCounterId[coreId].dtim_id);
 
 	/* 差分タイマの割込み要求のクリア */
 	HwcounterClearInterrupt(HwCounterId[coreId].dtim_intno);

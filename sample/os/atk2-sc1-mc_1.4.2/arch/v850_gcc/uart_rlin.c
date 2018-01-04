@@ -237,9 +237,10 @@ ISR(RxHwSerialInt0)
 	str = sil_reb_mem((void *)UDnSTR(UDnCH0));
 	str &= ~0x10;
 	sil_wrb_mem((void *)UDnSTR(UDnCH0), str);
+	RxSerialInt(dat);
+
 	x_clear_int(INTNO_SIO_CORE0);
 
-	RxSerialInt(dat);
 }
 
 
@@ -256,7 +257,7 @@ ISR(RxHwSerialInt1)
 	str = sil_reb_mem((void *)UDnSTR(UDnCH1));
 	str &= ~0x10;
 	sil_wrb_mem((void *)UDnSTR(UDnCH1), str);
-	x_clear_int(INTNO_SIO_CORE1);
-
 	RxSerialInt(dat);
+
+	x_clear_int(INTNO_SIO_CORE1);
 }

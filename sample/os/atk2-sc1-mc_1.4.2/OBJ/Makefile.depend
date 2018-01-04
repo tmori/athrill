@@ -27,8 +27,9 @@ cfg1_out.o: ../arch/gcc/Compiler_Cfg.h \
 	../include/Rte_Os_Type.h ../kernel/resource.h \
 	../arch/v850_gcc/Platform_Types.h ../kernel/spinlock.h \
 	../kernel/kernel_unrename.h ../arch/v850_gcc/rh850_f1h.h \
-	../kernel/ioc_impl.h ../arch/v850_gcc/prc_config.h \
-	../arch/v850_gcc/prc_ici.h ../include/Std_Types.h \
+	../kernel/ioc_impl.h ../arch/v850_gcc/tauj_hw_counter.h \
+	../arch/v850_gcc/prc_config.h ../arch/v850_gcc/prc_ici.h \
+	../include/Std_Types.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\machine\\_default_types.h \
 	cfg1_out.c ../kernel/allfunc.h ../arch/gcc/Compiler.h \
 	../kernel/kernel_impl.h ../kernel/ccb.h \
@@ -141,38 +142,56 @@ rh850_f1h.o: ../arch/gcc/Compiler_Cfg.h \
 	../kernel/kernel_impl.h ../kernel/ccb.h 
 tauj_hw_counter.o: ../arch/gcc/Compiler_Cfg.h \
 	../target/rh850f1h_pb_gcc/target_hw_counter.h \
-	../arch/v850_gcc/v850.h ../arch/v850_gcc/prc_sil.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\lib\\gcc\\v850-elf\\4.9-gnuv850_v14.01\\include\\stdint.h \
-	../arch/v850_gcc/tauj_hw_counter.c ./Os_Lcfg.h ./Rte_Type.h \
-	../include/MemMap.h ../include/Rte_Os_Type.h \
+	../arch/v850_gcc/prc_ccb.h ../include/queue.h ./Rte_Type.h \
+	../include/MemMap.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\sys\\features.h \
-	../arch/v850_gcc/Platform_Types.h \
-	../arch/v850_gcc/prc_kernel.h ../arch/v850_gcc/rh850_f1h.h \
-	../include/Os.h ../arch/v850_gcc/tauj_hw_counter.h \
-	../target/rh850f1h_pb_gcc/rh850f1h_pb.h \
+	../target/rh850f1h_pb_gcc/target_config.h \
+	../kernel/kernel_rename.h ../arch/v850_gcc/prc_kernel.h \
+	../include/Os.h ../target/rh850f1h_pb_gcc/rh850f1h_pb.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\stdint.h \
-	./Os_Cfg.h ../include/Std_Types.h \
-	../arch/v850_gcc/prc_insn.h \
-	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\machine\\_default_types.h \
+	./Os_Cfg.h ../arch/v850_gcc/prc_insn.h \
 	../target/rh850f1h_pb_gcc/target_kernel.h \
-	../arch/gcc/Compiler.h 
+	../target/rh850f1h_pb_gcc/target_ccb.h \
+	../arch/v850_gcc/v850.h ../arch/v850_gcc/prc_rename.h \
+	../arch/v850_gcc/prc_sil.h \
+	../arch/v850_gcc/tauj_hw_counter.c ./Os_Lcfg.h \
+	../target/rh850f1h_pb_gcc/target_rename.h \
+	../target/rh850f1h_pb_gcc/target_ici.h \
+	../include/Rte_Os_Type.h ../arch/v850_gcc/Platform_Types.h \
+	../kernel/spinlock.h ../arch/v850_gcc/rh850_f1h.h \
+	../arch/v850_gcc/tauj_hw_counter.h \
+	../arch/v850_gcc/prc_config.h ../arch/v850_gcc/prc_ici.h \
+	../include/Std_Types.h \
+	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\machine\\_default_types.h \
+	../kernel/allfunc.h ../arch/gcc/Compiler.h \
+	../kernel/kernel_impl.h ../kernel/ccb.h 
 target_hw_counter.o: ../arch/gcc/Compiler_Cfg.h \
 	../target/rh850f1h_pb_gcc/target_hw_counter.h \
-	../arch/v850_gcc/v850.h ../arch/v850_gcc/prc_sil.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\lib\\gcc\\v850-elf\\4.9-gnuv850_v14.01\\include\\stdint.h \
-	../target/rh850f1h_pb_gcc/target_hw_counter.c ./Os_Lcfg.h \
-	./Rte_Type.h ../include/MemMap.h ../include/Rte_Os_Type.h \
+	../target/rh850f1h_pb_gcc/target_hw_counter.c \
+	../arch/v850_gcc/prc_ccb.h ../include/queue.h ./Rte_Type.h \
+	../include/MemMap.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\sys\\features.h \
-	../arch/v850_gcc/Platform_Types.h \
-	../arch/v850_gcc/prc_kernel.h ../arch/v850_gcc/rh850_f1h.h \
-	../include/Os.h ../arch/v850_gcc/tauj_hw_counter.h \
-	../target/rh850f1h_pb_gcc/rh850f1h_pb.h \
+	../target/rh850f1h_pb_gcc/target_config.h \
+	../kernel/kernel_rename.h ../arch/v850_gcc/prc_kernel.h \
+	../include/Os.h ../target/rh850f1h_pb_gcc/rh850f1h_pb.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\stdint.h \
-	./Os_Cfg.h ../include/Std_Types.h \
-	../arch/v850_gcc/prc_insn.h \
-	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\machine\\_default_types.h \
+	./Os_Cfg.h ../arch/v850_gcc/prc_insn.h \
 	../target/rh850f1h_pb_gcc/target_kernel.h \
-	../arch/gcc/Compiler.h 
+	../target/rh850f1h_pb_gcc/target_ccb.h \
+	../arch/v850_gcc/v850.h ../arch/v850_gcc/prc_rename.h \
+	../arch/v850_gcc/prc_sil.h \
+	../target/rh850f1h_pb_gcc/target_ici.h ./Os_Lcfg.h \
+	../target/rh850f1h_pb_gcc/target_rename.h \
+	../include/Rte_Os_Type.h ../arch/v850_gcc/Platform_Types.h \
+	../kernel/spinlock.h ../arch/v850_gcc/rh850_f1h.h \
+	../arch/v850_gcc/tauj_hw_counter.h \
+	../arch/v850_gcc/prc_config.h ../arch/v850_gcc/prc_ici.h \
+	../include/Std_Types.h \
+	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\machine\\_default_types.h \
+	../kernel/allfunc.h ../arch/gcc/Compiler.h \
+	../kernel/kernel_impl.h ../kernel/ccb.h 
 prc_config.o: ../arch/gcc/Compiler_Cfg.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\lib\\gcc\\v850-elf\\4.9-gnuv850_v14.01\\include\\stdint.h \
 	../arch/v850_gcc/prc_ccb.h ../include/queue.h ./Rte_Type.h \
@@ -618,24 +637,32 @@ sample1.o: ../arch/gcc/Compiler_Cfg.h \
 	../target/rh850f1h_pb_gcc/target_hw_counter.h \
 	../target/rh850f1h_pb_gcc/target_sysmod.h ../sysmod/serial.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\lib\\gcc\\v850-elf\\4.9-gnuv850_v14.01\\include\\stdint.h \
-	../target/rh850f1h_pb_gcc/target_test.h ./Rte_Type.h \
-	../include/MemMap.h \
+	../arch/v850_gcc/prc_ccb.h \
+	../target/rh850f1h_pb_gcc/target_test.h ../include/queue.h \
+	./Rte_Type.h ../include/MemMap.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\sys\\features.h \
-	sample1.h ../sysmod/banner.h ../sysmod/syslog.h \
-	../arch/v850_gcc/prc_kernel.h ../include/Os.h \
-	../include/t_stdlib.h \
+	../target/rh850f1h_pb_gcc/target_config.h sample1.h \
+	../kernel/kernel_rename.h ../sysmod/banner.h \
+	../sysmod/syslog.h ../arch/v850_gcc/prc_kernel.h \
+	../include/Os.h ../include/t_stdlib.h \
 	../target/rh850f1h_pb_gcc/rh850f1h_pb.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\stdint.h \
 	./Os_Cfg.h ../arch/v850_gcc/prc_insn.h \
 	../target/rh850f1h_pb_gcc/target_kernel.h \
+	../target/rh850f1h_pb_gcc/target_ccb.h \
 	../arch/v850_gcc/uart_rlin.h \
 	../target/rh850f1h_pb_gcc/target_serial.h \
-	../arch/v850_gcc/v850.h ../arch/v850_gcc/prc_sil.h \
-	../include/t_syslog.h Ioc.h ./Os_Lcfg.h \
+	../arch/v850_gcc/v850.h ../arch/v850_gcc/prc_rename.h \
+	../arch/v850_gcc/prc_sil.h ../include/t_syslog.h Ioc.h \
+	../target/rh850f1h_pb_gcc/target_ici.h \
+	../target/rh850f1h_pb_gcc/target_rename.h ./Os_Lcfg.h \
 	../include/Rte_Os_Type.h ../arch/v850_gcc/Platform_Types.h \
-	sample1.c ../arch/v850_gcc/rh850_f1h.h Os_Lcfg.h \
+	../kernel/spinlock.h sample1.c ../arch/v850_gcc/rh850_f1h.h \
+	../arch/v850_gcc/tauj_hw_counter.h Os_Lcfg.h \
+	../arch/v850_gcc/prc_config.h ../arch/v850_gcc/prc_ici.h \
 	../include/Std_Types.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\machine\\_default_types.h \
+	../kernel/ccb.h ../kernel/kernel_impl.h \
 	../arch/gcc/Compiler.h 
 uart_rlin.o: ../arch/gcc/Compiler_Cfg.h ../arch/v850_gcc/v850.h \
 	../arch/v850_gcc/prc_sil.h \
@@ -814,7 +841,8 @@ Os_Lcfg.o: ../arch/gcc/Compiler_Cfg.h \
 	../include/Rte_Os_Type.h ../kernel/resource.h \
 	../arch/v850_gcc/Platform_Types.h ../kernel/spinlock.h \
 	../kernel/kernel_unrename.h ../arch/v850_gcc/rh850_f1h.h \
-	../kernel/ioc_impl.h Os_Lcfg.h ../arch/v850_gcc/prc_config.h \
+	../kernel/ioc_impl.h ../arch/v850_gcc/tauj_hw_counter.h \
+	Os_Lcfg.h ../arch/v850_gcc/prc_config.h \
 	../arch/v850_gcc/prc_ici.h ../include/Std_Types.h \
 	c:\\kpit\\gnuv850v14.01-elf\\v850-elf\\v850-elf\\include\\machine\\_default_types.h \
 	../kernel/allfunc.h ../arch/gcc/Compiler.h \

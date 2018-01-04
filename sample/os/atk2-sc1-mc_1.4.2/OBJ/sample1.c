@@ -727,6 +727,15 @@ TASK(MainTask)
 	SetRelAlarm(MainCycArm0, TICK_FOR_10MS, TICK_FOR_10MS);
 	SetRelAlarm(MainCycArm1, TICK_FOR_10MS, TICK_FOR_10MS);
 
+#if 0 //周期確認用
+	while (1) {
+		WaitEvent(MainEvt0);     /* 10msの作業時間待ち */
+		ClearEvent(MainEvt0);
+
+		syslog(LOG_INFO, "start");
+	}
+#endif
+
 	/*
 	 *  コマンド実行ループ
 	 */
