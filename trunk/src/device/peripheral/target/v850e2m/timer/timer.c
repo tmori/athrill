@@ -134,10 +134,10 @@ do {	\
 
 void device_supply_clock_timer(DeviceClockType *dev_clock)
 {
+	INLINE_device_supply_clock_timer(dev_clock, 0);
 	INLINE_device_supply_clock_timer(dev_clock, 1);
 	INLINE_device_supply_clock_timer(dev_clock, 2);
 	INLINE_device_supply_clock_timer(dev_clock, 3);
-	INLINE_device_supply_clock_timer(dev_clock, 4);
 	return;
 }
 
@@ -171,14 +171,17 @@ static Std_ReturnType timer_put_data8(MpuAddressRegionType *region, CoreIdType c
 	uint32 off = (addr - region->start);
 	*((uint8*)(&region->data[off])) = data;
 
+	//printf("timer_put_data8 core=%d addr=0x%x data=0x%x\n", core_id, addr, data);
 	for (ch = 0; ch < TAAnChannelNum; ch++) {
 		if (addr == (TAAnCTL0(ch) & region->mask)) {
 			if ((data & (1 << 7)) == (1 << 7)) {
 				TimerDevice[ch].state = TIMER_STATE_READY;
+				//printf("timer%d addr=0x%x ready\n", ch, addr);
 			}
 			else {
 				TimerDevice[ch].state = TIMER_STATE_STOP;
 				TimerDevice[ch].cnt = 0;
+				//printf("timer%d addr=0x%x stop\n", ch, addr);
 			}
 			break;
 		}
@@ -186,9 +189,11 @@ static Std_ReturnType timer_put_data8(MpuAddressRegionType *region, CoreIdType c
 			uint8 mode = (data & 0x07);
 			if (mode == 0x00) {
 				TimerDevice[ch].mode = TIMER_MODE_INTERVAL;
+				//printf("timer%d addr=0x%x interval\n", ch, addr);
 			}
 			else {
 				TimerDevice[ch].mode = TIMER_MODE_FREERUN;
+				//printf("timer%d addr=0x%x freerun\n", ch, addr);
 			}
 			break;
 		}
