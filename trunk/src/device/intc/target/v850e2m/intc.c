@@ -151,24 +151,34 @@ static void set_wait_intno(uint32 coreId, int intno, uint32 lvl)
 		intc_control.work[coreId].is_waiting_lvl[intno] = lvl;
 		intc_control.work[coreId].waiting_lvl_num[intno] = 1;
 		intc_control.work[coreId].waiting_int_num++;
-		//printf("set_wait_intno:intno=%d lvl=%d waiting num=%d current_intno=%d\n",
-		//		intno, intc_control.is_waiting_lvl[intno], intc_control.waiting_int_num,
-		//		intc_control.current_intno);
+#if 0
+		printf("set_wait_intno:coreId=%d intno=%d lvl=%d waiting num=%d current_intno=%d\n",
+				coreId, intno, intc_control.work[coreId].is_waiting_lvl[intno],
+				intc_control.work[coreId].waiting_int_num,
+				intc_control.work[coreId].current_intno);
+#endif
 	}
 	else {
-		//printf("set_wait_intno:intno=%d : can not set waiting num=%d current_intno=%d\n",
-		//		intno, intc_control.waiting_int_num, intc_control.current_intno);
+#if 0
+		printf("set_wait_intno:coreId=%d intno=%d : can not set waiting num=%d current_intno=%d\n",
+				coreId, intno, intc_control.work[coreId].waiting_int_num,
+				intc_control.work[coreId].current_intno);
+#endif
 	}
 }
 static void clr_wait_intno(CoreIdType core_id, int intno)
 {
 	if (intc_control.work[core_id].waiting_lvl_num[intno] > 0) {
 		intc_control.work[core_id].waiting_lvl_num[intno]--;
-		//printf("clr_wait_intno:intno=%d lvl_num=%d\n", intno, intc_control.waiting_lvl_num[intno]);
 		if (intc_control.work[core_id].waiting_lvl_num[intno] == 0) {
 			intc_control.work[core_id].is_waiting_lvl[intno] = INTC_NUM_INTLVL;
 		}
 		intc_control.work[core_id].waiting_int_num--;
+#if 0
+		printf("clr_wait_intno:coreId=%d intno=%d lvl_num=%d is_waiting_lvl=%d\n",
+				core_id, intno, intc_control.work[core_id].waiting_lvl_num[intno],
+				intc_control.work[core_id].is_waiting_lvl[intno]);
+#endif
 	}
 }
 

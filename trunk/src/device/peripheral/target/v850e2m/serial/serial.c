@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 typedef struct {
+	uint32 					last_raised_counter;
 	uint16 					id;
 	uint16 					intno;
 	bool   					is_send_data;
@@ -54,6 +55,7 @@ void device_init_serial(MpuAddressRegionType *region)
 		SerialDevice[i].is_send_data = FALSE;
 		SerialDevice[i].start_clock = 0;
 		SerialDevice[i].ops = NULL;
+		SerialDevice[i].last_raised_counter = 0;
 	}
 
 	SerialDevice[UDnCH0].intno = INTNO_INTUD0R;
@@ -72,21 +74,27 @@ void device_do_serial(SerialDeviceType *serial)
 		return;
 	}
 	if (serial_isset_str_ssf(serial->id) == FALSE) {
-		/*
-		 * ユーザがレディ状態
-		 */
-		ret = serial->ops->getchar(serial->id, &data);
-		if (ret == TRUE) {
-			//printf("device_do_serial:data=%c\n", data);
+		if (serial->last_raised_counter > 0U) {
+			serial->last_raised_counter--;
+		}
+		else {
 			/*
-			 * 受信データチェック：存在している場合は，割り込みを上げる．
+			 * ユーザがレディ状態
 			 */
-			serial_set_str_ssf(serial->id);
-			//受信データをセットする．
-			(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
-			//受信割込みを上げる
-			//printf("serial interrupt:%c\n", data);
-			device_raise_int(serial->intno);
+			ret = serial->ops->getchar(serial->id, &data);
+			if (ret == TRUE) {
+				//printf("device_do_serial:data=%c\n", data);
+				/*
+				 * 受信データチェック：存在している場合は，割り込みを上げる．
+				 */
+				serial_set_str_ssf(serial->id);
+				//受信データをセットする．
+				(void)serial_put_data8(serial_region, CPU_CONFIG_CORE_ID_0, (UDnRX(serial->id) & serial_region->mask), data);
+				//受信割込みを上げる
+				//printf("serial interrupt:%c\n", data);
+				device_raise_int(serial->intno);
+				serial->last_raised_counter = 1000U;
+			}
 		}
 	}
 
@@ -178,6 +186,12 @@ static Std_ReturnType serial_put_data8(MpuAddressRegionType *region, CoreIdType 
 		(void)SerialDevice[UDnCH1].ops->putchar(SerialDevice[UDnCH1].id, data);
 		SerialDevice[UDnCH1].is_send_data = TRUE;
 		serial_set_str(TRUE, UDnCH1);
+	}
+	else if (addr == (UDnSTR(UDnCH0) & region->mask)) {
+		//printf("UDnSTR(UDnCH0):data=0x%x\n", data);
+	}
+	else if (addr == (UDnSTR(UDnCH1) & region->mask)) {
+		//printf("UDnSTR(UDnCH1):data=0x%x\n", data);
 	}
 	return STD_E_OK;
 }

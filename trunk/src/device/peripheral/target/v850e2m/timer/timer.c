@@ -87,11 +87,13 @@ static void device_timer_do_update(DeviceClockType *device, int ch)
 	else if (timer->state == TIMER_STATE_READY) {
 		timer->state = TIMER_STATE_RUNNING;
 		timer->start_clock = device->clock;
+		//printf("device_timer_do_update:ch=%d compare=%d\n", ch, timer->compare0);
 	}
 
 	timer->cnt = (device->clock - timer->start_clock) / timer->fd;
 	if (timer->mode == TIMER_MODE_INTERVAL) {
 		if (timer->cnt == timer->compare0) {
+			//printf("raise INT:ch=%d cnt=%d\n", ch, timer->cnt);
 			device_raise_int(timer->compare0_intno);
 			timer->state = TIMER_STATE_READY;
 		}
