@@ -49,7 +49,7 @@ void device_init_timer(MpuAddressRegionType *region)
 {
 	int i = 0;
 	uint16 base;
-	uint32 value = 32;
+	uint32 value = 50000;
 
 	(void)cpuemu_get_devcfg_value("DEVICE_CONFIG_TIMER_FD", &value);
 	//printf("timer value=%d\n", value);
