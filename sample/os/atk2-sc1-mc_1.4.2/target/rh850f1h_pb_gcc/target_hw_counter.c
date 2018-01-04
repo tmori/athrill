@@ -52,7 +52,7 @@
 #include "tauj_hw_counter.h"
 
 /* カウンタの最大値の2倍+1 */
-static TickType MAIN_HW_COUNTER_maxval;
+static TickType MAIN_HW_COUNTER_maxval[TNUM_HWCORE];
 
 /*
  *  =begin MAIN_HW_COUNTER_CORE0の定義
@@ -66,7 +66,7 @@ init_hwcounter_MAIN_HW_COUNTER_CORE0(TickType maxval, TimeType nspertick)
 {
 	init_hwcounter_tauj(HWC_DTIM_CORE0_UNIT, HWC_DTIM_CORE0_ID,
 						HWC_CTIM_CORE0_UNIT, HWC_CTIM_CORE0_ID,
-						maxval, nspertick, &MAIN_HW_COUNTER_maxval);
+						maxval, nspertick, &MAIN_HW_COUNTER_maxval[0]);
 }
 
 /*
@@ -96,7 +96,7 @@ set_hwcounter_MAIN_HW_COUNTER_CORE0(TickType exprtick)
 {
 	set_hwcounter_tauj(HWC_DTIM_CORE0_UNIT, HWC_DTIM_CORE0_ID,
 					   HWC_CTIM_CORE0_UNIT, HWC_CTIM_CORE0_ID,
-					   exprtick, MAIN_HW_COUNTER_maxval);
+					   exprtick, MAIN_HW_COUNTER_maxval[0]);
 }
 
 /*
@@ -106,7 +106,7 @@ TickType
 get_hwcounter_MAIN_HW_COUNTER_CORE0(void)
 {
 	return(get_hwcounter_tauj(HWC_CTIM_CORE0_UNIT, HWC_CTIM_CORE0_ID,
-							  MAIN_HW_COUNTER_maxval));
+							  MAIN_HW_COUNTER_maxval[0]));
 }
 
 /*
@@ -171,7 +171,7 @@ init_hwcounter_MAIN_HW_COUNTER_CORE1(TickType maxval, TimeType nspertick)
 {
 	init_hwcounter_tauj(HWC_DTIM_CORE1_UNIT, HWC_DTIM_CORE1_ID,
 						HWC_CTIM_CORE1_UNIT, HWC_CTIM_CORE1_ID,
-						maxval, nspertick, &MAIN_HW_COUNTER_maxval);
+						maxval, nspertick, &MAIN_HW_COUNTER_maxval[1]);
 }
 
 /*
@@ -201,7 +201,7 @@ set_hwcounter_MAIN_HW_COUNTER_CORE1(TickType exprtick)
 {
 	set_hwcounter_tauj(HWC_DTIM_CORE1_UNIT, HWC_DTIM_CORE1_ID,
 					   HWC_CTIM_CORE1_UNIT, HWC_CTIM_CORE1_ID,
-					   exprtick, MAIN_HW_COUNTER_maxval);
+					   exprtick, MAIN_HW_COUNTER_maxval[1]);
 }
 
 /*
@@ -211,7 +211,7 @@ TickType
 get_hwcounter_MAIN_HW_COUNTER_CORE1(void)
 {
 	return(get_hwcounter_tauj(HWC_CTIM_CORE1_UNIT, HWC_CTIM_CORE1_ID,
-							  MAIN_HW_COUNTER_maxval));
+							  MAIN_HW_COUNTER_maxval[1]));
 }
 
 /*
