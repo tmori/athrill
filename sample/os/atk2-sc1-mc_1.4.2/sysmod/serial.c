@@ -70,9 +70,12 @@
 /*
  *  受信用データ
  */
+#define RX_BUFFER_SIZE	128U
 
-static uint8	rx_char[TotalNumberOfCores];
-static boolean	rx_flag[TotalNumberOfCores];
+static uint8	rx_char[TotalNumberOfCores][RX_BUFFER_SIZE];
+static uint32	rx_count[TotalNumberOfCores] = { 0U, 0U };
+static uint32	rx_wr_off[TotalNumberOfCores] = { 0U, 0U };
+static uint32	rx_rd_off[TotalNumberOfCores] = { 0U, 0U };
 
 /*
  *  シリアルIOモジュール初期化処理
@@ -82,14 +85,6 @@ static boolean	rx_flag[TotalNumberOfCores];
 void
 InitSerial(void)
 {
-	CoreIdType coreid;
-
-	/*
-	 *  受信フラグ初期化
-	 */
-	coreid = GetCoreID();
-	rx_flag[coreid] = FALSE;
-
 	/*
 	 *  依存部初期化処理実行
 	 */
@@ -107,18 +102,11 @@ InitSerial(void)
 void
 TermSerial(void)
 {
-	CoreIdType coreid;
-
 	/*
 	 *  依存部初期化処理実行
 	 */
 	TermHwSerial();
 
-	/*
-	 *  受信データ無効化
-	 */
-	coreid = GetCoreID();
-	rx_flag[coreid] = FALSE;
 }
 
 /*
@@ -131,18 +119,22 @@ RecvPolSerialChar(uint8 *character)
 
 	coreid = GetCoreID();
 	SuspendAllInterrupts();
-	if (rx_flag[coreid] != FALSE) {
-		/*
-		 *  割込み禁止にして受信データ取得・フラグクリア
-		 */
-		*character = rx_char[coreid];
-		rx_flag[coreid] = FALSE;
-	}
-	else {
+	if (rx_count[coreid] == 0U) {
 		/*
 		 *  受信データがない場合は'\0'を返す
 		 */
 		*character = '\0';
+	}
+	else {
+		/*
+		 *  割込み禁止にして受信データ取得・フラグクリア
+		 */
+		*character = rx_char[coreid][rx_rd_off[coreid]];
+		rx_count[coreid]--;
+		rx_rd_off[coreid]++;
+		if (rx_rd_off[coreid] == RX_BUFFER_SIZE) {
+			rx_rd_off[coreid] = 0U;
+		}
 	}
 	ResumeAllInterrupts();
 }
@@ -160,7 +152,13 @@ RxSerialInt(uint8 character)
 	 *  割込み禁止にして受信データ保持・フラグクリア
 	 */
 	SuspendAllInterrupts();
-	rx_char[coreid] = character;
-	rx_flag[coreid] = TRUE;
+	if (rx_count[coreid] < RX_BUFFER_SIZE) {
+		rx_char[coreid][rx_wr_off[coreid]] = character;
+		rx_wr_off[coreid]++;
+		rx_count[coreid]++;
+		if (rx_wr_off[coreid] == RX_BUFFER_SIZE) {
+			rx_wr_off[coreid] = 0U;
+		}
+	}
 	ResumeAllInterrupts();
 }
