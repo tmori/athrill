@@ -58,8 +58,8 @@
 #ifndef TOPPERS_TARGET_SERIAL_H
 #define TOPPERS_TARGET_SERIAL_H
 
-#define INTNO_SIO_CORE0 10
-#define INTNO_SIO_CORE1 11
+#define INTNO_SIO_CORE0 36
+#define INTNO_SIO_CORE1 39
 
 /*
  *  割込み優先度
