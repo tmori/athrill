@@ -77,6 +77,7 @@ void device_do_serial(SerialDeviceType *serial)
 		 */
 		ret = serial->ops->getchar(serial->id, &data);
 		if (ret == TRUE) {
+			//printf("device_do_serial:data=%c\n", data);
 			/*
 			 * 受信データチェック：存在している場合は，割り込みを上げる．
 			 */

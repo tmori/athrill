@@ -19,7 +19,7 @@ Std_ReturnType dbg_serial_in(uint8 channel, uint8 data)
 	if (channel >= DBG_SERIAL_CHANNEL_NUM) {
 		return STD_E_INVALID;
 	}
-
+	//printf("dbg_serial_in:channel=%d data=%c\n", channel, data);
 	fifo = &dbg_serial_fifo[channel];
 	if (fifo->count >= DBG_SERIAL_BUFFER_SIZE) {
 		return STD_E_LIMIT;
