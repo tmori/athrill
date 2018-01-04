@@ -1,6 +1,14 @@
 #include "device.h"
 #include "cpuemu_ops.h"
+#include "device_ex_serial_ops.h"
+#include "concrete_executor/target/dbg_target_serial.h"
 #include <stdio.h>
+
+static DeviceExSerialOpType device_ex_serial_op = {
+		.putchar = dbg_serial_putchar,
+		.getchar = dbg_serial_getchar,
+		.flush = NULL,
+};
 
 static void device_init_clock(MpuAddressRegionType *region)
 {
@@ -28,7 +36,10 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 	device_init_clock(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
 	device_init_intc(cpu, &mpu_address_map.map[MPU_ADDRESS_REGION_INX_INTC]);
 	device_init_timer(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_PH0]);
+
 	device_init_serial(&mpu_address_map.map[MPU_ADDRESS_REGION_INX_SERIAL]);
+	device_ex_serial_register_ops(0U, &device_ex_serial_op);
+	device_ex_serial_register_ops(1U, &device_ex_serial_op);
 
 	return;
 }
