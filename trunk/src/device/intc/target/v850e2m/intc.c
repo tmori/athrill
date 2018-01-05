@@ -321,36 +321,53 @@ static void intc_raise(TargetCoreType *cpu, uint32 intno)
 	return;
 }
 
-int intc_raise_intr(uint32 intno)
+static void common_raise_intr(uint32 intno, uint32 coreId)
 {
 	uint32 regaddr;
 	uint32 *pregaddr;
 	uint8 *xxIcn;
 	uint8 wdata;
 	uint8 lvl;
-	uint32 coreId;
 
 	regaddr = intc_regaddr_icn(intno);
 
+	(void)intc_get_pointer(intc_region, coreId, (regaddr & intc_region->mask), (uint8**)&pregaddr);
+
+	xxIcn = (uint8*)pregaddr;
+
+	/*
+	 * xxIF = 1
+	 */
+	wdata = *xxIcn;
+	INTC_ICN_SET_IF(wdata);
+	*xxIcn = wdata;
+	lvl = INTC_ICN_PR(*xxIcn);
+
+	/*
+	 * 管理上，すべての割り込み要求はwaitingに入れておく．
+	 */
+	set_wait_intno(coreId, intno, lvl);
+
+	intc_control.cpu->cores[coreId].core.is_halt = FALSE;
+	return;
+}
+
+void intc_cpu_trigger_interrupt(CoreIdType core_id, int intno)
+{
+	uint32 triggered_coreId;
+
+	triggered_coreId = (core_id == 0) ? 1 : 0;
+
+	common_raise_intr(intno, triggered_coreId);
+	return;
+}
+
+int intc_raise_intr(uint32 intno)
+{
+	uint32 coreId;
+
 	for (coreId = 0; coreId < CPU_CONFIG_CORE_NUM; coreId++) {
-		(void)intc_get_pointer(intc_region, coreId, (regaddr & intc_region->mask), (uint8**)&pregaddr);
-
-		xxIcn = (uint8*)pregaddr;
-
-		/*
-		 * xxIF = 1
-		 */
-		wdata = *xxIcn;
-		INTC_ICN_SET_IF(wdata);
-		*xxIcn = wdata;
-		lvl = INTC_ICN_PR(*xxIcn);
-
-		/*
-		 * 管理上，すべての割り込み要求はwaitingに入れておく．
-		 */
-		set_wait_intno(coreId, intno, lvl);
-
-		intc_control.cpu->cores[coreId].core.is_halt = FALSE;
+		common_raise_intr(intno, coreId);
 	}
 	return 0;
 }

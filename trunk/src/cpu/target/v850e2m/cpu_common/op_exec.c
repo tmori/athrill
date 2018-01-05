@@ -47,6 +47,10 @@ static uint32 *get_cpu_register_addr(MpuAddressRegionType *region, TargetCoreTyp
 		inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR);
 		return (uint32*)&region->data[inx];
 	}
+	else if ((addr >= CPU_CONFIG_ADDR_MIR_0) && (addr <= CPU_CONFIG_ADDR_MIR_1)) {
+		inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR);
+		return (uint32*)&region->data[inx];
+	}
 	return NULL;
 }
 static Std_ReturnType cpu_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data)
@@ -70,6 +74,14 @@ static Std_ReturnType cpu_put_data32(MpuAddressRegionType *region, CoreIdType co
 	}
 	else if (addr == CPU_CONFIG_ADDR_PEID) {
 		return STD_E_SEGV;
+	}
+	else if ((addr == CPU_CONFIG_ADDR_MIR_0)) {
+		intc_cpu_trigger_interrupt(core_id, CPU_CONFIG_ADDR_MIR_0_INTNO);
+		return STD_E_OK;
+	}
+	else if ((addr == CPU_CONFIG_ADDR_MIR_1)) {
+		intc_cpu_trigger_interrupt(core_id, CPU_CONFIG_ADDR_MIR_1_INTNO);
+		return STD_E_OK;
 	}
 	*registerp = data;
 	return STD_E_OK;

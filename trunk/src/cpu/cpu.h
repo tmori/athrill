@@ -24,5 +24,6 @@ extern uint32 cpu_get_current_core_sp(void);
 extern uint32 cpu_get_return_addr(const TargetCoreType *core);
 
 extern CoreIdType cpu_get_core_id(const TargetCoreType *core);
+extern void intc_cpu_trigger_interrupt(CoreIdType core_id, int intno);
 
 #endif /* _CPU_H_ */

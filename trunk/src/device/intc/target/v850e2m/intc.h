@@ -169,4 +169,6 @@ typedef struct {
 
 extern IntcControlType intc_control;
 
+
+
 #endif /* _INTC_H_ */
