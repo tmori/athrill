@@ -136,7 +136,7 @@ current_peid(void)
 }
 
 LOCAL_INLINE boolean
-acquire_lock_ldlstc(uint16 *p_lock)
+acquire_lock_ldlstc(uint32 *p_lock)
 {
 	uint16 locked = 1;
 	Asm("caxi [%1], r0, %0"
@@ -146,7 +146,7 @@ acquire_lock_ldlstc(uint16 *p_lock)
 }
 
 LOCAL_INLINE void
-release_lock_ldlstc(uint16 *p_lock)
+release_lock_ldlstc(uint32 *p_lock)
 {
 	*p_lock = 0;
 }
