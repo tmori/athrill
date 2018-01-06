@@ -150,6 +150,10 @@ static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *
 }
 static void print_typedef_type_data(PrintControlType *ctrl, DwarfDataTypedefType *type, uint8 *top_addr, uint32 off)
 {
+	if (type->ref == NULL) {
+		printf("ERROR:not found die ref (typedef %s )... please use resolved type.\n", type->info.typename);
+		return;
+	}
 	printf("(typedef %s )", type->info.typename);
 	print_any_data_type(ctrl, type->ref, top_addr, off);
 	return;
