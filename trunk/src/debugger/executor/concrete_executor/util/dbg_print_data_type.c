@@ -458,3 +458,23 @@ bool print_variable_with_data_type(char *variable_name, uint32 vaddr, uint8 *top
 	return print_any_data_type(&ctrl, type, top_addr, 0);
 }
 
+bool print_addr_with_data_type(uint32 vaddr, uint8 *top_addr, char* dataType, char* dataTypeName)
+{
+	PrintControlType ctrl;
+	DwarfDataType *type;
+	ctrl.vaddr = vaddr;
+	ctrl.level = 0;
+
+	if (dataType[0] == 's') {
+		type = (DwarfDataType *)dwarf_search_data_type(DATA_TYPE_STRUCT, NULL, NULL, dataTypeName);
+	}
+	else {
+		type = (DwarfDataType *)dwarf_search_data_type(DATA_TYPE_TYPEDEF, NULL, NULL, dataTypeName);
+	}
+	if (type == NULL) {
+		printf("Not Found Type: %s %s\n", dataType, dataTypeName);
+		return FALSE;
+	}
+	return print_any_data_type(&ctrl, type, top_addr, 0);
+}
+

@@ -473,7 +473,7 @@ DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContaine
 {
 	DbgCmdExecutorPrintType *parsed_args = (DbgCmdExecutorPrintType *)arg->parsed_args;
 
-	if ((token_container->num != 2) && (token_container->num != 3)) {
+	if ((token_container->num != 2) && (token_container->num != 3) && (token_container->num != 4)) {
 		return NULL;
 	}
 
@@ -502,13 +502,26 @@ DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContaine
 			return arg;
 		}
 	}
-	else {
+	else if (token_container->num == 3) {
 		if ((token_container->array[1].type == TOKEN_TYPE_VALUE_HEX) &&
 				(token_container->array[2].type == TOKEN_TYPE_VALUE_DEC)) {
 			arg->std_id = DBG_CMD_STD_ID_PRINT;
 			parsed_args->type = DBG_CMD_PRINT_ADDR_SIZE;
 			parsed_args->addr = token_container->array[1].body.dec.value;
 			parsed_args->size = token_container->array[2].body.dec.value;
+			arg->run = dbg_std_executor_print;
+			return arg;
+		}
+	}
+	else {
+		if ((token_container->array[1].type == TOKEN_TYPE_VALUE_HEX) &&
+				(token_container->array[2].type == TOKEN_TYPE_STRING) &&
+				(token_container->array[3].type == TOKEN_TYPE_STRING)) {
+			arg->std_id = DBG_CMD_STD_ID_PRINT;
+			parsed_args->type = DBG_CMD_PRINT_ADDR_TYPE;
+			parsed_args->addr = token_container->array[1].body.dec.value;
+			parsed_args->dataType = token_container->array[2].body.str;
+			parsed_args->dataTypeName = token_container->array[3].body.str;
 			arg->run = dbg_std_executor_print;
 			return arg;
 		}
@@ -982,7 +995,7 @@ static const DbgCmdHelpType help_list = {
 			{
 					.name = &print_string,
 					.name_shortcut = &print_string_short,
-					.opt_num = 2,
+					.opt_num = 3,
 					.opts = {
 							{
 									.semantics = "print <variable_name>",
@@ -991,6 +1004,10 @@ static const DbgCmdHelpType help_list = {
 							{
 									.semantics = "print <addr(hex)> <size>",
 									.description = "show memory information from <addr> to (<addr> + <size>)",
+							},
+							{
+									.semantics = "print <addr(hex)> <type(s|t)> <typename>",
+									.description = "show memory information from <addr> by <typename>)",
 							},
 					},
 			},

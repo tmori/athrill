@@ -46,12 +46,15 @@ typedef enum {
 	DBG_CMD_PRINT_SYMBOL,
 	DBG_CMD_PRINT_ADDR,
 	DBG_CMD_PRINT_ADDR_SIZE,
+	DBG_CMD_PRINT_ADDR_TYPE,
 } DbgCmdDPrintType;
 typedef struct {
 	DbgCmdDPrintType	type;
 	TokenStringType		symbol;
 	uint32 				addr;
 	uint32 				size;
+	TokenStringType		dataType;
+	TokenStringType		dataTypeName;
 } DbgCmdExecutorPrintType;
 extern DbgCmdExecutorType *dbg_parse_print(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 typedef struct {

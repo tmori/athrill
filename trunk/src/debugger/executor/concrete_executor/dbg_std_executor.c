@@ -414,6 +414,15 @@ static void print_memory_type(char *variable_name, uint32 vaddr, uint8 *top_addr
 	}
 	return;
 }
+static void print_memory_by_typename(uint32 vaddr, uint8 *top_addr, char* dataType, char* dataTypeName)
+{
+	if (print_addr_with_data_type(vaddr, top_addr, dataType, dataTypeName) == TRUE) {
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+	}
+	else {
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+	}
+}
 
 void dbg_std_executor_print(void *executor)
 {
@@ -443,6 +452,13 @@ void dbg_std_executor_print(void *executor)
 	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR_SIZE) {
 		 cpuemu_get_addr_pointer(parsed_args->addr, &data);
 		 print_memory_type(NULL, parsed_args->addr, data, parsed_args->size);
+	 }
+	 else if (parsed_args->type == DBG_CMD_PRINT_ADDR_TYPE) {
+		 cpuemu_get_addr_pointer(parsed_args->addr, &data);
+		//printf("DBG_CMD_PRINT_ADDR_TYPE\n");
+		//printf("type:%s\n", parsed_args->dataType.str);
+		//printf("typeName:%s\n", parsed_args->dataTypeName.str);
+		 print_memory_by_typename(parsed_args->addr, data, (char*)parsed_args->dataType.str, (char*)parsed_args->dataTypeName.str);
 	 }
 	 return;
 }
