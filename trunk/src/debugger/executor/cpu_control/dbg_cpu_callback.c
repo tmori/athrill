@@ -92,7 +92,9 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core, const DbgCpuCal
 		while (TRUE) {
 			int inx;
 			Std_ReturnType err;
-			err = bus_access_get_log(&type, &size, &access_addr);
+			uint32 last_data;
+
+			err = bus_access_get_log(&type, &size, &access_addr, &last_data);
 			if (err != STD_E_OK) {
 				break;
 			}
@@ -100,14 +102,14 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core, const DbgCpuCal
 				inx = cpuctrl_is_break_read_access(access_addr, size);
 				if (inx >= 0) {
 					need_stop = TRUE;
-					printf("\nore%d HIT watch data : read access : [%u] 0x%x %u\n", core->core_id, inx, access_addr, size);
+					printf("\nore%d HIT watch data : read access : [%u] 0x%x 0x%x %u\n", core->core_id, inx, access_addr, last_data, size);
 				}
 			}
 			else if (type == BUS_ACCESS_TYPE_WRITE) {
 				inx = cpuctrl_is_break_write_access(access_addr, size);
 				if (inx >= 0) {
 					need_stop = TRUE;
-					printf("\ncore%d HIT watch data : write access : [%u] 0x%x %u\n", core->core_id, inx, access_addr, size);
+					printf("\ncore%d HIT watch data : write access : [%u] 0x%x 0x%x %u\n", core->core_id, inx, access_addr, last_data, size);
 				}
 			}
 		}

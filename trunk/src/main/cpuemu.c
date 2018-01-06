@@ -161,7 +161,7 @@ void *cpuemu_thread_run(void* arg)
 			/*
 			 * バスのアクセスログをクリアする
 			 */
-			bus_access_set_log(BUS_ACCESS_TYPE_NONE, 8U, 0);
+			bus_access_set_log(BUS_ACCESS_TYPE_NONE, 8U, 0, 0);
 
 			/**
 			 * CPU 実行開始通知
