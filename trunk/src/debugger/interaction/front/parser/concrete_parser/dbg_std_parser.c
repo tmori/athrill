@@ -684,7 +684,13 @@ DbgCmdExecutorType *dbg_parse_serialin(DbgCmdExecutorType *arg, const TokenConta
 		arg->run = dbg_std_executor_serialin;
 		parsed_args->channel = token_container->array[1].body.dec.value;
 		(void)token_split_merge(token_container, 2, &parsed_args->input);
-		//printf("%s\n", (char*)parsed_args->input.str);
+		token_trim_newline(&parsed_args->input);
+#if 0
+		int i;
+		for (i = 0; i < parsed_args->input.len; i++) {
+			printf("str[%d]=%x\n", i, parsed_args->input.str[i]);
+		}
+#endif
 		return arg;
 	}
 	return NULL;

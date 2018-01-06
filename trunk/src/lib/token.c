@@ -161,6 +161,25 @@ bool token_split_merge(const TokenContainerType *token_container, uint8 start_in
 	}
 	return TRUE;
 }
+void token_trim_newline(TokenStringType *token)
+{
+	int i;
+	for (i = 0; i < token->len; i++) {
+		char c = token->str[i];
+		if (c == '\r') {
+			break;
+		}
+		else if (c == '\n') {
+			break;
+		}
+		else if (c == ' ') {
+			break;
+		}
+	}
+	token->len = i;
+	return;
+}
+
 
 
 bool token_merge(TokenStringType *dest, const TokenStringType *src)
