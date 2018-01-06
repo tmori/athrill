@@ -2,6 +2,7 @@
 #include "cpu_config.h"
 
 #define MPU_ADDRESS_REGION_MASK_PH		0x03FFFFFF
+#define MPU_ADDRESS_REGION_MASK_CPU		0x06FFFFFF
 
 #define MPU_ADDRESS_REGION_SIZE_INX_ROM		(1024U * 512U)
 #define MPU_ADDRESS_REGION_SIZE_INX_RAM		(1024U * 10240U)
@@ -126,7 +127,7 @@ MpuAddressMapType mpu_address_map = {
 						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= CPU_CONFIG_DEBUG_REGISTER_ADDR,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_CPU,
-						.mask		= MPU_ADDRESS_REGION_MASK_ALL,
+						.mask		= MPU_ADDRESS_REGION_MASK_CPU,
 						.data		= memory_data_CPU,
 						.ops		= &cpu_register_operation
 				},

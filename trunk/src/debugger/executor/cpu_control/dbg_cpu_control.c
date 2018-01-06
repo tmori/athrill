@@ -456,6 +456,8 @@ int cpuctrl_is_break_write_access(uint32 access_addr, uint32 size)
 		else if (access_addr >= watch_end) {
 			continue;
 		}
+		printf("watch_start=0x%x watch_end=0x%x\n", watch_start, watch_end);
+		printf("acces_start=0x%x acces_end=0x%x\n", access_addr, access_end);
 		return i;
 	}
 	return -1;

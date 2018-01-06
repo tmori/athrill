@@ -367,14 +367,12 @@ int op_exec_caxi(TargetCoreType *cpu)
 	uint16 reg2 = cpu->decoded_code.type11.reg2;
 	uint16 reg3 = cpu->decoded_code.type11.reg3;
 	sint16 token;
-	sint16 reg2_data;
-	sint16 reg3_data;
 	sint16 result;
 	uint16 put_data;
 
 	uint32 reg1_addr = (cpu->reg.r[reg1] & 0xFFFFFFFC);
-	uint32 reg2_addr = cpu->reg.r[reg2];
-	uint32 reg3_addr = cpu->reg.r[reg3];
+	uint32 reg2_data = cpu->reg.r[reg2];
+	uint32 reg3_data = cpu->reg.r[reg3];
 
 	/*
 	 * Load-memory (adr, Half-word)
@@ -382,16 +380,6 @@ int op_exec_caxi(TargetCoreType *cpu)
 	err = bus_get_data16(cpu->core_id, reg1_addr, (uint16*)&token);
 	if (err != STD_E_OK) {
 		printf("ERROR:CAXI pc=0x%x reg1=%u reg1_addr=%d\n", cpu->reg.pc, reg1, reg1_addr);
-		return -1;
-	}
-	err = bus_get_data16(cpu->core_id, reg2_addr, (uint16*)&reg2_data);
-	if (err != STD_E_OK) {
-		printf("ERROR:CAXI pc=0x%x reg2=%u reg2_addr=%d\n", cpu->reg.pc, reg2, reg2_addr);
-		return -1;
-	}
-	err = bus_get_data16(cpu->core_id, reg3_addr, (uint16*)&reg3_data);
-	if (err != STD_E_OK) {
-		printf("ERROR:CAXI pc=0x%x reg3=%u reg3_addr=%d\n", cpu->reg.pc, reg3, reg3_addr);
 		return -1;
 	}
 
@@ -406,6 +394,9 @@ int op_exec_caxi(TargetCoreType *cpu)
 	if (err != STD_E_OK) {
 		return -1;
 	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: CAXI r%d(%d),r%d(0x%x), r%d(0x%x):token=0x%x store=0x%x\n",
+			cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], reg3, cpu->reg.r[reg3], token, put_data));
+
 	cpu->reg.r[reg3] = (sint32)((uint32)((uint16)token));
 
 	op_chk_and_set_borrow(&cpu->reg, reg2_data, token);
@@ -413,8 +404,6 @@ int op_exec_caxi(TargetCoreType *cpu)
 	op_chk_and_set_zero(&cpu->reg, result);
 	op_chk_and_set_sign(&cpu->reg, result);
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: CAXI r%d(%d),r%d(0x%x), r%d(0x%x):0x%x\n",
-			cpu->reg.pc, reg1, cpu->reg.r[reg1], reg2, cpu->reg.r[reg2], reg3, cpu->reg.r[reg3], token));
 
 	cpu->reg.pc += 4;
 
