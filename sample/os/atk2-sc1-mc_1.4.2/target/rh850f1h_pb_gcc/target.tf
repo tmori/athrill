@@ -76,7 +76,7 @@ $INTNO_CONTROLLABLE  = {
 $ 
 $  コア間割込み番号の定義
 $ 
-$INTNO_ICI_LIST = {0x10000,0x20000}$
+$INTNO_ICI_LIST = {0, 1}$
 
 $ 
 $  コア間割込み優先度の定義

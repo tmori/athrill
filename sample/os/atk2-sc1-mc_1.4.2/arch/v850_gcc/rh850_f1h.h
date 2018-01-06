@@ -346,12 +346,8 @@
 /*
  *  PE間割込みレジスタ
  */
-#define IPIR_CH0	0xfffeec80
-#define IPIR_CH1	0xfffeec84
-#define IPIR_CH2	0xfffeec88
-#define IPIR_CH3	0xfffeec8c
-
-#define IPIC_ADDR(ch)	(IPIR_CH0 + ch * 4)
+#define IPIR_CH0	0xFFFF6800
+#define IPIR_CH1	0xFFFF6804
 
 
 #ifndef TOPPERS_MACRO_ONLY

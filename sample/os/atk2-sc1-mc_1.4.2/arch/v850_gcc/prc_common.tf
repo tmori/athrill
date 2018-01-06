@@ -104,24 +104,6 @@ $END$
 $FILE "Os_Lcfg.c"$
 
 $
-$ コア間割込みハンドラ本体生成
-$
-$FOREACH coreid RANGE(0, TMAX_COREID)$
-	$FOREACH intno INTNO_ICI_LIST$
-		$IF (intno & 0xffff0000) == ( (coreid+1) << 16)$
-			void$NL$
-			$CONCAT("kernel_inthdr_", FORMAT("0x%x",+intno))$(void)$NL$
-			{$NL$
-			$TAB$i_begin_int($+intno$U);$NL$
-			$TAB$ISRNAME(target_ici_handler$coreid$)();$NL$
-			$TAB$i_end_int($+intno$U);$NL$
-			}$NL$
-		$END$
-	$END$
-$END$
-
-
-$
 $ C2ISRの優先度下限
 $ ICIの優先度を考慮する必要があるため,MAX_PRI_ISR1を使用する
 $min_pri_isr2_system = MAX_PRI_ISR1 + 1$

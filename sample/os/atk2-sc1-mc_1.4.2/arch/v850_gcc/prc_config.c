@@ -226,28 +226,17 @@ infinite_loop(void)
 /*
  *	コア間割込みの実体定義
  */
-ISR(target_ici_handler0)
+ISR(IciInt0)
 {
 	ici_handler_main();
 }
 #if TotalNumberOfCores > 1
-ISR(target_ici_handler1)
+ISR(IciInt1)
 {
 	ici_handler_main();
 }
 #endif /* TotalNumberOfCores > 1 */
-#if TotalNumberOfCores > 2
-ISR(target_ici_handler2)
-{
-	ici_handler_main();
-}
-#endif /* TotalNumberOfCores > 2 */
-#if TotalNumberOfCores > 3
-ISR(target_ici_handler3)
-{
-	ici_handler_main();
-}
-#endif /* TotalNumberOfCores > 3 */
+
 
 /*
  *  特定の割込み要求ラインの有効/無効を制御可能かを調べる処理

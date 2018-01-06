@@ -119,7 +119,7 @@ endif
 #  コンフィギュレーション設定
 #
 ifeq ($(findstring target_serial,$(CFGNAME)),target_serial)
-  CFGNAME := $(CFGNAME) uart
+  CFGNAME := $(CFGNAME) uart ici
 endif
 
 #

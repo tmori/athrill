@@ -51,14 +51,16 @@
 #define TOPPERS_PRC_ICI_H
 
 #include "prc_sil.h"
+#include "kernel/kernel_impl.h"
+#include "prc_config.h"
 
 #ifndef TOPPERS_MACRO_ONLY
 
 /*
  *  コア間割込みの割込み番号
  */
-#define INTNO_ICI0	(UINT_C(0x10000) | (ICI_IPIC_CH))
-#define INTNO_ICI1	(UINT_C(0x20000) | (ICI_IPIC_CH))
+#define INTNO_ICI0	(0)
+#define INTNO_ICI1	(1)
 
 /*
  *  コア間割込みの発生
@@ -66,14 +68,12 @@
 LOCAL_INLINE void
 target_ici_raise(CoreIdType coreid)
 {
-#if 0
 	if (coreid == 0) {
-		sil_wrw_mem((void *) IPIC_ADDR(ICI_IPIC_CH), 1);
+		sil_wrw_mem((void *) IPIR_CH0, 1);
 	}
 	else {
-		sil_wrw_mem((void *) IPIC_ADDR(ICI_IPIC_CH), 2);
+		sil_wrw_mem((void *) IPIR_CH1, 1);
 	}
-#endif
 }
 
 LOCAL_INLINE void
@@ -89,6 +89,13 @@ target_ici_dispreq(const CCB *p_ccb)
 LOCAL_INLINE void
 target_ici_clear(void)
 {
+	uint16 coreId = current_peid() - 1U;
+	if (coreId == 0) {
+		(void)x_clear_int(INTNO_ICI0);
+	}
+	else {
+		(void)x_clear_int(INTNO_ICI1);
+	}
 
 }
 #endif /* TOPPERS_MACRO_ONLY */

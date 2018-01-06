@@ -268,13 +268,3 @@ SetClockSelection(uint32 s_control, uint32 s_status, uint8 regno, uint16 sel,
 	return(UC_SUCCESS);
 }
 
-void
-raise_ipir(uint8 ch)
-{
-	if (current_peid() == 1) {
-		sil_wrw_mem((void *) IPIC_ADDR(ch), 2);
-	}
-	else {
-		sil_wrw_mem((void *) IPIC_ADDR(ch), 1);
-	}
-}
