@@ -53,7 +53,7 @@ typedef struct {
 	char 	*funcname[DBG_FUNCLOG_TRACE_SIZE];
 } DbgFuncLogTraceType;
 
-static DbgFuncLogTraceType dbg_func_log_trace;
+static DbgFuncLogTraceType dbg_func_log_trace[CPU_CONFIG_CORE_NUM];
 
 #include "file.h"
 #include "file_address_mapping.h"
@@ -159,7 +159,7 @@ DataAccessInfoType *cpuctrl_get_func_access_info_table(const char* glname)
 	return data_access_info_table_gl[glid];
 }
 
-void cpuctrl_set_func_log_trace(uint32 pc, uint32 sp)
+void cpuctrl_set_func_log_trace(uint32 coreId, uint32 pc, uint32 sp)
 {
 	uint32 inx;
 	uint32 next;
@@ -175,9 +175,9 @@ void cpuctrl_set_func_log_trace(uint32 pc, uint32 sp)
 	current_funcid = funcid;
 	funcname = symbol_funcid2funcname(funcid);
 
-	if (dbg_func_log_trace.lognum > 0) {
-		inx = dbg_func_log_trace.current;
-		if (dbg_func_log_trace.funcpc[inx] == funcpc) {
+	if (dbg_func_log_trace[coreId].lognum > 0) {
+		inx = dbg_func_log_trace[coreId].current;
+		if (dbg_func_log_trace[coreId].funcpc[inx] == funcpc) {
 			return;
 		}
 		next = inx + 1;
@@ -188,38 +188,38 @@ void cpuctrl_set_func_log_trace(uint32 pc, uint32 sp)
 		next = 0;
 	}
 
-	dbg_func_log_trace.current = next;
-	dbg_func_log_trace.sp[next] = sp;
-	dbg_func_log_trace.funcid[next] = funcid;
-	dbg_func_log_trace.funcoff[next] = pc - funcpc;
-	dbg_func_log_trace.funcname[next] = funcname;
-	dbg_func_log_trace.funcpc[next] = funcpc;
-	if (dbg_func_log_trace.lognum < DBG_FUNCLOG_TRACE_SIZE) {
-		dbg_func_log_trace.lognum++;
+	dbg_func_log_trace[coreId].current = next;
+	dbg_func_log_trace[coreId].sp[next] = sp;
+	dbg_func_log_trace[coreId].funcid[next] = funcid;
+	dbg_func_log_trace[coreId].funcoff[next] = pc - funcpc;
+	dbg_func_log_trace[coreId].funcname[next] = funcname;
+	dbg_func_log_trace[coreId].funcpc[next] = funcpc;
+	if (dbg_func_log_trace[coreId].lognum < DBG_FUNCLOG_TRACE_SIZE) {
+		dbg_func_log_trace[coreId].lognum++;
 	}
 	return;
 }
 
-char *cpuctrl_get_func_log_trace_info(uint32 bt_number, uint32 *funcpcoff, uint32 *funcid, uint32 *sp)
+char *cpuctrl_get_func_log_trace_info(uint32 coreId, uint32 bt_number, uint32 *funcpcoff, uint32 *funcid, uint32 *sp)
 {
 	int off;
 	if (bt_number >= DBG_FUNCLOG_TRACE_SIZE) {
 		return NULL;
 	}
-	if (bt_number >= dbg_func_log_trace.lognum) {
+	if (bt_number >= dbg_func_log_trace[coreId].lognum) {
 		return NULL;
 	}
 
-	if (dbg_func_log_trace.current >= bt_number) {
-		off = dbg_func_log_trace.current - bt_number;
+	if (dbg_func_log_trace[coreId].current >= bt_number) {
+		off = dbg_func_log_trace[coreId].current - bt_number;
 	}
 	else {
-		off = DBG_FUNCLOG_TRACE_SIZE - (bt_number - dbg_func_log_trace.current);
+		off = DBG_FUNCLOG_TRACE_SIZE - (bt_number - dbg_func_log_trace[coreId].current);
 	}
-	*sp = dbg_func_log_trace.sp[off];
-	*funcid = dbg_func_log_trace.funcid[off];
-	*funcpcoff = dbg_func_log_trace.funcoff[off];
-	return dbg_func_log_trace.funcname[off];
+	*sp = dbg_func_log_trace[coreId].sp[off];
+	*funcid = dbg_func_log_trace[coreId].funcid[off];
+	*funcpcoff = dbg_func_log_trace[coreId].funcoff[off];
+	return dbg_func_log_trace[coreId].funcname[off];
 
 }
 

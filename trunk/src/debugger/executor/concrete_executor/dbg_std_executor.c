@@ -508,15 +508,18 @@ void dbg_std_executor_func_trace(void *executor)
 	char *stackp;
 	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	DbgCmdExecutorFuncTraceType *parsed_args = (DbgCmdExecutorFuncTraceType *)(arg->parsed_args);
+	uint32 coreId;
 
-	for (i = (parsed_args->bt_number - 1); i >= 0; i--) {
-		funcname = cpuctrl_get_func_log_trace_info(i, &funcpcoff, &funcid, &sp);
-		if (funcname == NULL) {
-			break;
+	for (coreId = 0; coreId < CPU_CONFIG_CORE_NUM; coreId++) {
+		for (i = (parsed_args->bt_number - 1); i >= 0; i--) {
+			funcname = cpuctrl_get_func_log_trace_info(coreId, i, &funcpcoff, &funcid, &sp);
+			if (funcname == NULL) {
+				break;
+			}
+			glid = symbol_addr2glid(sp, &gladdr);
+			stackp = symbol_glid2glname(glid);
+			printf("core%d: <%-30s(0x%03x)> [%3u] <0x%03x> %s\n", coreId, stackp, sp - gladdr, i, funcpcoff, funcname);
 		}
-		glid = symbol_addr2glid(sp, &gladdr);
-		stackp = symbol_glid2glname(glid);
-		printf("<%-30s(0x%03x)> [%3u] <0x%03x> %s\n", stackp, sp - gladdr, i, funcpcoff, funcname);
 	}
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 

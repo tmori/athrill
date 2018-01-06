@@ -77,7 +77,7 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core, const DbgCpuCal
 	 */
 
 	if (enable_dbg->enable_ft == TRUE) {
-		cpuctrl_set_func_log_trace(pc, sp);
+		cpuctrl_set_func_log_trace(core->core_id, pc, sp);
 	}
 	if (enable_dbg->enable_prof == TRUE) {
 		cpuctrl_profile_collect(core->core_id, pc);
