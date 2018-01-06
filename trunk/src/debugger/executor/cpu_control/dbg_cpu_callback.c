@@ -80,7 +80,7 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core, const DbgCpuCal
 		cpuctrl_set_func_log_trace(pc, sp);
 	}
 	if (enable_dbg->enable_prof == TRUE) {
-		cpuctrl_profile_collect(pc);
+		cpuctrl_profile_collect(core->core_id, pc);
 	}
 	if (enable_dbg->enable_bt == TRUE) {
 		cpuctrl_set_stack_pointer(sp);

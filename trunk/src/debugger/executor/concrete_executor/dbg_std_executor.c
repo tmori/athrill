@@ -639,18 +639,24 @@ void dbg_std_executor_profile(void *executor)
 	uint32 funcid;
 	char *funcname;
 	CpuProfileType profile;
+	uint32 coreId;
 
 	funcnum = symbol_get_func_num();
-	printf("%-50s %-15s %-15s %-15s\n", "funcname", "call_num", "func_time", "total_time");
-	for (funcid = 0; funcid < funcnum; funcid++) {
-		cpuctrl_profile_get(funcid, &profile);
-		if (profile.call_num == 0) {
-			continue;
+
+	for (coreId = 0; coreId < CPU_CONFIG_CORE_NUM; coreId++) {
+		printf("*** coreId=%d ***\n", coreId);
+		printf("%-50s %-15s %-15s %-15s\n", "funcname", "call_num", "func_time", "total_time");
+		for (funcid = 0; funcid < funcnum; funcid++) {
+			cpuctrl_profile_get(coreId, funcid, &profile);
+			if (profile.call_num == 0) {
+				continue;
+			}
+			funcname = symbol_funcid2funcname(funcid);
+			printf("%-50s %-15I64u %-15I64u %-15I64u\n",
+					funcname, profile.call_num,
+					profile.func_time/profile.call_num, profile.total_time/profile.call_num);
 		}
-		funcname = symbol_funcid2funcname(funcid);
-		printf("%-50s %-15I64u %-15I64u %-15I64u\n",
-				funcname, profile.call_num,
-				profile.func_time/profile.call_num, profile.total_time/profile.call_num);
+		printf("****************\n");
 	}
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 

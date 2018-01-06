@@ -102,8 +102,8 @@ typedef struct {
 	 */
 	uint32 sp_func_enter;
 } CpuProfileType;
-extern void cpuctrl_profile_collect(uint32 pc);
-extern void cpuctrl_profile_get(uint32 funcid, CpuProfileType *profile);
+extern void cpuctrl_profile_collect(uint32 coreId, uint32 pc);
+extern void cpuctrl_profile_get(uint32 coreId, uint32 funcid, CpuProfileType *profile);
 
 /*
  * 関数フレーム記録

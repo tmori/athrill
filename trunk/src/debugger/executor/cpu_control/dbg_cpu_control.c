@@ -541,22 +541,27 @@ void cpuctrl_set_force_break(void)
 /*
  * profile機能
  */
-static CpuProfileType *CpuProfile;
+static CpuProfileType *CpuProfile[CPU_CONFIG_CORE_NUM];
 typedef struct {
 	uint32	prev_funcid;
 	uint32	current_funcid;
 } CpuProfileCurrentInfoType;
-static CpuProfileCurrentInfoType CpuProfileCurrentInfo;
+static CpuProfileCurrentInfoType CpuProfileCurrentInfo[CPU_CONFIG_CORE_NUM];
 
 void cpuctrl_init(void)
 {
 	uint32 i;
 	uint32 func_num = symbol_get_func_num();
 	uint32 gl_num = symbol_get_gl_num();
-	CpuProfile = malloc(func_num * sizeof(CpuProfileType));
-	CpuProfileCurrentInfo.current_funcid = func_num;
-	ASSERT(CpuProfile != NULL);
-	memset(CpuProfile, 0, func_num * sizeof(CpuProfileType));
+	uint32 coreId;
+
+
+	for (coreId = 0; coreId < CPU_CONFIG_CORE_NUM; coreId++) {
+		CpuProfile[coreId] = malloc(func_num * sizeof(CpuProfileType));
+		ASSERT(CpuProfile[coreId] != NULL);
+		CpuProfileCurrentInfo[coreId].current_funcid = func_num;
+		memset(CpuProfile[coreId], 0, func_num * sizeof(CpuProfileType));
+	}
 
 	data_access_info = malloc(func_num * gl_num * sizeof(DataAccessInfoType));
 	ASSERT(data_access_info != NULL);
@@ -569,7 +574,7 @@ void cpuctrl_init(void)
 
 	return;
 }
-void cpuctrl_profile_collect(uint32 pc)
+void cpuctrl_profile_collect(uint32 coreId, uint32 pc)
 {
 	int funcid;
 	uint32 funcpc;
@@ -587,32 +592,32 @@ void cpuctrl_profile_collect(uint32 pc)
 		/*
 		 * 関数入場
 		 */
-		CpuProfile[funcid].call_num++;
+		CpuProfile[coreId][funcid].call_num++;
 
-		if (CpuProfile[funcid].recursive_num == 0U) {
+		if (CpuProfile[coreId][funcid].recursive_num == 0U) {
 			/*
 			 * 初回入場
 			 */
-			CpuProfile[funcid].sp_func_enter = cpu_get_current_core_sp();
-			CpuProfile[funcid].start_time = elaps.total_clocks;
-			CpuProfile[funcid].recursive_num++;
+			CpuProfile[coreId][funcid].sp_func_enter = cpu_get_current_core_sp();
+			CpuProfile[coreId][funcid].start_time = elaps.total_clocks;
+			CpuProfile[coreId][funcid].recursive_num++;
 			//printf("func_enter:funcid=%s start_time=%I64u\n", symbol_funcid2funcname(funcid), CpuProfile[funcid].start_time);
 		}
 	}
-	else if (CpuProfileCurrentInfo.current_funcid != funcid) {
+	else if (CpuProfileCurrentInfo[coreId].current_funcid != funcid) {
 		uint32 i;
 		uint32 func_num = symbol_get_func_num();
 
-		CpuProfileCurrentInfo.prev_funcid = CpuProfileCurrentInfo.current_funcid;
+		CpuProfileCurrentInfo[coreId].prev_funcid = CpuProfileCurrentInfo[coreId].current_funcid;
 
 		for (i = 0; i < func_num; i++) {
-			if (CpuProfile[i].recursive_num > 0) {
-				if (cpu_get_current_core_sp() == CpuProfile[i].sp_func_enter) {
+			if (CpuProfile[coreId][i].recursive_num > 0) {
+				if (cpu_get_current_core_sp() == CpuProfile[coreId][i].sp_func_enter) {
 					/*
 					 * 最終退場
 					 */
-					CpuProfile[i].total_time += (elaps.total_clocks - CpuProfile[i].start_time);
-					CpuProfile[i].recursive_num--;
+					CpuProfile[coreId][i].total_time += (elaps.total_clocks - CpuProfile[coreId][i].start_time);
+					CpuProfile[coreId][i].recursive_num--;
 					//printf("func_exit:funcid=%s ctime=%I64u\n", symbol_funcid2funcname(i), elaps.total_clocks);
 					//printf("func_exit:func_time=%Iu total_time=%Iu\n", CpuProfile[i].func_time, CpuProfile[i].total_time);
 					//printf("func_exit:stime=%I64u ", CpuProfile[i].start_time);
@@ -623,13 +628,13 @@ void cpuctrl_profile_collect(uint32 pc)
 			}
 		}
 	}
-	CpuProfileCurrentInfo.current_funcid = funcid;
-	CpuProfile[funcid].func_time++;
+	CpuProfileCurrentInfo[coreId].current_funcid = funcid;
+	CpuProfile[coreId][funcid].func_time++;
 	return;
 }
-void cpuctrl_profile_get(uint32 funcid, CpuProfileType *profile)
+void cpuctrl_profile_get(uint32 coreId, uint32 funcid, CpuProfileType *profile)
 {
-	*profile = CpuProfile[funcid];
+	*profile = CpuProfile[coreId][funcid];
 	return;
 }
 /*
