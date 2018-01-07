@@ -8,6 +8,7 @@ IFLAGS	:= -I$(ROOTDIR)/inc
 IFLAGS	+= -I$(ROOTDIR)/lib
 IFLAGS	+= -I$(ROOTDIR)/lib/dwarf
 IFLAGS	+= -I$(ROOTDIR)/config
+IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 
 VPATH	:=	$(ROOTDIR)/lib
 VPATH	+=	$(ROOTDIR)/lib/dwarf

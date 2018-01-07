@@ -73,6 +73,15 @@ char * symbol_pc2func(uint32 pc)
 	}
 	return NULL;
 }
+void symbol_set_pc(int funcid, uint32 core_id, uint32 sp)
+{
+	symbol_func[funcid].enter_sp[core_id] = sp;
+	return;
+}
+uint32 symbol_get_entered_sp(int funcid, uint32 core_id)
+{
+	return symbol_func[funcid].enter_sp[core_id];
+}
 
 int symbol_pc2funcid(uint32 pc, uint32 *funcaddr)
 {

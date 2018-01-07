@@ -92,6 +92,10 @@ uint32 cpu_get_pc(const TargetCoreType *core)
 {
 	return core->reg.pc;
 }
+uint32 cpu_get_ep(const TargetCoreType *core)
+{
+	return core->reg.r[30];
+}
 uint32 cpu_get_current_core_id(void)
 {
 	return ((const TargetCoreType *)virtual_cpu.current_core)->core_id;
@@ -108,6 +112,10 @@ uint32 cpu_get_sp(const TargetCoreType *core)
 uint32 cpu_get_current_core_sp(void)
 {
 	return cpu_get_sp((const TargetCoreType *)virtual_cpu.current_core);
+}
+uint32 cpu_get_current_core_ep(void)
+{
+	return cpu_get_ep((const TargetCoreType *)virtual_cpu.current_core);
 }
 
 

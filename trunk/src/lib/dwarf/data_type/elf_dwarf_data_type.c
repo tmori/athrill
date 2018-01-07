@@ -322,7 +322,7 @@ void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filena
 			continue;
 		}
 		len = strlen(entry->typename);
-		printf("in_len=%u chk_len=%u in_name=%s chk_name=%s\n", typelen, len, typename, entry->typename);
+		//printf("in_len=%u chk_len=%u in_name=%s chk_name=%s\n", typelen, len, typename, entry->typename);
 		if (typelen != len) {
 			continue;
 		}

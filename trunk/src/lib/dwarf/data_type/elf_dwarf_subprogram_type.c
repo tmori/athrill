@@ -34,7 +34,7 @@ static void elf_dwarf_build_subprogram_variable(DwarfDataSubprogramType *obj, El
 				int value;
 				if (attr->encoded.op.ops[0] == DW_OP_fbreg) {
 					value = elf_dwarf_decode_sleb128(&attr->encoded.op.ops[1], &size);
-					//printf("value=%d\n", value);
+					//printf("DW_OP_fbreg %d\n", value);
 					localVariable.attr = attr;
 					localVariable.stackLocOff = value;
 					localVariable.isSupported = TRUE;
@@ -202,5 +202,60 @@ void elf_dwarf_resolve_subprogram_type(void)
 		elf_dwarf_resolve_local_variable(obj);
 	}
 	return;
-	return;
+}
+
+DwarfDataSubprogramType *elf_dwarf_search_subprogram(char *funcname)
+{
+	int namelen = strlen(funcname);
+	int i;
+	ElfPointerArrayType	*my_types = dwarf_get_data_types(DATA_TYPE_SUBPROGRAM);
+	DwarfDataSubprogramType *obj = NULL;
+
+	if (my_types == NULL) {
+		return NULL;
+	}
+
+	for (i = 0; i < my_types->current_array_size; i++) {
+		int len;
+		obj = (DwarfDataSubprogramType *)my_types->data[i];
+		len = strlen(obj->info.typename);
+		if (len != namelen) {
+			continue;
+		}
+		if (strncmp(funcname, obj->info.typename, len) != 0) {
+			continue;
+		}
+		return obj;
+	}
+	return NULL;
+}
+
+DwarfLocalVariableType *elf_dwarf_search_local_variable(DwarfDataSubprogramType *subprogram, char *local_variable)
+{
+	int namelen = strlen(local_variable);
+	int i;
+
+	DwarfLocalVariableType *localVariable;
+
+	if (subprogram->variables == NULL) {
+		return NULL;
+	}
+
+	for (i = 0; i < subprogram->variables->current_array_size; i++) {
+		int len;
+		localVariable = (DwarfLocalVariableType *)subprogram->variables->data[i];
+
+		if (localVariable->ref == NULL) {
+			continue;
+		}
+		len = strlen(localVariable->name);
+		if (namelen != len) {
+			continue;
+		}
+		if (strncmp(local_variable, localVariable->name, len) != 0) {
+			continue;
+		}
+		return localVariable;
+	}
+	return NULL;
 }

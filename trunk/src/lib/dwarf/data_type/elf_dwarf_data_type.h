@@ -136,4 +136,8 @@ typedef struct {
 	ElfPointerArrayType		*variables;
 } DwarfDataSubprogramType;
 extern void dwarf_add_subprogram_variable(DwarfDataSubprogramType *obj, DwarfLocalVariableType *org_val);
+
+extern DwarfDataSubprogramType *elf_dwarf_search_subprogram(char *funcname);
+extern DwarfLocalVariableType *elf_dwarf_search_local_variable(DwarfDataSubprogramType *subprogram, char *local_variable);
+
 #endif /* _ELF_DWARF_DATA_TYPE_H_ */

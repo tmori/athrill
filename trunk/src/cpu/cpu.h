@@ -19,8 +19,11 @@ extern CpuType	virtual_cpu;
 extern uint32 cpu_get_current_core_id(void);
 extern uint32 cpu_get_pc(const TargetCoreType *core);
 extern uint32 cpu_get_sp(const TargetCoreType *core);
+extern uint32 cpu_get_ep(const TargetCoreType *core);
+
 extern uint32 cpu_get_current_core_pc(void);
 extern uint32 cpu_get_current_core_sp(void);
+extern uint32 cpu_get_current_core_ep(void);
 extern uint32 cpu_get_return_addr(const TargetCoreType *core);
 
 extern CoreIdType cpu_get_core_id(const TargetCoreType *core);

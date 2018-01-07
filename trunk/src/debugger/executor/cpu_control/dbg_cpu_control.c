@@ -598,7 +598,7 @@ void cpuctrl_profile_collect(uint32 coreId, uint32 pc)
 			/*
 			 * 初回入場
 			 */
-			CpuProfile[coreId][funcid].sp_func_enter = cpu_get_current_core_sp();
+			CpuProfile[coreId][funcid].sp_func_enter = cpu_get_current_core_sp(); //TODO coreid
 			CpuProfile[coreId][funcid].start_time = elaps.total_clocks;
 			CpuProfile[coreId][funcid].recursive_num++;
 			//printf("func_enter:funcid=%s start_time=%I64u\n", symbol_funcid2funcname(funcid), CpuProfile[funcid].start_time);

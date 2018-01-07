@@ -2,6 +2,9 @@
 #include "dwarf/data_type/elf_dwarf_data_type.h"
 #include "dwarf/data_type/elf_dwarf_base_type.h"
 #include "dwarf/elf_section.h"
+#include "cpu.h"
+#include "symbol_ops.h"
+#include "cpuemu_ops.h"
 #include <stdio.h>
 
 typedef struct {
@@ -440,6 +443,44 @@ static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint
 
 	return ret;
 }
+
+bool print_local_variable_type(char *variable_name)
+{
+	DwarfDataSubprogramType *subprogram;
+	DwarfLocalVariableType *localVariable;
+	PrintControlType ctrl;
+	uint8 *top_addr;
+	sint32 vaddr;
+	uint32 pc = cpu_get_current_core_pc();
+	int funcId;
+	uint32 funcaddr;
+	char *func_Name;
+
+	funcId = symbol_pc2funcid(pc, &funcaddr);
+	if (funcId < 0) {
+		printf("not found pc=0x%x\n", pc);
+		return FALSE;
+	}
+	func_Name = symbol_funcid2funcname(funcId);
+	printf("func=%s\n", func_Name);
+
+	subprogram = elf_dwarf_search_subprogram(func_Name);
+	if (subprogram == NULL) {
+		return FALSE;
+	}
+	localVariable = elf_dwarf_search_local_variable(subprogram, variable_name);
+	printf("val=%s\n", localVariable->name);
+
+	vaddr = symbol_get_entered_sp(funcId, cpu_get_current_core_id());
+	//printf("vaddr=0x%x\n", vaddr);
+
+	ctrl.vaddr = (uint32)((sint32)(vaddr + localVariable->stackLocOff));
+	ctrl.level = 0;
+	cpuemu_get_addr_pointer(ctrl.vaddr, &top_addr);
+	printf("%s = ", variable_name);
+	return print_any_data_type(&ctrl, localVariable->ref, top_addr, 0);
+}
+
 
 bool print_variable_with_data_type(char *variable_name, uint32 vaddr, uint8 *top_addr, uint32 size)
 {

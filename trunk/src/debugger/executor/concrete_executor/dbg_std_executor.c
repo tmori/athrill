@@ -436,9 +436,11 @@ void dbg_std_executor_print(void *executor)
 	 if (parsed_args->type == DBG_CMD_PRINT_SYMBOL) {
 		 gl_len = strlen((char*)parsed_args->symbol.str);
 		 if (symbol_get_gl((char*)parsed_args->symbol.str, gl_len, &addr, &size) < 0) {
-			 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
-			 symbol_print_gl((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
-			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+			 if (print_local_variable_type((char*)parsed_args->symbol.str) == FALSE) {
+				 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
+				 symbol_print_gl((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
+				 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+			 }
 		 }
 		 else {
 			 cpuemu_get_addr_pointer(addr, &data);

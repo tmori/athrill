@@ -5,5 +5,6 @@
 
 extern bool print_variable_with_data_type(char *variable_name, uint32 vaddr, uint8 *top_addr, uint32 size);
 extern bool print_addr_with_data_type(uint32 vaddr, uint8 *top_addr, char* dataType, char* dataTypeName);
+extern bool print_local_variable_type(char *variable_name);
 
 #endif /* _DBG_PRINT_DATA_TYPE_H_ */

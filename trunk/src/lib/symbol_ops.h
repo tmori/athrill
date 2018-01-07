@@ -2,11 +2,13 @@
 #define _SYMBOL_OPS_H_
 
 #include "std_types.h"
+#include "cpu_config.h"
 
 typedef struct {
 	char *name;
 	uint32 addr;
 	uint32 size;
+	uint32 enter_sp[CPU_CONFIG_CORE_NUM];
 } DbgSymbolType;
 
 extern uint32 symbol_get_func_num(void);
@@ -30,5 +32,10 @@ extern void symbol_print_func(char *gl_name, uint32 show_num);
 extern int symbol_gl_add(DbgSymbolType *sym);
 extern int symbol_func_add(DbgSymbolType *sym);
 extern uint32 symbol_funcid2funcsize(int id);
+
+
+extern uint32 symbol_get_entered_sp(int funcid, uint32 core_id);
+extern void symbol_set_pc(int funcid, uint32 core_id, uint32 sp);
+
 
 #endif /* _SYMBOL_OPS_H_ */
