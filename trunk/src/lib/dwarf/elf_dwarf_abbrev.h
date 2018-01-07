@@ -118,6 +118,8 @@ typedef enum {
 	DW_AT_virtuality = 0x4c, //constant
 	DW_AT_vtable_elem_location = 0x4d, //block, reference
 	DW_AT_lo_user = 0x2000,
+	DW_AT_unknown_0x2116 = 0x2116,
+	DW_AT_unknown_0x2117 = 0x2117,
 	DW_AT_hi_user = 0x3fff,
 } DwAtType;
 

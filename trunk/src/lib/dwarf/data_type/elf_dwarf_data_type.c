@@ -7,10 +7,13 @@
 #include "elf_dwarf_array_type.h"
 #include "elf_dwarf_enum_type.h"
 #include "elf_dwarf_variable_type.h"
+#include "elf_dwarf_subprogram_type.h"
 #include "assert.h"
 #include <string.h>
 
 static ElfPointerArrayType	*dwarf_data_type_set[DATA_TYPE_NUM] = {
+		NULL,
+		NULL,
 		NULL,
 		NULL,
 		NULL,
@@ -36,6 +39,7 @@ static parse_func_table_t parse_func_table[DATA_TYPE_NUM] = {
 		elf_dwarf_build_typedef_type,
 		elf_dwarf_build_enum_type,
 		elf_dwarf_build_variable_type,
+		elf_dwarf_build_subprogram_type,
 };
 
 static DwarfDataEnumType get_dataType(DwTagType tag)
@@ -65,6 +69,9 @@ static DwarfDataEnumType get_dataType(DwTagType tag)
 		break;
 	case DW_TAG_variable:
 		ret = DATA_TYPE_VARIABLE;
+		break;
+	case DW_TAG_subprogram:
+		ret = DATA_TYPE_SUBPROGRAM;
 		break;
 	default:
 		break;
@@ -233,6 +240,7 @@ static void resolve_reference(void)
 	elf_dwarf_resolve_array_type();
 	elf_dwarf_resolve_struct_type();
 	elf_dwarf_resolve_variable_type();
+	elf_dwarf_resolve_subprogram_type();
 	return;
 }
 
@@ -276,6 +284,9 @@ void *dwarf_alloc_data_type(DwarfDataEnumType type)
 	case DATA_TYPE_VARIABLE:
 		size = sizeof(DwarfDataVariableType);
 		break;
+	case DATA_TYPE_SUBPROGRAM:
+		size = sizeof(DwarfDataSubprogramType);
+		break;
 	default:
 		ASSERT(0);
 		break;
@@ -311,7 +322,7 @@ void *dwarf_search_data_type(DwarfDataEnumType type, char *dirname, char *filena
 			continue;
 		}
 		len = strlen(entry->typename);
-		//printf("in_len=%u chk_len=%u in_name=%s chk_name=%s\n", typelen, len, typename, entry->typename);
+		printf("in_len=%u chk_len=%u in_name=%s chk_name=%s\n", typelen, len, typename, entry->typename);
 		if (typelen != len) {
 			continue;
 		}
@@ -385,6 +396,22 @@ void dwarf_add_struct_member(DwarfDataStructType *obj, DwarfDataStructMember *or
 	}
 
 	elf_array_add_entry(obj->members, member);
+
+	return;
+}
+
+
+void dwarf_add_subprogram_variable(DwarfDataSubprogramType *obj, DwarfLocalVariableType *org_val)
+{
+	DwarfLocalVariableType *val;
+
+	val = (DwarfLocalVariableType*)elf_obj_alloc(sizeof(DwarfLocalVariableType));
+	*val = *org_val;
+	if (obj->variables == NULL) {
+		obj->variables = elf_array_alloc();
+	}
+
+	elf_array_add_entry(obj->variables, val);
 
 	return;
 }

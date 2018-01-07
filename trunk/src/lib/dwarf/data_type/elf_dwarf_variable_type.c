@@ -22,6 +22,7 @@ void elf_dwarf_build_variable_type(ElfDwarfDieType *die)
 		switch (attr_type) {
 		case DW_AT_name:
 			obj->info.typename = attr->encoded.string;
+			//printf("typename=%s\n", obj->info.typename);
 			break;
 		case DW_AT_type:
 			offset = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);

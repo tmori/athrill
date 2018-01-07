@@ -27,6 +27,7 @@ extern Std_ReturnType elfsym_get_symbol(uint32 index, ElfSymbolType *elfsym);
 #define SECTION_DWARF_ABBREV_NAME	".debug_abbrev"
 #define SECTION_DWARF_INFO_NAME		".debug_info"
 #define SECTION_DWARF_STR_NAME		".debug_str"
+#define SECTION_DWARF_LOC_NAME		".debug_loc"
 extern Std_ReturnType elf_section_get_dwarf_line(uint8 *elf_data, uint8 **section_data, uint32 *section_size);
 extern Std_ReturnType elf_section_get(uint8 *elf_data, char *key, uint8 **section_data, uint32 *section_size);
 

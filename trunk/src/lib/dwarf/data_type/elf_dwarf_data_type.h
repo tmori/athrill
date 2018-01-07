@@ -14,6 +14,7 @@ typedef enum {
 	DATA_TYPE_TYPEDEF,
 	DATA_TYPE_ENUM,
 	DATA_TYPE_VARIABLE,
+	DATA_TYPE_SUBPROGRAM,
 	DATA_TYPE_NUM,
 } DwarfDataEnumType;
 
@@ -120,4 +121,19 @@ typedef struct {
 	uint32					ref_debug_info_offset;
 } DwarfDataVariableType;
 
+typedef struct {
+	char					*name;
+	bool					isSupported;
+	sint32					stackLocOff;
+	ElfDwarfAttributeType	*attr;
+	bool					is_valid_ref_debug_info_offset;
+	uint32					ref_debug_info_offset;
+	DwarfDataType			*ref;
+} DwarfLocalVariableType;
+
+typedef struct {
+	DwarfDataType			info;
+	ElfPointerArrayType		*variables;
+} DwarfDataSubprogramType;
+extern void dwarf_add_subprogram_variable(DwarfDataSubprogramType *obj, DwarfLocalVariableType *org_val);
 #endif /* _ELF_DWARF_DATA_TYPE_H_ */

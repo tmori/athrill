@@ -30,6 +30,7 @@ OBJS	+= elf_dwarf_struct_type.o
 OBJS	+= elf_dwarf_enum_type.o
 OBJS	+= elf_dwarf_array_type.o
 OBJS	+= elf_dwarf_variable_type.o
+OBJS	+= elf_dwarf_subprogram_type.o
 OBJS	+= elf_dwarf_info_ops.o
 OBJS	+= file_address_mapping.o
 OBJS	+= symbol_ops.o
