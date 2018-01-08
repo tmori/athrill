@@ -75,6 +75,7 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core, const DbgCpuCal
 	/*
 	 * call callback
 	 */
+#if 0 /* DELETE: do not use */
 	//TODO
 	{
 		int funcid;
@@ -87,7 +88,7 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core, const DbgCpuCal
 			}
 		}
 	}
-
+#endif
 	if (enable_dbg->enable_ft == TRUE) {
 		cpuctrl_set_func_log_trace(core->core_id, pc, sp);
 	}
