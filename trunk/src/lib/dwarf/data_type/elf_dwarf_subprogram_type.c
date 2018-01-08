@@ -81,9 +81,12 @@ void elf_dwarf_build_subprogram_type(ElfDwarfDieType *die)
 				obj->frame_loc_offset = attr->encoded.const32;
 				//printf("name=0x%x form=%s off=0x%x\n", attr_type, attr->typename, obj->frame_loc_offset);
 			}
+			else if (attr->type == DW_FORM_exprloc) {
+				//printf("ERROR: not supported elf_dwarf_build_subprogram_type:off=0x%x", die->offset);
+			}
 			else {
-				printf("ERROR: not supported elf_dwarf_build_subprogram_type:off=0x%x", die->offset);
-				printf("name=0x%x form=%s\n", attr_type, attr->typename);
+				//printf("ERROR: not supported elf_dwarf_build_subprogram_type:off=0x%x", die->offset);
+				//printf("name=0x%x form=%s\n", attr_type, attr->typename);
 			}
 			break;
 		case DW_AT_abstract_origin:

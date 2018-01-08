@@ -9,6 +9,9 @@ IFLAGS	:= -I$(ROOTDIR)/inc
 IFLAGS	+= -I$(ROOTDIR)/lib
 IFLAGS	+= -I$(ROOTDIR)/lib/dwarf
 IFLAGS	+= -I$(ROOTDIR)/config
+IFLAGS	+= -I$(ROOTDIR)/cpu
+IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 
 VPATH	:=	$(ROOTDIR)/lib
 VPATH	+=	$(ROOTDIR)/lib/dwarf
@@ -20,6 +23,7 @@ CFLAGS	+= $(IFLAGS)
 
 OBJS	:= elf_section.o
 OBJS	+= elf_dwarf_line.o
+OBJS	+= elf_dwarf_loc.o
 OBJS	+= elf_dwarf_info.o
 OBJS	+= elf_dwarf_abbrev.o
 OBJS	+= elf_dwarf_util.o
@@ -31,6 +35,7 @@ OBJS	+= elf_dwarf_struct_type.o
 OBJS	+= elf_dwarf_enum_type.o
 OBJS	+= elf_dwarf_array_type.o
 OBJS	+= elf_dwarf_variable_type.o
+OBJS	+= elf_dwarf_subprogram_type.o
 OBJS	+= elf_dwarf_info_ops.o
 OBJS	+= file_address_mapping.o
 OBJS	+= symbol_ops.o

@@ -74,6 +74,10 @@ uint32 cpu_get_current_core_pc(void)
 	return cpu_get_pc((const TargetCoreType *)virtual_cpu.current_core);
 }
 
+uint32 cpu_get_current_core_register(uint32 inx)
+{
+	return ((TargetCoreType *)virtual_cpu.current_core)->reg.r[inx];
+}
 uint32 cpu_get_sp(const TargetCoreType *core)
 {
 	return core->reg.r[3];
