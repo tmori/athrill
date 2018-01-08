@@ -8,6 +8,8 @@ IFLAGS	:= -I$(ROOTDIR)/inc
 IFLAGS	+= -I$(ROOTDIR)/lib
 IFLAGS	+= -I$(ROOTDIR)/lib/dwarf
 IFLAGS	+= -I$(ROOTDIR)/config
+IFLAGS	+= -I$(ROOTDIR)/cpu
+IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 
 VPATH	:=	$(ROOTDIR)/lib
@@ -20,6 +22,7 @@ CFLAGS	+= $(IFLAGS)
 
 OBJS	:= elf_section.o
 OBJS	+= elf_dwarf_line.o
+OBJS	+= elf_dwarf_loc.o
 OBJS	+= elf_dwarf_info.o
 OBJS	+= elf_dwarf_abbrev.o
 OBJS	+= elf_dwarf_util.o

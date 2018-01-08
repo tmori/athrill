@@ -21,6 +21,7 @@ extern uint32 cpu_get_pc(const TargetCoreType *core);
 extern uint32 cpu_get_sp(const TargetCoreType *core);
 extern uint32 cpu_get_ep(const TargetCoreType *core);
 
+extern uint32 cpu_get_current_core_register(uint32 inx);
 extern uint32 cpu_get_current_core_pc(void);
 extern uint32 cpu_get_current_core_sp(void);
 extern uint32 cpu_get_current_core_ep(void);

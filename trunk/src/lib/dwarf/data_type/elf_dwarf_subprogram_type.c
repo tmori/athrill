@@ -30,20 +30,7 @@ static void elf_dwarf_build_subprogram_variable(DwarfDataSubprogramType *obj, El
 			break;
 		case DW_AT_location:
 			//printf("location:%d\n", attr->encoded.op.len);
-			{
-				int value;
-				if (attr->encoded.op.ops[0] == DW_OP_fbreg) {
-					value = elf_dwarf_decode_sleb128(&attr->encoded.op.ops[1], &size);
-					//printf("DW_OP_fbreg %d\n", value);
-					localVariable.attr = attr;
-					localVariable.stackLocOff = value;
-					localVariable.isSupported = TRUE;
-				}
-				else {
-					printf("not supported ops[0]=0x%x\n", attr->encoded.op.ops[0]);
-					localVariable.isSupported = FALSE;
-				}
-			}
+			localVariable.DW_AT_location = attr;
 			break;
 		case DW_AT_type:
 			offset = elf_dwarf_info_get_value(abbrev->attribute_form->data[j], attr, &size);
@@ -88,6 +75,17 @@ void elf_dwarf_build_subprogram_type(ElfDwarfDieType *die)
 			obj->info.typename = attr->encoded.string;
 			//printf("typename=%s\n", obj->info.typename);
 			break;
+		case DW_AT_frame_base:
+			//printf("elf_dwarf_build_subprogram_type:off=0x%x\n", die->offset);
+			if (attr->type == DW_FORM_data4) {
+				obj->frame_loc_offset = attr->encoded.const32;
+				//printf("name=0x%x form=%s off=0x%x\n", attr_type, attr->typename, obj->frame_loc_offset);
+			}
+			else {
+				printf("ERROR: not supported elf_dwarf_build_subprogram_type:off=0x%x", die->offset);
+				printf("name=0x%x form=%s\n", attr_type, attr->typename);
+			}
+			break;
 		case DW_AT_abstract_origin:
 		case DW_AT_accessibility:
 		case DW_AT_address_class:
@@ -95,7 +93,6 @@ void elf_dwarf_build_subprogram_type(ElfDwarfDieType *die)
 		case DW_AT_calling_convention:
 		case DW_AT_declaration:
 		case DW_AT_external:
-		case DW_AT_frame_base:
 		case DW_AT_high_pc:
 		case DW_AT_inline:
 		case DW_AT_low_pc:

@@ -125,14 +125,16 @@ typedef struct {
 	char					*name;
 	bool					isSupported;
 	sint32					stackLocOff;
-	ElfDwarfAttributeType	*attr;
+	ElfDwarfAttributeType	*DW_AT_location;
 	bool					is_valid_ref_debug_info_offset;
 	uint32					ref_debug_info_offset;
 	DwarfDataType			*ref;
+	uint8					location_op;
 } DwarfLocalVariableType;
 
 typedef struct {
 	DwarfDataType			info;
+	uint32					frame_loc_offset;
 	ElfPointerArrayType		*variables;
 } DwarfDataSubprogramType;
 extern void dwarf_add_subprogram_variable(DwarfDataSubprogramType *obj, DwarfLocalVariableType *org_val);

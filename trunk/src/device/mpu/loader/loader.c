@@ -7,6 +7,7 @@
 #include "elf_dwarf_line.h"
 #include "elf_dwarf_abbrev.h"
 #include "elf_dwarf_info.h"
+#include "elf_dwarf_loc.h"
 #include "elf_dwarf_data_type.h"
 #include <string.h>
 #include <stdio.h>
@@ -54,6 +55,10 @@ Std_ReturnType elf_load(uint8 *elf_data)
 		return err;
 	}
 	err = elf_dwarf_info_load(elf_data);
+	if (err != STD_E_OK) {
+		return err;
+	}
+	err = elf_dwarf_loc_load(elf_data);
 	if (err != STD_E_OK) {
 		return err;
 	}
