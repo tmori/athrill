@@ -472,6 +472,10 @@ bool print_local_variable_type(char *variable_name)
 		return FALSE;
 	}
 	localVariable = elf_dwarf_search_local_variable(subprogram, variable_name);
+	if (localVariable == NULL) {
+		printf("ERROR not found local_val=%s\n", variable_name);
+		return FALSE;
+	}
 	printf("val=%s\n", localVariable->name);
 
 	needPrint = printLocalValueV850(subprogram, localVariable, pc, funcaddr, (uint32*)&vaddr);
