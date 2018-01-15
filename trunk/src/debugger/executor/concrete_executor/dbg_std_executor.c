@@ -382,7 +382,7 @@ static void print_memory(uint32 vaddr, uint8 *top_addr, uint32 size)
 	uint32 i;
 	printf("size=%u byte\n", size);
 	for (i = 0; i < size; i++) {
-		printf("%4u 0x%x 0x%x\n", i, (vaddr + i), *(top_addr + i));
+		printf("%4u 0x%x 0x%x	(%c)\n", i, (vaddr + i), *(top_addr + i), *(top_addr + i));
 	}
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x\n", *top_addr));
 	return;
