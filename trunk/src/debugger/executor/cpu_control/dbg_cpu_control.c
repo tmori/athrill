@@ -108,9 +108,15 @@ void dbg_cpu_control_print_source(uint32 pc)
 		if (path != NULL) {
 			token_string_set(&dbg_std_executor_file.filepath, "./arg_sakura.txt");
 			file_wopen(&dbg_std_executor_file);
+#ifdef OS_LINUX
+			int len = snprintf((char*)dbg_std_executor_file.buffer,
+					sizeof(dbg_std_executor_file.buffer),
+					"-l %u %s\n", value.line, path);
+#else
 			int len = snprintf((char*)dbg_std_executor_file.buffer,
 					sizeof(dbg_std_executor_file.buffer),
 					"-Y=%u %s\n", value.line, path);
+#endif
 			file_putline(&dbg_std_executor_file, (char*)dbg_std_executor_file.buffer, len);
 			file_close(&dbg_std_executor_file);
 			printf("[NEXT> pc=0x%x %s %u\n", pc, value.file, value.line);
@@ -132,7 +138,11 @@ char *dbg_cpu_control_get_print_args(void)
 void dbg_cpu_control_update_editor(void)
 {
 	char cmd[256];
+#ifdef OS_LINUX
+	snprintf(cmd, sizeof(cmd), "geany.sh");
+#else
 	snprintf(cmd, sizeof(cmd), "sh sakura.sh");
+#endif
 	if (system(cmd) < 0) {
 		printf("can not execute sakura\n");
 	}
