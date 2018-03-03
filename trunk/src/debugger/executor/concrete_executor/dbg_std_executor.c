@@ -13,7 +13,7 @@
 #include "cui/cui_ops.h"
 #include "dbg_target_cpu.h"
 #include <stdio.h>
-#include <windows.h>
+#include "target/target_os_api.h"
 #include <string.h>
 #define SYMBOL_CANDIATE_NUM		10
 
@@ -298,7 +298,7 @@ void dbg_std_executor_next(void *executor)
 	 * ここにsleepを入れないと，cont => q コマンド実行後，ログ出力されなくなるため，
 	 * 一時的に本修正対応する．
 	 */
-	Sleep(50);
+	target_os_api_sleep(50);
 	dbg_log_set_print_mode(FALSE);
 	dbg_log_set_view_mode(org_view_mode);
 	return;
@@ -356,8 +356,8 @@ void dbg_std_executor_elaps(void *executor)
 {
 	CpuEmuElapsType elaps;
 	cpuemu_get_elaps(&elaps);
-	printf("clock = cpu %I64u intc %I64u\n", elaps.total_clocks, elaps.intr_clocks);
-	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%I64u\n", elaps.total_clocks));
+	printf("clock = cpu "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64"\n", elaps.total_clocks, elaps.intr_clocks);
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), PRINT_FMT_UINT64"\n", elaps.total_clocks));
 	return;
 }
 void dbg_std_executor_view(void *executor)
@@ -673,7 +673,7 @@ void dbg_std_executor_profile(void *executor)
 				continue;
 			}
 			funcname = symbol_funcid2funcname(funcid);
-			printf("%-50s %-15I64u %-15I64u %-15I64u\n",
+			printf("%-50s %-15"FMT_UINT64" %-15"FMT_UINT64" %-15"FMT_UINT64"\n",
 					funcname, profile.call_num,
 					profile.func_time/profile.call_num, profile.total_time/profile.call_num);
 		}

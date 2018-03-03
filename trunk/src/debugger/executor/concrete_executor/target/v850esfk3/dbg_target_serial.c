@@ -1,5 +1,6 @@
 #include "concrete_executor/target/dbg_target_serial.h"
 #include <stdio.h>
+#include "target/target_os_api.h"
 
 #define DBG_SERIAL_CHANNEL_NUM	4U
 #define DBG_SERIAL_BUFFER_SIZE	1024U
@@ -200,7 +201,7 @@ static void file_wopen(SerialFileWriterType *wfile)
 		return;
 	}
 	file_pathset(&wfile->file, SERIAL_OUT_FILENAME, strlen(SERIAL_OUT_FILENAME));
-	wfile->file.fd = open(wfile->file.path, O_WRONLY|O_BINARY);
+	wfile->file.fd = target_os_api_open_w(wfile->file.path);
 	if (wfile->file.fd < 0) {
 		printf("file open error:%s\n", wfile->file.path);
 		exit(1);
@@ -223,7 +224,7 @@ static void file_ropen(SerialFileReaderType *rfile)
 		return;
 	}
 	file_pathset(&rfile->file, SERIAL_IN_FILENAME, strlen(SERIAL_IN_FILENAME));
-	rfile->file.fd = open(rfile->file.path, O_RDONLY|O_BINARY);
+	rfile->file.fd = target_os_api_open_r(rfile->file.path);
 	if (rfile->file.fd < 0) {
 		printf("file open error:%s errno=%d\n", rfile->file.path, errno);
 		exit(1);

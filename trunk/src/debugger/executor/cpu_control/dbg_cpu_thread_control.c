@@ -1,6 +1,6 @@
 #include "cpu_control/dbg_cpu_thread_control.h"
 #include "std_types.h"
-#include<windows.h>
+#include "target/target_os_api.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -94,7 +94,7 @@ void cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped(void)
 	while (cputhr_state == THREAD_STATE_RUNNING) {
 		pthread_mutex_unlock(&dbg_mutex);
 
-		Sleep(50);
+		target_os_api_sleep(50);
 
 		pthread_mutex_lock(&dbg_mutex);
 	}
@@ -108,7 +108,7 @@ void cputhr_control_dbg_waitfor_cpu_stopped(void)
 	while (cputhr_state == THREAD_STATE_RUNNING) {
 		pthread_mutex_unlock(&dbg_mutex);
 
-		Sleep(50);
+		target_os_api_sleep(50);
 
 		pthread_mutex_lock(&dbg_mutex);
 	}

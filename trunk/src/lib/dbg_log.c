@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "target/target_os_api.h"
 
 DbgExecOpBufferType DbgExecOpBuffer;
 char dbg_tmp_logbuf[DBG_BUFP_LEN];
@@ -13,7 +14,7 @@ uint32 dbg_tmp_logbuflen;
 void dbg_log_init(char *filepath)
 {
 	int fd;
-	fd = open(filepath, O_CREAT | O_TRUNC |O_WRONLY | O_BINARY, 0777);
+	fd = target_os_api_open_ctw(filepath, 0777);
 	if (fd < 0) {
 		printf("debugger_exec_op_bufinit:open err=%d\n", errno);
 		fflush(stdout);
@@ -45,7 +46,7 @@ void dbg_log_sync(void)
 		exit(1);
 	}
 	int fd;
-	fd = open(DbgExecOpBuffer.filepath, O_APPEND |O_WRONLY | O_BINARY);
+	fd = target_os_api_open_aw(DbgExecOpBuffer.filepath);
 	if (fd < 0) {
 		printf("debugger_exec_op_bufsync:open err=%d\n", errno);
 		fflush(stdout);

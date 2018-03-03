@@ -1,3 +1,5 @@
+#ifdef OS_LINUX
+#else
 #include "winsock_wrapper.h"
 
 int winsock_init(void)
@@ -17,3 +19,4 @@ void winsock_fini(void)
 {
 	WSACleanup();
 }
+#endif

@@ -13,8 +13,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include<windows.h>
-#include "winsock_wrapper/winsock_wrapper.h"
+#include "target/target_os_api.h"
 
 
 static void do_cui(void)
@@ -32,7 +31,7 @@ retry:
 		len = cui_getline(buffer, 1024);
 		if (len < 0) {
 			cui_close();
-			Sleep(1000);
+			target_os_api_sleep(1000);
 			goto retry;
 		}
 		buffer[len] = '\0';

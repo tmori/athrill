@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "target/target_os_api.h"
 
 
 static Std_ReturnType comm_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
@@ -99,7 +100,7 @@ static void tx_fifo_sync(void)
 	int fd;
 	int err;
 
-	fd = open(CpuEmuCommDev.tx_fifo.path, O_WRONLY|O_BINARY);
+	fd = target_os_api_open_w(CpuEmuCommDev.tx_fifo.path);
 	if (fd < 0) {
 		printf("file open error:%s\n", CpuEmuCommDev.tx_fifo.path);
 		exit(1);
@@ -129,7 +130,7 @@ static void rx_fifo_sync(void)
 	int err;
 	struct stat buf;
 
-	fd = open(CpuEmuCommDev.rx_fifo.path, O_RDONLY|O_BINARY);
+	fd = target_os_api_open_r(CpuEmuCommDev.rx_fifo.path);
 	if (fd < 0) {
 		printf("file open error:%s\n", CpuEmuCommDev.rx_fifo.path);
 		exit(1);

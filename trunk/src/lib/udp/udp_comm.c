@@ -6,7 +6,7 @@
 Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *comm)
 {
 	int err;
-	struct sockaddr_in addr;
+	struct target_os_api_sockaddr_type addr;
 	u_long val;
 
 	err = socket(AF_INET, SOCK_DGRAM, 0);
@@ -17,7 +17,7 @@ Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *com
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(config->server_port);
-	addr.sin_addr.S_un.S_addr = INADDR_ANY;
+	addr.sin_addr.target_os_sockaddr_sin_addr = INADDR_ANY;
 
 	err = bind(comm->srv_sock, (struct sockaddr *)&addr, sizeof(addr));
 	if (err < 0) {
@@ -30,7 +30,7 @@ Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *com
 	else {
 		val = UDP_COMM_BLOCKING;
 	}
-	ioctlsocket(comm->srv_sock, FIONBIO, &val);
+	target_os_api_ioctlsock(comm->srv_sock, FIONBIO, &val);
 
 	comm->client_port = htons(config->client_port);
 
@@ -53,7 +53,7 @@ Std_ReturnType udp_comm_read(UdpCommType *comm)
 Std_ReturnType udp_comm_write(UdpCommType *comm)
 {
 	int err;
-	struct sockaddr_in addr;
+	struct target_os_api_sockaddr_type addr;
 
 	err = socket(AF_INET, SOCK_DGRAM, 0);
 	if (err < 0) {
@@ -63,21 +63,21 @@ Std_ReturnType udp_comm_write(UdpCommType *comm)
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = comm->client_port;
-	addr.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+	addr.sin_addr.target_os_sockaddr_sin_addr = inet_addr("127.0.0.1");
 
 	err = sendto(comm->clt_sock, comm->write_data.buffer, comm->write_data.len, 0,
 			(struct sockaddr *)&addr, sizeof(addr));
 	if (err != comm->write_data.len) {
 		return STD_E_INVALID;
 	}
-	closesocket(comm->clt_sock);
+	target_os_api_closesocket(comm->clt_sock);
 	comm->clt_sock = -1;
 
 	return STD_E_OK;
 }
 void udp_server_delete(UdpCommType *comm)
 {
-	closesocket(comm->srv_sock);
+	target_os_api_closesocket(comm->srv_sock);
 	comm->srv_sock = -1;
 	return;
 }

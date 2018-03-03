@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/time.h>
- #include <windows.h>
+#include "target/target_os_api.h"
 #include <fcntl.h>
 
 static DeviceClockType cpuemu_dev_clock;
@@ -144,7 +144,8 @@ void *cpuemu_thread_run(void* arg)
 	while (TRUE) {
 		if (cpuemu_dev_clock.clock >= cpuemu_get_cpu_end_clock()) {
 			dbg_log_sync();
-			printf("EXIT for timeout(%I64u).\n", cpuemu_dev_clock.clock);
+			//printf("EXIT for timeout(%I64u).\n", cpuemu_dev_clock.clock);
+			printf("EXIT for timeout("PRINT_FMT_UINT64").\n", cpuemu_dev_clock.clock);
 			exit(1);
 		}
 

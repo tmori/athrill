@@ -7,6 +7,7 @@
 #include "symbol_ops.h"
 #include "cpuemu_ops.h"
 #include <stdio.h>
+#include "target/target_os_api.h"
 
 typedef struct {
 	uint32 vaddr;
@@ -64,7 +65,7 @@ static void print_base_type_signed(uint8 *addr, uint32 size)
 		break;
 	case 8:
 		value64 = ((sint64)elf_get_data64(addr, 0));
-		printf("%I64d", value64);
+		printf(PRINT_FMT_SINT64, value64);
 		return;
 	default:
 		break;
@@ -91,7 +92,7 @@ static void print_base_type_unsigned(uint8 *addr, uint32 size)
 		break;
 	case 8:
 		value64 = ((uint64)elf_get_data64(addr, 0));
-		printf("%I64u", value64);
+		printf(PRINT_FMT_UINT64, value64);
 		return;
 	default:
 		break;
