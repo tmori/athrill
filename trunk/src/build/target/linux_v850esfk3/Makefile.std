@@ -1,0 +1,35 @@
+ROOTDIR		:= ../../..
+ARCH		:= v850esfk3
+
+include Makefile.env
+
+LIBTARGET	:= libstd.a
+
+IFLAGS	:= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/lib
+
+VPATH	:=	$(ROOTDIR)/lib
+VPATH	+=	$(ROOTDIR)/lib/winsock_wrapper
+VPATH	+=	$(ROOTDIR)/lib/udp
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+OBJS	:=	hash.o
+OBJS	+=	token.o
+OBJS	+=	file.o
+OBJS	+=	winsock_wrapper.o
+OBJS	+=	udp_comm.o
+
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+
