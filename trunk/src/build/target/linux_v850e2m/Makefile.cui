@@ -1,0 +1,51 @@
+ROOTDIR		:= ../../..
+
+include Makefile.env
+
+LIBTARGET	:= libcui.a
+
+IFLAGS	:= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/lib
+IFLAGS	+= -I$(ROOTDIR)/lib/dwarf
+IFLAGS	+= -I$(ROOTDIR)/debugger/interaction
+IFLAGS	+= -I$(ROOTDIR)/debugger/executor
+IFLAGS	+= -I$(ROOTDIR)/debugger/interaction/inc
+IFLAGS	+= -I$(ROOTDIR)/debugger/interaction/inc/target/$(ARCH)
+IFLAGS	+=	-I$(ROOTDIR)/debugger/executor/concrete_executor/target
+IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/cpu
+IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/config
+
+
+VPATH	:= $(ROOTDIR)/debugger/interaction/front/parser
+VPATH	+= $(ROOTDIR)/debugger/interaction/front/parser/concrete_parser
+VPATH	+= $(ROOTDIR)/debugger/executor/concrete_executor
+VPATH	+= $(ROOTDIR)/debugger/executor/concrete_executor/util
+VPATH	+= $(ROOTDIR)/lib/cui
+VPATH	+= $(ROOTDIR)/lib/cui/stdio
+VPATH	+= $(ROOTDIR)/lib/cui/udp
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+OBJS	:= dbg_parser_config.o
+OBJS	+= dbg_std_parser.o
+OBJS	+= dbg_parser.o
+OBJS	+= dbg_std_executor.o
+OBJS	+= dbg_print_data_type.o
+OBJS	+= cui_ops.o
+OBJS	+= cui_ops_stdio.o
+OBJS	+= cui_ops_udp.o
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+

@@ -1,0 +1,49 @@
+ROOTDIR		:= ../../..
+
+include Makefile.env
+
+LIBTARGET	:= libmain.a
+
+IFLAGS	:= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/lib
+IFLAGS	+= -I$(ROOTDIR)/lib/dwarf
+IFLAGS	+= -I$(ROOTDIR)/bus
+IFLAGS	+= -I$(ROOTDIR)/device/mpu
+IFLAGS	+= -I$(ROOTDIR)/debugger/interaction
+IFLAGS	+= -I$(ROOTDIR)/debugger/executor
+IFLAGS	+= -I$(ROOTDIR)/debugger/interaction/inc
+IFLAGS	+= -I$(ROOTDIR)/debugger/interaction/inc/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/cpu
+IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/config
+IFLAGS	+= -I$(ROOTDIR)/main
+
+
+VPATH	:= $(ROOTDIR)/debugger/executor/cpu_control
+VPATH	+= $(ROOTDIR)/main
+VPATH	+= $(ROOTDIR)/main/option
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+
+OBJS		:= main.o
+OBJS		+= cpuemu.o
+OBJS		+= dbg_cpu_control.o
+OBJS		+= dbg_cpu_thread_control.o
+OBJS		+= dbg_cpu_callback.o
+OBJS		+= option.o
+
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+

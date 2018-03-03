@@ -1,0 +1,25 @@
+ROOTDIR		:= ../../..
+
+include Makefile.env
+
+LIBTARGET	:= libbus.a
+
+
+IFLAGS		:= -I$(ROOTDIR)/inc
+IFLAGS		+= -I$(ROOTDIR)/device/mpu
+
+VPATH		:= $(ROOTDIR)/bus
+
+CFLAGS		:= $(WFLAGS)
+CFLAGS		+= $(IFLAGS)
+
+OBJS		:= bus.o
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+

@@ -1,0 +1,48 @@
+ROOTDIR		:= ../../..
+
+include Makefile.env
+
+LIBTARGET	:= libdevice.a
+
+IFLAGS	:= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/cpu
+IFLAGS	+= -I$(ROOTDIR)/cpu/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/mpu
+IFLAGS	+= -I$(ROOTDIR)/device/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/intc/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target/$(ARCH)/inc
+IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target
+IFLAGS	+= -I$(ROOTDIR)/config
+IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
+IFLAGS	+= -I$(ROOTDIR)/debugger/executor
+IFLAGS	+= -I$(ROOTDIR)/lib
+
+VPATH	:=	$(ROOTDIR)/device/intc/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/timer
+VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/serial
+VPATH	+=	$(ROOTDIR)/device/target/$(ARCH)
+VPATH	+=	$(ROOTDIR)/debugger/executor/concrete_executor/target/$(ARCH)
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+OBJS	:=	device.o
+OBJS	+=	timer.o
+OBJS	+=	serial.o
+OBJS	+=	dbg_target_serial.o
+OBJS	+=	dbg_target_cpu.o
+OBJS	+=	intc.o
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+
