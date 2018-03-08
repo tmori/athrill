@@ -2,9 +2,7 @@ package application;
 
 
 import Code.Code;
-import Code.CodeFragment;
 import javafx.fxml.FXML;
-import javafx.scene.control.IndexRange;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 
@@ -16,6 +14,11 @@ public class SampleController {
 	private TextArea lineArea;
 	@FXML
 	private TextArea codeArea;
+	
+	@FXML
+	private TextArea cpu0;
+	@FXML
+	private TextArea cpu1;
 	
 	private Code code;
 	
@@ -34,18 +37,18 @@ public class SampleController {
 		return codeArea;
 	}
 	
-	@FXML
-	public void codeAreaonMouseClicked() {
-		//IndexRange range = this.codeArea.getSelection();
-		//CodeFragment line = code.getFromCodePos(range.getStart());
-
-		//getCodeArea().selectRange(line.getCodePos(), line.getCodePos() + line.getCodeFragment().length());
-		//getLineArea().selectRange(line.getLinePos(), line.getLinePos() + line.getLineno().length());
-
-	}
+	
 
 	public Tab getFileName() {
 		return fileName;
+	}
+
+	public TextArea getCpu0() {
+		return cpu0;
+	}
+
+	public TextArea getCpu1() {
+		return cpu1;
 	}
 	
 }

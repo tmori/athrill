@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 <?import javafx.scene.control.*?>
@@ -7,30 +10,31 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SampleController">
+<BorderPane prefHeight="800" prefWidth="800" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.SampleController">
    <center>
-      <AnchorPane prefHeight="687.0" prefWidth="671.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="790" prefWidth="790" BorderPane.alignment="CENTER">
          <children>
-            <TabPane layoutY="7.0" prefHeight="774.0" prefWidth="671.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane layoutY="1.0" prefHeight="780" prefWidth="780" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab fx:id="fileName" text="Untitled Tab 1">
+                <Tab fx:id="fileName" text="FileNameArea">
                   <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="600.0" prefWidth="700.0">
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="770" prefWidth="770">
                            <children>
-                              <SplitPane layoutX="10.0" layoutY="20.0" prefHeight="520.0" prefWidth="640.0">
+                              <SplitPane layoutX="10.0" layoutY="20.0" prefHeight="760" prefWidth="760">
                                 <items>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="520.0" prefWidth="640.0">
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="700.0" prefWidth="750">
                                        <children>
-                                          <TextFlow layoutX="30.0" layoutY="30.0" prefHeight="400.0" prefWidth="600.0">
+                                          <TextFlow layoutX="10.0" layoutY="40" prefHeight="740" prefWidth="740">
                                              <children>
-                                                <TextArea fx:id="lineArea" editable="false" prefHeight="380.0" prefWidth="70.0">
+                                                <TextArea fx:id="lineArea" editable="false" prefHeight="500" prefWidth="100.0">
                                                    <font>
                                                       <Font name="System Bold" size="13.0" />
                                                    </font></TextArea>
-                                                <TextArea fx:id="codeArea" editable="false" onMouseClicked="#codeAreaonMouseClicked" prefHeight="380" prefWidth="500.0">
+                                                <TextArea fx:id="codeArea" editable="false" prefHeight="500" prefWidth="500.0">
                                                    <font>
                                                       <Font name="System Bold" size="13.0" />
-                                                   </font></TextArea>
+                                                   </font>
+                                                </TextArea>
                                              </children>
                                           </TextFlow>
                                        </children>
