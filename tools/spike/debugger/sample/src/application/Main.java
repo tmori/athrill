@@ -16,70 +16,80 @@ import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.control.SingleSelectionModel;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.fxml.FXMLLoader;
 
 
 
 public class Main extends Application {
-	private SampleController ctrl = null;
-	private Code currentCode;
-	private int currentLineno;
-	private List<String> cpu0 = new ArrayList<>();
-	private List<String> cpu1 = new ArrayList<>();
+	private SampleController root;
+	private List<SampleController> ctrls = new ArrayList<>();
 	
-	private void updateLineFocus(int lineno) throws IOException {
-		currentLineno = lineno;
-		CodeFragment line = currentCode.getLine(currentLineno);
-		ctrl.getCodeArea().selectRange(line.getCodePos(), line.getCodePos() + line.getCodeFragment().length());
-		ctrl.getLineArea().selectRange(line.getLinePos(), line.getLinePos() + line.getLineno().length());
+	private void updateLineFocus(SampleController localCtrl, int lineno) throws IOException {
+		localCtrl.setLineno(lineno);
+		CodeFragment line = localCtrl.getCurrentCode().getLine(lineno);
+		localCtrl.getCodeArea().selectRange(line.getCodePos(), line.getCodePos() + line.getCodeFragment().length());
+		localCtrl.getLineArea().selectRange(line.getLinePos(), line.getLinePos() + line.getLineno().length());
+		SingleSelectionModel<Tab> selectionModel = root.getTabPane().getSelectionModel();
+		selectionModel.select(localCtrl.getFileName());
+
 	}
-	
-	public void updateCpuInfo() throws IOException {
-		CpuInfoFile cpuInfoFile = new CpuInfoFile("/home/tmori/project/sample/os/atk2-sc1-mc_1.4.2/OBJ/cpuinfo.txt");
-		List<String> list = cpuInfoFile.getCpuInfo(0);
-		if ((cpu0.size() == 0) || !cpu0.containsAll(list)) {
-			cpu0.addAll(list);
-			ctrl.getCpu0().clear();
-			for (int i = list.size() - 1; i >= 0; i--) {
-				ctrl.getCpu0().insertText(0, list.get(i));
-			}
-			ctrl.getCpu0().setStyle("-fx-background-color: red;");
-			ctrl.getCpu1().setStyle("-fx-background-color: gray;");
-		}
 		
-		list = cpuInfoFile.getCpuInfo(1);
-		if ((cpu1.size() == 0) || !cpu1.containsAll(list)) {
-			cpu1.addAll(list);
-			ctrl.getCpu1().clear();
-			for (int i = list.size() - 1; i >= 0; i--) {
-				ctrl.getCpu1().insertText(0, list.get(i));
-			}
-			ctrl.getCpu0().setStyle("-fx-background-color: gray;");
-			ctrl.getCpu1().setStyle("-fx-background-color: red;");
-		}
+	public void setNewCode(SampleController localCtrl, DebugFile dbgFile) throws FileNotFoundException, IOException {
+		int lineno = dbgFile.getLineno();
+		Code currentCode = Code.getCode("/home/tmori/project/sample/os/atk2-sc1-mc_1.4.2/OBJ/" + dbgFile.getFilePath());
+		//System.out.println("change Start currentCode=" + dbgFile.getFileName());
+		localCtrl.setCode(currentCode);
+		localCtrl.getCodeArea().clear();
+		localCtrl.getLineArea().clear();
+		currentCode.getLines().stream()
+			.forEach( line -> {
+				localCtrl.getCodeArea().insertText(line.getCodePos(), line.getCodeFragment());
+				localCtrl.getLineArea().insertText(line.getLinePos(),  line.getLineno());
+			});
+		//System.out.println("change End currentCode=" + dbgFile.getFileName());
+		updateLineFocus(localCtrl, lineno);
 	}
 	
 	public void update() throws FileNotFoundException, IOException {
 		//updateCpuInfo();
 		DebugFile dbgFile = new DebugFile("/home/tmori/project/sample/os/atk2-sc1-mc_1.4.2/OBJ/arg_sakura.txt");
 		int lineno = dbgFile.getLineno();
-		if (currentCode == null || !currentCode.getFilename().equals(dbgFile.getFileName())) {
-			currentCode = new Code("/home/tmori/project/sample/os/atk2-sc1-mc_1.4.2/OBJ/" + dbgFile.getFilePath());
-			currentCode.build();
-			
-			ctrl.setCode(currentCode);
-			currentCode.getLines().stream()
-				.forEach( line -> {
-					ctrl.getCodeArea().insertText(line.getCodePos(), line.getCodeFragment());
-					ctrl.getLineArea().insertText(line.getLinePos(),  line.getLineno());
-				});
-				
-			ctrl.getFileName().setText(currentCode.getFilename());
-			updateLineFocus(lineno);
+		String fileName = dbgFile.getFileName();
+		SampleController localCtrl = null;
+		
+		if (ctrls.isEmpty()) {
+			ctrls.add(root);
+			root.getFileName().setText(fileName);
+			setNewCode(root, dbgFile);
+			return;
 		}
-		else if (lineno != currentLineno) {
-			updateLineFocus(lineno);
+		
+		for (SampleController entry : ctrls) {
+			if (entry.getFileName().getText().equals(fileName)) {
+				localCtrl = entry;
+				break;
+			}
 		}
+
+		if (localCtrl != null) {
+			updateLineFocus(localCtrl, lineno);
+		}
+		else {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("Sample.fxml"));
+			loader.load();
+			SampleController newCtrl = loader.getController();
+			root.getTabPane().getTabs().add(newCtrl.getFileName());
+			ctrls.add(newCtrl);
+			newCtrl.getFileName().setText(fileName);
+			newCtrl.getLineArea().scrollTopProperty().bindBidirectional(newCtrl.getCodeArea().scrollTopProperty());
+			newCtrl.getCodeArea().setFocusTraversable(true);
+
+			setNewCode(newCtrl, dbgFile);
+		}
+
 		
 	}
 	
@@ -94,11 +104,11 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			
 			primaryStage.setTitle("Athrill Debugger");
-			ctrl = fxmlLoader.getController();
+			root = fxmlLoader.getController();
 			this.update();
 			primaryStage.show();
-			ctrl.getLineArea().scrollTopProperty().bindBidirectional(ctrl.getCodeArea().scrollTopProperty());
-			ctrl.getCodeArea().setFocusTraversable(true);
+			root.getLineArea().scrollTopProperty().bindBidirectional(ctrls.get(0).getCodeArea().scrollTopProperty());
+			root.getCodeArea().setFocusTraversable(true);
 
 			Main tmp = this;
 			

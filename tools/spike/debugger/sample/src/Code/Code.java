@@ -6,19 +6,32 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import com.sun.javafx.collections.MappingChange.Map;
 
 public class Code {
 	private List<CodeFragment> lines = new ArrayList<>();
 	private File file;
 	private int currentCodePos = 0;
 	private int currentLinePos = 0;
+	private static HashMap<String, Code> map = new HashMap<String, Code>();
 	
 	public Code(String filepath) {
 		this.file = new File(filepath);
 	}
 	
-	public void build() throws FileNotFoundException, IOException {
+	public static Code getCode(String filepath) throws FileNotFoundException, IOException {
+		if (!map.containsKey(filepath)) {
+			Code code = new Code(filepath);
+			code.build();
+			map.put(filepath, code);
+		}
+		return map.get(filepath);
+	}
+	
+	private void build() throws FileNotFoundException, IOException {
 	    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 	        String string = reader.readLine();
 	        while (string != null){

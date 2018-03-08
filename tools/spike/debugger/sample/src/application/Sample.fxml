@@ -14,7 +14,7 @@
    <center>
       <AnchorPane prefHeight="790" prefWidth="790" BorderPane.alignment="CENTER">
          <children>
-            <TabPane layoutY="1.0" prefHeight="780" prefWidth="780" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="Tab" layoutY="1.0" prefHeight="780" prefWidth="780" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab fx:id="fileName" text="FileNameArea">
                   <content>

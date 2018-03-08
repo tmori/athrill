@@ -4,6 +4,7 @@ package application;
 import Code.Code;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 
 public class SampleController {
@@ -19,6 +20,13 @@ public class SampleController {
 	private TextArea cpu0;
 	@FXML
 	private TextArea cpu1;
+	
+	@FXML
+	private TabPane Tab;
+	
+	public TabPane getTabPane() {
+		return Tab;
+	}
 	
 	private Code code;
 	
@@ -49,6 +57,17 @@ public class SampleController {
 
 	public TextArea getCpu1() {
 		return cpu1;
+	}
+
+	public Code getCurrentCode() {
+		return code;
+	}
+	private int currentLineno;
+	public void setLineno(int lineno) {
+		currentLineno = lineno;
+	}
+	public int getCurrentLineno() {
+		return currentLineno;
 	}
 	
 }
