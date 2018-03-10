@@ -39,7 +39,8 @@
  */
 #define TARGET_OS_SOCKET_TYPE	int
 #else
-#include<windows.h>
+#include <windows.h>
+#include <winsock2.h>
 /*
  * Winsock
  */
@@ -58,13 +59,17 @@
 #define PRINT_FMT_SINT64	"%I64d"
 #define FMT_SINT64	"I64d"
 #define target_os_api_open_ctw(filepath, mode)	open((filepath), O_CREAT | O_TRUNC |O_WRONLY | O_BINARY, (mode))
-#define target_os_api_open_aw(filepath, mode)	open((filepath), O_APPEND |O_WRONLY | O_BINARY, (mode))
+#define target_os_api_open_aw(filepath)	open((filepath), O_APPEND |O_WRONLY | O_BINARY)
 #define target_os_api_open_w(filepath)	open((filepath), O_WRONLY | O_BINARY)
 #define target_os_api_open_r(filepath)	open((filepath), O_RDONLY | O_BINARY)
 #define target_os_api_closesocket	closesocket
 #define target_os_sockaddr_sin_addr	S_un.S_addr
-#define target_os_api_ioctlsock		ioctlsock
 
+//#define target_os_api_ioctlsock		ioctlsock
+static inline void target_os_api_ioctlsock(SOCKET sock, int flag, unsigned long *valp) 
+{
+	ioctlsocket(sock, flag, valp);
+}
 #endif /* OS_LINUX */
 /*
  * File I/O
