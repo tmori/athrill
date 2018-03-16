@@ -39,13 +39,13 @@ export PATH=[athrill root folder]/src/bin:$PATH
 ```
 Then make sure you can display usage of athrill on an arbitrary folder:
 
-`Usage:athrill [OPTION]... <load_file>
+	Usage:athrill [OPTION]... <load_file>
 	-i                             : execute on the interaction mode. if -i is not set, execute on the background mode.
 	-r                             : execute on the remote mode. this option is valid on the interaction mode.
 	-t<timeout>                    : set program end time using <timeout> clocks. this option is valid on the background mode.
 	-p<fifo config file>           : set communication path with an another emulator.
 	-d<device config file>         : set device parameter.
-`
+
 
 # License
 -------
