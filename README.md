@@ -9,6 +9,7 @@ Athrill at the moment supports V850 CPU instructions.
 # Table of Contents
 -----------------
   * [Requirements](#requirements)
+  * [Install](#install)
   * [Usage](#usage)
   * [License](#license)
 
@@ -30,7 +31,7 @@ Athrill uses the following editors for source debugging:
     * [Windows]
       * Sakura Editor
 
-# Usage
+# Install
 -----
 After downloading Athrill project, add the following athrill executable binary folder path on the environment-variable (PATH).
 
@@ -45,6 +46,9 @@ Then make sure you can display usage of athrill on an arbitrary folder:
 	-t<timeout>                    : set program end time using <timeout> clocks. this option is valid on the background mode.
 	-p<fifo config file>           : set communication path with an another emulator.
 	-d<device config file>         : set device parameter.
+
+# Usage
+---
 
 
 # License
