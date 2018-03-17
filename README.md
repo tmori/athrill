@@ -10,7 +10,7 @@ Athrill at the moment supports V850 CPU instructions.
 -----------------
   * [Requirements](#requirements)
   * [Install](#install)
-  * [Usage](#usage)
+  * [Deomo](#demo)
   * [License](#license)
 
 # Requirements
@@ -47,9 +47,9 @@ Then make sure you can display usage of athrill on an arbitrary folder:
 	-p<fifo config file>           : set communication path with an another emulator.
 	-d<device config file>         : set device parameter.
 
-# Usage
+# Demo
 ---
-
+![demo](https://github.com/tmori/athrill/blob/media/demo.gif)
 
 # License
 -------
