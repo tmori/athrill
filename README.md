@@ -49,6 +49,8 @@ Then make sure you can display usage of athrill on an arbitrary folder:
 
 # Demo
 ---
+Athrill debugging Real-time OS (asp3) demonstration.
+ 
 ![demo](https://github.com/tmori/athrill/blob/media/demo.gif)
 
 # License
