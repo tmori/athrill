@@ -550,7 +550,23 @@ void dbg_std_executor_serialin(void *executor)
 
 void dbg_std_executor_info_cpu(void *executor)
 {
-	dbg_target_print_cpu();
+	CoreIdType i;
+	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	DbgCmdExecutorInfoCpuType *parsed_args = (DbgCmdExecutorInfoCpuType *)(arg->parsed_args);
+
+	if (parsed_args->type == DBG_CMD_CORE_ALL) {
+		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+			dbg_target_print_cpu(i);
+		}
+	}
+	else {
+		if (parsed_args->core_id >= CPU_CONFIG_CORE_NUM) {
+			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+			printf("ERROR: Invalid core_id=%d max_core_num=%d\n", parsed_args->core_id, CPU_CONFIG_CORE_NUM);
+			return;
+		}
+		dbg_target_print_cpu(parsed_args->core_id);
+	}
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	return;
 }

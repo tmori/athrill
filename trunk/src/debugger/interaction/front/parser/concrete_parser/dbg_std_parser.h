@@ -84,6 +84,10 @@ typedef struct {
 } DbgCmdExecutorSerialInType;
 extern DbgCmdExecutorType *dbg_parse_serialin(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
+typedef struct {
+	DbgCmdCoreType 		type;
+	CoreIdType			core_id;
+} DbgCmdExecutorInfoCpuType;
 extern DbgCmdExecutorType *dbg_parse_info_cpu(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 
 

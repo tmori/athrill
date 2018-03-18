@@ -798,16 +798,29 @@ static const TokenStringType info_cpu_string = {
 
 DbgCmdExecutorType *dbg_parse_info_cpu(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
 {
-	if (token_container->num != 1) {
+	DbgCmdExecutorInfoCpuType *parsed_args = (DbgCmdExecutorInfoCpuType *)arg->parsed_args;
+	if ((token_container->num != 1) && (token_container->num != 2)) {
 		return NULL;
 	}
 
 	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
 		return NULL;
 	}
+	if ((token_container->num == 2)) {
+		if (token_container->array[1].type != TOKEN_TYPE_VALUE_DEC) {
+			return NULL;
+		}
+	}
 
 	if ((token_strcmp(&token_container->array[0].body.str, &info_cpu_string) == TRUE)) {
 		arg->std_id = DBG_CMD_STD_ID_INFO_CPU;
+		if (token_container->num == 1) {
+			parsed_args->type = DBG_CMD_CORE_ALL;
+		}
+		else {
+			parsed_args->type = DBG_CMD_CORE_SINGLE;
+			parsed_args->core_id = token_container->array[1].body.dec.value;
+		}
 		arg->run = dbg_std_executor_info_cpu;
 		return arg;
 	}
@@ -1149,11 +1162,15 @@ static const DbgCmdHelpType help_list = {
 			{
 					.name = &info_cpu_string,
 					.name_shortcut = NULL,
-					.opt_num = 1,
+					.opt_num = 2,
 					.opts = {
 							{
 									.semantics = "cpu",
-									.description = "show cpu registers",
+									.description = "show all cpu registers",
+							},
+							{
+									.semantics = "cpu <core_id>",
+									.description = "show cpu(<core_id>)",
 							},
 					},
 			},

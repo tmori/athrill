@@ -34,7 +34,7 @@ static void print_register(const char* regname, uint32 addr, char* opt)
 	return;
 }
 
-void dbg_target_print_cpu(void)
+void dbg_target_print_cpu(uint32 core_id)
 {
 	int i;
 	char buffer[128];

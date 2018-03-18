@@ -34,56 +34,50 @@ static void print_register(const char* regname, uint32 addr, char* opt)
 	return;
 }
 
-void dbg_target_print_cpu(void)
+void dbg_target_print_cpu(uint32 coreId)
 {
 	int i;
 	uint32 pc;
 	char buffer[128];
 
-	uint32 coreId;
+	printf("***CPU<%d>***\n", coreId);
+	pc = virtual_cpu.cores[coreId].core.reg.pc;
 
-	for (coreId = 0; coreId < CPU_CONFIG_CORE_NUM; coreId++) {
-		printf("***CPU<%d>***\n", coreId);
-		pc = virtual_cpu.cores[coreId].core.reg.pc;
-
-		 print_register("PC", pc, NULL);
-		 for (i = 0; i < 32; i++) {
-			 char *opt = NULL;
-			 sprintf(buffer, "R%d", i);
-			 switch (i) {
-			 case 3:
-				 opt = "Stack Pointer";
-				 break;
-			 case 10:
-				 opt = "Return Value";
-				 break;
-			 case 6:
-				 opt = "Arg1";
-				 break;
-			 case 7:
-				 opt = "Arg2";
-				 break;
-			 case 8:
-				 opt = "Arg3";
-				 break;
-			 case 9:
-				 opt = "Arg4";
-				 break;
-			 default:
-				 break;
-			 }
-			 print_register(buffer, virtual_cpu.cores[coreId].core.reg.r[i], opt);
+	print_register("PC", pc, NULL);
+	for (i = 0; i < 32; i++) {
+		 char *opt = NULL;
+		 sprintf(buffer, "R%d", i);
+		 switch (i) {
+		 case 3:
+			 opt = "Stack Pointer";
+			 break;
+		 case 10:
+			 opt = "Return Value";
+			 break;
+		 case 6:
+			 opt = "Arg1";
+			 break;
+		 case 7:
+			 opt = "Arg2";
+			 break;
+		 case 8:
+			 opt = "Arg3";
+			 break;
+		 case 9:
+			 opt = "Arg4";
+			 break;
+		 default:
+			 break;
 		 }
-		 print_register("EIPC", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_EIPC], NULL);
-		 printf("EIPSW		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_EIPSW]);
-		 printf("ECR		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_ECR]);
-		 printf("PSW		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_PSW]);
-		 print_register("EIPC", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_FEPC], NULL);
-		 printf("FEPSW 		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_FEPSW]);
-		 printf("CTBP		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_CTBP]);
+		 print_register(buffer, virtual_cpu.cores[coreId].core.reg.r[i], opt);
+	 }
+	 print_register("EIPC", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_EIPC], NULL);
+	 printf("EIPSW		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_EIPSW]);
+	 printf("ECR		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_ECR]);
+	 printf("PSW		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_PSW]);
+	 print_register("EIPC", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_FEPC], NULL);
+	 printf("FEPSW 		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_FEPSW]);
+	 printf("CTBP		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_CTBP]);
 
-	}
-
-
-	return;
+	 return;
 }
