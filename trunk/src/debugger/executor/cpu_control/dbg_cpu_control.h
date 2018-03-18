@@ -9,6 +9,11 @@
 extern void cpuctrl_init(void);
 extern bool cpuctrl_is_debug_mode(void);
 extern void cpuctrl_set_debug_mode(bool on);
+
+extern bool cpuctrl_is_force_debug_mode(void);
+extern void cpuctrl_set_force_debug_mode(void);
+
+
 extern void cpuctrl_set_force_break(void);
 extern void cpuctrl_set_current_debugged_core(CoreIdType core_id);
 extern void cpuctrl_clr_current_debugged_core(void);
@@ -16,6 +21,8 @@ extern bool cpuctrl_get_current_debugged_core(CoreIdType *core_id);
 extern void dbg_cpu_control_print_source(uint32 pc);
 extern char *dbg_cpu_control_get_print_args(void);
 extern void dbg_cpu_control_update_editor(void);
+extern void dbg_cpu_debug_mode_set(uint32 core_id, bool dbg_mode);
+extern bool dbg_cpu_debug_mode_get(uint32 core_id);
 
 /*
  * break機能

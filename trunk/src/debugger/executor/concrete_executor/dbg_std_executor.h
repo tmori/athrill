@@ -5,6 +5,7 @@ extern void dbg_std_executor_parse_error(void *executor);
 extern void dbg_std_executor_break(void *executor);
 extern void dbg_std_executor_delete(void *executor);
 extern void dbg_std_executor_cont(void *executor);
+extern void dbg_std_executor_core(void *executor);
 extern void dbg_std_executor_watch_data(void *executor);
 extern void dbg_std_executor_intr(void *executor);
 

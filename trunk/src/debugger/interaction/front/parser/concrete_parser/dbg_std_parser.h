@@ -38,6 +38,19 @@ typedef struct {
 	uint32 				cont_clocks;
 } DbgCmdExecutorContType;
 extern DbgCmdExecutorType *dbg_parse_cont(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+
+typedef enum {
+	DBG_CMD_CORE_ALL,
+	DBG_CMD_CORE_SINGLE,
+	DBG_CMD_CORE_SHOW
+} DbgCmdCoreType;
+typedef struct {
+	DbgCmdCoreType 		type;
+	CoreIdType			core_id;
+	bool				is_debug_mode;
+} DbgCmdExecutorCoreType;
+extern DbgCmdExecutorType *dbg_parse_core(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
+
 extern DbgCmdExecutorType *dbg_parse_elaps(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 extern DbgCmdExecutorType *dbg_parse_next(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 extern DbgCmdExecutorType *dbg_parse_return(DbgCmdExecutorType *arg, const TokenContainerType *token_container);

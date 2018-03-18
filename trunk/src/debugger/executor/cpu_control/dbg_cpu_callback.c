@@ -9,19 +9,26 @@
 
 void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 {
+	CoreIdType core_id;
 	bool need_stop = FALSE;
 	uint32 pc = cpu_get_pc(core);
+	bool is_debug_mode;
 
 	if (cpuemu_cui_mode() == FALSE) {
 		return;
 	}
+	is_debug_mode = cpuctrl_is_debug_mode();
 
+	core_id = cpu_get_core_id(core);
+	if ((cpuctrl_is_force_debug_mode() == FALSE) && (dbg_cpu_debug_mode_get(core_id) == FALSE)) {
+		return;
+	}
 	/*
 	 * cont timeout check
 	 * break point check
 	 * debug mode check
 	 */
-	if (cpuctrl_is_timeout_cont_clocks(cpu_get_core_id(core)) == TRUE) {
+	if (cpuctrl_is_timeout_cont_clocks(core_id) == TRUE) {
 		need_stop = TRUE;
 		printf("\nCONT TIMEOUT\n");
 		//printf("[DBG>");
@@ -39,7 +46,7 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 		 }
 
 	}
-	else if ((cpuctrl_is_debug_mode() == TRUE)) {
+	else if ((is_debug_mode == TRUE)) {
 		need_stop = TRUE;
 	}
 

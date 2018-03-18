@@ -16,7 +16,7 @@ typedef struct {
 } DbgCpuCtrlBreakPointType;
 
 DbgCpuCtrlBreakPointType dbg_cpuctrl_break_points[DBG_CPU_CONTROL_BREAK_SETSIZE] = {
-		{ TRUE, 0x00 },
+		{ TRUE, BREAK_POINT_TYPE_FOREVER, 0x00 },
 };
 
 typedef struct {
@@ -27,7 +27,12 @@ typedef struct {
 } DbgCpuCtrlDataWatchType;
 DbgCpuCtrlDataWatchType dbg_cpuctrl_data_watch_points[DBG_CPU_CONTROL_WATCH_DATA_SETSIZE];
 
-bool dbg_cpuctrl_dbg_mode = TRUE;
+typedef enum {
+	DBG_CPUCTRL_DBG_MODE_NONE = 0,
+	DBG_CPUCTRL_DBG_MODE_NORMAL,
+	DBG_CPUCTRL_DBG_MODE_FORCE
+} DbgCpuctrlDbgModeType;
+DbgCpuctrlDbgModeType dbg_cpuctrl_dbg_mode = DBG_CPUCTRL_DBG_MODE_NORMAL;
 
 typedef struct {
 	bool is_stopped;
@@ -42,6 +47,19 @@ typedef struct {
 
 static DbgCpuContType dbg_cpu_cont[CPU_CONFIG_CORE_NUM];
 
+typedef struct {
+	bool is_debug_mode;
+} DbgCpuDebugModeType;
+static DbgCpuDebugModeType dbg_cpu_debug_mode[CPU_CONFIG_CORE_NUM];
+void dbg_cpu_debug_mode_set(uint32 core_id, bool dbg_mode)
+{
+	dbg_cpu_debug_mode[core_id].is_debug_mode = dbg_mode;
+	return;
+}
+bool dbg_cpu_debug_mode_get(uint32 core_id)
+{
+	return dbg_cpu_debug_mode[core_id].is_debug_mode;
+}
 
 typedef struct {
 	uint32	current;
@@ -339,7 +357,7 @@ bool cpuctrl_is_break_point(uint32 addr)
 
 bool cpuctrl_is_debug_mode(void)
 {
-	return (dbg_cpuctrl_dbg_mode == TRUE);
+	return (dbg_cpuctrl_dbg_mode != DBG_CPUCTRL_DBG_MODE_NONE);
 }
 
 bool cpuctrl_set_break(uint32 addr, BreakPointEumType type)
@@ -538,13 +556,27 @@ void cpuctrl_del_all_data_watch_points(void)
 
 void cpuctrl_set_debug_mode(bool on)
 {
-	dbg_cpuctrl_dbg_mode = on;
+	if (on == TRUE) {
+		dbg_cpuctrl_dbg_mode = DBG_CPUCTRL_DBG_MODE_NORMAL;
+	}
+	else {
+		dbg_cpuctrl_dbg_mode = DBG_CPUCTRL_DBG_MODE_NONE;
+	}
 	return;
 }
 void cpuctrl_set_force_break(void)
 {
 	cpuctrl_set_debug_mode(TRUE);
 
+	return;
+}
+bool cpuctrl_is_force_debug_mode(void)
+{
+	return (dbg_cpuctrl_dbg_mode == DBG_CPUCTRL_DBG_MODE_FORCE);
+}
+void cpuctrl_set_force_debug_mode(void)
+{
+	dbg_cpuctrl_dbg_mode = DBG_CPUCTRL_DBG_MODE_FORCE;
 	return;
 }
 

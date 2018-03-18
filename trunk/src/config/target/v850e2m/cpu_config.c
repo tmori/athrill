@@ -57,13 +57,16 @@ bool cpu_is_halt(CoreIdType core_id)
 {
 	return virtual_cpu.cores[core_id].core.is_halt;
 }
+void cpu_set_current_core(CoreIdType core_id)
+{
+	virtual_cpu.current_core = &virtual_cpu.cores[core_id];
+	return;
+}
 
 Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 {
 	int ret;
 	Std_ReturnType err;
-
-	virtual_cpu.current_core = &virtual_cpu.cores[core_id];
 
 	if (virtual_cpu.cores[core_id].core.is_halt == TRUE) {
 		return STD_E_OK;

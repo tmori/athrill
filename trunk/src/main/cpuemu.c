@@ -71,6 +71,7 @@ bool cpuemu_cui_mode(void)
 
 void cpuemu_init(void *(*cpu_run)(void *))
 {
+	CoreIdType i;
 	dbg_log_init("./log.txt");
 	cpu_init();
 	device_init(&virtual_cpu, &cpuemu_dev_clock);
@@ -78,6 +79,9 @@ void cpuemu_init(void *(*cpu_run)(void *))
 	cpuctrl_init();
 	if (cpu_run != NULL) {
 		cpuemu_is_cui_mode = TRUE;
+		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+			dbg_cpu_debug_mode_set(i, TRUE);
+		}
 		cputhr_control_start(cpu_run);
 	}
 	else {
@@ -159,6 +163,8 @@ void *cpuemu_thread_run(void* arg)
 		 */
 		is_halt = TRUE;
 		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+			cpu_set_current_core(i);
+
 			/*
 			 * バスのアクセスログをクリアする
 			 */

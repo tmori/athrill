@@ -272,6 +272,46 @@ void dbg_std_executor_cont(void *executor)
 	return;
 }
 
+void dbg_std_executor_core(void *executor)
+{
+	CoreIdType i;
+	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
+	DbgCmdExecutorCoreType *parsed_args = (DbgCmdExecutorCoreType *)(arg->parsed_args);
+
+	if (parsed_args->type == DBG_CMD_CORE_SINGLE) {
+		bool isAllNotDebugMode = TRUE;
+		dbg_cpu_debug_mode_set(parsed_args->core_id, parsed_args->is_debug_mode);
+		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+			if (dbg_cpu_debug_mode_get(i) == TRUE) {
+				isAllNotDebugMode = FALSE;
+				break;
+			}
+		}
+		if (isAllNotDebugMode == TRUE) {
+			dbg_cpu_debug_mode_set(parsed_args->core_id, TRUE);
+			printf("ERROR: Core%d can not be set non-debug mode, because all core must not be in non-debug mode. athrill does not controll cpu...\n", parsed_args->core_id);
+			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+			return;
+		}
+		printf("Core%d debug mode=%s\n", parsed_args->core_id,
+				dbg_cpu_debug_mode_get(parsed_args->core_id) == TRUE ? "TRUE" : "FALSE");
+	}
+	else {
+		CoreIdType current = cpu_get_current_core_id();
+		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+			if (parsed_args->type == DBG_CMD_CORE_ALL) {
+				dbg_cpu_debug_mode_set(i, parsed_args->is_debug_mode);
+			}
+			printf("%s Core%d debug mode=%s\n",
+					i == current ? "*" : "-",
+					i,
+					dbg_cpu_debug_mode_get(i) == TRUE ? "TRUE" : "FALSE");
+		}
+	}
+
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+	return;
+}
 void dbg_std_executor_intr(void *executor)
 {
 	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
@@ -331,8 +371,9 @@ void dbg_std_executor_return(void *executor)
 
 void dbg_std_executor_quit(void *executor)
 {
-	cpuctrl_set_debug_mode(TRUE);
+	cpuctrl_set_force_debug_mode();
 	cputhr_control_dbg_waitfor_cpu_stopped();
+	cpuctrl_set_debug_mode(TRUE);
 }
 
 void dbg_std_executor_list(void *executor)

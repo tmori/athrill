@@ -7,6 +7,7 @@ DbgCmdParserTableType dbg_cmd_parser_std_table[DBG_CMD_STD_ID_NUM] = {
 		{ dbg_parse_intr, },
 		{ dbg_parse_watch_data, },
 		{ dbg_parse_cont, },
+		{ dbg_parse_core, },
 		{ dbg_parse_elaps, },
 		{ dbg_parse_next, },
 		{ dbg_parse_return, },

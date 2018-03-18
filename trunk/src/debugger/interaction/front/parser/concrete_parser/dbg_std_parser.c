@@ -1,5 +1,6 @@
 #include "front/parser/concrete_parser/dbg_std_parser.h"
 #include "concrete_executor/dbg_std_executor.h"
+#include "cpu_config.h"
 #include <string.h>
 
 /************************************************************************************
@@ -277,6 +278,80 @@ DbgCmdExecutorType *dbg_parse_cont(DbgCmdExecutorType *arg, const TokenContainer
 			parsed_args->cont_clocks = token_container->array[1].body.dec.value;
 		}
 		arg->run = dbg_std_executor_cont;
+		return arg;
+	}
+	return NULL;
+}
+
+
+/************************************************************************************
+ * core コマンド
+ *
+ *
+ ***********************************************************************************/
+static const TokenStringType core_string = {
+		.len = 4,
+		.str = { 'c', 'o', 'r', 'e', '\0' },
+};
+
+DbgCmdExecutorType *dbg_parse_core(DbgCmdExecutorType *arg, const TokenContainerType *token_container)
+{
+	DbgCmdExecutorCoreType *parsed_args = (DbgCmdExecutorCoreType *)arg->parsed_args;
+	TokenStringType cpu_all = {
+			.len = 3,
+			.str = { 'a', 'l', 'l', '\0' },
+	};
+	TokenStringType dbg_mode_true = {
+			.len = 1,
+			.str = { 't', '\0' },
+	};
+	if ((token_container->num != 1) && (token_container->num != 3)) {
+		return NULL;
+	}
+
+	if (token_container->array[0].type != TOKEN_TYPE_STRING) {
+		return NULL;
+	}
+	if ((token_container->num == 3)) {
+		if (token_container->array[1].type == TOKEN_TYPE_STRING) {
+			if (token_strcmp(&token_container->array[1].body.str, &cpu_all) == FALSE) {
+				return NULL;
+			}
+		}
+		else if (token_container->array[1].type != TOKEN_TYPE_VALUE_DEC) {
+			return NULL;
+		}
+		else if (token_container->array[1].body.dec.value >= CPU_CONFIG_CORE_NUM){
+			return NULL;
+		}
+		if (token_container->array[2].type != TOKEN_TYPE_STRING) {
+			return NULL;
+		}
+	}
+
+	if ((token_strcmp(&token_container->array[0].body.str, &core_string) == TRUE)) {
+		arg->std_id = DBG_CMD_STD_ID_CORE;
+		if ((token_container->num == 3)) {
+			parsed_args->is_debug_mode = FALSE;
+			if (token_container->array[1].type == TOKEN_TYPE_STRING) {
+				parsed_args->type = DBG_CMD_CORE_ALL;
+				parsed_args->is_debug_mode = TRUE;
+				if (token_strcmp(&token_container->array[2].body.str, &dbg_mode_true) == FALSE) {
+					return NULL;
+				}
+			}
+			else {
+				parsed_args->type = DBG_CMD_CORE_SINGLE;
+				parsed_args->core_id = token_container->array[1].body.dec.value;
+				if (token_strcmp(&token_container->array[2].body.str, &dbg_mode_true) == TRUE) {
+					parsed_args->is_debug_mode = TRUE;
+				}
+			}
+		}
+		else {
+			parsed_args->type = DBG_CMD_CORE_SHOW;
+		}
+		arg->run = dbg_std_executor_core;
 		return arg;
 	}
 	return NULL;
@@ -937,6 +1012,22 @@ static const DbgCmdHelpType help_list = {
 							},
 					},
 			},
+			{
+					.name = &core_string,
+					.name_shortcut = NULL,
+					.opt_num = 2,
+					.opts = {
+							{
+									.semantics = "core <core_id> <debug_mode>",
+									.description = "set cpu(core_id(all|<id>)) <debug_mode(t|f)>",
+							},
+							{
+									.semantics = "core",
+									.description = "show cpu debug_mode",
+							},
+					},
+			},
+
 			{
 					.name = &intr_string,
 					.name_shortcut = &intr_string_short,
