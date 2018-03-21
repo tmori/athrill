@@ -403,13 +403,14 @@ void cpuctrl_del_all_break(BreakPointEumType type)
 	 }
 	 return;
 }
-static void cpuctrl_access_context_add(DataAccessInfoHeadType *acp)
+static void cpuctrl_access_context_add(uint8 access_type, DataAccessInfoHeadType *acp)
 {
 	DataAccessContextType context;
 	int glid;
 	uint32 gladdr;
 	uint32 index = 0;
 	DataAccessContextType *dp = NULL;
+	CpuEmuElapsType elaps;
 
 	glid = symbol_addr2glid(current_sp, &gladdr);
 	if (glid < 0) {
@@ -420,13 +421,18 @@ static void cpuctrl_access_context_add(DataAccessInfoHeadType *acp)
 	if (acp->access_context == NULL) {
 		acp->access_context = object_container_create(sizeof(DataAccessContextType), 2U);
 	}
+	context.access_type = access_type;
 	context.core_id = cpu_get_core_id((const TargetCoreType *)virtual_cpu.current_core);
 	context.sp = glid;
+	context.funcid = current_funcid;
 	//search context
 	do {
 		dp = object_container_get_element(acp->access_context, index);
 		if (dp != NULL) {
-			if ((dp->core_id == context.core_id) && (dp->sp == context.sp)) {
+			if ((dp->access_type == context.access_type)
+					&& (dp->core_id == context.core_id)
+					&& (dp->sp == context.sp)
+					&& (dp->funcid == context.funcid)) {
 				break;
 			}
 		}
@@ -435,17 +441,19 @@ static void cpuctrl_access_context_add(DataAccessInfoHeadType *acp)
 
 	if (dp == NULL) {
 		dp = object_container_create_element(acp->access_context);
+		dp->access_type = access_type;
 		dp->access_num = 0;
 		dp->core_id = context.core_id;
 		dp->sp = context.sp;
+		dp->funcid = context.funcid;
 	}
 
 	dp->access_num++;
+	cpuemu_get_elaps(&elaps);
+	dp->access_time = elaps.total_clocks;
 
 	return;
 }
-#define ACCESS_TYPE_READ	0x01
-#define ACCESS_TYPE_WRITE	0x02
 static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 size)
 {
 	uint32 i;
@@ -466,15 +474,7 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 			continue;
 		}
 		access_infop = data_access_info_table_gl[glid];
-		//printf("glid=%d funcid=%d access_infop=%p\n", glid, current_funcid, access_infop);
-		if (access_type == ACCESS_TYPE_READ) {
-			cpuctrl_access_context_add(&access_infop[current_funcid].read);
-		}
-		else {
-			//printf("cpuctrl_set_access: current_funcid=%d\n", current_funcid);
-			//printf("cpuctrl_set_access: glid=%d\n", glid);
-			cpuctrl_access_context_add(&access_infop[current_funcid].write);
-		}
+		cpuctrl_access_context_add(access_type, &access_infop[0].head);
 		prev_glid = glid;
 	}
 	return;

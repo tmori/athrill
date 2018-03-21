@@ -601,20 +601,37 @@ void dbg_std_executor_func_trace(void *executor)
 	return;
 }
 
+static bool dbg_data_access_compare(const ObjectSortElementType *obj1, const ObjectSortElementType *obj2)
+{
+	DataAccessContextType *dp1 = (DataAccessContextType *)obj1->p;
+	DataAccessContextType *dp2 = (DataAccessContextType *)obj2->p;
+
+	if (dp1->access_time > dp2->access_time) {
+		return TRUE;
+	}
+	return FALSE;
+}
+static void dbg_data_access_print(const void *p)
+{
+	const ObjectSortElementType *sp = (const ObjectSortElementType*)p;
+	const DataAccessContextType *dp = (const DataAccessContextType*)sp->p;
+
+	printf(" + <"PRINT_FMT_UINT64"> [%5s] [core%u] [%40s] [%30s()]\n",
+			dp->access_time,
+			(dp->access_type == ACCESS_TYPE_READ) ? "READ" : "WRITE",
+			dp->core_id,
+			symbol_glid2glname(dp->sp),
+			symbol_funcid2funcname(dp->funcid));
+	return;
+}
+
 static void dbg_std_executor_data_access_context(DataAccessInfoHeadType *context)
 {
-	uint32 index = 0;
-	DataAccessContextType *dp = NULL;
+	ObjectContainerType *sort = object_container_sort(context->access_context, dbg_data_access_compare);
 
-	//search context
-	do {
-		dp = object_container_get_element(context->access_context, index);
-		if (dp != NULL) {
-			printf("     [core=%d sp=%s]\n", dp->core_id, symbol_glid2glname(dp->sp));
-		}
-		index++;
-	} while (dp != NULL);
+	object_container_foreach(sort, dbg_data_access_print);
 
+	object_container_delete(sort);
 	return;
 }
 
@@ -624,8 +641,6 @@ void dbg_std_executor_data_access_info(void *executor)
 	DbgCmdExecutorDataAccessInfoType *parsed_args = (DbgCmdExecutorDataAccessInfoType *)(arg->parsed_args);
 	DataAccessInfoType *table;
 	DataAccessInfoType *p;
-	int i;
-	int num = symbol_get_func_num();
 
 	table = cpuctrl_get_func_access_info_table((const char*)parsed_args->symbol.str);
 	if (table == NULL) {
@@ -634,24 +649,15 @@ void dbg_std_executor_data_access_info(void *executor)
 		 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 		return;
 	}
-
-
 	printf("* %s\n", parsed_args->symbol.str);
-	printf(" READ\n");
-	for (i = 0; i < num; i++) {
-		p = &table[i];
-		if (p->read.access_num > 0) {
-			printf("  - %s\n", symbol_funcid2funcname(i));
-			dbg_std_executor_data_access_context(&p->read);
-		}
+
+	p = &table[0];
+
+	if (p->head.access_num > 0) {
+		dbg_std_executor_data_access_context(&p->head);
 	}
-	printf(" WRITE\n");
-	for (i = 0; i < num; i++) {
-		p = &table[i];
-		if (p->write.access_num > 0) {
-			printf("  - %s\n", symbol_funcid2funcname(i));
-			dbg_std_executor_data_access_context(&p->write);
-		}
+	else {
+		printf("Not accessed yet.\n");
 	}
 
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
