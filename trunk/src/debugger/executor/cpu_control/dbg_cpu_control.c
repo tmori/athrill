@@ -61,6 +61,17 @@ bool dbg_cpu_debug_mode_get(uint32 core_id)
 	return dbg_cpu_debug_mode[core_id].is_debug_mode;
 }
 
+static int current_funcid;
+static uint32 current_sp;
+
+void dbg_cpu_callback_start(uint32 pc, uint32 sp)
+{
+	uint32 funcpc;
+	current_funcid = symbol_pc2funcid(pc, &funcpc);
+	current_sp = sp;
+	return;
+}
+
 typedef struct {
 	uint32	current;
 	uint32	lognum;
@@ -173,7 +184,6 @@ void dbg_cpu_control_update_editor(void)
  */
 static DataAccessInfoType *data_access_info;
 static DataAccessInfoType **data_access_info_table_gl;
-static uint32 current_funcid;
 
 DataAccessInfoType *cpuctrl_get_func_access_info_table(const char* glname)
 {
@@ -197,10 +207,8 @@ void cpuctrl_set_func_log_trace(uint32 coreId, uint32 pc, uint32 sp)
 
 	funcid = symbol_pc2funcid(pc, &funcpc);
 	if (funcid < 0) {
-		current_funcid = -1;
 		return;
 	}
-	current_funcid = funcid;
 	funcname = symbol_funcid2funcname(funcid);
 
 	if (dbg_func_log_trace[coreId].lognum > 0) {
@@ -395,6 +403,47 @@ void cpuctrl_del_all_break(BreakPointEumType type)
 	 }
 	 return;
 }
+static void cpuctrl_access_context_add(DataAccessInfoHeadType *acp)
+{
+	DataAccessContextType context;
+	int glid;
+	uint32 gladdr;
+	uint32 index = 0;
+	DataAccessContextType *dp = NULL;
+
+	glid = symbol_addr2glid(current_sp, &gladdr);
+	if (glid < 0) {
+		return;
+	}
+
+	acp->access_num++;
+	if (acp->access_context == NULL) {
+		acp->access_context = object_container_create(sizeof(DataAccessContextType), 2U);
+	}
+	context.core_id = cpu_get_core_id((const TargetCoreType *)virtual_cpu.current_core);
+	context.sp = glid;
+	//search context
+	do {
+		dp = object_container_get_element(acp->access_context, index);
+		if (dp != NULL) {
+			if ((dp->core_id == context.core_id) && (dp->sp == context.sp)) {
+				break;
+			}
+		}
+		index++;
+	} while (dp != NULL);
+
+	if (dp == NULL) {
+		dp = object_container_create_element(acp->access_context);
+		dp->access_num = 0;
+		dp->core_id = context.core_id;
+		dp->sp = context.sp;
+	}
+
+	dp->access_num++;
+
+	return;
+}
 #define ACCESS_TYPE_READ	0x01
 #define ACCESS_TYPE_WRITE	0x02
 static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 size)
@@ -405,7 +454,7 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 	uint32 gladdr;
 	DataAccessInfoType *access_infop;
 
-	if (current_funcid == -1) {
+	if (current_funcid < 0) {
 		return;
 	}
 	for (i = 0; i < size; i++) {
@@ -417,13 +466,14 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 			continue;
 		}
 		access_infop = data_access_info_table_gl[glid];
+		//printf("glid=%d funcid=%d access_infop=%p\n", glid, current_funcid, access_infop);
 		if (access_type == ACCESS_TYPE_READ) {
-			access_infop[current_funcid].read_access_num++;
+			cpuctrl_access_context_add(&access_infop[current_funcid].read);
 		}
 		else {
 			//printf("cpuctrl_set_access: current_funcid=%d\n", current_funcid);
 			//printf("cpuctrl_set_access: glid=%d\n", glid);
-			access_infop[current_funcid].write_access_num++;
+			cpuctrl_access_context_add(&access_infop[current_funcid].write);
 		}
 		prev_glid = glid;
 	}
@@ -608,6 +658,9 @@ void cpuctrl_init(void)
 	data_access_info = malloc(func_num * gl_num * sizeof(DataAccessInfoType));
 	ASSERT(data_access_info != NULL);
 	memset(data_access_info, 0, func_num * gl_num * sizeof(DataAccessInfoType));
+
+	//printf("data_access_info:start=%p\n", data_access_info);
+	//printf("data_access_info:end=%p\n", ((char*)data_access_info) + func_num * gl_num * sizeof(DataAccessInfoType));
 
 	data_access_info_table_gl = malloc(gl_num * sizeof(DataAccessInfoType *));
 	for (i = 0; i < gl_num; i++) {

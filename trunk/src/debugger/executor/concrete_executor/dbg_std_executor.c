@@ -601,6 +601,22 @@ void dbg_std_executor_func_trace(void *executor)
 	return;
 }
 
+static void dbg_std_executor_data_access_context(DataAccessInfoHeadType *context)
+{
+	uint32 index = 0;
+	DataAccessContextType *dp = NULL;
+
+	//search context
+	do {
+		dp = object_container_get_element(context->access_context, index);
+		if (dp != NULL) {
+			printf("     [core=%d sp=%s]\n", dp->core_id, symbol_glid2glname(dp->sp));
+		}
+		index++;
+	} while (dp != NULL);
+
+	return;
+}
 
 void dbg_std_executor_data_access_info(void *executor)
 {
@@ -624,15 +640,17 @@ void dbg_std_executor_data_access_info(void *executor)
 	printf(" READ\n");
 	for (i = 0; i < num; i++) {
 		p = &table[i];
-		if (p->read_access_num > 0) {
+		if (p->read.access_num > 0) {
 			printf("  - %s\n", symbol_funcid2funcname(i));
+			dbg_std_executor_data_access_context(&p->read);
 		}
 	}
 	printf(" WRITE\n");
 	for (i = 0; i < num; i++) {
 		p = &table[i];
-		if (p->write_access_num > 0) {
+		if (p->write.access_num > 0) {
 			printf("  - %s\n", symbol_funcid2funcname(i));
+			dbg_std_executor_data_access_context(&p->write);
 		}
 	}
 

@@ -2,6 +2,7 @@
 #define _DBG_CPU_CONTROL_H_
 
 #include "std_types.h"
+#include "object_container.h"
 
 /*
  * 共通機能
@@ -23,6 +24,7 @@ extern char *dbg_cpu_control_get_print_args(void);
 extern void dbg_cpu_control_update_editor(void);
 extern void dbg_cpu_debug_mode_set(uint32 core_id, bool dbg_mode);
 extern bool dbg_cpu_debug_mode_get(uint32 core_id);
+extern void dbg_cpu_callback_start(uint32 pc, uint32 sp);
 
 /*
  * break機能
@@ -60,8 +62,17 @@ extern void cpuctrl_del_all_data_watch_points(void);
  * データアクセス情報取得機能
  */
 typedef struct {
-	uint64	read_access_num;
-	uint64	write_access_num;
+	CoreIdType 	core_id;
+	uint32 		sp;
+	uint64 		access_num;
+} DataAccessContextType;
+typedef struct {
+	uint64					access_num;
+	ObjectContainerType		*access_context;
+} DataAccessInfoHeadType;
+typedef struct {
+	DataAccessInfoHeadType	read;
+	DataAccessInfoHeadType	write;
 } DataAccessInfoType;
 extern DataAccessInfoType *cpuctrl_get_func_access_info_table(const char* glname);
 

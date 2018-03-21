@@ -1,4 +1,5 @@
 ROOTDIR		:= ../../..
+INSTALLDIR	:= ../../../../../bin/linux
 
 include Makefile.env
 
@@ -25,7 +26,9 @@ AROBJS		+= $(LIBSTD)
 all: $(AROBJS)
 	$(RANLIB) $(AROBJS)
 	$(GCC) -O3 $(LFLAGS) $(AROBJS) -o $(TARGET)  $(LIBS)
+	chmod +x $(TARGET)
 	$(CP) $(TARGET) $(ROOTDIR)/bin/
+	$(CP) $(TARGET) $(INSTALLDIR)/
 
 build_all:
 	make -f Makefile.main all
@@ -38,7 +41,9 @@ build_all:
 	make -f Makefile.std all
 	$(RANLIB) $(AROBJS)
 	$(GCC) -O3 $(LFLAGS) $(AROBJS) -o $(TARGET)  $(LIBS)
+	chmod +x $(TARGET)
 	$(CP) $(TARGET) $(ROOTDIR)/bin/
+	$(CP) $(TARGET) $(INSTALLDIR)/
 
 $(LIBMAIN):
 	make -f Makefile.main all

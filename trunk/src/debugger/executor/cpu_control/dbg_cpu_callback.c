@@ -82,20 +82,7 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core, const DbgCpuCal
 	/*
 	 * call callback
 	 */
-#if 0 /* DELETE: do not use */
-	//TODO
-	{
-		int funcid;
-		uint32 funcaddr;
-		funcid = symbol_pc2funcid(pc, &funcaddr);
-		if (funcid >= 0) {
-			uint32 funcpc = symbol_funcid2funcaddr(funcid);
-			if (pc == funcpc) {
-				symbol_set_pc(funcid, core->core_id, cpu_get_current_core_sp());
-			}
-		}
-	}
-#endif
+	dbg_cpu_callback_start(pc, sp);
 	if (enable_dbg->enable_ft == TRUE) {
 		cpuctrl_set_func_log_trace(core->core_id, pc, sp);
 	}
