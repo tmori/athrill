@@ -134,9 +134,6 @@ void file_appendline(FileType *file)
 	if (file != NULL) {
 		(void)fprintf(file->fp, "%s\n", file->buffer);
 	}
-	else {
-		printf("%s\n", file->buffer);
-	}
 	return;
 }
 
