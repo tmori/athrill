@@ -129,6 +129,17 @@ void file_putline(FileType *file, char *line, int size)
 	return;
 }
 
+void file_appendline(FileType *file)
+{
+	if (file != NULL) {
+		(void)fprintf(file->fp, "%s\n", file->buffer);
+	}
+	else {
+		printf("%s\n", file->buffer);
+	}
+	return;
+}
+
 void file_close(FileType *file)
 {
 	if (file->fp != NULL) {

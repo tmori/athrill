@@ -24,6 +24,7 @@ extern uint32 file_getline(FileType *file, char *line, int size);
 extern uint32 file_readline(FileType *file, char *line, int size, int lineno);
 
 extern void file_putline(FileType *file, char *line, int size);
+extern void file_appendline(FileType *file);
 
 extern void file_close(FileType *file);
 

@@ -196,6 +196,10 @@ DataAccessInfoType *cpuctrl_get_func_access_info_table(const char* glname)
 	}
 	return data_access_info_table_gl[glid];
 }
+DataAccessInfoType *cpuctrl_get_func_access_info_table_glid(uint32 glid)
+{
+	return data_access_info_table_gl[glid];
+}
 
 void cpuctrl_set_func_log_trace(uint32 coreId, uint32 pc, uint32 sp)
 {

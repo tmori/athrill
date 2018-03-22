@@ -79,6 +79,7 @@ typedef struct {
 	DataAccessInfoHeadType	head;
 } DataAccessInfoType;
 extern DataAccessInfoType *cpuctrl_get_func_access_info_table(const char* glname);
+extern DataAccessInfoType *cpuctrl_get_func_access_info_table_glid(uint32 glid);
 
 /*
  * cont機能

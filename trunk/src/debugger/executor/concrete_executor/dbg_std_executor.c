@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include "target/target_os_api.h"
 #include <string.h>
+#include "file.h"
 #define SYMBOL_CANDIATE_NUM		10
 
 
@@ -611,27 +612,61 @@ static bool dbg_data_access_compare(const ObjectSortElementType *obj1, const Obj
 	}
 	return FALSE;
 }
+
+static FileType data_access_file;
+static uint32 data_access_glid = 0;
+
 static void dbg_data_access_print(const void *p)
 {
 	const ObjectSortElementType *sp = (const ObjectSortElementType*)p;
 	const DataAccessContextType *dp = (const DataAccessContextType*)sp->p;
 
 	printf(" + <"PRINT_FMT_UINT64"> [%5s] [core%u] [%40s] [%30s()]\n",
-			dp->access_time,
-			(dp->access_type == ACCESS_TYPE_READ) ? "READ" : "WRITE",
-			dp->core_id,
-			symbol_glid2glname(dp->sp),
-			symbol_funcid2funcname(dp->funcid));
+						dp->access_time,
+						(dp->access_type == ACCESS_TYPE_READ) ? "READ" : "WRITE",
+						dp->core_id,
+						symbol_glid2glname(dp->sp),
+						symbol_funcid2funcname(dp->funcid));
+	return;
+}
+static void dbg_data_access_print_csv(const void *p)
+{
+	const ObjectSortElementType *sp = (const ObjectSortElementType*)p;
+	const DataAccessContextType *dp = (const DataAccessContextType*)sp->p;
+	char *glname = symbol_glid2glname(data_access_glid);
+
+	(void)snprintf((char*)data_access_file.buffer,
+						sizeof(data_access_file.buffer),
+						"%s, "PRINT_FMT_UINT64", %s, core%u, %s, %s(),",
+						glname,
+						dp->access_time,
+						(dp->access_type == ACCESS_TYPE_READ) ? "READ" : "WRITE",
+						dp->core_id,
+						symbol_glid2glname(dp->sp),
+						symbol_funcid2funcname(dp->funcid));
+	file_appendline(&data_access_file);
 	return;
 }
 
-static void dbg_std_executor_data_access_context(DataAccessInfoHeadType *context)
+static void dbg_std_executor_data_access_context(DataAccessInfoHeadType *context,  void (*object_action) (const void *p))
 {
 	ObjectContainerType *sort = object_container_sort(context->access_context, dbg_data_access_compare);
 
-	object_container_foreach(sort, dbg_data_access_print);
+	object_container_foreach(sort, object_action);
 
 	object_container_delete(sort);
+	return;
+}
+
+static void show_all_data_access_info(void)
+{
+	uint32 gl_num = symbol_get_gl_num();
+	for (data_access_glid = 0; data_access_glid < gl_num; data_access_glid++) {
+		DataAccessInfoType *table = cpuctrl_get_func_access_info_table_glid(data_access_glid);
+		if (table[0].head.access_num > 0) {
+			dbg_std_executor_data_access_context(&table[0].head, dbg_data_access_print_csv);
+		}
+	}
 	return;
 }
 
@@ -641,28 +676,51 @@ void dbg_std_executor_data_access_info(void *executor)
 	DbgCmdExecutorDataAccessInfoType *parsed_args = (DbgCmdExecutorDataAccessInfoType *)(arg->parsed_args);
 	DataAccessInfoType *table;
 	DataAccessInfoType *p;
+	bool ret;
 
-	table = cpuctrl_get_func_access_info_table((const char*)parsed_args->symbol.str);
-	if (table == NULL) {
-		 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
-		 symbol_print_gl((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
-		 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+	if (parsed_args->symbol.str[0] == '-') {
+		/*
+		 * show all access
+		 */
+		token_string_set(&data_access_file.filepath, "./data_access.csv");
+		ret = file_wopen(&data_access_file);
+		if (ret == FALSE) {
+			printf("ERROR: can not open file ./data_access.csv\n");
+			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+			return;
+		}
+		else {
+			show_all_data_access_info();
+			file_close(&data_access_file);
+			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+		}
 		return;
 	}
-	printf("* %s\n", parsed_args->symbol.str);
-
-	p = &table[0];
-
-	if (p->head.access_num > 0) {
-		dbg_std_executor_data_access_context(&p->head);
-	}
 	else {
-		printf("Not accessed yet.\n");
+		/*
+		 * show one symbol access
+		 */
+		table = cpuctrl_get_func_access_info_table((const char*)parsed_args->symbol.str);
+		if (table == NULL) {
+			 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
+			 symbol_print_gl((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
+			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
+			return;
+		}
+
+		printf("* %s\n", parsed_args->symbol.str);
+		p = &table[0];
+
+		if (p->head.access_num > 0) {
+			dbg_std_executor_data_access_context(&p->head, dbg_data_access_print);
+		}
+		else {
+			printf("Not accessed yet.\n");
+		}
+
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+		return;
 	}
-
-	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
-
-	return;
 }
 static void print_stack_data(uint32 addr)
 {
