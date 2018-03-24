@@ -15,8 +15,8 @@ void test_print(const char *str)
 	*(SERIAL_OUT_ADDR) = '\n';
 }
 
-static int global_value;
-static int *global_value_pointer;
+int global_value;
+int *global_value_pointer;
 int main(void)
 {
 	global_value_pointer = &global_value;
