@@ -2,12 +2,13 @@
 
 import com.xlson.groovycsv.CsvParser
 
-if (args.length != 1) {
-    println "Usage: variable_conflict_check.groovy <file>"
+if (args.length != 2) {
+    println "Usage: variable_conflict_check.groovy <file> <interval>"
     return 1;
 }
 
 csv_file = args[0];
+int interval = Integer.parseInt(args[1]);
 
 class DataAccessInfo {
 	public String variable;
@@ -66,15 +67,35 @@ for (String key : map.keySet()) {
 			.every{ writeInfo.stack.equals(it.stack) }) {
 			continue;
 		}
-		println String.format("<%s> <write(%s):%s(%s)>", 
-					key, writeInfo.func,
-					writeInfo.stack, writeInfo.clock);
+		
+		DataAccessInfo readInfo = null;
+		int wclock = Integer.parseInt(writeInfo.clock);
+		int min = Integer.MAX_VALUE;
 		readList.stream()
 			.filter{ !writeInfo.stack.equals(it.stack) }
 			.each {
-				println String.format("  +<read(%s):%s(%s)>", 
-					it.func,
-					it.stack, it.clock);
+				int tmp_clock = Integer.parseInt(it.clock);
+				if (min > Math.abs(tmp_clock - wclock)) {
+					min = Math.abs(tmp_clock - wclock);
+					readInfo = it;
+				}
 			}
+		
+		if ((interval > 0) && Math.abs(Integer.parseInt(writeInfo.clock) - Integer.parseInt(readInfo.clock)) > interval) {
+			continue;
+		}
+
+		println String.format("%d W:%s %s (%s) : %s(%s)", 
+					Integer.parseInt(writeInfo.clock) - Integer.parseInt(readInfo.clock),
+					key,
+					writeInfo.clock, 
+					writeInfo.core,
+					writeInfo.stack,
+					writeInfo.func);
+		println String.format("  + R:%s (%s) : %s(%s)>", 
+				readInfo.clock,
+				readInfo.core,
+				readInfo.stack, 
+				readInfo.func);
 	}
 }
