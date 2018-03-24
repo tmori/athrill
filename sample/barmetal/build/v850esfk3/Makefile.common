@@ -5,12 +5,13 @@ LINK	:= v850-elf-gcc
 
 OBJS	:= start.o
 OBJS	+= vector.o
+OBJS	+= training.o
 OBJS	+= main.o
 OBJS	+= test_suite.o
 OBJS	+= test_instruction.o
 
 
-CFLAGS	:= -mdisable-callt -mno-app-regs -mtda=0
+CFLAGS	:= -O0 -mdisable-callt -mno-app-regs -mtda=0
 CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e2 -Wa,-mno-bcond17 -msoft-float -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
 
 
@@ -37,6 +38,7 @@ LIBS := -lm -lgcc -lc
 
 all: $(OBJS)
 	$(LINK) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJS) -Wl,-Map,$(TARGET).map
+	v850-elf-objdump -d $(TARGET) > $(TARGET).dump
 
 
 

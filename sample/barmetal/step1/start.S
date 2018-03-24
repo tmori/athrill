@@ -3,14 +3,14 @@
 
 .section	".text" , "ax"
 .align	4
-.globl	_start
+.globl	_start, _training
 .type   _start, @function
 _start:
 	di
 	Lea _stack_data, r3
 	addi 1024, sp r3
 	ei
-	br	 _main
+	br	 _training
 .size		_start, .-_start
 
 .align	4

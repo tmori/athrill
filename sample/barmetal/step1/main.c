@@ -15,9 +15,13 @@ void test_print(const char *str)
 	*(SERIAL_OUT_ADDR) = '\n';
 }
 
+static int global_value;
+static int *global_value_pointer;
 int main(void)
 {
-	test_suite();
+	global_value_pointer = &global_value;
+
+	*global_value_pointer = 999;
 
 	while (1) {
 		;
