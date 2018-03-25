@@ -63,12 +63,14 @@ bool dbg_cpu_debug_mode_get(uint32 core_id)
 }
 
 static int current_funcid;
+static uint32 current_pc;
 static uint32 current_sp;
 static uint32 current_access_glid = -1;
 
 void dbg_cpu_callback_start(uint32 pc, uint32 sp)
 {
 	uint32 funcpc;
+	current_pc = pc;
 	current_funcid = symbol_pc2funcid(pc, &funcpc);
 	current_sp = sp;
 	return;
@@ -489,12 +491,8 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 	sint32 glid;
 	uint32 gladdr;
 	DataAccessInfoType *access_infop;
+	bool found = FALSE;
 
-#if 0
-	if (current_funcid < 0) {
-		return;
-	}
-#endif
 	for (i = 0; i < size; i++) {
 		glid = symbol_addr2glid(access_addr + i, &gladdr);
 		if (glid < 0) {
@@ -503,10 +501,26 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 		if (glid == prev_glid) {
 			continue;
 		}
+		found = TRUE;
 		current_access_glid = glid;
 		access_infop = data_access_info_table_gl[glid];
 		cpuctrl_access_context_add(access_type, access_infop);
 		prev_glid = glid;
+	}
+
+	if ((found == FALSE) && (access_type == ACCESS_TYPE_WRITE)) {
+		MpuAddressRegionEnumType type = mpu_address_region_type_get(access_addr);
+
+		if (type != DEVICE) {
+			uint32 gladdr;
+			int stack_glid = symbol_addr2glid(current_sp, &gladdr);
+
+			printf("WARNING: Found invalid data write on not variable region(addr=0x%x size=%u) : %s(0x%x)@%s\n",
+					access_addr, size,
+					symbol_funcid2funcname(current_funcid),
+					current_pc,
+					(stack_glid > 0) ? symbol_glid2glname(stack_glid) : "unknown_stack");
+		}
 	}
 	return;
 }
