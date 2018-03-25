@@ -1,4 +1,5 @@
 ROOTDIR		:= ../../..
+INSTALLDIR	:= ../../../../../bin/windows
 
 include Makefile.env
 
@@ -26,6 +27,8 @@ all: $(AROBJS)
 	$(RANLIB) $(AROBJS)
 	$(GCC) -O3 $(LFLAGS) $(AROBJS) -o $(TARGET)  $(LIBS)
 	$(CP) $(TARGET).exe $(ROOTDIR)/bin/
+	$(CP) $(TARGET).exe $(INSTALLDIR)/
+	chmod +x $(INSTALLDIR)/$(TARGET).exe
 
 build_all:
 	make -f Makefile.main all
@@ -39,6 +42,8 @@ build_all:
 	$(RANLIB) $(AROBJS)
 	$(GCC) -O3 $(LFLAGS) $(AROBJS) -o $(TARGET)  $(LIBS)
 	$(CP) $(TARGET).exe $(ROOTDIR)/bin/
+	$(CP) $(TARGET).exe $(INSTALLDIR)/
+	chmod +x $(INSTALLDIR)/$(TARGET).exe
 
 $(LIBMAIN):
 	make -f Makefile.main all
