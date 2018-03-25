@@ -12,11 +12,14 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	CoreIdType core_id;
 	bool need_stop = FALSE;
 	uint32 pc = cpu_get_pc(core);
+	uint32 sp = cpu_get_sp(core);
 	bool is_debug_mode;
 
 	if (cpuemu_cui_mode() == FALSE) {
 		return;
 	}
+	dbg_cpu_callback_start(pc, sp);
+
 	is_debug_mode = cpuctrl_is_debug_mode();
 
 	core_id = cpu_get_core_id(core);
@@ -82,7 +85,6 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core, const DbgCpuCal
 	/*
 	 * call callback
 	 */
-	dbg_cpu_callback_start(pc, sp);
 	if (enable_dbg->enable_ft == TRUE) {
 		cpuctrl_set_func_log_trace(core->core_id, pc, sp);
 	}

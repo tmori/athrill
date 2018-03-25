@@ -30,4 +30,6 @@ extern uint32 cpu_get_return_addr(const TargetCoreType *core);
 extern CoreIdType cpu_get_core_id(const TargetCoreType *core);
 extern void intc_cpu_trigger_interrupt(CoreIdType core_id, int intno);
 
+extern bool cpu_may_store_on_stack_overflow(uint32 start_addr, uint32 size);
+
 #endif /* _CPU_H_ */

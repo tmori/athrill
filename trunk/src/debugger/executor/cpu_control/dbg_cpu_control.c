@@ -508,6 +508,9 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 		prev_glid = glid;
 	}
 
+	/*
+	 * invalid region access detection
+	 */
 	if ((found == FALSE) && (access_type == ACCESS_TYPE_WRITE)) {
 		MpuAddressRegionEnumType type = mpu_address_region_type_get(access_addr);
 
@@ -524,7 +527,28 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 	}
 	return;
 }
+bool cpu_may_store_on_stack_overflow(uint32 start_addr, uint32 size)
+{
+	uint32 i;
+	sint32 glid;
+	uint32 gladdr;
 
+	int stack_glid = symbol_addr2glid(current_sp, &gladdr);
+
+	for (i = 0; i < size; i++) {
+		glid = symbol_addr2glid(start_addr + i, &gladdr);
+		if (glid != stack_glid) {
+			//printf("i=%d glid=%s stack_glid=%s\n", i, symbol_glid2glname(glid), symbol_glid2glname(stack_glid));
+			printf("ERROR: Found invalid data write over stack(addr=0x%x size=%u) : %s(0x%x)@%s\n",
+					start_addr, size,
+					symbol_funcid2funcname(current_funcid),
+					current_pc,
+					(stack_glid > 0) ? symbol_glid2glname(stack_glid) : "unknown_stack");
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
 
 int cpuctrl_is_break_read_access(uint32 access_addr, uint32 size)
 {

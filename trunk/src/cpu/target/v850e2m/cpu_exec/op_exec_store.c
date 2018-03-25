@@ -26,6 +26,10 @@ int op_exec_sstb(TargetCoreType *cpu)
 	disp = (disp << 1) | cpu->decoded_code.type4_1.gen;
 	disp = op_zero_extend(7, disp);
 	addr = cpu->reg.r[reg1] + disp;
+	if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
+		printf("ERROR: found stack overflow\n");
+		return -1;
+	}
 
 	err = bus_put_data8(cpu->core_id, addr, (uint8)cpu->reg.r[reg2]);
 	if (err != STD_E_OK) {
@@ -57,6 +61,10 @@ int op_exec_ssth(TargetCoreType *cpu)
 	disp = op_zero_extend(7, disp);
 	disp = disp << 1;
 	addr = cpu->reg.r[reg1] + disp;
+	if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
+		printf("ERROR: found stack overflow\n");
+		return -1;
+	}
 
 	err = bus_put_data16(cpu->core_id, addr, (uint16)cpu->reg.r[reg2]);
 	if (err != STD_E_OK) {
@@ -88,6 +96,10 @@ int op_exec_sstw(TargetCoreType *cpu)
 	disp = op_zero_extend(6, disp);
 	disp = disp << 2;
 	addr = cpu->reg.r[reg1] + disp;
+	if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
+		printf("ERROR: found stack overflow\n");
+		return -1;
+	}
 
 	err = bus_put_data32(cpu->core_id, addr, (uint32)cpu->reg.r[reg2]);
 	if (err != STD_E_OK) {
@@ -124,6 +136,10 @@ int op_exec_sthw(TargetCoreType *cpu)
 		//ST.H
 		disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) );
 		addr = cpu->reg.r[reg1] + disp;
+		if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
+			printf("ERROR: found stack overflow\n");
+			return -1;
+		}
 
 		err = bus_put_data16(cpu->core_id, addr, (sint16)cpu->reg.r[reg2]);
 		if (err != STD_E_OK) {
@@ -136,6 +152,10 @@ int op_exec_sthw(TargetCoreType *cpu)
 		//ST.W
 		disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) );
 		addr = cpu->reg.r[reg1] + disp;
+		if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
+			printf("ERROR: found stack overflow\n");
+			return -1;
+		}
 
 		err = bus_put_data32(cpu->core_id, addr, (sint32)cpu->reg.r[reg2]);
 		if (err != STD_E_OK) {
@@ -167,6 +187,10 @@ int op_exec_stb(TargetCoreType *cpu)
 
 	disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) | cpu->decoded_code.type7.gen);
 	addr = cpu->reg.r[reg1] + disp;
+	if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
+		printf("ERROR: found stack overflow\n");
+		return -1;
+	}
 
 
 	err = bus_put_data8(cpu->core_id, addr, (uint8)cpu->reg.r[reg2]);
