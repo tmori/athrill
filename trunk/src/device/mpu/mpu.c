@@ -133,6 +133,10 @@ Std_ReturnType mpu_put_data8(CoreIdType core_id, uint32 addr, uint8 data)
 		printf("mpu_put_data8:error2:addr=0x%x data=%u\n", addr, data);
 		return STD_E_SEGV;
 	}
+	if (region->type == READONLY_MEMORY) {
+		printf("mpu_put_data8:error: can not write data on ROM :addr=0x%x data=%u\n", addr, data);
+		return STD_E_SEGV;
+	}
 	uint32 paddr = (addr & region->mask);
 	err = region->ops->put_data8(region, core_id, paddr, data);
 	if (err != STD_E_OK) {
@@ -150,6 +154,10 @@ Std_ReturnType mpu_put_data16(CoreIdType core_id, uint32 addr, uint16 data)
 	if (region->ops->put_data16 == NULL) {
 		return STD_E_SEGV;
 	}
+	if (region->type == READONLY_MEMORY) {
+		printf("mpu_put_data16:error: can not write data on ROM :addr=0x%x data=%u\n", addr, data);
+		return STD_E_SEGV;
+	}
 	uint32 paddr = (addr & region->mask);
 	return region->ops->put_data16(region, core_id, paddr, data);
 }
@@ -163,6 +171,11 @@ Std_ReturnType mpu_put_data32(CoreIdType core_id, uint32 addr, uint32 data)
 	if (region->ops->put_data32 == NULL) {
 		return STD_E_SEGV;
 	}
+	if (region->type == READONLY_MEMORY) {
+		printf("mpu_put_data32:error: can not write data on ROM :addr=0x%x data=%u\n", addr, data);
+		return STD_E_SEGV;
+	}
+
 	uint32 paddr = (addr & region->mask);
 	return region->ops->put_data32(region, core_id, paddr, data);
 }
