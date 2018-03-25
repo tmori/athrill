@@ -34,7 +34,7 @@ MpuAddressMapType mpu_address_map = {
 				 * INDEX 0:ROM
 				 */
 				{
-						.type		= GLOBAL_MEMORY,
+						.type		= READONLY_MEMORY,
 						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x00000000,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_ROM,

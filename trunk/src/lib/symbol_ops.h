@@ -23,7 +23,7 @@ extern int symbol_get_gl(char *gl_name, uint32 gl_len, uint32 *addrp, uint32 *si
 
 extern int symbol_addr2glid(uint32 addr, uint32 *gladdr);
 extern char * symbol_glid2glname(int id);
-
+extern uint32 symbol_glid2gladdr(int id);
 
 extern void symbol_print_gl(char *gl_name, uint32 show_num);
 extern void symbol_print_func(char *gl_name, uint32 show_num);

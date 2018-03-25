@@ -6,6 +6,7 @@
 #include "file.h"
 #include "cpuemu_ops.h"
 #include "std_errno.h"
+#include "mpu_types.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -63,6 +64,7 @@ bool dbg_cpu_debug_mode_get(uint32 core_id)
 
 static int current_funcid;
 static uint32 current_sp;
+static uint32 current_access_glid = -1;
 
 void dbg_cpu_callback_start(uint32 pc, uint32 sp)
 {
@@ -407,7 +409,17 @@ void cpuctrl_del_all_break(BreakPointEumType type)
 	 }
 	 return;
 }
-static void cpuctrl_access_context_add(uint8 access_type, DataAccessInfoHeadType *acp)
+static bool data_access_object_write_filter(const void *p)
+{
+	DataAccessContextType *dp = (DataAccessContextType *)p;
+
+	if (dp->access_type == ACCESS_TYPE_WRITE) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static void cpuctrl_access_context_add(uint8 access_type, DataAccessInfoType *access_info)
 {
 	DataAccessContextType context;
 	int glid;
@@ -415,6 +427,7 @@ static void cpuctrl_access_context_add(uint8 access_type, DataAccessInfoHeadType
 	uint32 index = 0;
 	DataAccessContextType *dp = NULL;
 	CpuEmuElapsType elaps;
+	DataAccessInfoHeadType *acp = &access_info->head;
 
 	glid = symbol_addr2glid(current_sp, &gladdr);
 	if (glid < 0) {
@@ -425,6 +438,17 @@ static void cpuctrl_access_context_add(uint8 access_type, DataAccessInfoHeadType
 	if (acp->access_context == NULL) {
 		acp->access_context = object_container_create(sizeof(DataAccessContextType), 2U);
 	}
+
+	if ((access_info->region_type != READONLY_MEMORY) && (access_type == ACCESS_TYPE_READ)) {
+		void *write_objp = object_container_find_first(acp->access_context, data_access_object_write_filter);
+		if (write_objp == NULL) {
+			printf("WARNING: Unitialized data read : variable=>%s : %s()@%s\n",
+					symbol_glid2glname(current_access_glid),
+					symbol_funcid2funcname(current_funcid),
+					symbol_glid2glname(glid));
+		}
+	}
+
 	context.access_type = access_type;
 	context.core_id = cpu_get_core_id((const TargetCoreType *)virtual_cpu.current_core);
 	context.sp = glid;
@@ -466,9 +490,11 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 	uint32 gladdr;
 	DataAccessInfoType *access_infop;
 
+#if 0
 	if (current_funcid < 0) {
 		return;
 	}
+#endif
 	for (i = 0; i < size; i++) {
 		glid = symbol_addr2glid(access_addr + i, &gladdr);
 		if (glid < 0) {
@@ -477,8 +503,9 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 		if (glid == prev_glid) {
 			continue;
 		}
+		current_access_glid = glid;
 		access_infop = data_access_info_table_gl[glid];
-		cpuctrl_access_context_add(access_type, &access_infop[0].head);
+		cpuctrl_access_context_add(access_type, access_infop);
 		prev_glid = glid;
 	}
 	return;
@@ -659,16 +686,17 @@ void cpuctrl_init(void)
 		memset(CpuProfile[coreId], 0, func_num * sizeof(CpuProfileType));
 	}
 
-	data_access_info = malloc(func_num * gl_num * sizeof(DataAccessInfoType));
+	data_access_info = malloc(gl_num * sizeof(DataAccessInfoType));
 	ASSERT(data_access_info != NULL);
-	memset(data_access_info, 0, func_num * gl_num * sizeof(DataAccessInfoType));
+	memset(data_access_info, 0, gl_num * sizeof(DataAccessInfoType));
 
 	//printf("data_access_info:start=%p\n", data_access_info);
 	//printf("data_access_info:end=%p\n", ((char*)data_access_info) + func_num * gl_num * sizeof(DataAccessInfoType));
 
 	data_access_info_table_gl = malloc(gl_num * sizeof(DataAccessInfoType *));
 	for (i = 0; i < gl_num; i++) {
-		data_access_info_table_gl[i] = &data_access_info[(func_num * i)];
+		data_access_info[i].region_type = mpu_address_region_type_get(symbol_glid2gladdr(i));
+		data_access_info_table_gl[i] = &data_access_info[i];
 	}
 
 	return;

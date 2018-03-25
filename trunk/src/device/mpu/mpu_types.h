@@ -4,11 +4,15 @@
 #include "std_types.h"
 
 typedef enum {
-	GLOBAL_MEMORY = 0,
+	READONLY_MEMORY = 0,
+	GLOBAL_MEMORY,
 	LOCAL_MEMORY,
 	PRIVATE_MEMORY,
 	DEVICE,
+	REGION_UNKNOWN,
 } MpuAddressRegionEnumType;
+
+extern MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr);
 
 #define MPU_ADDRESS_REGION_MASK_ALL				0xFFFFFFFF
 #define MPU_ADDRESS_REGION_PERM_ALL				0xFFFFFFFF

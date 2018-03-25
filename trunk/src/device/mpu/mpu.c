@@ -64,6 +64,24 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 	return NULL;
 }
 
+MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr)
+{
+	uint32 i;
+
+	for (i = 0U; i < MPU_CONFIG_REGION_NUM; i++) {
+		uint32 start = mpu_address_map.map[i].start;
+		uint32 end = mpu_address_map.map[i].start  + mpu_address_map.map[i].size;
+		uint32 paddr_str = (addr & mpu_address_map.map[i].mask);
+
+		if ((start <= paddr_str) && (paddr_str < end)) {
+			return mpu_address_map.map[i].type;
+		}
+	}
+	printf("search_region:not found error:addr=0x%x\n", addr);
+	return REGION_UNKNOWN;
+}
+
+
 Std_ReturnType mpu_get_data8(CoreIdType core_id, uint32 addr, uint8 *data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 1U);

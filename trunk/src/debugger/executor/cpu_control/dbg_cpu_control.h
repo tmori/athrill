@@ -76,8 +76,10 @@ typedef struct {
 	ObjectContainerType		*access_context;
 } DataAccessInfoHeadType;
 typedef struct {
-	DataAccessInfoHeadType	head;
+	uint32						region_type;
+	DataAccessInfoHeadType		head;
 } DataAccessInfoType;
+
 extern DataAccessInfoType *cpuctrl_get_func_access_info_table(const char* glname);
 extern DataAccessInfoType *cpuctrl_get_func_access_info_table_glid(uint32 glid);
 

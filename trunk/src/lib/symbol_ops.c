@@ -111,6 +111,9 @@ int symbol_pc2funcid(uint32 pc, uint32 *funcaddr)
 }
 char * symbol_funcid2funcname(int id)
 {
+	if (id < 0) {
+		return "unknown";
+	}
 	return symbol_func[id].name;
 }
 uint32 symbol_funcid2funcaddr(int id)
@@ -167,6 +170,10 @@ char * symbol_glid2glname(int id)
 	return symbol_gl[id].name;
 }
 
+uint32 symbol_glid2gladdr(int id)
+{
+	return symbol_gl[id].addr;
+}
 
 void symbol_print_gl(char *gl_name, uint32 show_num)
 {

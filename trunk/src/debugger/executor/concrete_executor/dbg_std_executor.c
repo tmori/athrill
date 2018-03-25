@@ -661,6 +661,11 @@ static void dbg_std_executor_data_access_context(DataAccessInfoHeadType *context
 static void show_all_data_access_info(void)
 {
 	uint32 gl_num = symbol_get_gl_num();
+	(void)snprintf((char*)data_access_file.buffer,
+						sizeof(data_access_file.buffer),
+						"variable,access_clock,type,core,stack,access_func,");
+	file_appendline(&data_access_file);
+
 	for (data_access_glid = 0; data_access_glid < gl_num; data_access_glid++) {
 		DataAccessInfoType *table = cpuctrl_get_func_access_info_table_glid(data_access_glid);
 		if (table[0].head.access_num > 0) {
