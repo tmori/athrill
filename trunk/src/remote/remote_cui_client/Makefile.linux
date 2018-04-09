@@ -1,0 +1,42 @@
+ROOTDIR		:= ../../
+TARGETDIR	:= .
+TARGET		:= athrill_remote
+
+WFLAGS		:= -g -Wall
+GCC		:= gcc
+
+IFLAGS		:= -I$(ROOTDIR)/inc
+IFLAGS		+= -I$(ROOTDIR)/lib
+IFLAGS		+= -I$(ROOTDIR)/config
+
+VPATH		:= $(TARGETDIR)
+VPATH		+= $(ROOTDIR)/lib/winsock_wrapper
+VPATH		+= $(ROOTDIR)/lib/udp
+
+
+
+CFLAGS		:= $(WFLAGS)
+CFLAGS		+= $(IFLAGS)
+CFLAGS		+= -DOS_LINUX
+
+LFLAGS		:= -Wl,--allow-multiple-definition
+
+LIBS		:= -lpthread
+
+OBJS		:= main.o
+OBJS		+= udp_comm.o
+
+
+.SUFFIXES:	.c .o
+
+all:	$(TARGET)
+
+$(TARGET):	$(OBJS)
+	$(GCC) -O3 $(LFLAGS) $(OBJS) -o $(TARGET)  $(LIBS)
+	cp $(TARGET) ../../../../bin/linux/$(TARGET)
+
+.c.o:	$<
+	$(GCC) -O3 -c $(CFLAGS) $<
+
+clean:
+	rm -f $(OBJS) $(TARGET) ../../../../bin/linux/$(TARGET)

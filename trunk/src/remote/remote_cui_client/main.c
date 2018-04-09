@@ -1,5 +1,6 @@
 #include "udp/udp_comm.h"
 #include "cpuemu_config.h"
+#include "target/target_os_api.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -36,10 +37,13 @@ int main(int argc, const char* argv[])
 	memcpy(comm.write_data.buffer, cmd_buffer, cmd_buffer_len);
 	cmd_buffer[cmd_buffer_len] = '\0';
 
+#ifdef OS_LINUX
+#else
 	if (winsock_init() < 0) {
 		printf("ERROR:winsock_init failed.\n");
 		return 1;
 	}
+#endif
 
 	if (udp_comm_create(&config, &comm) != STD_E_OK) {
 		printf("ERROR:udp_comm_create failed.\n");
@@ -54,7 +58,10 @@ int main(int argc, const char* argv[])
 		printf("ERROR:udp_comm_read failed.\n");
 		return 1;
 	}
+#ifdef OS_LINUX
+#else
 	winsock_fini();
+#endif
 
 	printf("%s", comm.read_data.buffer);
 	return 0;
