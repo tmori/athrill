@@ -18,8 +18,10 @@ SECTIONS
 
 	.text :	
 	{
+		__text = . ;
 		__tp = . ;
 		*(.text)
+		_etext = . ;
 	} > INTROM
 
 	.rodata : { *(.rodata) } > INTROM
@@ -46,7 +48,13 @@ SECTIONS
 	  . = ALIGN(4);
 	  __bss_end = .;
 	} > INTRAM
-	
+
+	.bss_noclr		:
+	{
+		. = ALIGN(4);
+		*(.bss_noclr)
+		. = ALIGN(4);
+	} > INTRAM
 	
 	.comment 0 : { *(.comment) }	
 	.debug			0 : { *(.debug) }

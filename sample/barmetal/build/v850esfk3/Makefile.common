@@ -37,7 +37,7 @@ LIBS := -lm -lgcc -lc
 	$(CC) -c $(IFLAGS) $(CFLAGS) $<
 
 all: $(OBJS)
-	$(LINK) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJS) -Wl,-Map,$(TARGET).map
+	$(LINK) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJS) -Wl,-Map,$(TARGET).map $(LIBS)
 	v850-elf-objdump -d $(TARGET) > $(TARGET).dump
 
 
