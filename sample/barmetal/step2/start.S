@@ -10,11 +10,11 @@ _start:
 	di
 	Lea _stack_data, r3
 	addi STACK_SIZE, sp r3
-	ei
 
 	jarl _bss_clear, lp
 	jarl _data_init, lp
 
+	ei
 	br	 _main
 .size		_start, .-_start
 

@@ -10,9 +10,9 @@ static int *global_value_pointer = &global_value;
 
 int main(void)
 {
-	test_print("Hello World!!\n");
+	*global_value_pointer = 999;
 
-	*global_value_pointer = 10;
+	printf("Hello World!!\n");
 	while (1) {
 		;
 	}
@@ -33,7 +33,7 @@ void data_init(void)
 	unsigned char *p_rom = &_idata_start;
 	unsigned char *e_rom = &_idata_end;
 	unsigned char *p_ram = &_data_start;
-	
+
 	for (;p_rom < e_rom; p_ram++, p_rom++) {
 		*p_ram = *p_rom;
 	}
