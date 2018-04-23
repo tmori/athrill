@@ -9,14 +9,14 @@ extern void list_test_OK_2(void);
 extern void list_test_OK_3(void);
 
 
-extern void test_print(const char *str);
+extern void test_print_line(const char *str, int lineno);
 #define ASSERT(expr)	\
 do {	\
 	if (expr) {	\
-		test_print("PASSED : " #expr);	\
+		test_print_line("PASSED <" #expr "> " __FILE__ ":", __LINE__);	\
 	}	\
 	else {	\
-		test_print("FAILED : " #expr);	\
+		test_print_line("FAILED <" #expr "> " __FILE__ ":", __LINE__);	\
 	}	\
 } while (0)
 
