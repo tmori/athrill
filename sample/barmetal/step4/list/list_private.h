@@ -60,24 +60,41 @@ extern void list_private_init(void);
  * 
  * returned entry's next/prev must point the entry itself.
  */
-extern ListEntryType *list_private_remove_head(ListEntryType *headp);
+extern ListEntryType *list_private_remove_head(ListEntryType **headpp);
 /*
  * add entryp on the top of headp
  * 
  * caller must gurantee entryp's next/prev point the entryp itself
  */
-extern void list_private_add_head(ListEntryType *headp, ListEntryType *entryp);
+extern void list_private_add_head(ListEntryType **headpp, ListEntryType *entryp);
 /*
  * remove the entryp from headp
  * 
  * returned entry's next/prev must point the entry itself.
  */
-extern void list_private_remove(ListEntryType *headp, ListEntryType *entryp);
+extern void list_private_remove(ListEntryType **headpp, ListEntryType *entryp);
 /*
  * add entryp on the last of headp
  * 
  * caller must gurantee entryp's next/prev point the entryp itself
  */
-extern void list_private_add_tail(ListEntryType *headp, ListEntryType *entryp);
+extern void list_private_add_tail(ListEntryType **headpp, ListEntryType *entryp);
+
+/*
+ *                     entryp
+ *                       |
+ *                       v
+ * <target_prev> <target> <target_next>
+ */
+extern void list_private_add_next(ListEntryType **headpp, ListEntryType *target, ListEntryType *entryp);
+
+
+/*
+ *            entryp
+ *              |
+ *              v
+ * <target_prev> <target> <target_next>
+ */
+extern void list_private_add_prev(ListEntryType **headpp, ListEntryType *target, ListEntryType *entryp);
 
 #endif /* _LIST_PRIVATE_H_ */
