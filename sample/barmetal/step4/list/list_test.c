@@ -24,6 +24,24 @@ void list_test_ERR_2(void)
     
     return;
 }
+void list_test_ERR_3(void)
+{
+    int ret;
+    char *data;
+    list_init();
+    data = my_alloc();
+
+    ASSERT(data != NULL_PTR);
+
+    ret = my_free(data + 1);
+    ASSERT(ret == -1);
+
+    ret = my_free(data - 1024);
+    ASSERT(ret == -1);
+    ret = my_free(data + 1024);
+    ASSERT(ret == -1);
+    return;
+}
 
 void list_test_OK_1(void)
 {

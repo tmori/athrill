@@ -4,6 +4,7 @@
 
 extern void list_test_ERR_1(void);
 extern void list_test_ERR_2(void);
+extern void list_test_ERR_3(void);
 extern void list_test_OK_1(void);
 extern void list_test_OK_2(void);
 extern void list_test_OK_3(void);

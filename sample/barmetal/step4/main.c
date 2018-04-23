@@ -12,6 +12,7 @@ int main(void)
 {
 	list_test_ERR_1();
 	list_test_ERR_2();
+	list_test_ERR_3();
 	list_test_OK_1();
 	list_test_OK_2();
 	list_test_OK_3();

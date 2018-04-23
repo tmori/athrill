@@ -32,7 +32,7 @@ static inline char *get_lineno(int lineno) {
 	k = 0;
 	for (i = 4; i >= 0; i--) {
 		div = next_val / dec_order[i];
-		if (div > 0) {
+		if ((k > 0) || (div > 0)) {
 			line_buffer[k] = div + '0';
 			k++;
 		}
