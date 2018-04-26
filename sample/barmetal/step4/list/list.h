@@ -23,10 +23,10 @@ extern void* my_alloc(void);
 /*
  * add entryp on the free list.
  * 
- * if entryp is valid, return 0.
- * if entryp is not valid, return -1 and free list is not changed.
+ * if data is valid, return 0, allocated list -> free list.
+ * if data is not valid, return -1 and free list is not changed.
  */
-extern int my_free(void *entryp);
+extern int my_free(void *data);
 
 
 #endif /* _LIST_H_ */
