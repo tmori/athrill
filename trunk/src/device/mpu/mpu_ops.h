@@ -13,5 +13,6 @@ extern Std_ReturnType mpu_put_data32(CoreIdType core_id, uint32 addr, uint32 dat
 
 extern Std_ReturnType mpu_get_pointer(CoreIdType core_id, uint32 addr, uint8 **data);
 
+extern uint8 *mpu_address_get_rom_ram(bool isRom, uint32 addr, uint32 size);
 
 #endif /* _MPU_OPS_H_ */

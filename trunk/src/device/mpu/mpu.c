@@ -2,6 +2,7 @@
 #include "cpu_config.h"
 #include "mpu_ops.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 static Std_ReturnType memory_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
 static Std_ReturnType memory_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data);
@@ -62,6 +63,32 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 	}
 	printf("search_region:not found error:addr=0x%x\n", addr);
 	return NULL;
+}
+uint8 *mpu_address_get_rom_ram(bool isRom, uint32 addr, uint32 size) 
+{
+	uint32 i;
+	bool isFound = FALSE;
+
+	for (i = 0U; i < MPU_CONFIG_REGION_NUM; i++) {
+		if (isRom == TRUE) {
+			if (mpu_address_map.map[i].type == READONLY_MEMORY) {
+				isFound = TRUE;
+				break;
+			}
+		}
+		else {
+			if (mpu_address_map.map[i].type == GLOBAL_MEMORY) {
+				isFound = TRUE;
+				break;
+			}
+		}
+	}
+	if (isFound == FALSE) {
+		return NULL;
+	}
+	mpu_address_map.map[i].start = addr;
+	mpu_address_map.map[i].data = malloc(size);
+	return mpu_address_map.map[i].data;
 }
 
 MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr)
