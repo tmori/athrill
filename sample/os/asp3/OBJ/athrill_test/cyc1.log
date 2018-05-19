@@ -6,7 +6,8 @@
 + echo 'wait for start 2 sec..'
 wait for start 2 sec..
 + sleep 2
-+ athrill -r -i -d device_quick_config.txt ../asp
++ athrill2 -c1 -r -i -d device_quick_config.txt ../asp
+core id num=1
 Elf loading was succeeded:0x0 - 0x7771 : 29.881 KB
 Elf loading was succeeded:0x7774 - 0x7774 : 0.0 KB
 ELF SYMBOL SECTION LOADED:index=16
@@ -38,6 +39,7 @@ E_OBJ (-1) reported by `serial_opn_por'.
 task1 is running (001).   |
 task1 is running (002).   |
 task1 is running (003).   |
+task1 is running (004).   |
 + athrill_remote q
 OK
 + athrill_remote 'S 0 c'
@@ -48,7 +50,6 @@ OK
 sleep 60sec
 + wait_athrill 60
 + sleep 60
-task1 is running (004).   |
 #sta_cyc(1)
 task2 is running (001).     +
 task2 is running (002).     +
@@ -250,26 +251,6 @@ task3 is running (035).       *
 task3 is running (036).       *
 task3 is running (037).       *
 task3 is running (038).       *
-task3 is running (039).       *
-task3 is running (040).       *
-task3 is running (041).       *
-task3 is running (042).       *
-task3 is running (043).       *
-task3 is running (044).       *
-task3 is running (045).       *
-task3 is running (046).       *
-task3 is running (047).       *
-task3 is running (048).       *
-task3 is running (049).       *
-task3 is running (050).       *
-task3 is running (051).       *
-task3 is running (052).       *
-task3 is running (053).       *
-task3 is running (054).       *
-task3 is running (055).       *
-task3 is running (056).       *
-task3 is running (057).       *
-task3 is running (058).       *
 + athrill_remote q
 OK
 + echo '## end test'

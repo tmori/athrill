@@ -6,7 +6,8 @@
 + echo 'wait for start 2 sec..'
 wait for start 2 sec..
 + sleep 2
-+ athrill -r -i -d device_quick_config.txt ../asp
++ athrill2 -c1 -r -i -d device_quick_config.txt ../asp
+core id num=1
 Elf loading was succeeded:0x0 - 0x7771 : 29.881 KB
 Elf loading was succeeded:0x7774 - 0x7774 : 0.0 KB
 ELF SYMBOL SECTION LOADED:index=16
@@ -38,6 +39,7 @@ E_OBJ (-1) reported by `serial_opn_por'.
 task1 is running (001).   |
 task1 is running (002).   |
 task1 is running (003).   |
+task1 is running (004).   |
 + athrill_remote q
 OK
 + athrill_remote 'S 0 c'
@@ -48,7 +50,6 @@ OK
 sleep 60sec
 + wait_athrill 60
 + sleep 60
-task1 is running (004).   |
 #sta_cyc(1)
 task2 is running (001).     +
 task2 is running (002).     +
@@ -242,6 +243,17 @@ task3 is running (027).       *
 task3 is running (028).       *
 task3 is running (029).       *
 task3 is running (030).       *
++ athrill_remote q
+OK
++ athrill_remote 'S 0 C'
+[DBG>[DBG>OK
++ athrill_remote c
+[CPU>OK
++ echo 'sleep 60sec'
+sleep 60sec
++ wait_athrill 60
++ sleep 60
+#stp_cyc(1)
 task3 is running (031).       *
 task3 is running (032).       *
 task3 is running (033).       *
@@ -267,17 +279,6 @@ task3 is running (052).       *
 task3 is running (053).       *
 task3 is running (054).       *
 task3 is running (055).       *
-+ athrill_remote q
-OK
-+ athrill_remote 'S 0 C'
-[DBG>[DBG>OK
-+ athrill_remote c
-[CPU>OK
-+ echo 'sleep 60sec'
-sleep 60sec
-+ wait_athrill 60
-+ sleep 60
-#stp_cyc(1)
 task3 is running (056).       *
 task3 is running (057).       *
 task3 is running (058).       *
@@ -444,56 +445,6 @@ task3 is running (218).       *
 task3 is running (219).       *
 task3 is running (220).       *
 task3 is running (221).       *
-task3 is running (222).       *
-task3 is running (223).       *
-task3 is running (224).       *
-task3 is running (225).       *
-task3 is running (226).       *
-task3 is running (227).       *
-task3 is running (228).       *
-task3 is running (229).       *
-task3 is running (230).       *
-task3 is running (231).       *
-task3 is running (232).       *
-task3 is running (233).       *
-task3 is running (234).       *
-task3 is running (235).       *
-task3 is running (236).       *
-task3 is running (237).       *
-task3 is running (238).       *
-task3 is running (239).       *
-task3 is running (240).       *
-task3 is running (241).       *
-task3 is running (242).       *
-task3 is running (243).       *
-task3 is running (244).       *
-task3 is running (245).       *
-task3 is running (246).       *
-task3 is running (247).       *
-task3 is running (248).       *
-task3 is running (249).       *
-task3 is running (250).       *
-task3 is running (251).       *
-task3 is running (252).       *
-task3 is running (253).       *
-task3 is running (254).       *
-task3 is running (255).       *
-task3 is running (256).       *
-task3 is running (257).       *
-task3 is running (258).       *
-task3 is running (259).       *
-task3 is running (260).       *
-task3 is running (261).       *
-task3 is running (262).       *
-task3 is running (263).       *
-task3 is running (264).       *
-task3 is running (265).       *
-task3 is running (266).       *
-task3 is running (267).       *
-task3 is running (268).       *
-task3 is running (269).       *
-task3 is running (270).       *
-task3 is running (271).       *
 + athrill_remote q
 OK
 + echo '## end test'

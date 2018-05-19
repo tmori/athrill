@@ -9,7 +9,7 @@ activate_athrill()
 {
 	if [ -f ${ASP_BIN} ]
 	then
-		athrill -r -i -d device_config.txt ../asp &
+		athrill2 -c1 -r -i -d device_config.txt ../asp &
 		
 		echo "wait for start ${WAIT_TIME} sec.."
 		sleep ${WAIT_TIME}
@@ -22,7 +22,7 @@ activate_athrill_quick()
 {
 	if [ -f ${ASP_BIN} ]
 	then
-		athrill -r -i -d device_quick_config.txt ../asp &
+		athrill2 -c1 -r -i -d device_quick_config.txt ../asp &
 		
 		echo "wait for start ${WAIT_TIME} sec.."
 		sleep ${WAIT_TIME}

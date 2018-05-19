@@ -6,7 +6,8 @@
 + echo 'wait for start 2 sec..'
 wait for start 2 sec..
 + sleep 2
-+ athrill -r -i -d device_quick_config.txt ../asp
++ athrill2 -c1 -r -i -d device_quick_config.txt ../asp
+core id num=1
 Elf loading was succeeded:0x0 - 0x7771 : 29.881 KB
 Elf loading was succeeded:0x7774 - 0x7774 : 0.0 KB
 ELF SYMBOL SECTION LOADED:index=16
@@ -38,6 +39,7 @@ E_OBJ (-1) reported by `serial_opn_por'.
 task1 is running (001).   |
 task1 is running (002).   |
 task1 is running (003).   |
+task1 is running (004).   |
 + athrill_remote q
 OK
 + athrill_remote 'S 0 b'
@@ -49,7 +51,6 @@ sleep 120sec
 + wait_athrill 120
 + sleep 120
 #sta_alm(1, 5000000)
-task1 is running (004).   |
 task1 is running (005).   |
 task1 is running (006).   |
 task1 is running (007).   |
@@ -449,46 +450,8 @@ task1 is running (400).   |
 task1 is running (401).   |
 task1 is running (402).   |
 task1 is running (403).   |
-task1 is running (404).   |
-task1 is running (405).   |
-task1 is running (406).   |
-task1 is running (407).   |
-task1 is running (408).   |
-task2 is running (001).     +
-task2 is running (002).     +
-task2 is running (003).     +
-task2 is running (004).     +
-task2 is running (005).     +
-task2 is running (006).     +
-task2 is running (007).     +
-task2 is running (008).     +
-task2 is running (009).     +
-task2 is running (010).     +
-task2 is running (011).     +
-task2 is running (012).     +
-task2 is running (013).     +
-task2 is running (014).     +
-task2 is running (015).     +
-task2 is running (016).     +
-task2 is running (017).     +
-task2 is running (018).     +
-task2 is running (019).     +
-task2 is running (020).     +
-task2 is running (021).     +
-task2 is running (022).     +
-task2 is running (023).     +
-task2 is running (024).     +
-task2 is running (025).     +
-task2 is running (026).     +
-task2 is running (027).     +
-task2 is running (028).     +
-task2 is running (029).     +
-task2 is running (030).     +
-task2 is running (031).     +
-task2 is running (032).     +
-task2 is running (033).     +
-task2 is running (0+ athrill_remote q
-34).  OK
++ athrill_remote q
+OK
 + echo '## end test'
 ## end test
 + deactivate_athrill
