@@ -10,12 +10,16 @@ unsigned char stack_data[STACK_SIZE] __attribute__ ((section("bss_noclr")));
 
 int main(void)
 {
+	volatile int i;
 	list_test_ERR_1();
 	list_test_ERR_2();
 	list_test_ERR_3();
 	list_test_OK_1();
 	list_test_OK_2();
 	list_test_OK_3();
+	for (i = 0; i < 1000000; i++) {
+		;
+	}
 	printf("Hello World!!\n");
 	while (1) {
 		;
