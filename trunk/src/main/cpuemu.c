@@ -84,7 +84,7 @@ void cpuemu_init(void *(*cpu_run)(void *), void *opt)
 		virtual_cpu.core_id_num = copt->core_id_num;
 	}
 	else {
-		virtual_cpu.core_id_num = 1;
+		virtual_cpu.core_id_num = CPU_CONFIG_CORE_NUM;
 	}
 	device_init(&virtual_cpu, &cpuemu_dev_clock);
 	cputhr_control_init();
