@@ -1,6 +1,7 @@
 #include "test_serial.h"
 #include "test_reg.h"
 #include "section.h"
+#include "v850_ins.h"
 #include <string.h>
 
 typedef unsigned char uint8;
@@ -92,9 +93,11 @@ void timer_interrupt_handler(void)
 void interrupt_handler(int intrno)
 {
 	x_clear_int(intrno);
+	enable_int_all();
 	if (intrno == 22) {
 		timer_interrupt_handler();
 	}
+	disable_int_all();
 	return;
 }
 
