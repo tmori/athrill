@@ -16,9 +16,9 @@ _interrupt:
 	sst.w	r7 ,  POS_R7[ep]
 	sst.w	r8 ,  POS_R8[ep]
 	sst.w	r9 ,  POS_R9[ep]
-	sst.w	r10 ,  POS_R10[ep]
-	sst.w	r11 ,  POS_R11[ep]
-	sst.w	r12 ,  POS_R12[ep]
+	sst.w	r10 , POS_R10[ep]
+	sst.w	r11 , POS_R11[ep]
+	sst.w	r12 , POS_R12[ep]
 	sst.w	r13 , POS_R13[ep]
 	sst.w	r14 , POS_R14[ep]
 	sst.w	r15 , POS_R15[ep]
@@ -45,10 +45,10 @@ end_int_handler:
 	 */
 	mov		sp , ep	/* EPへ切り替え */
 
-	sld.w	POS_EIPC[ep] , r10
-	ldsr	r10 , eipc
-	sld.w   POS_EIPSW[ep] , r10
-	ldsr    r10 , eipsw
+	sld.w	POS_EIPC[ep] , r11
+	ldsr	r11 , eipc
+	sld.w   POS_EIPSW[ep] , r11
+	ldsr    r11 , eipsw
 	sld.w	POS_R1[ep] , r1
 	sld.w	POS_R6[ep] , r6
 	sld.w	POS_R7[ep] , r7
