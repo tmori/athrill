@@ -1,6 +1,7 @@
 #include "front/parser/concrete_parser/dbg_std_parser.h"
 #include "concrete_executor/dbg_std_executor.h"
 #include "cpu_config.h"
+#include "cpu_config_ops.h"
 #include <string.h>
 
 /************************************************************************************
@@ -321,7 +322,7 @@ DbgCmdExecutorType *dbg_parse_core(DbgCmdExecutorType *arg, const TokenContainer
 		else if (token_container->array[1].type != TOKEN_TYPE_VALUE_DEC) {
 			return NULL;
 		}
-		else if (token_container->array[1].body.dec.value >= CPU_CONFIG_CORE_NUM){
+		else if (token_container->array[1].body.dec.value >= cpu_config_get_core_id_num()){
 			return NULL;
 		}
 		if (token_container->array[2].type != TOKEN_TYPE_STRING) {

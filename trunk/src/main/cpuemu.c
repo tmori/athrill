@@ -16,6 +16,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include "target/target_os_api.h"
+#include "option/option.h"
 #include <fcntl.h>
 
 static DeviceClockType cpuemu_dev_clock;
@@ -68,18 +69,26 @@ bool cpuemu_cui_mode(void)
 {
 	return cpuemu_is_cui_mode;
 }
-
-void cpuemu_init(void *(*cpu_run)(void *))
+int cpu_config_get_core_id_num(void)
 {
+	return (int)virtual_cpu.core_id_num;
+}
+
+void cpuemu_init(void *(*cpu_run)(void *), void *opt)
+{
+	CmdOptionType *copt = (CmdOptionType*)opt;
 	CoreIdType i;
 	dbg_log_init("./log.txt");
 	cpu_init();
+	if (copt->core_id_num > 0) {
+		virtual_cpu.core_id_num = copt->core_id_num;
+	}
 	device_init(&virtual_cpu, &cpuemu_dev_clock);
 	cputhr_control_init();
 	cpuctrl_init();
 	if (cpu_run != NULL) {
 		cpuemu_is_cui_mode = TRUE;
-		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+		for (i = 0; i < cpu_config_get_core_id_num(); i++) {
 			dbg_cpu_debug_mode_set(i, TRUE);
 		}
 		cputhr_control_start(cpu_run);
@@ -162,7 +171,7 @@ void *cpuemu_thread_run(void* arg)
 		 * CPU 実行
 		 */
 		is_halt = TRUE;
-		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+		for (i = 0; i < cpu_config_get_core_id_num(); i++) {
 			cpu_set_current_core(i);
 
 			/*

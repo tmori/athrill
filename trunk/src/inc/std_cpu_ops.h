@@ -3,6 +3,7 @@
 
 #include "std_types.h"
 #include "std_errno.h"
+#include "cpu_config_ops.h"
 
 extern void cpu_init(void);
 extern void cpu_reset(CoreIdType core_id);

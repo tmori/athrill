@@ -1,6 +1,8 @@
 #ifndef _STD_DEVICE_OPS_H_
 #define _STD_DEVICE_OPS_H_
 
+#include "cpu_config_ops.h"
+
 /*
  * スキップ可能な最大クロック数
  */

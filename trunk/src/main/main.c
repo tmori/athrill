@@ -83,6 +83,7 @@ int main(int argc, const char *argv[])
 	if (opt == NULL) {
 		return 1;
 	}
+	printf("core id num=%u\n", opt->core_id_num);
 	if (opt->fifocfgpath != NULL) {
 		err = cpuemu_set_comm_fifocfg(opt->fifocfgpath);
 		if (err != STD_E_OK) {
@@ -115,11 +116,11 @@ int main(int argc, const char *argv[])
 			cui_ops_stdio_init();
 		}
 
-		cpuemu_init(cpuemu_thread_run);
+		cpuemu_init(cpuemu_thread_run, opt);
 		do_cui();
 	}
 	else {
-		cpuemu_init(NULL);
+		cpuemu_init(NULL, opt);
 		cpuemu_set_cpu_end_clock(opt->timeout);
 		(void)cpuemu_thread_run(NULL);
 	}

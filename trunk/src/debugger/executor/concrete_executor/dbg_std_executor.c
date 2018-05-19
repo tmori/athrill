@@ -282,7 +282,7 @@ void dbg_std_executor_core(void *executor)
 	if (parsed_args->type == DBG_CMD_CORE_SINGLE) {
 		bool isAllNotDebugMode = TRUE;
 		dbg_cpu_debug_mode_set(parsed_args->core_id, parsed_args->is_debug_mode);
-		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+		for (i = 0; i < cpu_config_get_core_id_num(); i++) {
 			if (dbg_cpu_debug_mode_get(i) == TRUE) {
 				isAllNotDebugMode = FALSE;
 				break;
@@ -299,7 +299,7 @@ void dbg_std_executor_core(void *executor)
 	}
 	else {
 		CoreIdType current = cpu_get_current_core_id();
-		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+		for (i = 0; i < cpu_config_get_core_id_num(); i++) {
 			if (parsed_args->type == DBG_CMD_CORE_ALL) {
 				dbg_cpu_debug_mode_set(i, parsed_args->is_debug_mode);
 			}
@@ -556,14 +556,14 @@ void dbg_std_executor_info_cpu(void *executor)
 	DbgCmdExecutorInfoCpuType *parsed_args = (DbgCmdExecutorInfoCpuType *)(arg->parsed_args);
 
 	if (parsed_args->type == DBG_CMD_CORE_ALL) {
-		for (i = 0; i < CPU_CONFIG_CORE_NUM; i++) {
+		for (i = 0; i < cpu_config_get_core_id_num(); i++) {
 			dbg_target_print_cpu(i);
 		}
 	}
 	else {
 		if (parsed_args->core_id >= CPU_CONFIG_CORE_NUM) {
 			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
-			printf("ERROR: Invalid core_id=%d max_core_num=%d\n", parsed_args->core_id, CPU_CONFIG_CORE_NUM);
+			printf("ERROR: Invalid core_id=%d max_core_num=%d\n", parsed_args->core_id, cpu_config_get_core_id_num());
 			return;
 		}
 		dbg_target_print_cpu(parsed_args->core_id);
@@ -586,7 +586,7 @@ void dbg_std_executor_func_trace(void *executor)
 	DbgCmdExecutorFuncTraceType *parsed_args = (DbgCmdExecutorFuncTraceType *)(arg->parsed_args);
 	uint32 coreId;
 
-	for (coreId = 0; coreId < CPU_CONFIG_CORE_NUM; coreId++) {
+	for (coreId = 0; coreId < cpu_config_get_core_id_num(); coreId++) {
 		for (i = (parsed_args->bt_number - 1); i >= 0; i--) {
 			funcname = cpuctrl_get_func_log_trace_info(coreId, i, &funcpcoff, &funcid, &sp);
 			if (funcname == NULL) {
@@ -808,7 +808,7 @@ void dbg_std_executor_profile(void *executor)
 
 	funcnum = symbol_get_func_num();
 
-	for (coreId = 0; coreId < CPU_CONFIG_CORE_NUM; coreId++) {
+	for (coreId = 0; coreId < cpu_config_get_core_id_num(); coreId++) {
 		printf("*** coreId=%d ***\n", coreId);
 		printf("%-50s %-15s %-15s %-15s\n", "funcname", "call_num", "func_time", "total_time");
 		for (funcid = 0; funcid < funcnum; funcid++) {

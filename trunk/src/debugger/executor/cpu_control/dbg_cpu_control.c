@@ -717,7 +717,7 @@ void cpuctrl_init(void)
 	uint32 coreId;
 
 
-	for (coreId = 0; coreId < CPU_CONFIG_CORE_NUM; coreId++) {
+	for (coreId = 0; coreId < cpu_config_get_core_id_num(); coreId++) {
 		CpuProfile[coreId] = malloc(func_num * sizeof(CpuProfileType));
 		ASSERT(CpuProfile[coreId] != NULL);
 		CpuProfileCurrentInfo[coreId].current_funcid = func_num;

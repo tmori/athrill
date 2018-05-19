@@ -24,6 +24,22 @@ static int cmd_atoi(char *arg, uint64 *out)
 	return -1;
 }
 
+static int cmd_atoi32(char *arg, uint32 *out)
+{
+	char *endptr;
+	uint32 ret32;
+	/*
+	 * 10進数チェック
+	 */
+	errno = 0;
+	ret32 = strtol((const char*)arg, &endptr, 10);
+	if ((errno == 0) && (*endptr == '\0')) {
+		*out = ret32;
+		return 0;
+	}
+	return -1;
+}
+
 CmdOptionType *parse_args(int argc, const char* argv[])
 {
 	  int opt;
@@ -35,7 +51,7 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	  cmd_option.is_remote = FALSE;
 	  cmd_option.timeout = 0;
 
-	  while ((opt = getopt(argc, (char**)argv, "irbt:p:d:")) != -1) {
+	  while ((opt = getopt(argc, (char**)argv, "irbt:p:d:c:")) != -1) {
 		  switch (opt) {
 		  case 'i':
 	    	cmd_option.is_interaction = TRUE;
@@ -47,10 +63,16 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 		    cmd_option.is_binary_data = TRUE;
 	        break;
 	      case 't':
-	    	if (cmd_atoi(optarg, &cmd_option.timeout) < 0) {
-		        printf("error! -t %s\n", optarg);
-	    		return NULL;
-	    	}
+					if (cmd_atoi(optarg, &cmd_option.timeout) < 0) {
+							printf("error! -t %s\n", optarg);
+						return NULL;
+					}
+	        break;
+	      case 'c':
+					if (cmd_atoi32(optarg, &cmd_option.core_id_num) < 0) {
+							printf("error! -c %s\n", optarg);
+						return NULL;
+					}
 	        break;
 	      case 'p':
 	    	memcpy(cmd_option.buffer_fifopath, optarg, strlen(optarg));

@@ -11,6 +11,7 @@ typedef struct {
 
 typedef struct {
 	CpuCoreType			*current_core;
+	uint32				core_id_num;
 	CpuCoreType			cores[CPU_CONFIG_CORE_NUM];
 } CpuType;
 

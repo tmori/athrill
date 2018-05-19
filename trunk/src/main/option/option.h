@@ -6,6 +6,7 @@
 
 typedef struct {
 	bool	is_interaction;
+	uint32	core_id_num;
 	uint64	timeout;
 	bool	is_binary_data;
 	bool	is_remote;
