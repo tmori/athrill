@@ -142,6 +142,7 @@ void *cpuemu_thread_run(void* arg)
 	Std_ReturnType err;
 	DbgCpuCallbackFuncEnableType enable_dbg;
 	bool is_halt;
+	int core_id_num = cpu_config_get_core_id_num();
 
 	enable_dbg.enable_bt = TRUE;
 	enable_dbg.enable_ft = TRUE;
@@ -174,7 +175,7 @@ void *cpuemu_thread_run(void* arg)
 		 * CPU 実行
 		 */
 		is_halt = TRUE;
-		for (i = 0; i < cpu_config_get_core_id_num(); i++) {
+		for (i = 0; i < core_id_num; i++) {
 			cpu_set_current_core(i);
 
 			/*

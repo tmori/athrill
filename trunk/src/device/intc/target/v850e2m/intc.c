@@ -42,6 +42,7 @@ void device_init_intc(CpuType *cpu, MpuAddressRegionType *region)
 	uint8 *imr7;
 	uint8 *ispr;
 	uint32 coreId = 0;
+	int core_id_num = cpu_config_get_core_id_num();
 
 	intc_control.cpu = cpu;
 	intc_region = region;
@@ -54,7 +55,7 @@ void device_init_intc(CpuType *cpu, MpuAddressRegionType *region)
 	intc_control.nmi.intwdt2_hasreq = FALSE;
 	intc_control.nmi.nmi_reqnum = 0;
 
-	for (coreId = 0; coreId < cpu_config_get_core_id_num(); coreId++) {
+	for (coreId = 0; coreId < core_id_num; coreId++) {
 
 		/*
 		 * マスカブル割り込み初期化
@@ -130,16 +131,17 @@ void device_init_intc(CpuType *cpu, MpuAddressRegionType *region)
 void device_supply_clock_intc(DeviceClockType *dev_clock)
 {
 	uint32 coreId;
+	int core_id_num = cpu_config_get_core_id_num();
 
 	dev_clock->clock++;
-	for (coreId = 0; coreId < cpu_config_get_core_id_num(); coreId++) {
+	for (coreId = 0; coreId < core_id_num; coreId++) {
 		if (intc_control.work[coreId].current_intno != -1) {
 			dev_clock->intclock++;
 			break;
 		}
 	}
 
-	for (coreId = 0; coreId < cpu_config_get_core_id_num(); coreId++) {
+	for (coreId = 0; coreId < core_id_num; coreId++) {
 		intc_raise_pending_intr(&intc_control.cpu->cores[coreId].core);
 	}
 
