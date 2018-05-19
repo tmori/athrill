@@ -6,7 +6,7 @@
  */
 int op_exec_jmp(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
 	}
@@ -21,7 +21,7 @@ int op_exec_jmp(TargetCoreType *cpu)
  */
 int op_exec_bcond(TargetCoreType *cpu)
 {
-	uint16 cond = cpu->decoded_code.type3.cond;
+	uint16 cond = cpu->decoded_code->type3.cond;
 	uint16 is_br = FALSE;
 	uint16 flg_s = CPU_ISSET_S(&cpu->reg);
 	uint16 flg_ov = CPU_ISSET_OV(&cpu->reg);
@@ -31,7 +31,7 @@ int op_exec_bcond(TargetCoreType *cpu)
 	uint32 disp_u;
 	sint32 disp;
 
-	disp_u = cpu->decoded_code.type3.disp << 1;
+	disp_u = cpu->decoded_code->type3.disp << 1;
 	disp = op_sign_extend(8, disp_u);//1�r�b�g�V�t�g�����̂ŁC7��8�ƂȂ����D
 
 	switch (cond) {
@@ -153,14 +153,14 @@ int op_exec_bcond(TargetCoreType *cpu)
  */
 int op_exec_jr(TargetCoreType *cpu)
 {
-	uint32 reg2 = cpu->decoded_code.type5.reg2;
+	uint32 reg2 = cpu->decoded_code->type5.reg2;
 	sint32 pc = (sint32)cpu->reg.pc;
 	sint32 disp;
 
 	if (reg2 > 0) {
 		cpu->reg.r[reg2] = cpu->reg.pc + 4;
 	}
-	disp = op_sign_extend(21, cpu->decoded_code.type5.disp);
+	disp = op_sign_extend(21, cpu->decoded_code->type5.disp);
 	pc += disp;
 
 	if (reg2 == 0) {

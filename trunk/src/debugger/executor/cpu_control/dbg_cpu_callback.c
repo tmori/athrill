@@ -15,10 +15,10 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	uint32 sp = cpu_get_sp(core);
 	bool is_debug_mode;
 
+	dbg_cpu_callback_start(pc, sp);
 	if (cpuemu_cui_mode() == FALSE) {
 		return;
 	}
-	dbg_cpu_callback_start(pc, sp);
 
 	is_debug_mode = cpuctrl_is_debug_mode();
 

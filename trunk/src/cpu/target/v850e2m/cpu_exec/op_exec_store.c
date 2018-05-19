@@ -12,7 +12,7 @@ int op_exec_sstb(TargetCoreType *cpu)
 	uint32 addr;
 	uint32 disp;
 	uint32 reg1 = CPU_REG_EP;
-	uint32 reg2 = cpu->decoded_code.type4_1.reg2;
+	uint32 reg2 = cpu->decoded_code->type4_1.reg2;
 	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -22,8 +22,8 @@ int op_exec_sstb(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = cpu->decoded_code.type4_1.disp;
-	disp = (disp << 1) | cpu->decoded_code.type4_1.gen;
+	disp = cpu->decoded_code->type4_1.disp;
+	disp = (disp << 1) | cpu->decoded_code->type4_1.gen;
 	disp = op_zero_extend(7, disp);
 	addr = cpu->reg.r[reg1] + disp;
 	if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
@@ -45,7 +45,7 @@ int op_exec_ssth(TargetCoreType *cpu)
 	uint32 addr;
 	uint32 disp;
 	uint32 reg1 = CPU_REG_EP;
-	uint32 reg2 = cpu->decoded_code.type4_1.reg2;
+	uint32 reg2 = cpu->decoded_code->type4_1.reg2;
 	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -56,8 +56,8 @@ int op_exec_ssth(TargetCoreType *cpu)
 	}
 
 
-	disp = cpu->decoded_code.type4_1.disp;
-	disp = (disp << 1) | cpu->decoded_code.type4_1.gen;
+	disp = cpu->decoded_code->type4_1.disp;
+	disp = (disp << 1) | cpu->decoded_code->type4_1.gen;
 	disp = op_zero_extend(7, disp);
 	disp = disp << 1;
 	addr = cpu->reg.r[reg1] + disp;
@@ -82,7 +82,7 @@ int op_exec_sstw(TargetCoreType *cpu)
 	uint32 addr;
 	uint32 disp;
 	uint32 reg1 = CPU_REG_EP;
-	uint32 reg2 = cpu->decoded_code.type4_1.reg2;
+	uint32 reg2 = cpu->decoded_code->type4_1.reg2;
 	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -92,7 +92,7 @@ int op_exec_sstw(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = cpu->decoded_code.type4_1.disp;
+	disp = cpu->decoded_code->type4_1.disp;
 	disp = op_zero_extend(6, disp);
 	disp = disp << 2;
 	addr = cpu->reg.r[reg1] + disp;
@@ -120,8 +120,8 @@ int op_exec_sthw(TargetCoreType *cpu)
 {
 	uint32 addr;
 	sint32 disp;
-	uint32 reg1 = cpu->decoded_code.type7.reg1;
-	uint32 reg2 = cpu->decoded_code.type7.reg2;
+	uint32 reg1 = cpu->decoded_code->type7.reg1;
+	uint32 reg2 = cpu->decoded_code->type7.reg2;
 	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -132,9 +132,9 @@ int op_exec_sthw(TargetCoreType *cpu)
 	}
 
 
-	if (cpu->decoded_code.type7.gen == 0x00) {
+	if (cpu->decoded_code->type7.gen == 0x00) {
 		//ST.H
-		disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) );
+		disp = op_sign_extend(15, (cpu->decoded_code->type7.disp << 1) );
 		addr = cpu->reg.r[reg1] + disp;
 		if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
 			printf("ERROR: found stack overflow\n");
@@ -150,7 +150,7 @@ int op_exec_sthw(TargetCoreType *cpu)
 	}
 	else {
 		//ST.W
-		disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) );
+		disp = op_sign_extend(15, (cpu->decoded_code->type7.disp << 1) );
 		addr = cpu->reg.r[reg1] + disp;
 		if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
 			printf("ERROR: found stack overflow\n");
@@ -174,8 +174,8 @@ int op_exec_stb(TargetCoreType *cpu)
 {
 	uint32 addr;
 	sint32 disp;
-	uint32 reg1 = cpu->decoded_code.type7.reg1;
-	uint32 reg2 = cpu->decoded_code.type7.reg2;
+	uint32 reg1 = cpu->decoded_code->type7.reg1;
+	uint32 reg2 = cpu->decoded_code->type7.reg2;
 	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -185,7 +185,7 @@ int op_exec_stb(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) | cpu->decoded_code.type7.gen);
+	disp = op_sign_extend(15, (cpu->decoded_code->type7.disp << 1) | cpu->decoded_code->type7.gen);
 	addr = cpu->reg.r[reg1] + disp;
 	if ((reg1 == CPU_REG_SP) && cpu_may_store_on_stack_overflow(cpu->reg.r[reg1], disp) == TRUE) {
 		printf("ERROR: found stack overflow\n");

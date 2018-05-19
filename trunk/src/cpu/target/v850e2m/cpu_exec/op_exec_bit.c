@@ -8,9 +8,9 @@
  */
 int op_exec_tst1_8(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type8.reg1;
-	sint32 disp16 = cpu->decoded_code.type8.disp;
-	sint32 bit3 = cpu->decoded_code.type8.bit;
+	uint32 reg1 = cpu->decoded_code->type8.reg1;
+	sint32 disp16 = cpu->decoded_code->type8.disp;
+	sint32 bit3 = cpu->decoded_code->type8.bit;
 	uint32 addr;
 	uint8 bit;
 	Std_ReturnType err;
@@ -42,9 +42,9 @@ int op_exec_tst1_8(TargetCoreType *cpu)
 }
 int op_exec_set1_8(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type8.reg1;
-	sint32 disp16 = cpu->decoded_code.type8.disp;
-	sint32 bit3 = cpu->decoded_code.type8.bit;
+	uint32 reg1 = cpu->decoded_code->type8.reg1;
+	sint32 disp16 = cpu->decoded_code->type8.disp;
+	sint32 bit3 = cpu->decoded_code->type8.bit;
 	uint32 addr;
 	uint8 org_bit;
 	uint8 bit;
@@ -86,9 +86,9 @@ int op_exec_set1_8(TargetCoreType *cpu)
 
 int op_exec_clr1_8(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type8.reg1;
-	sint32 disp16 = cpu->decoded_code.type8.disp;
-	sint32 bit3 = cpu->decoded_code.type8.bit;
+	uint32 reg1 = cpu->decoded_code->type8.reg1;
+	sint32 disp16 = cpu->decoded_code->type8.disp;
+	sint32 bit3 = cpu->decoded_code->type8.bit;
 	uint32 addr;
 	uint8 org_bit;
 	uint8 bit;
@@ -128,9 +128,9 @@ int op_exec_clr1_8(TargetCoreType *cpu)
 
 int op_exec_not1_8(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type8.reg1;
-	sint32 disp16 = cpu->decoded_code.type8.disp;
-	sint32 bit3 = cpu->decoded_code.type8.bit;
+	uint32 reg1 = cpu->decoded_code->type8.reg1;
+	sint32 disp16 = cpu->decoded_code->type8.disp;
+	sint32 bit3 = cpu->decoded_code->type8.bit;
 	uint32 addr;
 	uint8 org_bit;
 	uint8 bit;
@@ -177,8 +177,8 @@ int op_exec_not1_8(TargetCoreType *cpu)
  */
 int op_exec_set1_9(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type9.gen;
-	sint32 reg2 = cpu->decoded_code.type9.reg2;
+	uint32 reg1 = cpu->decoded_code->type9.gen;
+	sint32 reg2 = cpu->decoded_code->type9.reg2;
 	uint32 addr;
 	uint8 org_bit;
 	uint8 bit3;
@@ -230,8 +230,8 @@ int op_exec_set1_9(TargetCoreType *cpu)
 }
 int op_exec_clr1_9(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type9.gen;
-	sint32 reg2 = cpu->decoded_code.type9.reg2;
+	uint32 reg1 = cpu->decoded_code->type9.gen;
+	sint32 reg2 = cpu->decoded_code->type9.reg2;
 	uint32 addr;
 	uint8 bit;
 	Std_ReturnType err;
@@ -282,8 +282,8 @@ int op_exec_clr1_9(TargetCoreType *cpu)
 
 int op_exec_tst1_9(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type9.gen;
-	sint32 reg2 = cpu->decoded_code.type9.reg2;
+	uint32 reg1 = cpu->decoded_code->type9.gen;
+	sint32 reg2 = cpu->decoded_code->type9.reg2;
 	uint32 addr;
 	Std_ReturnType err;
 	uint8 bit3;
@@ -322,8 +322,8 @@ int op_exec_tst1_9(TargetCoreType *cpu)
 }
 int op_exec_not1_9(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type9.gen;
-	sint32 reg2 = cpu->decoded_code.type9.reg2;
+	uint32 reg1 = cpu->decoded_code->type9.gen;
+	sint32 reg2 = cpu->decoded_code->type9.reg2;
 	uint32 addr;
 	Std_ReturnType err;
 	uint8 bit;

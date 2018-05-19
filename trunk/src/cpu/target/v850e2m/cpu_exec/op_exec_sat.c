@@ -6,8 +6,8 @@
  */
 int op_exec_satadd_1(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
-	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	uint32 reg2 = cpu->decoded_code->type1.reg2;
 	sint32 result;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -26,8 +26,8 @@ int op_exec_satadd_1(TargetCoreType *cpu)
 }
 int op_exec_satsub_1(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
-	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	uint32 reg2 = cpu->decoded_code->type1.reg2;
 	sint32 result;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -50,8 +50,8 @@ int op_exec_satsub_1(TargetCoreType *cpu)
  */
 int op_exec_satadd_2(TargetCoreType *cpu)
 {
-	sint32 imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code.type2.imm);
-	uint32 reg2 = cpu->decoded_code.type2.reg2;
+	sint32 imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code->type2.imm);
+	uint32 reg2 = cpu->decoded_code->type2.reg2;
 	sint32 result;
 
 	if (reg2 >= CPU_GREG_NUM) {
@@ -74,9 +74,9 @@ int op_exec_satadd_2(TargetCoreType *cpu)
 
 int op_exec_satsubi(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type6.reg1;
-	uint32 reg2 = cpu->decoded_code.type6.reg2;
-	sint32 imm_data = op_sign_extend(15, cpu->decoded_code.type6.imm);
+	uint32 reg1 = cpu->decoded_code->type6.reg1;
+	uint32 reg2 = cpu->decoded_code->type6.reg2;
+	sint32 imm_data = op_sign_extend(15, cpu->decoded_code->type6.imm);
 	sint32 result;
 
 	if (reg1 >= CPU_GREG_NUM) {

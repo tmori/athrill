@@ -30,8 +30,8 @@ int op_exec_ldsr(TargetCoreType *cpu)
 	 * rrrrr： regID指定
 	 * RRRRR： reg2指定
 	 */
-	uint32 regid = cpu->decoded_code.type9.reg2;
-	uint32 reg2 = cpu->decoded_code.type9.gen;
+	uint32 regid = cpu->decoded_code->type9.reg2;
+	uint32 reg2 = cpu->decoded_code->type9.gen;
 
 	if (reg2 >= CPU_GREG_NUM) {
 		printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
@@ -58,8 +58,8 @@ int op_exec_stsr(TargetCoreType *cpu)
 {
 	int ret;
 	uint32 *sysreg;
-	uint32 regid = cpu->decoded_code.type9.gen;
-	uint32 reg2 = cpu->decoded_code.type9.reg2;
+	uint32 regid = cpu->decoded_code->type9.gen;
+	uint32 reg2 = cpu->decoded_code->type9.reg2;
 
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
@@ -85,7 +85,7 @@ int op_exec_stsr(TargetCoreType *cpu)
 
 int op_exec_diei(TargetCoreType *cpu)
 {
-	if (cpu->decoded_code.type10.gen1 == 0x04) {
+	if (cpu->decoded_code->type10.gen1 == 0x04) {
 		/* EI */
 		CPU_CLR_ID(&cpu->reg);
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: EI\n", cpu->reg.pc));
@@ -151,7 +151,7 @@ int op_exec_trap(TargetCoreType *cpu)
 	uint32 pc;
 	uint32 eicc;
 	uint32 ecr;
-	uint32 vector = cpu->decoded_code.type10.gen2;
+	uint32 vector = cpu->decoded_code->type10.gen2;
 
 	if (vector <= 0x0F) {
 		ret = 0;
@@ -183,7 +183,7 @@ int op_exec_trap(TargetCoreType *cpu)
 
 int op_exec_switch(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
 	uint32 reg1_data;
 	uint32 addr;
 	sint32 tmp_pc;
@@ -233,19 +233,19 @@ int op_exec_switch(TargetCoreType *cpu)
  */
 int op_exec_prepare(TargetCoreType *cpu)
 {
-	uint16 subop = cpu->decoded_code.type13.gen & 0x0007;
-	uint16 ff = cpu->decoded_code.type13.gen >> 3U;
+	uint16 subop = cpu->decoded_code->type13.gen & 0x0007;
+	uint16 ff = cpu->decoded_code->type13.gen >> 3U;
 	uint16 start_reg = 20U;
 	uint16 i;
 	uint32 addr;
 	uint32 *addrp;
 	uint32 *sp = (uint32*)&(cpu->reg.r[3]);	//sp:r3
-	uint32 imm = ( cpu->decoded_code.type13.imm << 2U );
+	uint32 imm = ( cpu->decoded_code->type13.imm << 2U );
 	Std_ReturnType err;
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: PREPARE sp=0x%x ", cpu->reg.pc, *sp));
 	for (i = start_reg; i < 32; i++) {
-		if (cpu->decoded_code.type13.list[i] == 0) {
+		if (cpu->decoded_code->type13.list[i] == 0) {
 			continue;
 		}
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "r%u(0x%x) ", i, cpu->reg.r[i]));
@@ -307,20 +307,20 @@ int op_exec_prepare(TargetCoreType *cpu)
 
 int op_exec_dispose(TargetCoreType *cpu)
 {
-	uint16 reg1 = cpu->decoded_code.type13.gen;
+	uint16 reg1 = cpu->decoded_code->type13.gen;
 	uint16 start_reg = 20U;
 	uint16 i;
 	uint32 addr;
 	uint32 *addrp;
 	uint32 *sp = (uint32*)&(cpu->reg.r[3]);	//sp:r3
-	uint32 imm = ( cpu->decoded_code.type13.imm << 2U );
+	uint32 imm = ( cpu->decoded_code->type13.imm << 2U );
 	Std_ReturnType err;
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DISPOSE imm=0x%x sp=0x%x ", cpu->reg.pc, imm, *sp));
 
 	*sp = (*sp) + imm;
 	for (i = 31; i >= start_reg; i--) {
-		if (cpu->decoded_code.type13.list[i] == 0) {
+		if (cpu->decoded_code->type13.list[i] == 0) {
 			continue;
 		}
 
@@ -363,9 +363,9 @@ int op_exec_dispose(TargetCoreType *cpu)
 int op_exec_caxi(TargetCoreType *cpu)
 {
 	Std_ReturnType err;
-	uint16 reg1 = cpu->decoded_code.type11.reg1;;
-	uint16 reg2 = cpu->decoded_code.type11.reg2;
-	uint16 reg3 = cpu->decoded_code.type11.reg3;
+	uint16 reg1 = cpu->decoded_code->type11.reg1;;
+	uint16 reg2 = cpu->decoded_code->type11.reg2;
+	uint16 reg3 = cpu->decoded_code->type11.reg3;
 	sint16 token;
 	sint16 result;
 	uint16 put_data;

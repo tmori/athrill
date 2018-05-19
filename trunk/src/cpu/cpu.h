@@ -10,10 +10,23 @@ typedef struct {
 } CpuCoreType;
 
 typedef struct {
-	CpuCoreType			*current_core;
-	uint32				core_id_num;
-	CpuCoreType			cores[CPU_CONFIG_CORE_NUM];
+	OpDecodedCodeType	decoded_code;
+	int (*op_exec) (TargetCoreType *cpu);
+} OperationCodeType;
+
+typedef struct {
+	uint32				code_start_addr;
+	uint32				code_size;
+	OperationCodeType	*codes;
+} CachedOperationCodeType;
+
+typedef struct {
+	CpuCoreType					*current_core;
+	uint32						core_id_num;
+	CpuCoreType					cores[CPU_CONFIG_CORE_NUM];
+	CachedOperationCodeType		cached_code;
 } CpuType;
+
 
 extern CpuType	virtual_cpu;
 

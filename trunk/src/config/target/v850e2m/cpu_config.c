@@ -67,41 +67,58 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 {
 	int ret;
 	Std_ReturnType err;
+	uint32 inx;
 
 	if (virtual_cpu.cores[core_id].core.is_halt == TRUE) {
 		return STD_E_OK;
 	}
+	inx = virtual_cpu.cores[core_id].core.reg.pc - virtual_cpu.cached_code.code_start_addr;
+	if (virtual_cpu.cached_code.codes[inx].op_exec == NULL) {
+		/*
+		 * 命令取得する
+		 */
+		err = bus_get_data32(core_id,
+				virtual_cpu.cores[core_id].core.reg.pc,
+				(uint32*)virtual_cpu.cores[core_id].core.current_code);
+		if (err != STD_E_OK) {
+			return err;
+		}
 
-	/*
-	 * 命令取得する
-	 */
-	err = bus_get_data32(core_id,
-			virtual_cpu.cores[core_id].core.reg.pc,
-			(uint32*)virtual_cpu.cores[core_id].core.current_code);
-	if (err != STD_E_OK) {
-		return err;
+		/*
+		 * デコード
+		 */
+		ret = OpDecode(virtual_cpu.cores[core_id].core.current_code,
+				&virtual_cpu.cached_code.codes[inx].decoded_code);
+		if (ret < 0) {
+			printf("Decode Error\n");
+			return STD_E_DECODE;
+		}
+		virtual_cpu.cores[core_id].core.decoded_code = &virtual_cpu.cached_code.codes[inx].decoded_code;
+		virtual_cpu.cores[core_id].core.op_exec = NULL;
+		/*
+		 * 命令実行
+		 */
+		ret = OpExec(&virtual_cpu.cores[core_id].core);
+		if (ret < 0) {
+			printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
+					virtual_cpu.cores[core_id].core.current_code[0],
+					virtual_cpu.cores[core_id].core.current_code[1],
+					virtual_cpu.cores[core_id].core.decoded_code->type_id);
+			return STD_E_EXEC;
+		}
+		virtual_cpu.cached_code.codes[inx].op_exec = virtual_cpu.cores[core_id].core.op_exec;
 	}
+	else {
+		virtual_cpu.cores[core_id].core.decoded_code = &virtual_cpu.cached_code.codes[inx].decoded_code;
+		ret = virtual_cpu.cached_code.codes[inx].op_exec(&virtual_cpu.cores[core_id].core);
+		if (ret < 0) {
+			printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
+					virtual_cpu.cores[core_id].core.current_code[0],
+					virtual_cpu.cores[core_id].core.current_code[1],
+					virtual_cpu.cores[core_id].core.decoded_code->type_id);
+			return STD_E_EXEC;
+		}
 
-	/*
-	 * デコード
-	 */
-	ret = OpDecode(virtual_cpu.cores[core_id].core.current_code,
-			&virtual_cpu.cores[core_id].core.decoded_code);
-	if (ret < 0) {
-		printf("Decode Error\n");
-		return STD_E_DECODE;
-	}
-
-	/*
-	 * 命令実行
-	 */
-	ret = OpExec(&virtual_cpu.cores[core_id].core);
-	if (ret < 0) {
-		printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
-				virtual_cpu.cores[core_id].core.current_code[0],
-				virtual_cpu.cores[core_id].core.current_code[1],
-				virtual_cpu.cores[core_id].core.decoded_code.type_id);
-		return STD_E_EXEC;
 	}
 
 	return STD_E_OK;

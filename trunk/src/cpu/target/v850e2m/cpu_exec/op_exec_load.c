@@ -14,7 +14,7 @@ int op_exec_sldb(TargetCoreType *cpu)
 	sint32 ret;
 	uint32 disp;
 	uint32 reg1 = CPU_REG_EP;
-	uint32 reg2 = cpu->decoded_code.type4_1.reg2;
+	uint32 reg2 = cpu->decoded_code->type4_1.reg2;
 	sint8 data8;
 	Std_ReturnType err;
 
@@ -25,8 +25,8 @@ int op_exec_sldb(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = cpu->decoded_code.type4_1.disp;
-	disp = (disp << 1) | cpu->decoded_code.type4_1.gen;
+	disp = cpu->decoded_code->type4_1.disp;
+	disp = (disp << 1) | cpu->decoded_code->type4_1.gen;
 	disp = op_zero_extend(7, disp);
 	addr = cpu->reg.r[reg1] + disp;
 
@@ -49,7 +49,7 @@ int op_exec_sldbu(TargetCoreType *cpu)
 	uint32 ret;
 	uint32 disp;
 	uint32 reg1 = CPU_REG_EP;
-	uint32 reg2 = cpu->decoded_code.type4_2.reg2;
+	uint32 reg2 = cpu->decoded_code->type4_2.reg2;
 	uint8 data8;
 	Std_ReturnType err;
 
@@ -60,7 +60,7 @@ int op_exec_sldbu(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = cpu->decoded_code.type4_2.disp;
+	disp = cpu->decoded_code->type4_2.disp;
 	disp = op_zero_extend(3, disp);
 	addr = cpu->reg.r[reg1] + disp;
 
@@ -84,7 +84,7 @@ int op_exec_sldhu(TargetCoreType *cpu)
 	uint32 ret;
 	uint32 disp;
 	uint32 reg1 = CPU_REG_EP;
-	uint32 reg2 = cpu->decoded_code.type4_2.reg2;
+	uint32 reg2 = cpu->decoded_code->type4_2.reg2;
 	uint16 data16;
 	Std_ReturnType err;
 
@@ -95,7 +95,7 @@ int op_exec_sldhu(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = ( (cpu->decoded_code.type4_2.disp) << 1U );
+	disp = ( (cpu->decoded_code->type4_2.disp) << 1U );
 	disp = op_zero_extend(4, disp);
 	addr = cpu->reg.r[reg1] + disp;
 
@@ -119,7 +119,7 @@ int op_exec_sldh(TargetCoreType *cpu)
 	sint32 ret;
 	uint32 disp;
 	uint32 reg1 = CPU_REG_EP;
-	uint32 reg2 = cpu->decoded_code.type4_1.reg2;
+	uint32 reg2 = cpu->decoded_code->type4_1.reg2;
 	sint16 data16;
 	Std_ReturnType err;
 
@@ -130,8 +130,8 @@ int op_exec_sldh(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = cpu->decoded_code.type4_1.disp;
-	disp = (disp << 1) | cpu->decoded_code.type4_1.gen;
+	disp = cpu->decoded_code->type4_1.disp;
+	disp = (disp << 1) | cpu->decoded_code->type4_1.gen;
 	disp = op_zero_extend(7, disp);
 	disp = disp << 1;
 
@@ -158,7 +158,7 @@ int op_exec_sldw(TargetCoreType *cpu)
 	uint32 ret;
 	uint32 disp;
 	uint32 reg1 = CPU_REG_EP;
-	uint32 reg2 = cpu->decoded_code.type4_1.reg2;
+	uint32 reg2 = cpu->decoded_code->type4_1.reg2;
 	uint32 data32;
 	Std_ReturnType err;
 
@@ -169,7 +169,7 @@ int op_exec_sldw(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = cpu->decoded_code.type4_1.disp;
+	disp = cpu->decoded_code->type4_1.disp;
 	disp = op_zero_extend(6, disp);
 	disp = disp << 2;
 	addr = cpu->reg.r[reg1] + disp;
@@ -197,8 +197,8 @@ int op_exec_ldb(TargetCoreType *cpu)
 {
 	uint32 addr;
 	sint32 disp;
-	uint32 reg1 = cpu->decoded_code.type7.reg1;
-	uint32 reg2 = cpu->decoded_code.type7.reg2;
+	uint32 reg1 = cpu->decoded_code->type7.reg1;
+	uint32 reg2 = cpu->decoded_code->type7.reg2;
 	sint8 data8;
 	Std_ReturnType err;
 
@@ -209,7 +209,7 @@ int op_exec_ldb(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) | cpu->decoded_code.type7.gen);
+	disp = op_sign_extend(15, (cpu->decoded_code->type7.disp << 1) | cpu->decoded_code->type7.gen);
 
 	addr = cpu->reg.r[reg1] + disp;
 
@@ -229,8 +229,8 @@ int op_exec_ldbu(TargetCoreType *cpu)
 {
 	uint32 addr;
 	sint32 disp;
-	uint32 reg1 = cpu->decoded_code.type7.reg1;
-	uint32 reg2 = cpu->decoded_code.type7.reg2;
+	uint32 reg1 = cpu->decoded_code->type7.reg1;
+	uint32 reg2 = cpu->decoded_code->type7.reg2;
 	sint32 disp_bit;
 	uint8 data8;
 	Std_ReturnType err;
@@ -242,8 +242,8 @@ int op_exec_ldbu(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp_bit = (cpu->decoded_code.type7.opcode & 0x0001);
-	disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) | disp_bit);
+	disp_bit = (cpu->decoded_code->type7.opcode & 0x0001);
+	disp = op_sign_extend(15, (cpu->decoded_code->type7.disp << 1) | disp_bit);
 
 	addr = cpu->reg.r[reg1] + disp;
 
@@ -264,8 +264,8 @@ int op_exec_ldhw(TargetCoreType *cpu)
 	uint32 addr;
 	sint32 ret;
 	sint32 disp;
-	uint32 reg1 = cpu->decoded_code.type7.reg1;
-	uint32 reg2 = cpu->decoded_code.type7.reg2;
+	uint32 reg1 = cpu->decoded_code->type7.reg1;
+	uint32 reg2 = cpu->decoded_code->type7.reg2;
 	sint16 data16;
 	sint32 data32;
 	Std_ReturnType err;
@@ -278,9 +278,9 @@ int op_exec_ldhw(TargetCoreType *cpu)
 	}
 
 
-	if (cpu->decoded_code.type7.gen == 0x00) {
+	if (cpu->decoded_code->type7.gen == 0x00) {
 		//LD.H
-		disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) );
+		disp = op_sign_extend(15, (cpu->decoded_code->type7.disp << 1) );
 		addr = cpu->reg.r[reg1] + disp;
 
 		err = bus_get_data16(cpu->core_id, addr, (uint16*)&data16);
@@ -292,7 +292,7 @@ int op_exec_ldhw(TargetCoreType *cpu)
 	}
 	else {
 		//LD.W
-		disp = op_sign_extend(15, (cpu->decoded_code.type7.disp << 1) );
+		disp = op_sign_extend(15, (cpu->decoded_code->type7.disp << 1) );
 		addr = cpu->reg.r[reg1] + disp;
 
 		//TODO: comm_hook_load_reg32(cpu, addr);
@@ -317,8 +317,8 @@ int op_exec_ldhu(TargetCoreType *cpu)
 	uint32 addr;
 	uint32 ret;
 	uint32 disp;
-	uint32 reg1 = cpu->decoded_code.type7.reg1;
-	uint32 reg2 = cpu->decoded_code.type7.reg2;
+	uint32 reg1 = cpu->decoded_code->type7.reg1;
+	uint32 reg2 = cpu->decoded_code->type7.reg2;
 	uint16 data16;
 	Std_ReturnType err;
 
@@ -329,7 +329,7 @@ int op_exec_ldhu(TargetCoreType *cpu)
 		return -1;
 	}
 
-	disp = op_zero_extend(15, (cpu->decoded_code.type7.disp << 1) );
+	disp = op_zero_extend(15, (cpu->decoded_code->type7.disp << 1) );
 	addr = cpu->reg.r[reg1] + disp;
 
 	err = bus_get_data16(cpu->core_id, addr, &data16);

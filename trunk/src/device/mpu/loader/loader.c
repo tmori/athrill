@@ -9,6 +9,7 @@
 #include "elf_dwarf_info.h"
 #include "elf_dwarf_loc.h"
 #include "elf_dwarf_data_type.h"
+#include "assert.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -123,6 +124,10 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image)
 				printf("Invalid elf file: can not load rom addr=0x%x\n", phdr->p_vaddr);
 				return STD_E_INVALID;
 			}
+			virtual_cpu.cached_code.codes = calloc(phdr->p_memsz, sizeof(OperationCodeType));
+			ASSERT(virtual_cpu.cached_code.codes != NULL);
+			virtual_cpu.cached_code.code_start_addr = phdr->p_vaddr;
+			virtual_cpu.cached_code.code_size = (phdr->p_memsz);
 		}
 		else if ((phdr->p_flags & (PF_W)) == (PF_W)) {
 			//RAM

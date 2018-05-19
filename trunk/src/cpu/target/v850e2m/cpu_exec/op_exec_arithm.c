@@ -108,8 +108,8 @@ int op_chk_and_set_sign(CpuRegisterType *cpu, sint32 result)
  */
 int op_exec_sub(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
-	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	uint32 reg2 = cpu->decoded_code->type1.reg2;
 	sint32 reg1_data;
 	sint32 reg2_data;
 	sint32 result;
@@ -138,8 +138,8 @@ int op_exec_sub(TargetCoreType *cpu)
 
 int op_exec_subr(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
-	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	uint32 reg2 = cpu->decoded_code->type1.reg2;
 	sint32 reg1_data;
 	sint32 reg2_data;
 	sint32 result;
@@ -166,8 +166,8 @@ int op_exec_subr(TargetCoreType *cpu)
 }
 int op_exec_cmp_1(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
-	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	uint32 reg2 = cpu->decoded_code->type1.reg2;
 	sint32 reg1_data;
 	sint32 reg2_data;
 	sint32 result;
@@ -194,8 +194,8 @@ int op_exec_cmp_1(TargetCoreType *cpu)
 
 int op_exec_add_1(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
-	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	uint32 reg2 = cpu->decoded_code->type1.reg2;
 	sint32 reg1_data;
 	sint32 reg2_data;
 	sint32 result;
@@ -223,8 +223,8 @@ int op_exec_add_1(TargetCoreType *cpu)
 }
 int op_exec_mov_1(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
-	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	uint32 reg2 = cpu->decoded_code->type1.reg2;
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
@@ -241,8 +241,8 @@ int op_exec_mov_1(TargetCoreType *cpu)
 }
 int op_exec_mulh_1(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
-	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	uint32 reg2 = cpu->decoded_code->type1.reg2;
 	sint16 tmp1;
 	sint16 tmp2;
 	sint32 result;
@@ -267,8 +267,8 @@ int op_exec_mulh_1(TargetCoreType *cpu)
 
 int op_exec_divh_1(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type1.reg1;
-	uint32 reg2 = cpu->decoded_code.type1.reg2;
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	uint32 reg2 = cpu->decoded_code->type1.reg2;
 	sint32 reg1_data = cpu->reg.r[reg1];
 	sint32 reg2_data = cpu->reg.r[reg2];
 
@@ -314,7 +314,7 @@ int op_exec_divh_1(TargetCoreType *cpu)
  */
 int op_exec_cmp_2(TargetCoreType *cpu)
 {
-	uint32 reg2 = cpu->decoded_code.type2.reg2;
+	uint32 reg2 = cpu->decoded_code->type2.reg2;
 	sint32 imm_data;
 	sint32 reg2_data;
 	sint32 result;
@@ -323,7 +323,7 @@ int op_exec_cmp_2(TargetCoreType *cpu)
 		return -1;
 	}
 	reg2_data = cpu->reg.r[reg2];
-	imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code.type2.imm);
+	imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code->type2.imm);
 	result = reg2_data - imm_data;
 
 	op_chk_and_set_borrow(&cpu->reg, reg2_data, imm_data);
@@ -337,7 +337,7 @@ int op_exec_cmp_2(TargetCoreType *cpu)
 }
 int op_exec_add_2(TargetCoreType *cpu)
 {
-	uint32 reg2 = cpu->decoded_code.type2.reg2;
+	uint32 reg2 = cpu->decoded_code->type2.reg2;
 	sint32 imm_data;
 	sint32 reg2_data;
 	sint32 result;
@@ -346,7 +346,7 @@ int op_exec_add_2(TargetCoreType *cpu)
 		return -1;
 	}
 	reg2_data = cpu->reg.r[reg2];
-	imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code.type2.imm);
+	imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code->type2.imm);
 	result = reg2_data + imm_data;
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ADD imm5(%d),r%d(%d):%d\n", cpu->reg.pc, imm_data, reg2, cpu->reg.r[reg2], result));
 
@@ -362,13 +362,13 @@ int op_exec_add_2(TargetCoreType *cpu)
 }
 int op_exec_mov_2(TargetCoreType *cpu)
 {
-	uint32 reg2 = cpu->decoded_code.type2.reg2;
+	uint32 reg2 = cpu->decoded_code->type2.reg2;
 	sint32 imm_data;
 
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code.type2.imm);
+	imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code->type2.imm);
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: MOV imm5(%d),r%d(%d)\n", cpu->reg.pc, imm_data, reg2, cpu->reg.r[reg2]));
 	cpu->reg.r[reg2] = imm_data;
 
@@ -377,7 +377,7 @@ int op_exec_mov_2(TargetCoreType *cpu)
 }
 int op_exec_mulh_2(TargetCoreType *cpu)
 {
-	uint32 reg2 = cpu->decoded_code.type2.reg2;
+	uint32 reg2 = cpu->decoded_code->type2.reg2;
 	sint32 imm_data;
 	sint16 tmp2;
 	sint32 result;
@@ -385,7 +385,7 @@ int op_exec_mulh_2(TargetCoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code.type2.imm);
+	imm_data = OP_FORMAT2_IMM_SIGN_EXTEND(cpu->decoded_code->type2.imm);
 	tmp2 = (sint16)cpu->reg.r[reg2];
 	result = imm_data * ((sint32)tmp2);
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: MULH imm5(%d),r%d(%d):%d\n", cpu->reg.pc, imm_data, reg2, cpu->reg.r[reg2], result));
@@ -401,9 +401,9 @@ int op_exec_mulh_2(TargetCoreType *cpu)
  */
 int op_exec_addi(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type6.reg1;
-	uint32 reg2 = cpu->decoded_code.type6.reg2;
-	sint32 imm_data = op_sign_extend(15, cpu->decoded_code.type6.imm);
+	uint32 reg1 = cpu->decoded_code->type6.reg1;
+	uint32 reg2 = cpu->decoded_code->type6.reg2;
+	sint32 imm_data = op_sign_extend(15, cpu->decoded_code->type6.imm);
 	sint32 result;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -422,9 +422,9 @@ int op_exec_addi(TargetCoreType *cpu)
 }
 int op_exec_movea(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type6.reg1;
-	uint32 reg2 = cpu->decoded_code.type6.reg2;
-	sint32 imm_data = op_sign_extend(15, cpu->decoded_code.type6.imm);
+	uint32 reg1 = cpu->decoded_code->type6.reg1;
+	uint32 reg2 = cpu->decoded_code->type6.reg2;
+	sint32 imm_data = op_sign_extend(15, cpu->decoded_code->type6.imm);
 	sint32 result;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -442,11 +442,11 @@ int op_exec_movea(TargetCoreType *cpu)
 }
 int op_exec_mov_6(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type6.reg1;
+	uint32 reg1 = cpu->decoded_code->type6.reg1;
 	uint32 imm_high_addr;
 	uint16 imm_high16;
 	uint32 imm_high;
-	uint32 imm_data = cpu->decoded_code.type6.imm;
+	uint32 imm_data = cpu->decoded_code->type6.imm;
 	Std_ReturnType err;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -474,9 +474,9 @@ int op_exec_mov_6(TargetCoreType *cpu)
 
 int op_exec_movhi(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type6.reg1;
-	uint32 reg2 = cpu->decoded_code.type6.reg2;
-	sint32 imm_data = op_sign_extend(15, cpu->decoded_code.type6.imm);
+	uint32 reg1 = cpu->decoded_code->type6.reg1;
+	uint32 reg2 = cpu->decoded_code->type6.reg2;
+	sint32 imm_data = op_sign_extend(15, cpu->decoded_code->type6.imm);
 	sint32 result;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -496,9 +496,9 @@ int op_exec_movhi(TargetCoreType *cpu)
 
 int op_exec_mulhi(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type6.reg1;
-	uint32 reg2 = cpu->decoded_code.type6.reg2;
-	sint32 imm_data = op_sign_extend(15, cpu->decoded_code.type6.imm);
+	uint32 reg1 = cpu->decoded_code->type6.reg1;
+	uint32 reg2 = cpu->decoded_code->type6.reg2;
+	sint32 imm_data = op_sign_extend(15, cpu->decoded_code->type6.imm);
 	sint32 result;
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -615,8 +615,8 @@ static int setf_chk_cond(TargetCoreType *cpu, uint16 cond)
 }
 int op_exec_setf(TargetCoreType *cpu)
 {
-	uint32 reg2 = cpu->decoded_code.type9.reg2;
-	uint16 cond = cpu->decoded_code.type9.gen;
+	uint32 reg2 = cpu->decoded_code->type9.reg2;
+	uint16 cond = cpu->decoded_code->type9.gen;
 	sint32 result;
 
 	if (reg2 >= CPU_GREG_NUM) {
@@ -642,9 +642,9 @@ int op_exec_setf(TargetCoreType *cpu)
  */
 int op_exec_divu(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type11.reg1;
-	uint32 reg2 = cpu->decoded_code.type11.reg2;
-	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
 	uint32 reg1_data = cpu->reg.r[reg1];
 	uint32 reg2_data = cpu->reg.r[reg2];
 	uint32 reg3_data = cpu->reg.r[reg3];
@@ -696,9 +696,9 @@ int op_exec_divu(TargetCoreType *cpu)
 }
 int op_exec_divhu(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type11.reg1;
-	uint32 reg2 = cpu->decoded_code.type11.reg2;
-	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
 	uint32 reg1_data = cpu->reg.r[reg1];
 	uint32 reg2_data = cpu->reg.r[reg2];
 	uint32 reg3_data = cpu->reg.r[reg3];
@@ -750,9 +750,9 @@ int op_exec_divhu(TargetCoreType *cpu)
 }
 int op_exec_divh_11(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type11.reg1;
-	uint32 reg2 = cpu->decoded_code.type11.reg2;
-	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
 	sint32 reg1_data = cpu->reg.r[reg1];
 	sint32 reg2_data = cpu->reg.r[reg2];
 	sint32 reg3_data = cpu->reg.r[reg3];
@@ -804,9 +804,9 @@ int op_exec_divh_11(TargetCoreType *cpu)
 }
 int op_exec_div(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type11.reg1;
-	uint32 reg2 = cpu->decoded_code.type11.reg2;
-	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
 	sint32 reg1_data = cpu->reg.r[reg1];
 	sint32 reg2_data = cpu->reg.r[reg2];
 	sint32 reg3_data = cpu->reg.r[reg3];
@@ -867,9 +867,9 @@ int op_exec_div(TargetCoreType *cpu)
 
 int op_exec_mul(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type11.reg1;
-	uint32 reg2 = cpu->decoded_code.type11.reg2;
-	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
 	sint64 reg1_data = cpu->reg.r[reg1];
 	sint64 reg2_data = cpu->reg.r[reg2];
 	sint64 reg3_data = cpu->reg.r[reg3];
@@ -908,9 +908,9 @@ int op_exec_mul(TargetCoreType *cpu)
 
 int op_exec_mulu(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type11.reg1;
-	uint32 reg2 = cpu->decoded_code.type11.reg2;
-	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
 	uint64 reg1_data = cpu->reg.r[reg1];
 	uint64 reg2_data = cpu->reg.r[reg2];
 	uint64 reg3_data = cpu->reg.r[reg3];
@@ -949,13 +949,13 @@ int op_exec_mulu(TargetCoreType *cpu)
 
 int op_exec_cmov_11(TargetCoreType *cpu)
 {
-	uint32 reg1 = cpu->decoded_code.type11.reg1;
-	uint32 reg2 = cpu->decoded_code.type11.reg2;
-	uint32 reg3 = cpu->decoded_code.type11.reg3;
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
 	uint32 reg1_data = cpu->reg.r[reg1];
 	uint32 reg2_data = cpu->reg.r[reg2];
 	uint32 reg3_data = cpu->reg.r[reg3];
-	uint16 cond = ( (cpu->decoded_code.type11.rfu << 1U) | (cpu->decoded_code.type11.sub2) );
+	uint16 cond = ( (cpu->decoded_code->type11.rfu << 1U) | (cpu->decoded_code->type11.sub2) );
 
 
 	if (reg1 >= CPU_GREG_NUM) {
@@ -1000,8 +1000,8 @@ int op_exec_mulu_12(TargetCoreType *cpu)
 	uint64 imm9;
 	uint32 imm9_low;
 	uint32 imm9_high;
-	uint32 reg2 = cpu->decoded_code.type12.reg2;
-	uint32 reg3 = cpu->decoded_code.type12.reg3;
+	uint32 reg2 = cpu->decoded_code->type12.reg2;
+	uint32 reg3 = cpu->decoded_code->type12.reg3;
 	uint64 reg2_data;
 	uint64 result;
 	uint32 result_low;
@@ -1013,8 +1013,8 @@ int op_exec_mulu_12(TargetCoreType *cpu)
 	if (reg3 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	imm9_low = cpu->decoded_code.type12.imml;
-	imm9_high = (cpu->decoded_code.type12.immh & 0xF);
+	imm9_low = cpu->decoded_code->type12.imml;
+	imm9_high = (cpu->decoded_code->type12.immh & 0xF);
 	imm9 = (imm9_high << 5U) | imm9_low;
 
 	reg2_data = cpu->reg.r[reg2];
@@ -1040,8 +1040,8 @@ int op_exec_mul_12(TargetCoreType *cpu)
 	uint32 imm9_32bit;
 	uint32 imm9_low;
 	uint32 imm9_high;
-	sint32 reg2 = cpu->decoded_code.type12.reg2;
-	sint32 reg3 = cpu->decoded_code.type12.reg3;
+	sint32 reg2 = cpu->decoded_code->type12.reg2;
+	sint32 reg3 = cpu->decoded_code->type12.reg3;
 	sint64 reg2_data;
 	sint64 result;
 	sint32 result_low;
@@ -1053,8 +1053,8 @@ int op_exec_mul_12(TargetCoreType *cpu)
 	if (reg3 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	imm9_low = cpu->decoded_code.type12.imml;
-	imm9_high = (cpu->decoded_code.type12.immh & 0xF);
+	imm9_low = cpu->decoded_code->type12.imml;
+	imm9_high = (cpu->decoded_code->type12.immh & 0xF);
 	imm9_32bit = (imm9_high << 5U) | imm9_low;
 	imm9 = (sint64)op_sign_extend(8, imm9_32bit);
 
@@ -1078,12 +1078,12 @@ int op_exec_mul_12(TargetCoreType *cpu)
 
 int op_exec_cmov_12(TargetCoreType *cpu)
 {
-	sint32 imm_data = op_sign_extend(4, cpu->decoded_code.type12.imml);
-	uint32 reg2 = cpu->decoded_code.type12.reg2;
-	uint32 reg3 = cpu->decoded_code.type12.reg3;
+	sint32 imm_data = op_sign_extend(4, cpu->decoded_code->type12.imml);
+	uint32 reg2 = cpu->decoded_code->type12.reg2;
+	uint32 reg3 = cpu->decoded_code->type12.reg3;
 	uint32 reg2_data = cpu->reg.r[reg2];
 	uint32 reg3_data = cpu->reg.r[reg3];
-	uint16 cond = ( ((cpu->decoded_code.type12.immh &  0x07) << 1U) | (cpu->decoded_code.type12.sub2) );
+	uint16 cond = ( ((cpu->decoded_code->type12.immh &  0x07) << 1U) | (cpu->decoded_code->type12.sub2) );
 
 
 	if (reg2 >= CPU_GREG_NUM) {
