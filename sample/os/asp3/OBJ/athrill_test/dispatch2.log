@@ -7,15 +7,14 @@
 wait for start 2 sec..
 + sleep 2
 + athrill -r -i -d device_config.txt ../asp
-ERROR: the token is invalid EBUG_FUNC_ENABLE_WATCH		1 on device_config.txt...
 Elf loading was succeeded:0x0 - 0x7771 : 29.881 KB
 Elf loading was succeeded:0x7774 - 0x7774 : 0.0 KB
 ELF SYMBOL SECTION LOADED:index=16
 ELF SYMBOL SECTION LOADED:sym_num=550
 ELF STRING TABLE SECTION LOADED:index=17
-Not supported:unknown typeref(*) debug_offset=0x60e4
-Not supported:unknown typeref(*) debug_offset=0x9463
-Not supported:unknown typeref(*) debug_offset=0x9a10
+Not supported:unknown typeref(*) debug_offset=0x60ed
+Not supported:unknown typeref(*) debug_offset=0x946c
+Not supported:unknown typeref(*) debug_offset=0x9a19
 REMOTE:server port 49152
 REMOTE:client port 49153
 [DBG>+ echo '## start test'
@@ -26,18 +25,14 @@ HIT break:0x0
 [CPU>OK
 + wait_athrill 1
 + sleep 1
-
-TOPPERS/ASP3 Kernel Release 3.2.0 for V850-ESFK3 (Aug 14 2017, 14:32:56)
-Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
-                            Toyohashi Univ. of Technology, JAPAN
-Copyright (C) 2004-2017 by Embedded and Real-Time Systems Laboratory
-            Graduate School of Information Science, Nagoya Univ., JAPAN
-
-System logging task is started.
-Sample program starts (exinf = 0).
-E_OBJ (-1) reported by `serial_opn_por'.
-task1 is running (001).   |
-task1 is running (002).   |
+
+TOPPERS/ASP3 Kernel Release 3.2.0 for V850-ESFK3 (Mar 17 2018, 15:37:11)
+Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
+                            Toyohashi Univ. of Technology, JAPAN
+Copyright (C) 2004-2017 by Embedded and Real-Time Systems Laboratory
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+
+System logging task is started.
 + athrill_remote q
 OK
 + athrill_remote 'S 0 1>s'
@@ -46,14 +41,15 @@ OK
 [CPU>OK
 + wait_athrill 3
 + sleep 3
-#chg_pri(1, HIGH_PRIORITY)
-#1#slp_tsk()
-task2 is running (001).     +
-task2 is running (002).     +
-task2 is running (003).     +
-task2 is running (004).     +
-task2 is running (005).     +
-task2 is running (006).     +
+Sample program starts (exinf = 0).
+E_OBJ (-1) reported by `serial_opn_por'.
+task1 is running (001).   |
+#chg_pri(1, HIGH_PRIORITY)
+#1#slp_tsk()
+task2 is running (001).     +
+task2 is running (002).     +
+task2 is running (003).     +
+task2 is running (004).     +
 + athrill_remote q
 OK
 + athrill_remote 'S 0 1w'
@@ -62,14 +58,13 @@ OK
 [CPU>OK
 + wait_athrill 3
 + sleep 3
-#wup_tsk(1)
-task1 is running (003).   |
-task1 is running (004).   |
-task1 is running (005).   |
-task1 is running (006).   |
-task1 is running (007).   |
+#wup_tsk(1)
+task1 is running (002).   |
+task1 is running (003).   |
+task1 is running (004).   |
+task1 is running (005).   |
+task1 is running (006).   |
 + athrill_remote q
-task1 is running (008).   |
 OK
 + echo '## end test'
 ## end test
