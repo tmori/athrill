@@ -1,4 +1,5 @@
 	#include "v850asm.inc"
+	#include "test_reg.h"
 
 	.section .vectors,"ax"
 	.align	4
@@ -1017,13 +1018,9 @@ __reset:
 	.global	_interrupt
 	.global	_goto_kernel_int_handler_22
 _goto_kernel_int_handler_22:
-	addi	-80 , sp , sp
-	st.w	r10 , 52[sp]
-	st.w	r11 , 48[sp]
-	st.w	r12 , 44[sp]
-	Lea	_timer_interrupt_handler , r10
-	mov	1 , r11
-	mov	22 , r12
+	addi	INTR_PUSH_SPSZ , sp , sp
+	st.w	r6 , POS_R6[sp]
+	mov		22 , r6
 	jr		_interrupt
 
 

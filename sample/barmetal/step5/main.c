@@ -86,7 +86,15 @@ void data_init(void)
 
 void timer_interrupt_handler(void)
 {
-	x_clear_int(22);
+	return;
+}
+
+void interrupt_handler(int intrno)
+{
+	x_clear_int(intrno);
+	if (intrno == 22) {
+		timer_interrupt_handler();
+	}
 	return;
 }
 
