@@ -12,12 +12,12 @@ typedef struct {
 typedef struct {
 	OpDecodedCodeType	decoded_code;
 	int (*op_exec) (TargetCoreType *cpu);
-} OperationCodeType;
+} CpuOperationCodeType;
 
 typedef struct {
 	uint32				code_start_addr;
 	uint32				code_size;
-	OperationCodeType	*codes;
+	CpuOperationCodeType	*codes;
 } CachedOperationCodeType;
 
 typedef struct {

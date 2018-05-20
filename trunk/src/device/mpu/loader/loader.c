@@ -106,7 +106,7 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image)
 {
 	uint32_t i;
 	Elf32_Phdr *phdr;
-	uint8 *ptr;
+	uint8 *ptr = NULL;
 
 	for (i = 0; i < elf_image->e_phnum; i++) {
 		phdr = (Elf32_Phdr*) (
@@ -124,7 +124,7 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image)
 				printf("Invalid elf file: can not load rom addr=0x%x\n", phdr->p_vaddr);
 				return STD_E_INVALID;
 			}
-			virtual_cpu.cached_code.codes = calloc(phdr->p_memsz, sizeof(OperationCodeType));
+			virtual_cpu.cached_code.codes = calloc(phdr->p_memsz, sizeof(CpuOperationCodeType));
 			ASSERT(virtual_cpu.cached_code.codes != NULL);
 			virtual_cpu.cached_code.code_start_addr = phdr->p_vaddr;
 			virtual_cpu.cached_code.code_size = (phdr->p_memsz);

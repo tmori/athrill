@@ -1,3 +1,5 @@
+#ifndef _CPU_OPS_H_
+#define _CPU_OPS_H_
 #include "target_cpu.h"
 
 #define CPU_PSW_ID		(1 << 5)
@@ -284,3 +286,4 @@ static inline char *addr2devregname(uint32 addr)
 	return "NULL";
 }
 
+#endif /* _CPU_OPS_H_ */
