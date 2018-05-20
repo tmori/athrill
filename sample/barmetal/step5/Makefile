@@ -12,7 +12,7 @@ LINK	:= v850-elf-gcc
 OBJS	:= start.o
 OBJS	+= vector.o
 OBJS	+= interrupt.o
-OBJS	+= training.o
+OBJS	+= interrupt_asm.o
 OBJS	+= main.o
 
 
