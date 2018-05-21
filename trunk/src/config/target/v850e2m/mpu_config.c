@@ -4,8 +4,6 @@
 #define MPU_ADDRESS_REGION_MASK_PH		0x03FFFFFF
 #define MPU_ADDRESS_REGION_MASK_CPU		0x06FFFFFF
 
-#define MPU_ADDRESS_REGION_SIZE_INX_ROM		(1024U * 512U)
-#define MPU_ADDRESS_REGION_SIZE_INX_RAM		(1024U * 10240U)
 #define MPU_ADDRESS_REGION_SIZE_INX_INTC	(0xFFFFF1FB - 0xFFFFF100)
 #define MPU_ADDRESS_REGION_SIZE_INX_SERIAL	(0xFFFFFA78 - 0xFFFFFA00)
 #define MPU_ADDRESS_REGION_SIZE_INX_TIMER	(0xFFFFF700 - 0xFFFFF590)
@@ -13,8 +11,6 @@
 #define MPU_ADDRESS_REGION_SIZE_INX_PH0		(1024U * 4U)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH1		(1024U * 12U)
 
-static uint8 memory_data_ROM[MPU_ADDRESS_REGION_SIZE_INX_ROM];
-static uint8 memory_data_RAM[MPU_ADDRESS_REGION_SIZE_INX_RAM];
 
 static uint8 memory_data_CPU[MPU_ADDRESS_REGION_SIZE_INX_CPU * CPU_CONFIG_CORE_NUM];
 static uint8 memory_data_INTC[MPU_ADDRESS_REGION_SIZE_INX_INTC * CPU_CONFIG_CORE_NUM];
@@ -29,33 +25,11 @@ extern MpuAddressRegionOperationType	intc_memory_operation;
 extern MpuAddressRegionOperationType	cpu_register_operation;
 
 MpuAddressMapType mpu_address_map = {
+		.dynamic_map_num = 0,
+		.dynamic_map = NULL,
 		.map = {
 				/*
-				 * INDEX 0:ROM
-				 */
-				{
-						.type		= READONLY_MEMORY,
-						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
-						.start		= 0x00000000,
-						.size		= MPU_ADDRESS_REGION_SIZE_INX_ROM,
-						.mask		= MPU_ADDRESS_REGION_MASK_ALL,
-						.data		= memory_data_ROM,
-						.ops		= &default_memory_operation
-				},
-				/*
-				 * INDEX 1:RAM
-				 */
-				{
-						.type		= GLOBAL_MEMORY,
-						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
-						.start		= 0x05FF0000,
-						.size		= MPU_ADDRESS_REGION_SIZE_INX_RAM,
-						.mask		= MPU_ADDRESS_REGION_MASK_ALL,
-						.data		= memory_data_RAM,
-						.ops		= &default_memory_operation
-				},
-				/*
-				 * INDEX 2:DEVICE(割込みコントローラ)
+				 * INDEX 0:DEVICE(割込みコントローラ)
 				 */
 				{
 						.type		= DEVICE,
