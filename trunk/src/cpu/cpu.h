@@ -4,6 +4,7 @@
 #include "std_types.h"
 #include "cpu_config.h"
 #include "target_cpu.h"
+#include "assert.h"
 
 typedef struct {
 	TargetCoreType		core;
@@ -24,11 +25,40 @@ typedef struct {
 	CpuCoreType					*current_core;
 	uint32						core_id_num;
 	CpuCoreType					cores[CPU_CONFIG_CORE_NUM];
-	CachedOperationCodeType		cached_code;
+	uint32						cached_code_num;
+	CachedOperationCodeType		**cached_code;
 } CpuType;
 
-
 extern CpuType	virtual_cpu;
+
+static inline CachedOperationCodeType *virtual_cpu_get_cached_code(uint32 pc)
+{
+	uint32 i;
+	for (i = 0; i < virtual_cpu.cached_code_num; i++) {
+		if (pc < virtual_cpu.cached_code[i]->code_start_addr) {
+			continue;
+		}
+		else if (pc >= (virtual_cpu.cached_code[i]->code_start_addr + virtual_cpu.cached_code[i]->code_size)) {
+			continue;
+		}
+		return virtual_cpu.cached_code[i];
+	}
+	/*
+	 * not reached.
+	 */
+	ASSERT(0);
+	return NULL;
+}
+
+static inline void virtual_cpu_add_cached_code(CachedOperationCodeType *cached_code)
+{
+	virtual_cpu.cached_code_num++;
+	virtual_cpu.cached_code = realloc(virtual_cpu.cached_code, virtual_cpu.cached_code_num * (sizeof (CachedOperationCodeType*)));
+	ASSERT(virtual_cpu.cached_code != NULL);
+	virtual_cpu.cached_code[virtual_cpu.cached_code_num - 1] = cached_code;
+	return;
+}
+
 
 extern uint32 cpu_get_current_core_id(void);
 extern uint32 cpu_get_pc(const TargetCoreType *core);

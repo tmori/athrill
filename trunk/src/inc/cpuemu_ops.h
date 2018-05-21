@@ -30,6 +30,20 @@ extern Std_ReturnType cpuemu_symbol_set(void);
 
 extern void cpuemu_raise_intr(uint32 intno);
 
+
+typedef struct {
+	uint32	start;
+	uint32	size;
+} MemoryAddressType;
+
+typedef struct {
+	uint32				rom_num;
+	MemoryAddressType	*rom;
+	uint32				ram_num;
+	MemoryAddressType	*ram;
+} MemoryAddressMapType;
+extern Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map);
+
 extern Std_ReturnType cpuemu_load_devcfg(const char *path);
 extern Std_ReturnType cpuemu_get_devcfg_value(const char* key, uint32 *value);
 extern Std_ReturnType cpuemu_get_devcfg_string(const char* key, char **value);

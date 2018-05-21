@@ -3,6 +3,7 @@
 #include "mpu_ops.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "assert.h"
 
 static Std_ReturnType memory_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
 static Std_ReturnType memory_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data);
@@ -39,6 +40,26 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 
 	//printf("addr=0x%x\n", addr);
 
+	for (i = 0U; i < mpu_address_map.dynamic_map_num; i++) {
+		uint32 start = mpu_address_map.dynamic_map[i].start;
+		uint32 end = mpu_address_map.dynamic_map[i].start  + mpu_address_map.dynamic_map[i].size;
+		uint32 paddr_str = (addr & mpu_address_map.dynamic_map[i].mask);
+		uint32 paddr_end = paddr_str + search_size;
+
+		if (	((start <= paddr_str) && (paddr_str < end)) &&
+				((start <  paddr_end) && (paddr_end <= end))
+			) {
+			//printf("1:passed1\n");
+			if (has_permission( &mpu_address_map.dynamic_map[i], core_id) == FALSE) {
+				printf("search_region:permission error:addr=0x%x\n", addr);
+				return NULL;
+			}
+			//printf("2:passed1:%u:0x%p\n", i,  &mpu_address_map.map[i]);
+			return &mpu_address_map.dynamic_map[i];
+		}
+	}
+
+
 	for (i = 0U; i < MPU_CONFIG_REGION_NUM; i++) {
 		uint32 start = mpu_address_map.map[i].start;
 		uint32 end = mpu_address_map.map[i].start  + mpu_address_map.map[i].size;
@@ -67,33 +88,60 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 uint8 *mpu_address_get_rom_ram(bool isRom, uint32 addr, uint32 size) 
 {
 	uint32 i;
-	bool isFound = FALSE;
+	MpuAddressRegionType *region = NULL;
 
-	for (i = 0U; i < MPU_CONFIG_REGION_NUM; i++) {
+	for (i = 0U; i < mpu_address_map.dynamic_map_num; i++) {
+		uint32 start = mpu_address_map.dynamic_map[i].start;
+		uint32 end = mpu_address_map.dynamic_map[i].start  + mpu_address_map.dynamic_map[i].size;
+		uint32 paddr_str = (addr & mpu_address_map.dynamic_map[i].mask);
+		uint32 paddr_end = paddr_str + size;
+
+		if (	((start <= paddr_str) && (paddr_str < end)) &&
+				((start <  paddr_end) && (paddr_end <= end))
+			) {
+			region = &mpu_address_map.dynamic_map[i];
+		}
+	}
+
+	if (region == NULL) {
+		mpu_address_map.dynamic_map_num++;
+		mpu_address_map.dynamic_map = realloc(mpu_address_map.dynamic_map, (sizeof(MpuAddressRegionType)) * mpu_address_map.dynamic_map_num);
+		ASSERT(mpu_address_map.dynamic_map != NULL);
+		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].start = addr;
+		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].size = size;
 		if (isRom == TRUE) {
-			if (mpu_address_map.map[i].type == READONLY_MEMORY) {
-				isFound = TRUE;
-				break;
-			}
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = READONLY_MEMORY;
 		}
 		else {
-			if (mpu_address_map.map[i].type == GLOBAL_MEMORY) {
-				isFound = TRUE;
-				break;
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = GLOBAL_MEMORY;
 			}
+		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].permission	= MPU_ADDRESS_REGION_PERM_ALL;
+		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].mask		= MPU_ADDRESS_REGION_MASK_ALL;
+		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].ops			= &default_memory_operation;
+
+		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = malloc(size);
+		ASSERT(mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data != NULL);
+
+		return mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data;
 		}
+	else {
+		return region->data;
 	}
-	if (isFound == FALSE) {
-		return NULL;
-	}
-	mpu_address_map.map[i].start = addr;
-	mpu_address_map.map[i].data = malloc(size);
-	return mpu_address_map.map[i].data;
 }
 
 MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr)
 {
 	uint32 i;
+
+	for (i = 0U; i < mpu_address_map.dynamic_map_num; i++) {
+		uint32 start = mpu_address_map.dynamic_map[i].start;
+		uint32 end = mpu_address_map.dynamic_map[i].start  + mpu_address_map.dynamic_map[i].size;
+		uint32 paddr_str = (addr & mpu_address_map.dynamic_map[i].mask);
+
+		if ((start <= paddr_str) && (paddr_str < end)) {
+			return mpu_address_map.dynamic_map[i].type;
+		}
+	}
 
 	for (i = 0U; i < MPU_CONFIG_REGION_NUM; i++) {
 		uint32 start = mpu_address_map.map[i].start;

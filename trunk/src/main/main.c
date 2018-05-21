@@ -66,6 +66,11 @@ int main(int argc, const char *argv[])
 {
 	Std_ReturnType err;
 	CmdOptionType *opt;
+	MemoryAddressMapType memmap;
+	memmap.ram_num = 0;
+	memmap.rom_num = 0;
+	memmap.ram = NULL;
+	memmap.rom = NULL;
 
 	if (argc == 1) {
 		printf("Usage:%s [OPTION]... <load_file>\n", "athrill");
@@ -96,12 +101,18 @@ int main(int argc, const char *argv[])
 			return -1;
 		}
 	}
+	if (opt->memfilepath != NULL) {
+		err = cpuemu_load_memmap(opt->memfilepath, &memmap);
+		if (err != STD_E_OK) {
+			return -1;
+		}
+	}
 
 	if (opt->is_binary_data) {
 		binary_load((uint8*)opt->load_file.buffer, 0U, opt->load_file.size);
 	}
 	else {
-		elf_load((uint8*)opt->load_file.buffer);
+		elf_load((uint8*)opt->load_file.buffer, &memmap);
 		if (cpuemu_symbol_set() != STD_E_OK) {
 			return -1;
 		}

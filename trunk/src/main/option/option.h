@@ -19,6 +19,9 @@ typedef struct {
 
 	char	*devcfgpath;
 	char	buffer_devcfgpath[4096];
+
+	char*				memfilepath;
+	char				buffer_memfile[4096];
 } CmdOptionType;
 
 extern CmdOptionType *parse_args(int argc, const char* argv[]);

@@ -18,6 +18,8 @@
 #include "target/target_os_api.h"
 #include "option/option.h"
 #include <fcntl.h>
+#include <string.h>
+#include "assert.h"
 
 static DeviceClockType cpuemu_dev_clock;
 static bool cpuemu_is_cui_mode = FALSE;
@@ -443,6 +445,73 @@ errdone:
 	file_close(&devcfg_file);
 	return err;
 }
+
+static FileType memcfg_file;
+static char memcfg_buffer[4096];
+static TokenContainerType memcfg_token_container;
+Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
+{
+	Std_ReturnType err = STD_E_OK;
+	uint32 len;
+	bool ret;
+	MemoryAddressType *memp;
+
+	map->ram_num = 0;
+	map->rom_num = 0;
+	map->ram = NULL;
+	map->rom = NULL;
+
+	ret = token_string_set(&memcfg_file.filepath, path);
+	if (ret == FALSE) {
+		return STD_E_INVALID;
+	}
+	ret = file_ropen(&memcfg_file);
+	if (ret == FALSE) {
+		return STD_E_NOENT;
+	}
+	while (TRUE) {
+		err = STD_E_INVALID;
+
+		len = file_getline(&memcfg_file, memcfg_buffer, 4096);
+		if (len <= 0) {
+			break;
+		}
+
+		err = token_split(&memcfg_token_container, (uint8*)memcfg_buffer, len);
+		if (err != STD_E_OK) {
+			printf("ERROR: can not parse data on %s...\n", path);
+			goto errdone;
+		}
+		if (memcfg_token_container.num != 3) {
+			printf("ERROR: the token is invalid %s on %s...\n", memcfg_buffer, path);
+			goto errdone;
+		}
+		if (!strcmp("ROM", (char*)memcfg_token_container.array[0].body.str.str)) {
+			printf("ROM");
+			map->rom_num++;
+			map->rom = realloc(map->rom, map->rom_num * sizeof(MemoryAddressType));
+			ASSERT(map->rom != NULL);
+			memp = &map->rom[map->rom_num - 1];
+		}
+		else {
+			printf("RAM");
+			map->ram_num++;
+			map->ram = realloc(map->ram, map->ram_num * sizeof(MemoryAddressType));
+			ASSERT(map->ram != NULL);
+			memp = &map->ram[map->ram_num - 1];
+		}
+		memp->start = memcfg_token_container.array[1].body.hex.value;
+		memp->size = memcfg_token_container.array[2].body.dec.value;
+		printf(" : START=0x%x SIZE=%u\n", memp->start, memp->size);
+	}
+
+	file_close(&memcfg_file);
+	return STD_E_OK;
+errdone:
+	file_close(&memcfg_file);
+	return err;
+}
+
 
 Std_ReturnType cpuemu_get_devcfg_value(const char* key, uint32 *value)
 {

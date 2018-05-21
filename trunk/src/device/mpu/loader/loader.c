@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 static Std_ReturnType Elf_Check(const Elf32_Ehdr *elf_image);
-static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image);
+static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddressMapType *memap);
 
 Std_ReturnType binary_load(uint8 *binary_data, uint32 load_addr, uint32 binary_data_len)
 {
@@ -31,7 +31,7 @@ Std_ReturnType binary_load(uint8 *binary_data, uint32 load_addr, uint32 binary_d
 	return STD_E_OK;
 }
 
-Std_ReturnType elf_load(uint8 *elf_data)
+Std_ReturnType elf_load(uint8 *elf_data, MemoryAddressMapType *memap)
 {
 	Std_ReturnType err;
 
@@ -39,7 +39,7 @@ Std_ReturnType elf_load(uint8 *elf_data)
 	if (err != STD_E_OK) {
 		return err;
 	}
-	err = Elf_LoadProgram((const Elf32_Ehdr*)elf_data);
+	err = Elf_LoadProgram((const Elf32_Ehdr*)elf_data, memap);
 	if (err != STD_E_OK) {
 		return err;
 	}
@@ -102,11 +102,28 @@ static Std_ReturnType Elf_Check(const Elf32_Ehdr *elf_image)
 	}
 	return STD_E_OK;
 }
-static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image)
+static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddressMapType *memap)
 {
+	Std_ReturnType err;
 	uint32_t i;
 	Elf32_Phdr *phdr;
 	uint8 *ptr = NULL;
+	CachedOperationCodeType *cached_code = NULL;
+
+	for (i = 0; i < memap->rom_num; i++) {
+		ptr = mpu_address_get_rom_ram(TRUE, memap->rom[i].start, memap->rom[i].size * 1024);
+		if (ptr == NULL) {
+			printf("Invalid elf file: can not load rom addr=0x%x\n", memap->rom[i].start);
+			return STD_E_INVALID;
+		}
+	}
+	for (i = 0; i < memap->ram_num; i++) {
+		ptr = mpu_address_get_rom_ram(FALSE, memap->ram[i].start, memap->ram[i].size * 1024);
+		if (ptr == NULL) {
+			printf("Invalid elf file: can not load ram addr=0x%x\n", memap->ram[i].start);
+			return STD_E_INVALID;
+		}
+	}
 
 	for (i = 0; i < elf_image->e_phnum; i++) {
 		phdr = (Elf32_Phdr*) (
@@ -117,17 +134,26 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image)
 		//printf("p_type=0x%x\n", phdr->p_type);
 		//printf("p_paddr=0x%x\n", phdr->p_paddr);
 		//printf("p_flags=0x%x\n", phdr->p_flags);
-		if ((phdr->p_flags & (PF_X)) == (PF_X)) {
+		if ((phdr->p_flags & (PF_X)) == PF_X) {
+
+			cached_code = malloc(sizeof(CachedOperationCodeType));
+			ASSERT(cached_code != NULL);
+			cached_code->codes = calloc(phdr->p_memsz, sizeof(CpuOperationCodeType));
+			ASSERT(cached_code->codes != NULL);
+			cached_code->code_start_addr = phdr->p_vaddr;
+			cached_code->code_size = (phdr->p_memsz);
+
+			virtual_cpu_add_cached_code(cached_code);
+			cached_code = NULL;
+		}
+#if 1
+		if ((phdr->p_flags & (PF_W|PF_R)) == PF_R) {
 			//ROM
 			ptr = mpu_address_get_rom_ram(TRUE, phdr->p_vaddr, phdr->p_memsz);
 			if (ptr == NULL) {
 				printf("Invalid elf file: can not load rom addr=0x%x\n", phdr->p_vaddr);
 				return STD_E_INVALID;
 			}
-			virtual_cpu.cached_code.codes = calloc(phdr->p_memsz, sizeof(CpuOperationCodeType));
-			ASSERT(virtual_cpu.cached_code.codes != NULL);
-			virtual_cpu.cached_code.code_start_addr = phdr->p_vaddr;
-			virtual_cpu.cached_code.code_size = (phdr->p_memsz);
 		}
 		else if ((phdr->p_flags & (PF_W)) == (PF_W)) {
 			//RAM
@@ -137,14 +163,15 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image)
 				return STD_E_INVALID;
 			}
 		}
+#endif
 		if (phdr->p_type != PT_LOAD) {
 			continue;
 		}
 		/*
 		 * ROM領域のみロードする．
 		 */
-#if 0
-		err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, phdr->p_paddr, &ptr);
+#if 1
+		err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, phdr->p_vaddr, &ptr);
 		if (err != STD_E_OK) {
 			printf("Invalid elf file: can not load addr=0x%x\n", phdr->p_vaddr);
 			return STD_E_INVALID;
@@ -154,7 +181,7 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image)
 				( ((uint8_t*)elf_image) + phdr->p_offset ),
 				phdr->p_filesz);
 
-		printf("Elf loading was succeeded:0x%x - 0x%x : %u.%u KB\n", phdr->p_paddr, phdr->p_paddr + phdr->p_filesz, phdr->p_filesz/1024, phdr->p_filesz % 1024);
+		printf("Elf loading was succeeded:0x%x - 0x%x : %u.%u KB\n", phdr->p_vaddr, phdr->p_vaddr + phdr->p_memsz, phdr->p_memsz/1024, phdr->p_memsz % 1024);
 
 	}
 	return 0;

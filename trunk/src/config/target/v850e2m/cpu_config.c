@@ -68,12 +68,14 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 	int ret;
 	Std_ReturnType err;
 	uint32 inx;
+	CachedOperationCodeType *cached_code;
 
 	if (virtual_cpu.cores[core_id].core.is_halt == TRUE) {
 		return STD_E_OK;
 	}
-	inx = virtual_cpu.cores[core_id].core.reg.pc - virtual_cpu.cached_code.code_start_addr;
-	if (virtual_cpu.cached_code.codes[inx].op_exec == NULL) {
+	cached_code = virtual_cpu_get_cached_code(virtual_cpu.cores[core_id].core.reg.pc);
+	inx = virtual_cpu.cores[core_id].core.reg.pc - cached_code->code_start_addr;
+	if (cached_code->codes[inx].op_exec == NULL) {
 		/*
 		 * 命令取得する
 		 */
@@ -88,12 +90,12 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 		 * デコード
 		 */
 		ret = OpDecode(virtual_cpu.cores[core_id].core.current_code,
-				&virtual_cpu.cached_code.codes[inx].decoded_code);
+				&cached_code->codes[inx].decoded_code);
 		if (ret < 0) {
 			printf("Decode Error\n");
 			return STD_E_DECODE;
 		}
-		virtual_cpu.cores[core_id].core.decoded_code = &virtual_cpu.cached_code.codes[inx].decoded_code;
+		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
 		virtual_cpu.cores[core_id].core.op_exec = NULL;
 		/*
 		 * 命令実行
@@ -106,11 +108,11 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 					virtual_cpu.cores[core_id].core.decoded_code->type_id);
 			return STD_E_EXEC;
 		}
-		virtual_cpu.cached_code.codes[inx].op_exec = virtual_cpu.cores[core_id].core.op_exec;
+		cached_code->codes[inx].op_exec = virtual_cpu.cores[core_id].core.op_exec;
 	}
 	else {
-		virtual_cpu.cores[core_id].core.decoded_code = &virtual_cpu.cached_code.codes[inx].decoded_code;
-		ret = virtual_cpu.cached_code.codes[inx].op_exec(&virtual_cpu.cores[core_id].core);
+		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
+		ret = cached_code->codes[inx].op_exec(&virtual_cpu.cores[core_id].core);
 		if (ret < 0) {
 			printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
 					virtual_cpu.cores[core_id].core.current_code[0],
