@@ -399,7 +399,7 @@ void dbg_std_executor_elaps(void *executor)
 	CpuEmuElapsType elaps;
 	cpuemu_get_elaps(&elaps);
 	printf("clock = cpu "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64"\n", elaps.total_clocks, elaps.intr_clocks);
-	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), PRINT_FMT_UINT64"\n", elaps.total_clocks));
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), PRINT_FMT_UINT64"  OK", elaps.total_clocks));
 	return;
 }
 void dbg_std_executor_view(void *executor)
@@ -426,7 +426,7 @@ static void print_memory(uint32 vaddr, uint8 *top_addr, uint32 size)
 	for (i = 0; i < size; i++) {
 		printf("%4u 0x%x 0x%x	(%c)\n", i, (vaddr + i), *(top_addr + i), *(top_addr + i));
 	}
-	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x", *top_addr));
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x  OK", *top_addr));
 	return;
 }
 static void print_memory_type(char *variable_name, uint32 vaddr, uint8 *top_addr, uint32 size)
@@ -434,7 +434,7 @@ static void print_memory_type(char *variable_name, uint32 vaddr, uint8 *top_addr
 	if (variable_name != NULL) {
 		bool ret = print_variable_with_data_type(variable_name, vaddr, top_addr, size);
 		if (ret == TRUE) {
-			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "0x%x  %u ", vaddr, size));
+			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "0x%x  %u  OK", vaddr, size));
 			return;
 		}
 	}
@@ -443,13 +443,13 @@ static void print_memory_type(char *variable_name, uint32 vaddr, uint8 *top_addr
 		uint16 *data = (uint16*)top_addr;
 		printf("size=%u byte\n", size);
 		printf("0x%x 0x%x\n", (vaddr), *(data));
-		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x",  *(data)));
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x  OK",  *(data)));
 	}
 	else if (size == 4) {
 		uint32 *data = (uint32*)top_addr;
 		printf("size=%u byte\n", size);
 		printf("0x%x 0x%x\n", (vaddr), *(data));
-		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x",  *(data)));
+		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%x  OK",  *(data)));
 	}
 	else {
 		print_memory(vaddr, top_addr, size);
