@@ -43,6 +43,7 @@ static inline CachedOperationCodeType *virtual_cpu_get_cached_code(uint32 pc)
 		}
 		return virtual_cpu.cached_code[i];
 	}
+	printf("INVALID: pc=0x%x\n", pc);
 	/*
 	 * not reached.
 	 */

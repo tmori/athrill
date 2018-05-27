@@ -146,42 +146,28 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 			virtual_cpu_add_cached_code(cached_code);
 			cached_code = NULL;
 		}
-#if 1
-		if ((phdr->p_flags & (PF_W|PF_R)) == PF_R) {
-			//ROM
-			ptr = mpu_address_get_rom_ram(TRUE, phdr->p_vaddr, phdr->p_memsz);
-			if (ptr == NULL) {
-				printf("Invalid elf file: can not load rom addr=0x%x\n", phdr->p_vaddr);
-				return STD_E_INVALID;
-			}
-		}
-		else if ((phdr->p_flags & (PF_W)) == (PF_W)) {
-			//RAM
-			ptr = mpu_address_get_rom_ram(FALSE, phdr->p_vaddr, phdr->p_memsz);
-			if (ptr == NULL) {
-				printf("Invalid elf file: can not load ram addr=0x%x\n", phdr->p_vaddr);
-				return STD_E_INVALID;
-			}
-		}
-#endif
 		if (phdr->p_type != PT_LOAD) {
 			continue;
 		}
 		/*
 		 * ROM領域のみロードする．
 		 */
-#if 1
-		err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, phdr->p_vaddr, &ptr);
-		if (err != STD_E_OK) {
-			printf("Invalid elf file: can not load addr=0x%x\n", phdr->p_vaddr);
+		ptr = mpu_address_get_rom_ram(TRUE, phdr->p_paddr, phdr->p_filesz);
+		if (ptr == NULL) {
+			printf("Invalid elf file: can not load rom addr=0x%x\n", phdr->p_vaddr);
 			return STD_E_INVALID;
 		}
-#endif
+		err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, phdr->p_paddr, &ptr);
+		if (err != STD_E_OK) {
+			printf("Invalid elf file: can not load addr=0x%x\n", phdr->p_paddr);
+			return STD_E_INVALID;
+		}
+
 		memcpy(ptr,
 				( ((uint8_t*)elf_image) + phdr->p_offset ),
 				phdr->p_filesz);
 
-		printf("Elf loading was succeeded:0x%x - 0x%x : %u.%u KB\n", phdr->p_vaddr, phdr->p_vaddr + phdr->p_memsz, phdr->p_memsz/1024, phdr->p_memsz % 1024);
+		printf("Elf loading was succeeded:0x%x - 0x%x : %u.%u KB\n", phdr->p_paddr, phdr->p_paddr + phdr->p_memsz, phdr->p_filesz/1024, phdr->p_filesz % 1024);
 
 	}
 	return 0;

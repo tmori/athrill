@@ -201,6 +201,7 @@ static int OpExec1(TargetCoreType *cpu)
 		ret = op_exec_cmp_1(cpu);
 		break;
 	case OP_CODE_JMP:
+		cpu->op_exec = op_exec_jmp;
 		ret = op_exec_jmp(cpu);
 		break;
 	case OP_CODE_MOV_1:

@@ -120,7 +120,7 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 					virtual_cpu.cores[core_id].core.decoded_code->type_id);
 			return STD_E_EXEC;
 		}
-
+		virtual_cpu.cores[core_id].core.reg.r[0] = 0U;
 	}
 
 	return STD_E_OK;
