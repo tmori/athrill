@@ -25,8 +25,11 @@ CpuType virtual_cpu = {
 
 void cpu_init(void)
 {
-	cpu_reset(CPU_CONFIG_CORE_ID_0);
-	cpu_reset(CPU_CONFIG_CORE_ID_1);
+	CoreIdType i;
+	for (i = 0; i < cpu_config_get_core_id_num(); i++) {
+		virtual_cpu.cores[i].core.core_id = i;
+		cpu_reset(i);
+	}
 	return;
 }
 
