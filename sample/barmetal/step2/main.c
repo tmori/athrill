@@ -1,21 +1,17 @@
 #include "test_serial.h"
 #include "test_reg.h"
 #include "section.h"
-#include "list_test.h"
-#include "list.h"
 #include <string.h>
 
 unsigned char stack_data[STACK_SIZE] __attribute__ ((section("bss_noclr")));
 
+static int global_value;
+static int *global_value_pointer = &global_value;
 
 int main(void)
 {
-	list_test_ERR_1();
-	list_test_ERR_2();
-	list_test_ERR_3();
-	list_test_OK_1();
-	list_test_OK_2();
-	list_test_OK_3();
+	*global_value_pointer = 999;
+
 	printf("Hello World!!\n");
 	while (1) {
 		;

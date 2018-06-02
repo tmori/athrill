@@ -1,0 +1,22 @@
+#include "test_serial.h"
+#include "v850asm.inc"
+
+.section	".text" , "ax"
+.align	4
+.globl	_start, _training
+.type   _start, @function
+_start:
+	di
+	Lea _stack_data, r3
+	addi 1024, sp r3
+	ei
+	br	 _training
+.size		_start, .-_start
+
+.align	4
+.globl	_default_int_handler
+.type	_default_int_handler,@function
+_default_int_handler:
+	br	_default_int_handler
+.size		_default_int_handler, .-_default_int_handler
+	

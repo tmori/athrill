@@ -7,10 +7,16 @@
 
 unsigned char stack_data[STACK_SIZE] __attribute__ ((section("bss_noclr")));
 
+static int gl_variable;
+
+
 int main(void)
 {
 	x_enable_int(22);
+
 	printf("Hello World!!\n");
+
+	gl_variable = 10;
 	while (1) {
 		;
 	}
