@@ -1,13 +1,18 @@
 #include "cpuemu_config.h"
 #include "symbol_ops.h"
 #include "std_types.h"
+#include "assert.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
+static uint32 symbolc_func_max_num = 0;
+static uint32 symbolc_gl_max_num = 0;
 
 static uint32 symbol_func_size = 0;
 static uint32 symbol_gl_size = 0;
-static DbgSymbolType symbol_func[CPUEMU_CONFIG_FUNC_SYMBOL_TABLE_NUM];
-static DbgSymbolType symbol_gl[CPUEMU_CONFIG_OBJECT_SYMBOL_TABLE_NUM];
+static DbgSymbolType *symbol_func;
+static DbgSymbolType *symbol_gl;
 
 uint32 symbol_get_func_num(void)
 {
@@ -19,8 +24,10 @@ uint32 symbol_get_gl_num(void)
 }
 int symbol_gl_add(DbgSymbolType *sym)
 {
-	if (symbol_gl_size >= CPUEMU_CONFIG_OBJECT_SYMBOL_TABLE_NUM) {
-		return -1;
+	if (symbol_gl_size >= symbolc_gl_max_num) {
+		symbolc_gl_max_num += CPUEMU_CONFIG_OBJECT_SYMBOL_TABLE_NUM;
+		symbol_gl = realloc(symbol_gl, symbolc_gl_max_num * sizeof(DbgSymbolType));
+		ASSERT(symbol_gl != NULL);
 	}
 	symbol_gl[symbol_gl_size] = *sym;
 	symbol_gl_size++;
@@ -29,8 +36,10 @@ int symbol_gl_add(DbgSymbolType *sym)
 
 int symbol_func_add(DbgSymbolType *sym)
 {
-	if (symbol_func_size >= CPUEMU_CONFIG_FUNC_SYMBOL_TABLE_NUM) {
-		return -1;
+	if (symbol_func_size >= symbolc_func_max_num) {
+		symbolc_func_max_num += CPUEMU_CONFIG_OBJECT_SYMBOL_TABLE_NUM;
+		symbol_func = realloc(symbol_func, symbolc_func_max_num * sizeof(DbgSymbolType));
+		ASSERT(symbol_func != NULL);
 	}
 	symbol_func[symbol_func_size] = *sym;
 	symbol_func_size++;
