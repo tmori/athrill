@@ -31,6 +31,7 @@ _interrupt:
 	stsr	eipsw,  r11
 	sst.w	r11 ,   POS_EIPSW[ep]
 	stsr	ecr,	r6
+	
 	Lea	_interrupt_handler , r10
 	Lea		end_int_handler, lp
 	/* 割込みハンドラを呼び出す */

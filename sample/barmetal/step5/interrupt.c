@@ -1,3 +1,4 @@
+#include "test_serial.h"
 #include "interrupt.h"
 #include "v850_ins.h"
 
@@ -37,6 +38,7 @@ void x_clear_int(int intno)
 
 void timer_interrupt_handler(void)
 {
+	printf("timer_interrupt_handler!!\n");
 	return;
 }
 
