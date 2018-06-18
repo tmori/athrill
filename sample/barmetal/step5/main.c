@@ -3,7 +3,7 @@
 #include "section.h"
 #include "interrupt.h"
 #include <string.h>
-
+#include "timer.h"
 
 unsigned char stack_data[STACK_SIZE] __attribute__ ((section("bss_noclr")));
 
@@ -12,7 +12,7 @@ static int gl_variable;
 
 int main(void)
 {
-	x_enable_int(22);
+	timer_init();
 
 	printf("Hello World!!\n");
 

@@ -1,5 +1,5 @@
-#include "test_serial.h"
 #include "interrupt.h"
+#include "interrupt_table.h"
 #include "v850_ins.h"
 
 static void sil_wrb_mem(void *addr, uint8 data)
@@ -36,20 +36,12 @@ void x_clear_int(int intno)
 		sil_reb_mem((void *)intreg_addr) & ~(0x01U << 7));
 }
 
-void timer_interrupt_handler(void)
-{
-	printf("timer_interrupt_handler!!\n");
-	return;
-}
-
 void interrupt_handler(unsigned int ecr)
 {
 	unsigned int intrno = ((ecr & 0x0000FFFF) - 0x80) >> 4;
 	x_clear_int(intrno);
 	enable_int_all();
-	if (intrno == 22) {
-		timer_interrupt_handler();
-	}
+	do_interrupt_handler(intrno);
 	disable_int_all();
 	return;
 }

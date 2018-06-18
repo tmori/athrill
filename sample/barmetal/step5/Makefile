@@ -12,6 +12,8 @@ LINK	:= v850-elf-gcc
 OBJS	:= start.o
 OBJS	+= vector.o
 OBJS	+= interrupt.o
+OBJS	+= interrupt_table.o
+OBJS	+= timer.o
 OBJS	+= interrupt_asm.o
 OBJS	+= main.o
 
