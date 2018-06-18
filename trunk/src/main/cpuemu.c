@@ -138,6 +138,72 @@ void cpuemu_get_register(CoreIdType core_id, TargetCoreType *cpu)
 	return;
 }
 
+static TokenContainerType cpuemu_rom_parameter;
+
+static void cpuemu_set_debug_romdata(void)
+{
+	uint32 param_num;
+	uint32 i;
+	Std_ReturnType err;
+	char *rom_variable_name;
+	static char parameter[4096];
+
+	err = cpuemu_get_devcfg_value("DEBUG_ROM_DEFINE_NUM", &param_num);
+	if (err != STD_E_OK) {
+		return;
+	}
+	printf("rom_param_num=%d\n", param_num);
+	for (i = 0; i < param_num; i++) {
+		snprintf(parameter, sizeof(parameter), "DEBUG_ROM_DEFINE_%d", i);
+		err = cpuemu_get_devcfg_string(parameter, &rom_variable_name);
+		if (err != STD_E_OK) {
+			printf("not found param=%s\n", parameter);
+			return;
+		}
+		err = token_split_with_delimiter(&cpuemu_rom_parameter, (uint8*)rom_variable_name, strlen(rom_variable_name), '=');
+		if (err != STD_E_OK) {
+			printf("can not get param value=%s\n", rom_variable_name);
+			return;
+		}
+		printf("ROM:redefine %s = %d\n",
+				cpuemu_rom_parameter.array[0].body.str.str,
+				cpuemu_rom_parameter.array[1].body.dec.value);
+		{
+			int ret;
+			char *gl_name = (char*)cpuemu_rom_parameter.array[0].body.str.str;
+			uint32 gl_len = strlen(gl_name);
+			uint32 addr;
+			uint32 size;
+			uint8* datap;
+			ret = symbol_get_gl(gl_name, gl_len, &addr, &size);
+			if (ret < 0) {
+				printf("can not found global variable=%s\n", gl_name);
+				return;
+			}
+			err = bus_get_pointer(0U, addr, &datap);
+			if (err != 0) {
+				printf("can not found memory pointer=%s\n", gl_name);
+				return;
+			}
+			switch (size) {
+			case 1:
+				*((uint8*)datap) = (uint8)cpuemu_rom_parameter.array[1].body.dec.value;
+				break;
+			case 2:
+				*((uint16*)datap) = (uint16)cpuemu_rom_parameter.array[1].body.dec.value;
+				break;
+			case 4:
+				*((uint32*)datap) = (uint32)cpuemu_rom_parameter.array[1].body.dec.value;
+				break;
+			default:
+				printf("can not set pointer because gl_size(%s:%u) > 4\n", gl_name, size);
+				break;
+			}
+		}
+	}
+	return;
+}
+
 void *cpuemu_thread_run(void* arg)
 {
 	CoreIdType i;
@@ -158,7 +224,7 @@ void *cpuemu_thread_run(void* arg)
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_WATCH", &enable_dbg.enable_prof);
 
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_SKIP_CLOCK", (uint32*)&cpuemu_dev_clock.enable_skip);
-
+	cpuemu_set_debug_romdata();
 
 	while (TRUE) {
 		if (cpuemu_dev_clock.clock >= cpuemu_get_cpu_end_clock()) {
@@ -194,10 +260,15 @@ void *cpuemu_thread_run(void* arg)
 			if (err != STD_E_OK) {
 				printf("CPU(pc=0x%x) Exception!!\n", cpu_get_pc(&virtual_cpu.cores[i].core));
 				fflush(stdout);
-				cpuctrl_set_force_break();
-	#if 0
-				cpu_illegal_opcode_trap(&CpuManager);
-	#endif
+				if (cpuemu_cui_mode() == FALSE) {
+					cpuctrl_set_force_break();
+		#if 0
+					cpu_illegal_opcode_trap(&CpuManager);
+		#endif
+				}
+				else {
+					exit(1);
+				}
 			}
 			/**
 			 * CPU 実行完了通知

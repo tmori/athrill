@@ -40,6 +40,7 @@ typedef struct {
 } TokenContainerType;
 
 extern Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint32 len);
+extern Std_ReturnType token_split_with_delimiter(TokenContainerType *token_container, uint8 *str, uint32 len, char delimiter);
 extern bool token_split_merge(const TokenContainerType *token_container, uint8 start_index, TokenStringType *out);
 extern void token_trim_newline(TokenStringType *token);
 

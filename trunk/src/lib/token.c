@@ -21,7 +21,7 @@ bool token_strcmp(const TokenStringType *str1, const TokenStringType *str2)
 /*
  * デミリタ=空白,",",":"
  */
-static bool is_delimiter(char c)
+static bool is_delimiter(char c, char *ex_c)
 {
 	if (isspace(c)) {
 		return TRUE;
@@ -33,6 +33,9 @@ static bool is_delimiter(char c)
 		return TRUE;
 	}
 	else if (c == '\0') {
+		return TRUE;
+	}
+	else if ((ex_c != NULL) && c == *ex_c) {
 		return TRUE;
 	}
 	return FALSE;
@@ -78,7 +81,7 @@ typedef enum {
 	TOKEN_CHECK_STATE_DEMILITER = 0,
 	TOKEN_CHECK_STATE_CODE,
 } TokenCheckStateType;
-Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint32 len)
+static Std_ReturnType token_split_common(TokenContainerType *token_container, uint8 *str, uint32 len, char *demiliter)
 {
 	uint32 i;
 	volatile TokenCheckStateType state;
@@ -92,7 +95,7 @@ Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint
 	for (i = 0; i < len; i++) {
 		switch (state) {
 		case TOKEN_CHECK_STATE_DEMILITER:
-			if (is_delimiter(str[i]) == TRUE) {
+			if (is_delimiter(str[i], demiliter) == TRUE) {
 				break;
 			}
 			if (token_container->num > TOKEN_CONTAINER_MAX_SIZE) {
@@ -110,7 +113,7 @@ Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint
 			state = TOKEN_CHECK_STATE_CODE;
 			break;
 		case TOKEN_CHECK_STATE_CODE:
-			if (is_delimiter(str[i]) == TRUE) {
+			if (is_delimiter(str[i], demiliter) == TRUE) {
 				set_token(token_container, &buffer);
 				buffer.len = 0;
 				state = TOKEN_CHECK_STATE_DEMILITER;
@@ -135,6 +138,15 @@ Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint
 
 	return STD_E_OK;
 }
+Std_ReturnType token_split(TokenContainerType *token_container, uint8 *str, uint32 len)
+{
+	return token_split_common(token_container, str, len, NULL);
+}
+Std_ReturnType token_split_with_delimiter(TokenContainerType *token_container, uint8 *str, uint32 len, char delimiter)
+{
+	return token_split_common(token_container, str, len, &delimiter);
+}
+
 
 bool token_split_merge(const TokenContainerType *token_container, uint8 start_index, TokenStringType *out)
 {
