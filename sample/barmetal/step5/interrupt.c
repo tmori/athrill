@@ -40,8 +40,9 @@ void timer_interrupt_handler(void)
 	return;
 }
 
-void interrupt_handler(int intrno)
+void interrupt_handler(unsigned int ecr)
 {
+	unsigned int intrno = ((ecr & 0x0000FFFF) - 0x80) >> 4;
 	x_clear_int(intrno);
 	enable_int_all();
 	if (intrno == 22) {

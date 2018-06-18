@@ -249,7 +249,7 @@ __reset:
 	nop
 	nop
 	//0x1e0 
-	jr _goto_kernel_int_handler_22
+	jr _interrupt
 	nop
 	nop
 	nop
@@ -1010,17 +1010,5 @@ __reset:
 	nop
 
 
-
-	.section .text,"ax"
-	.align	4
-
-	.global	_timer_interrupt_handler
-	.global	_interrupt
-	.global	_goto_kernel_int_handler_22
-_goto_kernel_int_handler_22:
-	addi	INTR_PUSH_SPSZ , sp , sp
-	st.w	r6 , POS_R6[sp]
-	mov		22 , r6
-	jr		_interrupt
 
 

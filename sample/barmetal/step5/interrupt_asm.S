@@ -6,13 +6,11 @@
 .align	4
 .globl	_interrupt
 _interrupt:
-	/*
-	 *  残りのレジスタ退避， EPでのアクセスに切り替えて行う
-	 *  (r6は退避済み)
-	 */
+	addi    INTR_PUSH_SPSZ , sp , sp
 	st.w	ep,   POS_EP[sp]
 	mov		sp ,  ep 
 	sst.w	r1 ,  POS_R1[ep]
+	sst.w	r6 ,  POS_R6[ep]
 	sst.w	r7 ,  POS_R7[ep]
 	sst.w	r8 ,  POS_R8[ep]
 	sst.w	r9 ,  POS_R9[ep]
@@ -32,7 +30,7 @@ _interrupt:
 	sst.w	r11 ,   POS_EIPC[ep]
 	stsr	eipsw,  r11
 	sst.w	r11 ,   POS_EIPSW[ep]
-
+	stsr	ecr,	r6
 	Lea	_interrupt_handler , r10
 	Lea		end_int_handler, lp
 	/* 割込みハンドラを呼び出す */
