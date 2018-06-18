@@ -260,7 +260,7 @@ void *cpuemu_thread_run(void* arg)
 			if (err != STD_E_OK) {
 				printf("CPU(pc=0x%x) Exception!!\n", cpu_get_pc(&virtual_cpu.cores[i].core));
 				fflush(stdout);
-				if (cpuemu_cui_mode() == FALSE) {
+				if (cpuemu_cui_mode() == TRUE) {
 					cpuctrl_set_force_break();
 		#if 0
 					cpu_illegal_opcode_trap(&CpuManager);
