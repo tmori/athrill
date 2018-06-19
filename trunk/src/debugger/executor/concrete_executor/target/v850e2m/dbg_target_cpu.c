@@ -75,7 +75,7 @@ void dbg_target_print_cpu(uint32 coreId)
 	 printf("EIPSW		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_EIPSW]);
 	 printf("ECR		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_ECR]);
 	 printf("PSW		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_PSW]);
-	 print_register("EIPC", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_FEPC], NULL);
+	 print_register("FEPC", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_FEPC], NULL);
 	 printf("FEPSW 		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_FEPSW]);
 	 printf("CTBP		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_CTBP]);
 

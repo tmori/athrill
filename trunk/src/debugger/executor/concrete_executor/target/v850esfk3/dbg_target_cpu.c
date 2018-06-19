@@ -72,7 +72,7 @@ void dbg_target_print_cpu(uint32 core_id)
 	 printf("EIPSW		0x%x\n", virtual_cpu.cores[CPU_CONFIG_CORE_ID_0].core.reg.eipsw);
 	 printf("ECR		0x%x\n", virtual_cpu.cores[CPU_CONFIG_CORE_ID_0].core.reg.ecr);
 	 printf("PSW		0x%x\n", virtual_cpu.cores[CPU_CONFIG_CORE_ID_0].core.reg.psw);
-	 print_register("EIPC", virtual_cpu.cores[CPU_CONFIG_CORE_ID_0].core.reg.fepc, NULL);
+	 print_register("FEPC", virtual_cpu.cores[CPU_CONFIG_CORE_ID_0].core.reg.fepc, NULL);
 	 printf("FEPSW 		0x%x\n", virtual_cpu.cores[CPU_CONFIG_CORE_ID_0].core.reg.fepsw);
 	 printf("CTBP		0x%x\n", virtual_cpu.cores[CPU_CONFIG_CORE_ID_0].core.reg.ctbp);
 
