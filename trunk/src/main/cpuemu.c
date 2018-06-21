@@ -19,6 +19,12 @@
 #include "option/option.h"
 #include <fcntl.h>
 #include <string.h>
+#ifdef OS_LINUX
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif /* OS_LINUX */
 #include "assert.h"
 
 static DeviceClockType cpuemu_dev_clock;
@@ -563,16 +569,51 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 			map->rom = realloc(map->rom, map->rom_num * sizeof(MemoryAddressType));
 			ASSERT(map->rom != NULL);
 			memp = &map->rom[map->rom_num - 1];
+			memp->type = MemoryAddressImplType_ROM;
+			memp->size = memcfg_token_container.array[2].body.dec.value;
+			memp->mmap_addr = NULL;
 		}
-		else {
+		else if (!strcmp("RAM", (char*)memcfg_token_container.array[0].body.str.str)) {
 			printf("RAM");
 			map->ram_num++;
 			map->ram = realloc(map->ram, map->ram_num * sizeof(MemoryAddressType));
 			ASSERT(map->ram != NULL);
 			memp = &map->ram[map->ram_num - 1];
+			memp->type = MemoryAddressImplType_RAM;
+			memp->size = memcfg_token_container.array[2].body.dec.value;
+			memp->mmap_addr = NULL;
+		}
+#ifdef OS_LINUX
+		else if (!strcmp("MMAP", (char*)memcfg_token_container.array[0].body.str.str)) {
+			map->ram_num++;
+			map->ram = realloc(map->ram, map->ram_num * sizeof(MemoryAddressType));
+			ASSERT(map->ram != NULL);
+			memp = &map->ram[map->ram_num - 1];
+			memp->type = MemoryAddressImplType_MMAP;
+			{
+				char* filepath = (char*)memcfg_token_container.array[2].body.str.str;
+				int fd;
+				int err;
+				struct stat statbuf;
+				fd = open(filepath, O_RDWR);
+				ASSERT(fd >= 0);
+				err = fstat(fd, &statbuf);
+				ASSERT(err >= 0);
+				memp->size = ((statbuf.st_size + 8191) / 8192) * 8;
+				if (memp->size == 0) {
+					memp->size = 8;
+				}
+				memp->mmap_addr = mmap(NULL, memp->size * 1024, (PROT_READ|PROT_WRITE), MAP_SHARED, fd, 0);
+				ASSERT(memp->mmap_addr != NULL);
+				printf("MMAP(%s filesize=%lu)", filepath, statbuf.st_size);
+			}
+		}
+#endif /* OS_LINUX */
+		else {
+			printf("WARNING: unknown memory type=%s\n", (char*)memcfg_token_container.array[0].body.str.str);
+			continue;
 		}
 		memp->start = memcfg_token_container.array[1].body.hex.value;
-		memp->size = memcfg_token_container.array[2].body.dec.value;
 		printf(" : START=0x%x SIZE=%u\n", memp->start, memp->size);
 	}
 

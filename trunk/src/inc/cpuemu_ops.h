@@ -31,9 +31,17 @@ extern Std_ReturnType cpuemu_symbol_set(void);
 extern void cpuemu_raise_intr(uint32 intno);
 
 
+typedef enum {
+	MemoryAddressImplType_ROM = 0,
+	MemoryAddressImplType_RAM,
+	MemoryAddressImplType_MMAP,
+} MemoryAddressImplType;
+
 typedef struct {
+	MemoryAddressImplType type;
 	uint32	start;
 	uint32	size;
+	void *mmap_addr;
 } MemoryAddressType;
 
 typedef struct {

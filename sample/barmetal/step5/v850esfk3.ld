@@ -2,6 +2,7 @@ MEMORY
 {
 	INTROM(raxi) : org = 0x00000000, len = 512k
 	INTRAM(wax)  : org = 0x06FF7000, len = 512k
+	INTMMAP(wax)  : org = 0x07FF0000, len = 512k
 };
 
 
@@ -55,7 +56,15 @@ SECTIONS
 		*(.bss_noclr)
 		. = ALIGN(4);
 	} > INTRAM
-	
+
+	.mmap_section	: 
+	{
+		. = ALIGN(4);
+		*(.mmap_section)
+		. = ALIGN(4);
+	} > INTMMAP
+
+
 	.comment 0 : { *(.comment) }	
 	.debug			0 : { *(.debug) }
 	.line			0 : { *(.line) }

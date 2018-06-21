@@ -85,7 +85,7 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 	printf("search_region:not found error:addr=0x%x\n", addr);
 	return NULL;
 }
-uint8 *mpu_address_get_rom_ram(bool isRom, uint32 addr, uint32 size) 
+uint8 *mpu_address_get_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 size, void *mmap_addr) 
 {
 	uint32 i;
 	MpuAddressRegionType *region = NULL;
@@ -108,22 +108,32 @@ uint8 *mpu_address_get_rom_ram(bool isRom, uint32 addr, uint32 size)
 		mpu_address_map.dynamic_map = realloc(mpu_address_map.dynamic_map, (sizeof(MpuAddressRegionType)) * mpu_address_map.dynamic_map_num);
 		ASSERT(mpu_address_map.dynamic_map != NULL);
 		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].start = addr;
-		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].size = size;
-		if (isRom == TRUE) {
-			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = READONLY_MEMORY;
-		}
-		else {
-			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = GLOBAL_MEMORY;
-			}
+
 		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].permission	= MPU_ADDRESS_REGION_PERM_ALL;
 		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].mask		= MPU_ADDRESS_REGION_MASK_ALL;
 		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].ops			= &default_memory_operation;
 
-		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = malloc(size);
-		ASSERT(mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data != NULL);
-
-		return mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data;
+		if (getType == MpuAddressGetType_ROM) {
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = READONLY_MEMORY;
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].size = size;
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = malloc(size);
 		}
+		else if (getType == MpuAddressGetType_RAM) {
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = GLOBAL_MEMORY;
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].size = size;
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = malloc(size);
+		}
+		else {
+#ifdef OS_LINUX
+			/* MMAP */
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = GLOBAL_MEMORY;
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].size = size;
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = mmap_addr;
+#endif /* OS_LINUX */
+		}
+		ASSERT(mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data != NULL);
+		return mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data;
+	}
 	else {
 		return region->data;
 	}
