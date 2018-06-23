@@ -29,6 +29,7 @@ VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/timer_m
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/serial
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/comm
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/can
+VPATH	+=	$(ROOTDIR)/device/peripheral
 VPATH	+=	$(ROOTDIR)/device/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/debugger/executor/concrete_executor/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/debugger/device/target/$(ARCH)/can/$(CAN_DEVICE_TYPE)
@@ -48,6 +49,7 @@ OBJS	+=	dbg_target_serial.o
 OBJS	+=	dbg_target_cpu.o
 OBJS	+=	dbg_can.o
 OBJS	+=	intc.o
+OBJS	+=	athrill_device.o
 
 all:	$(LIBTARGET)
 
