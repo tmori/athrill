@@ -73,11 +73,12 @@ int main(int argc, const char *argv[])
 	memmap.rom = NULL;
 
 	if (argc == 1) {
-		printf("Usage:%s [OPTION]... <load_file>\n", "athrill");
+		printf("Usage:%s -m <memory config file> [OPTION]... <load_file>\n", "athrill");
 		printf(" %-30s : execute on the interaction mode. if -i is not set, execute on the background mode.\n", "-i");
 		printf(" %-30s : execute on the remote mode. this option is valid on the interaction mode.\n", "-r");
 		printf(" %-30s : set program end time using <timeout> clocks. this option is valid on the background mode.\n", "-t<timeout>");
-		printf(" %-30s : set communication path with an another emulator.\n", "-p<fifo config file>");
+		printf(" %-30s : set athrill memory configuration. rom, ram region is configured on your system.\n", "-m<memory config file>");
+		//printf(" %-30s : set communication path with an another emulator.\n", "-p<fifo config file>");
 		printf(" %-30s : set device parameter.\n", "-d<device config file>");
 		return -11;
 	}

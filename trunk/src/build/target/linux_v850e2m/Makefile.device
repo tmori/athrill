@@ -13,6 +13,7 @@ IFLAGS	+= -I$(ROOTDIR)/device/intc/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target/$(ARCH)/inc
 IFLAGS	+= -I$(ROOTDIR)/device/peripheral/target
+IFLAGS	+= -I$(ROOTDIR)/device/peripheral
 IFLAGS	+= -I$(ROOTDIR)/config
 IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/debugger/executor
@@ -22,6 +23,7 @@ VPATH	:=	$(ROOTDIR)/device/intc/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/timer
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)/serial
+VPATH	+=	$(ROOTDIR)/device/peripheral
 VPATH	+=	$(ROOTDIR)/device/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/debugger/executor/concrete_executor/target/$(ARCH)
 
@@ -35,6 +37,7 @@ OBJS	+=	serial.o
 OBJS	+=	dbg_target_serial.o
 OBJS	+=	dbg_target_cpu.o
 OBJS	+=	intc.o
+OBJS	+=	athrill_device.o
 
 all:	$(LIBTARGET)
 
