@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #endif /* OS_LINUX */
+#include "athrill_device.h"
 #include "assert.h"
 
 static DeviceClockType cpuemu_dev_clock;
@@ -107,6 +108,7 @@ void cpuemu_init(void *(*cpu_run)(void *), void *opt)
 	else {
 		cpuemu_is_cui_mode = FALSE;
 	}
+	device_init_athrill_device();
 	return;
 }
 
@@ -243,6 +245,7 @@ void *cpuemu_thread_run(void* arg)
 		/**
 		 * デバイス実行実行
 		 */
+		device_supply_clock_athrill_device();
 		device_supply_clock(&cpuemu_dev_clock);
 
 		/**

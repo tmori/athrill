@@ -121,7 +121,7 @@ uint8 *mpu_address_get_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 si
 		else if (getType == MpuAddressGetType_RAM) {
 			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = GLOBAL_MEMORY;
 			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].size = size;
-			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = malloc(size);
+			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = calloc(1U, size);
 		}
 		else {
 #ifdef OS_LINUX

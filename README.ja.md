@@ -40,11 +40,11 @@ export PATH=[athrill root folder]/src/bin:$PATH
 ```
 任意のフォルダ上でathrillを空打ちし， usageが表示されればインストール完了です：
 
-	Usage:athrill [OPTION]... <load_file>
+	Usage:athrill -m<memory config file> [OPTION]... <load_file>
 	-i                             : execute on the interaction mode. if -i is not set, execute on the background mode.
 	-r                             : execute on the remote mode. this option is valid on the interaction mode.
 	-t<timeout>                    : set program end time using <timeout> clocks. this option is valid on the background mode.
-	-p<fifo config file>           : set communication path with an another emulator.
+	-m<memory config file>         : set athrill memory configuration. rom, ram region is configured on your system.
 	-d<device config file>         : set device parameter.
 
 # Demo
