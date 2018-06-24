@@ -1,0 +1,618 @@
+
+		TOPPERS/HRP2カーネル
+		ターゲット依存部 ポーティングガイド
+
+		対応バージョン: Release 2.1.0
+		最終更新: 2012年9月8日
+
+このドキュメントは，TOPPERS/HRP2カーネルを，未サポートのターゲットシス
+テムにポーティングするために必要となるターゲット依存部の実装方法を説明
+するものである．
+
+現時点では，メモの段階で，ドキュメントとして完成していない．
+
+○依存部処理の仮想コード
+
+●dispatcherの処理内容
+
+----------------------------------------
+void
+dispatcher(void)
+{
+	DOMINIB	*p_dominib;
+
+#ifdef LOG_DSP_ENTER
+	log_dsp_enter(p_runtsk);
+#endif /* LOG_DSP_ENTER */
+	if (自タスクがユーザタスク) {
+		自タスクのユーザスタック領域をアクセスできない状態とする
+	}
+  dispatcher_0:
+	while ((p_runtsk = p_schedtsk) == NULL) {
+		割込みを許可したらCPUロック解除状態になるよう準備する
+		非タスクコンテキストに切り換える … (*1)
+		do {
+			割込みをすべて許可し，割込み発生を待つ … (*2)
+			割込み許可前の状態に戻す（＝カーネル管理の割込みを禁止する）
+		} while (!reqflg);
+		reqflg = false;
+		タスクコンテキストに戻す … (*1)
+		CPUロック状態に戻す ... (*3)
+	}
+	自タスク（p_runtsk）のTCBからスタックポインタを復帰する
+	p_dominib = p_runtsk->p_tinib->p_dominib;
+	rundom = (p_runtsk->svclevel > 0U) ? TACP_KERNEL : p_dominib->domptn;
+	if (自タスクがユーザタスク) {
+		自タスクのユーザスタック領域をアクセスできる状態とする
+		if (p_ctxdom != p_dominib) {
+			p_ctxdom = p_dominib;
+			p_dominibに関するアクセス保護情報をMMU/MPUに設定する
+		}
+	}
+#ifdef LOG_DSP_LEAVE
+	log_dsp_leave(p_runtsk);
+#endif /* LOG_DSP_LEAVE */
+	自タスクのTCBから実行再開番地を復帰し，そこへ分岐する
+}
+----------------------------------------
+
+●dispatchの処理内容
+
+----------------------------------------
+void
+dispatch(void)
+{
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	ovrtimer_stop();					/* オーバランタイマの停止 */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+	スクラッチレジスタを除くすべてのレジスタをスタックに保存する
+	if (自タスクがユーザタスク) {
+		ユーザスタックポインタをスタックに保存する
+	}
+	スタックポインタを自タスク（p_runtsk）のTCBに保存する
+	dispatch_rを，実行再開番地として自タスクのTCBに保存する
+	dispatcherに分岐する
+
+  dispatch_r:
+	if (自タスクがユーザタスク) {
+		ユーザスタックポインタをスタックから復帰する
+	}
+	スクラッチレジスタを除くすべてのレジスタをスタックから復帰する
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	ovrtimer_start();					/* オーバランタイマの動作開始 */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+	if (p_runtsk->enatex && p_runtsk->texptn != 0U && ipmflg
+					&& rundom == TACP_KERNEL && p_runtsk->svclevel == 0U) {
+		call_texrtn_stask();
+	}
+}
+----------------------------------------
+
+●start_dispatchの処理内容（ASPカーネルと同様）
+
+----------------------------------------
+void
+start_dispatch(void)
+{
+	タスクコンテキストに切り換える
+	CPUロック状態・割込み優先度マスク全解除状態にする
+	dispatcher_0に分岐する
+}
+----------------------------------------
+
+●exit_and_dispatchの処理内容
+
+----------------------------------------
+void
+exit_and_dispatch(void)
+{
+	dispatcherに分岐する
+}
+----------------------------------------
+
+●activate_contextとstart_rの処理内容
+
+----------------------------------------
+void
+activate_context(TCB *p_tcb)
+{
+	指定されたタスク（p_tcb）のTCB中のスタックポインタを初期化する
+	if (指定されたタスクがユーザタスク) {
+		start_utask_rを，実行再開番地として自タスクのTCBに保存する
+	}
+	else {
+		start_stask_rを，実行再開番地として自タスクのTCBに保存する
+	}
+	return;
+
+  start_stask_r:
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	ovrtimer_start();					/* オーバランタイマの動作開始 */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+	CPUロック解除状態にする
+	自タスク（p_runtsk）の起動番地を，拡張情報をパラメータとして呼び出す
+	ext_tskに分岐する
+
+  start_utask_r:
+	自タスクのユーザスタックポインタを初期化する
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	ovrtimer_start();					/* オーバランタイマの動作開始 */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+	例外/割込みからのリターンによって，
+			自タスクの起動番地へ分岐するように準備する … (*1)
+	例外/割込みからのリターンによって，非特権モード・CPUロック解除状態・
+			割込み優先度マスク全解除状態になるように準備する … (*2)
+	自タスクの起動番地へ分岐する際に，
+			自タスクの拡張情報がパラメータとして渡るように準備する … (*3)
+	自タスクの起動番地からのリターンにより，
+			call_ext_tskの番地へ分岐するように準備する … (*4)
+	例外/割込みからのリターン
+}
+----------------------------------------
+
+●割込みハンドラの出入口処理の処理内容
+
+----------------------------------------
+void
+<割込みの出入口処理>(void)
+{
+	if (非特権モードで割込み発生) {
+		スタックを実行状態のタスクのシステムスタックに切り換える
+	}
+	少なくともカーネル管理の割込みを禁止した状態にする … (*f)
+	スクラッチレジスタをスタックに保存する
+	if (タスクコンテキストで割込み発生) {
+#ifdef TOPPERS_SUPPORT_OVRHDR
+		ovrtimer_stop();				/* オーバランタイマの停止 */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+		スタックを非タスクコンテキスト用のスタックに切り換え，
+								非タスクコンテキストに切り換える
+	}
+	割込み優先度マスクを，受け付けた割込み要求の割込優先度に設定し，
+				CPUロック解除状態にする（受け付けた割込みよりも
+				優先度の高い割込みを受け付けるようにする）… (*i)
+
+
+#ifdef LOG_INH_ENTER
+	log_inh_enter(割込みハンドラ番号);
+#endif /* LOG_INH_ENTER */
+	割込みハンドラを呼び出す
+#ifdef LOG_INH_LEAVE
+	log_inh_leave(割込みハンドラ番号);
+#endif /* LOG_INH_LEAVE */
+
+  ret_int:
+	if (タスクコンテキストで割込み発生) {
+		（少なくとも）カーネル管理の割込みを禁止した状態にする … (*d)
+		スタックをタスク用のスタックに戻し，タスクコンテキストに切り換える
+																… (*g)
+		if (reqflg) {
+			reqflg = false;
+			CPUロック状態にする … (*e)
+			割込み優先度マスクを，全解除状態（TIPM_ENAALL）に設定する … (*h)
+			if (dspflg && p_runtsk != p_schedtsk) {
+				スクラッチレジスタを除くすべてのレジスタをスタックに保存する
+				if (自タスクがユーザタスク) {
+					ユーザスタックポインタをスタックに保存する
+				}
+				スタックポインタを自タスク（p_runtsk）のTCBに保存する
+				ret_int_rを，実行再開番地として自タスクのTCBに保存する … (*a)
+				dispatcherに分岐する
+
+			  ret_int_r:
+				if (自タスクがユーザタスク) {
+					ユーザスタックポインタをスタックから復帰する
+				}
+				スクラッチレジスタを除くすべてのレジスタをスタックから復帰する
+			}
+#ifdef TOPPERS_SUPPORT_OVRHDR
+			ovrtimer_start();			/* オーバランタイマの動作開始 */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+			if (p_runtsk->enatex && p_runtsk->texptn != 0U && ipmflg) {
+				if (rundom == TACP_KERNEL) {
+					if (p_runtsk->svclevel == 0U) {
+						call_texrtn_stask();
+					}
+				}
+				else {
+					if (!i_sense_priv_runtsk()) {
+						if (prepare_texrtn_utask()) {
+							タスク例外実行開始時スタック不正例外ハンドラを
+																	呼び出す
+						}
+					}
+				}
+			}
+		}
+#ifdef TOPPERS_SUPPORT_OVRHDR
+		else {
+			ovrtimer_start();			/* オーバランタイマの動作開始 */
+		}
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+	}
+	割込み処理からのリターン後に，割込み優先度マスクが
+									割込み処理前の値に戻るように準備する
+	割込み処理からのリターン後に，CPUロック解除状態に戻るように準備する
+	スクラッチレジスタをスタックから復帰する
+	if (戻り先が非特権モード) {
+		スタックを実行状態のタスクのユーザスタックに戻す
+	}
+	割込み処理からのリターン
+}
+----------------------------------------
+
+●CPU例外ハンドラの出入口処理の処理内容
+
+----------------------------------------
+void
+<CPU例外の出入口処理>(void)
+{
+	if (非特権モードでCPU例外発生) {
+		スタックを実行状態のタスクのシステムスタックに切り換える
+	}
+	スクラッチレジスタをスタックに保存する
+	if (カーネル管理外のCPU例外) {
+		if (タスクコンテキストでCPU例外発生) {
+			スタックを非タスクコンテキスト用のスタックに切り換え，
+									非タスクコンテキストに切り換える … (*j)
+		}
+		システム状態（コンテキストは除く）を，CPU例外発生時の状態にする
+		CPU例外ハンドラを，CPU例外の情報を記憶している領域の先頭番地を
+									パラメータ（p_excinf）として呼び出す
+		if (タスクコンテキストでCPU例外発生) {
+			スタックをタスク用のスタックに戻し，
+									タスクコンテキストに切り換える … (*j)
+		}
+		CPU例外処理からのリターン後に，CPU例外発生時のシステム状態に
+													戻るように準備する
+	}
+	else {
+		if (タスクコンテキストでCPU例外発生) {
+			（少なくとも）カーネル管理の割込みを禁止した状態にする
+#ifdef TOPPERS_SUPPORT_OVRHDR
+			ovrtimer_stop();			/* オーバランタイマの停止 */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+			スタックを非タスクコンテキスト用のスタックに切り換え，
+									非タスクコンテキストに切り換える
+		}
+		割込み優先度マスクを，CPU例外発生時の値に設定し，
+				CPUロック解除状態にする（CPU例外発生時の割込み優先度マスク
+				よりも優先度の高い割込みを受け付けるようにする）
+
+#ifdef LOG_EXC_ENTER
+		log_exc_enter(CPU例外ハンドラ番号);
+#endif /* LOG_EXC_ENTER */
+		CPU例外ハンドラを，CPU例外の情報を記憶している領域の先頭番地を
+									パラメータ（p_excinf）として呼び出す
+#ifdef LOG_EXC_LEAVE
+		log_exc_leave(CPU例外ハンドラ番号);
+#endif /* LOG_EXC_LEAVE */
+
+	  ret_exc:
+		if (タスクコンテキストでCPU例外発生) {
+			（少なくとも）カーネル管理の割込みを禁止した状態にする … (*d)
+			スタックをタスク用のスタックに戻し，タスクコンテキストに切り換える
+																	… (*g)
+			if (reqflg) {
+				reqflg = false;
+				CPUロック状態にする … (*e)
+				if (dspflg && p_runtsk != p_schedtsk) {
+					スクラッチレジスタを除くすべてのレジスタをスタックに保存する
+					if (自タスクがユーザタスク) {
+						ユーザスタックポインタをスタックに保存する
+					}
+					スタックポインタを自タスク（p_runtsk）のTCBに保存する
+					ret_exc_rを，実行再開番地として自タスクのTCBに保存する
+																	… (*a)
+					dispatcherに分岐する
+
+				  ret_exc_r:
+					if (自タスクがユーザタスク) {
+						ユーザスタックポインタをスタックから復帰する
+					}
+					スクラッチレジスタを除くすべてのレジスタを
+												スタックから復帰する
+				}
+#ifdef TOPPERS_SUPPORT_OVRHDR
+				ovrtimer_start();		/* オーバランタイマの動作開始 */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+				if (p_runtsk->enatex && p_runtsk->texptn != 0U && ipmflg) {
+					if (rundom == TACP_KERNEL) {
+						if (p_runtsk->svclevel == 0U) {
+							call_texrtn_stask();
+						}
+					}
+					else {
+						if (!i_sense_priv_runtsk()) {
+							if (prepare_texrtn_utask()) {
+								タスク例外実行開始時スタック不正例外ハンドラを
+																	呼び出す
+							}
+						}
+					}
+				}
+			}
+#ifdef TOPPERS_SUPPORT_OVRHDR
+			else {
+				ovrtimer_start();		/* オーバランタイマの動作開始 */
+			}
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+		}
+		CPU例外処理からのリターン後に，CPUロック解除状態に戻るように準備する
+	}
+	スクラッチレジスタをスタックから復帰する
+	if (戻り先が非特権モード) {
+		スタックを実行状態のタスクのユーザスタックに戻す
+	}
+	CPU例外処理からのリターン
+}
+----------------------------------------
+
+●svc_entryの処理内容
+
+----------------------------------------
+ER_UINT
+svc_entry(FN fncd, パラメータリスト)
+{
+	ER_UINT		ercd;
+
+	if (非特権モードからの呼び出し) {
+		スタックを実行状態のタスクのシステムスタックに切り換える
+	}
+	if (fncd <= 0) {
+		/*
+		 *  カーネルのサービスコールの場合
+		 */
+		if (fncd < TMIN_FNCD) {
+			ercd = E_RSFN;
+			goto error_exit;
+		}
+		ソフトウェア割込みによりシステム状態が変化する場合には，
+							ソフトウェア割込み前のシステム状態に戻す
+		ercd = (*(svc_table[-fncd]))(パラメータリスト);
+		ソフトウェア割込みからリターン後のシステム状態が，
+							この時点でのシステム状態になるよう準備する
+		（少なくとも）カーネル管理の割込みを禁止した状態にする
+		if (タスクコンテキストからの呼出し && p_runtsk->svclevel == 0U) {
+			p_runtsk->waifbd = false;
+
+			/*
+			 *  タスク例外処理ルーチンの実行開始処理
+			 */
+			if (p_runtsk->enatex && p_runtsk->texptn != 0U && ipmflg
+								&& サービスコールからのリターン後の
+									システム状態がCPUロック状態でない) {
+				assert(rundom != TACP_KERNEL);
+				if (prepare_texrtn_utask()) {
+					タスク例外実行開始時スタック不正例外ハンドラを呼び出す
+				}
+			}
+		}
+	}
+	else {
+		/*
+		 *  拡張サービスコールの場合
+		 */
+		const SVCINIB	*p_svcinib;
+		ID				cdmid;
+
+		if (fncd > tmax_fncd) {
+			ercd = E_RSFN;
+			goto error_exit;
+		}
+		p_svcinib = &svcinib_table[fncd - 1];
+		if (p_svcinib->svcrtn == NULL) {
+			ercd = E_RSFN;
+			goto error_exit;
+		}
+
+		if (非タスクコンテキストからの呼出し) {
+			ソフトウェア割込みによりシステム状態が変化する場合には，
+							ソフトウェア割込み前のシステム状態に戻す
+			LOG_EXTSVC_ENTER(fncd, パラメータリスト, TDOM_KERNEL);
+			ercd = (*(p_svcinib->svcrtn))(パラメータリスト, TDOM_KERNEL);
+			LOG_EXTSVC_LEAVE(fncd, ercd);
+			ソフトウェア割込みからリターン後のシステム状態が，
+							この時点でのシステム状態になるよう準備する
+		}
+		else {
+			（少なくとも）カーネル管理の割込みを禁止した状態にする
+			if (p_runtsk->svclevel == UINT8_MAX) {
+				ercd = E_SYS;
+				ソフトウェア割込みからリターン後のシステム状態が，
+						ソフトウェア割込み前のシステム状態になるよう準備する
+			}
+			else if (システムスタック領域の残りサイズ < p_svcinib->stksz) {
+				ercd = E_NOMEM;
+				ソフトウェア割込みからリターン後のシステム状態が，
+						ソフトウェア割込み前のシステム状態になるよう準備する
+			}
+			else {
+				if (rundom == TACP_KERNEL) {
+					cdmid = TDOM_KERNEL;
+				}
+				else {
+					cdmid = DOMID(p_runtsk->p_tinib->p_dominib);
+				}
+				p_runtsk->svclevel++;
+				rundom = TACP_KERNEL;
+				ソフトウェア割込み前のシステム状態に戻す
+				LOG_EXTSVC_ENTER(fncd, パラメータリスト, cdmid);
+				ercd = (*(p_svcinib->svcrtn))(パラメータリスト, cdmid);
+				LOG_EXTSVC_LEAVE(fncd, ercd);
+				ソフトウェア割込みからリターン後のシステム状態が，
+							この時点でのシステム状態になるよう準備する
+				（少なくとも）カーネル管理の割込みを禁止した状態にする
+				if (--p_runtsk->svclevel == 0U) {
+					rundom = p_runtsk->p_tinib->p_dominib->domptn;
+					p_runtsk->waifbd = false;
+
+					/*
+					 *  タスク例外処理ルーチンの実行開始処理
+					 */
+					if (p_runtsk->enatex && p_runtsk->texptn != 0U && ipmflg
+								&& 拡張サービスコールからのリターン後の
+									システム状態がCPUロック状態でない) {
+						if (rundom == TACP_KERNEL) {
+							この時点でのシステム状態を，拡張サービスコール
+									からリターン後のシステム状態に対して，
+									CPUロック状態にしたシステム状態に変更する
+							call_texrtn_stask();
+							ソフトウェア割込みからリターン後のシステム状態が，
+									CPUロック解除状態，割込み優先度マスク
+									全解除状態になるよう準備する … (*1)
+						}
+						else {
+							if (prepare_texrtn_utask()) {
+								タスク例外実行開始時スタック不正例外ハンドラを
+																	呼び出す
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+  error_exit:
+	if (非特権モードからの呼び出し) {
+		スタックを実行状態のタスクのユーザスタックに戻す
+	}
+	return(ercd);
+}
+----------------------------------------
+
+●prepare_texrtn_utaskの処理内容
+
+----------------------------------------
+bool_t
+prepare_texrtn_utask()
+{
+	TEXPTN	texptn = p_runtsk->texptn;
+
+	if (!PROBE_STACK(ユーザスタックに情報を積む領域の先頭番地, サイズ) {
+		return(true);
+	}
+	ユーザスタックに，タスク例外処理ルーチンからの戻り番地を積む
+	ユーザスタックに，非特権モードでのスクラッチレジスタとフラグの値を積む
+	ユーザスタックに，disdspの値を積む
+	タスクの保留例外要因（p_runtsk->texptn）と
+			拡張情報（p_runtsk->p_tinib->exinf）が，
+			タスク例外処理ルーチンへのパラメータとして渡るように準備する
+	タスク例外処理ルーチンからのリターンにより，
+			call_ret_texの番地へ分岐するように準備する … (*b)
+	特権モードからのリターンによって，タスク例外処理ルーチン
+			（p_runtsk->p_tinib->texrtn）へ分岐するように準備する
+	p_runtsk->enatex = false;
+	p_runtsk->texptn = 0U;
+	LOG_TEX_ENTER(p_runtsk, texptn);
+	return(false);
+}
+----------------------------------------
+
+●ret_texの処理内容
+
+----------------------------------------
+ER
+ret_tex(void)
+{
+	if (呼び出し元が非特権モードでない) {
+		返値をE_CTXとして，ソフトウェア割込みからリターン
+	}
+	スタックを実行状態のタスクのシステムスタックに切り換える
+
+	if (!PROBE_STACK(prepare_texrtn_utaskで
+						ユーザスタックに情報を積んだ領域の先頭番地, サイズ) {
+		タスク例外リターン時スタック不正例外ハンドラを呼び出す
+	}
+
+	LOG_TEX_LEAVE(p_runtsk);
+	（少なくとも）カーネル管理の割込みを禁止した状態にする
+	ソフトウェア割込みからリターン後のシステム状態が，
+			CPUロック解除状態，割込み優先度マスク全解除状態になるよう準備する
+	if ((rundom & sysstat_acvct.acptn1) != 0U) {
+		disdspを，ユーザスタックに保存した値に戻す
+	}
+	dspflg = !disdsp;
+	if (p_runtsk != p_schedtsk && dspflg) {
+		CPUロック状態にする
+		dispatch();
+	}
+
+	if (p_runtsk->texptn != 0U) {
+		/*
+		 *  タスク例外処理ルーチンの再度の実行開始
+		 */
+		TEXPTN	texptn = p_runtsk->texptn;
+
+		タスクの保留例外要因（p_runtsk->texptn）と
+				拡張情報（p_runtsk->p_tinib->exinf）が，
+				タスク例外処理ルーチンへのパラメータとして渡るように準備する
+		タスク例外処理ルーチンからのリターンにより，
+				call_ret_texの番地へ分岐するように準備する … (*b)
+		特権モードからのリターンによって，タスク例外処理ルーチン
+				（p_runtsk->p_tinib->texrtn）へ分岐するように準備する
+		p_runtsk->texptn = 0U;
+		LOG_TEX_ENTER(p_runtsk, texptn);
+	}
+	else {
+		/*
+		 *  タスク例外処理ルーチンからのリターン
+		 */
+		ユーザスタック上の，disdspの値を捨てる（使用済み）
+		ユーザスタックから，非特権モードでの
+				スクラッチレジスタとフラグの値を取り出す
+		ソフトウェア割込みからのリターンによって，
+				スクラッチレジスタとフラグが取り出した値に戻るように準備する
+		ユーザスタックから，タスク例外処理ルーチンからの戻り番地を取り出す
+		ソフトウェア割込みからのリターンによって，
+				タスク例外処理ルーチンからの戻り番地へ分岐するように準備する
+		p_runtsk->enatex = true;
+	}
+	p_runtsk->waifbd = false; … (*x)
+	スタックを実行状態のタスクのユーザスタックに戻す
+	ソフトウェア割込みからリターン
+}
+----------------------------------------
+
+(*x)は，ret_texが呼ばれてから，カーネル管理の割込みを禁止するまでの間に，
+カーネル管理の割込みが発生する可能性があるプロセッサにおいてのみ必要．
+
+●i_check_tex_runtskの処理内容
+
+----------------------------------------
+bool_t
+i_check_tex_runtsk()
+{
+	if (!PROBE_STACK(prepare_texrtn_utaskで
+						ユーザスタックに情報を積む領域の先頭番地, サイズ) {
+		return(true);
+	}
+	return(false);
+}
+----------------------------------------
+
+●call_ret_texの処理内容
+
+----------------------------------------
+void
+call_ret_tex(void)
+{
+	(void) ret_tex();
+	(void) ext_tsk();
+	(void) ext_ker();
+	assert(0);
+}
+----------------------------------------
+
+●call_ext_tskの処理内容
+
+----------------------------------------
+void
+call_ext_tsk(void)
+{
+	(void) ext_tsk();
+	(void) ext_ker();
+	assert(0);
+}
+----------------------------------------

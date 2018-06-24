@@ -1,0 +1,445 @@
+#! /usr/bin/perl
+#
+#  TOPPERS Software
+#      Toyohashi Open Platform for Embedded Real-Time Systems
+# 
+#  Copyright (C) 2001 by Embedded and Real-Time Systems Laboratory
+#                              Toyohashi Univ. of Technology, JAPAN
+#  Copyright (C) 2005-2012 by Embedded and Real-Time Systems Laboratory
+#              Graduate School of Information Science, Nagoya Univ., JAPAN
+# 
+#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+#  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+#  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+#      権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+#      スコード中に含まれていること．
+#  (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+#      用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+#      者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+#      の無保証規定を掲載すること．
+#  (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+#      用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+#      と．
+#    (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+#        作権表示，この利用条件および下記の無保証規定を掲載すること．
+#    (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+#        報告すること．
+#  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+#      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+#      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+#      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+#      免責すること．
+# 
+#  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+#  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+#  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+#  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+#  の責任を負わない．
+# 
+#  $Id: gensvc 841 2012-12-27 02:42:17Z ertl-hiro $
+# 
+
+use Getopt::Std;
+
+#
+#  サービスコールインタフェース生成プログラム
+#
+#  サービスコール定義ファイル（svc.def）を読み込んで，以下のファイルを
+#  カレントディレクトリに生成する．それぞれのディレクトリへの移動は手動
+#  で行うこと．
+#
+#	svc_table.c → kernel/ に置く
+#	kernel_fncode.h → include/ に置く
+#	svc_call.h → include/ に置く
+#	tool_svc.h（GCC用）→ arch/gcc/ に置く
+#	kernel_fncode.inc（HEW用）→ arch/shc/ に置く
+#	svc_call.inc（HEW用）→ arch/shc/ に置く
+#
+#  オプションの定義
+#
+#  -H			HEW用のファイルを生成する
+
+#
+#  オプションの処理
+#
+getopt("");
+
+#
+#  大域変数の初期化
+#
+$min_fncd = 0;
+@allfncdlist = ();
+@fncdlist = ();
+%flagstable = ();
+%condtable = ();
+%labeltable = ();
+%typetable = ();
+%prototable = ();
+%nametable = ();
+%argstable = ();
+%argnotable = ();
+
+#
+#  1行読み込み（行番号をカウント）
+#
+sub getline {
+	local($line);
+
+	$line = <>;
+	$lineno++;
+	return($line);
+}
+
+#
+#  エラー出力
+#
+sub error {
+	local($msg) = @_;
+
+	print STDERR $msg," at line ",$lineno,".\n";
+	exit(1);
+}
+
+sub eof_error {
+	print STDERR "Unexpected EOF.\n";
+	exit(1);
+}
+
+#
+#  定義ファイルの読み込み
+#
+$lineno = 0;
+$next_fncd = -1;
+while ($line = getline()) {
+	chop $line;
+	$line =~ s/#.*$//;		# コメントの削除
+
+	# 空行のスキップ
+	next if ($line =~ /^[ \t]*$/);
+
+	# 継続行（行末が '\' の行）の処理
+	while ($line =~ /^(.*)\\$/) {
+		$line = $1;
+		unless ($line1 = getline()) {
+			eof_error();
+		}
+		chop $line1;
+		$line1 =~ s/#.*$//;		# コメントの削除
+		$line .= $line1;
+	}
+
+	# サービスコール定義の解析
+	unless ($line =~ /^(-?[0-9]*)[ \t]+([^ \t]+)[ \t]*(.*)$/) {
+		error("Syntax error");
+	}
+	$fncd = $1;
+	$flags = $2;
+	$proto = $3;
+	$proto =~ s/([^ \t])[ \t]+$/\1/;
+	$proto =~ s/[ \t]+/ /g;
+
+	# 機能コードをチェック
+	if ($fncd eq "") {
+		$fncd = $next_fncd;
+	}
+	elsif ($fncd != $next_fncd) {
+		print STDERR "Function code skipped at line: ",$lineno,"\n";
+	}
+
+	# 次の機能コードの計算
+	$next_fncd = $fncd - 1;
+
+	# 条件の解析
+	if ($flags =~ s/\[([^\]]+)\]//) {
+		$cond = $1;
+		push @{ $condlist{$cond} }, $fncd;
+	}
+	else {
+		$cond = "";
+	}
+
+	# 未サポートのサービスコールのスキップ
+	if ($flags !~ /^[SPL]/) {
+		if ($proto =~ /^([A-Za-z_]+)[ \t]+(([a-z_]+)\((.*)\))$/) {
+			push(@allfncdlist, $fncd);
+			$nametable{$fncd} = $3;
+		}
+		elsif ($proto =~ /^([a-z_]+)$/) {
+			push(@allfncdlist, $fncd);
+			$nametable{$fncd} = $1;
+		}
+		next;
+	}
+
+	# 機能コードの最小値の計算
+	$min_fncd = $fncd if ($min_fncd > $fncd);
+
+	# サービスコール以外の機能（Lフラグ）の処理
+	if ($flags =~ /^L/) {
+		$labeltable{$fncd} = $proto;
+		next;
+	}
+
+	# サービスコールリストに登録
+	push(@allfncdlist, $fncd);
+	push(@fncdlist, $fncd);
+	$flagstable{$fncd} = $flags;
+	$condtable{$fncd} = $cond;
+
+	# サービスコール定義の文法チェック
+	unless ($proto =~ /^([A-Za-z_]+)[ \t]+(([a-z_]+)\((.*)\))$/) {
+		error("Syntax error");
+	}
+	$typetable{$fncd} = $1;
+	$prototable{$fncd} = $2;
+	$nametable{$fncd} = $3;
+	$argstable{$fncd} = $4;
+	$argno = 0;
+	foreach $arg (split(/, */, $argstable{$fncd})) {
+		unless ($arg =~ /^([A-Za-z_* ]+)( +|\*)([a-z_]+)$/) {
+			error("Syntax error");
+		}
+		$argno++;
+	}
+	$argnotable{$fncd} = $argno;
+}
+
+#
+#	svc_table.cの生成
+#
+open(FILE, "> svc_table.c");
+print FILE <<END_OF_HEADER1;
+/*  This file is generated from svc.def by gensvc. */
+
+#include "kernel_impl.h"
+#include "omit_svc.h"
+
+static ER
+no_support(void)
+{
+	return(E_NOSPT);
+}
+END_OF_HEADER1
+
+foreach $cond (keys(%condlist)) {
+	printf FILE "\n#ifndef TOPPERS_SUPPORT_%s\n", $cond;
+	foreach $fn (@{ $condlist{$cond} }) {
+		printf FILE "#define _kernel_%s no_support\n", $nametable{$fn};
+	}
+	printf FILE "#endif /* TOPPERS_SUPPORT_%s */\n", $cond;
+}
+
+print FILE <<END_OF_HEADER2;
+
+typedef ER_UINT	(*SVC)();
+
+#define MIN_FNCD	($min_fncd)
+
+const SVC svc_table[-MIN_FNCD+1] = {
+	(SVC)(no_support),
+END_OF_HEADER2
+
+# ジャンプテーブルの生成
+foreach $fn (1 .. -$min_fncd) {
+	if ($flagstable{-$fn}) {
+		$entry = $nametable{-$fn};
+	}
+	elsif ($labeltable{-$fn}) {
+		$entry = $labeltable{-$fn};
+		$entry =~ y/a-z/A-Z/;
+	}
+	else {
+		$entry = "no_support";
+	}
+	printf FILE "\t(SVC)(%s),\n", $entry;
+}
+
+print FILE <<END_OF_TAILER;
+};
+END_OF_TAILER
+
+#
+#	kernel_fncode.hの生成
+#
+
+open(FILE, "> kernel_fncode.h");
+print FILE <<END_OF_HEADER;
+/*  This file is generated from svc.def by gensvc. */
+
+#ifndef TOPPERS_KERNEL_FNCODE_H
+#define TOPPERS_KERNEL_FNCODE_H
+
+#define TMIN_FNCD ($min_fncd)
+
+END_OF_HEADER
+
+foreach $fncd (@allfncdlist) {
+	$name = $nametable{$fncd};
+	$name =~ y/a-z/A-Z/;
+	print FILE "#define TFN_",$name," (",$fncd,")\n";
+}
+
+print FILE <<END_OF_TAILER;
+
+#endif /* TOPPERS_KERNEL_FNCODE_H */
+END_OF_TAILER
+close(FILE);
+
+#
+#	svc_call.hの生成
+#
+# 関数呼出しで呼び出す場合のインタフェース
+open(FILE, "> svc_call.h");
+print FILE <<END_OF_HEADER;
+/*  This file is generated from svc.def by gensvc. */
+
+#ifndef TOPPERS_SVC_CALL_H
+#define TOPPERS_SVC_CALL_H
+
+#ifndef TOPPERS_MACRO_ONLY
+
+END_OF_HEADER
+
+foreach $fncd (@fncdlist) {
+	$proto = $prototable{$fncd};
+	$proto =~ s/\(\)/(void)/;
+	print FILE "extern ",$typetable{$fncd}," _kernel_",$proto," throw();\n";
+}
+
+print FILE <<END_OF_SEPARATOR;
+
+#endif /* TOPPERS_MACRO_ONLY */
+
+#ifdef TOPPERS_SVC_CALL
+
+END_OF_SEPARATOR
+
+foreach $fncd (@fncdlist) {
+	$name = $nametable{$fncd};
+	if ($name !~ /xx/) {
+		print FILE "#define ",$name," _kernel_",$name,"\n";
+	}
+}
+
+print FILE <<END_OF_SEPARATOR;
+
+#ifdef TOPPERS_LABEL_ASM
+
+END_OF_SEPARATOR
+
+foreach $fncd (@fncdlist) {
+	$name = $nametable{$fncd};
+	if ($name !~ /xx/) {
+		print FILE "#define _",$name," __kernel_",$name,"\n";
+	}
+}
+
+print FILE <<END_OF_TRAILER;
+
+#endif /* TOPPERS_LABEL_ASM */
+#endif /* TOPPERS_SVC_CALL */
+#endif /* TOPPERS_SVC_CALL_H */
+END_OF_TRAILER
+close(FILE);
+
+#
+#	tool_svc.h（GCC用）の生成
+#
+# ソフトウェア割込みで呼び出す場合のインタフェース
+open(FILE, "> tool_svc.h");
+print FILE <<END_OF_HEADER;
+/*  This file is generated from svc.def by gensvc. */
+
+#ifndef TOPPERS_TOOL_SVC_H
+#define TOPPERS_TOOL_SVC_H
+
+#ifndef TOPPERS_MACRO_ONLY
+
+END_OF_HEADER
+
+foreach $fncd (@fncdlist) {
+	# 関数ヘッダの生成
+	print FILE "Inline ",$typetable{$fncd},"\n";
+	$proto = $prototable{$fncd};
+	$proto =~ s/\(\)/(void)/;
+	print FILE $proto,"\n";
+
+	# 関数本体の生成
+	print FILE "{\n";
+
+	print FILE "\tCAL_SVC_",$argnotable{$fncd};
+	print FILE "M(";
+	print FILE $typetable{$fncd},", ";
+
+	$name = $nametable{$fncd};
+	$name =~ y/a-z/A-Z/;
+	print FILE "TFN_",$name;
+
+	foreach $arg (split(/, */, $argstable{$fncd})) {
+		if ($arg =~ /^([A-Za-z_* ]+) +([a-z_]+)$/) {
+			print FILE ", ", $1, ", ", $2;
+		}
+		elsif ($arg =~ /^([A-Za-z_* ]+\*)([a-z_]+)$/) {
+			print FILE ", ", $1, ", ", $2;
+		}
+	}
+	print FILE ");\n";
+
+	print FILE "}\n";
+	print FILE "\n";
+}
+
+print FILE <<END_OF_TAILER;
+#endif /* TOPPERS_MACRO_ONLY */
+#endif /* TOPPERS_TOOL_SVC_H */
+END_OF_TAILER
+close(FILE);
+
+#
+#	kernel_fncode.incの生成（HEW用）
+#
+if ($opt_H) {
+	open(FILE, "> kernel_fncode.inc");
+	print FILE <<END_OF_HEADER;
+\;  This file is generated from svc.def by gensvc.
+
+TMIN_FNCD: .DEFINE \"($min_fncd)\"
+
+END_OF_HEADER
+
+	foreach $fncd (@allfncdlist) {
+		$name = $nametable{$fncd};
+		$name =~ y/a-z/A-Z/;
+		print FILE "TFN_",$name,": .DEFINE \"(",$fncd,")\"\n";
+	}
+
+	print FILE <<END_OF_TAILER;
+
+END_OF_TAILER
+	close(FILE);
+}
+
+#
+#	svc_call.incの生成（HEW用）
+#
+if ($opt_H) {
+	# 関数呼出しで呼び出す場合のインタフェース
+	open(FILE, "> svc_call.inc");
+	print FILE <<END_OF_HEADER;
+\;  This file is generated from svc.def by gensvc.
+
+END_OF_HEADER
+
+	foreach $fncd (@fncdlist) {
+		$name = $nametable{$fncd};
+		if ($name !~ /xx/) {
+			print FILE "_",$name,": .DEFINE \"__kernel_",$name,"\"\n";
+		}
+	}
+
+	print FILE <<END_OF_TRAILER;
+
+END_OF_TRAILER
+	close(FILE);
+}

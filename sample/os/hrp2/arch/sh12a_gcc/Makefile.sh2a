@@ -1,0 +1,35 @@
+#
+#  $Id: Makefile.sh2a 2083 2011-05-12 07:59:25Z mit-kimai $
+# 
+
+#
+#		Makefile のコア依存部（SH2A用）
+#
+
+#
+#  コンパイルオプション
+#
+COPTS := $(COPTS) -m2a-nofpu
+
+#  レジスタバンクを使用する場合は、以下の行を有効にする。
+CDEFS := $(CDEFS) -DUSE_BANKED_REG
+
+#
+#  カーネルに関する定義
+#
+KERNEL_COBJS := $(KERNEL_COBJS) prc_cmt.o
+
+#
+#  依存関係の定義
+#
+# 　以下の２つはMakefile.targetで定義している。
+# 　・$(PRCDIR)：アーキテクチャ依存部のパス
+# 　・$(CHIP)：チップ名（プロセッサ名）
+#
+kernel_cfg.timestamp: $(PRCDIR)/sh2a.tf $(PRCDIR)/$(CHIP).tf
+
+
+#
+#  アーキテクチャ依存部のインクルード
+#
+include $(SRCDIR)/arch/$(PRC)_$(TOOL)/Makefile.prc

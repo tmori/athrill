@@ -1,0 +1,361 @@
+#
+#  TOPPERS/HRP Kernel
+#      Toyohashi Open Platform for Embedded Real-Time Systems/
+#      High Reliable system Profile Kernel
+# 
+#  Copyright (C) 2001 by Embedded and Real-Time Systems Laboratory
+#                              Toyohashi Univ. of Technology, JAPAN
+#  Copyright (C) 2005-2012 by Embedded and Real-Time Systems Laboratory
+#              Graduate School of Information Science, Nagoya Univ., JAPAN
+# 
+#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+#  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+#  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+#      権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+#      スコード中に含まれていること．
+#  (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+#      用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+#      者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+#      の無保証規定を掲載すること．
+#  (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+#      用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+#      と．
+#    (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+#        作権表示，この利用条件および下記の無保証規定を掲載すること．
+#    (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+#        報告すること．
+#  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+#      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+#      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+#      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+#      免責すること．
+# 
+#  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+#  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+#  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+#  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+#  の責任を負わない．
+# 
+#  @(#) $Id: svc.def 837 2012-12-26 15:09:59Z ertl-hiro $
+# 
+
+#
+#  サービスコール定義ファイル
+#
+#  各行は，機能番号，属性，サービスコールのプロトタイプ宣言，コメントか
+#  ら構成される．行中の"#"以降はコメントととして読み飛ばす．行末の"\"は
+#  継続行を示す．
+#
+#  行頭がスペース（空白またはTAB）で始まる時は，機能コードが省略された
+#  とみなす．ただし，最初のサービスコールの機能コードは省略できない．
+#
+#  属性の意味は次の通り．
+#
+#	S : ASPカーネルがサポート
+#	P : HRP2カーネルが追加サポート
+#	L : サービスコール以外の機能（使用するかはターゲット依存）
+#	m : メモリをアクセスする
+#	[XXX] : XXXをサポート条件とする
+#	- : HRP2カーネルがサポートしない，予約
+#
+#  XXXがサポート条件であるとは，TOPPERS_SUPPORT_XXXがマクロ定義されてい
+#  る時のみ，そのサービスコールがサポートされることを示す．
+#
+-1		-			# ret_tex（タスク例外処理ルーチンからのリターン）用に予約
+		-
+		-
+		-
+-5		S			ER		act_tsk(ID tskid)
+		S			ER		iact_tsk(ID tskid)
+		S			ER_UINT	can_act(ID tskid)
+		S			ER		ext_tsk()
+-9		S			ER		ter_tsk(ID tskid)
+		S			ER		chg_pri(ID tskid, PRI tskpri)
+		S			ER		get_pri(ID tskid, PRI *p_tskpri)
+		S			ER		get_inf(intptr_t *p_exinf)
+-13		S			ER		slp_tsk()
+		S			ER		tslp_tsk(TMO tmout)
+		S			ER		wup_tsk(ID tskid)
+		S			ER		iwup_tsk(ID tskid)
+-17		S			ER_UINT	can_wup(ID tskid)
+		S			ER		rel_wai(ID tskid)
+		S			ER		irel_wai(ID tskid)
+		-
+-21		P			ER		dis_wai(ID tskid)
+		P			ER		idis_wai(ID tskid)
+		P			ER		ena_wai(ID tskid)
+		P			ER		iena_wai(ID tskid)
+-25		S			ER		sus_tsk(ID tskid)
+		S			ER		rsm_tsk(ID tskid)
+		S			ER		dly_tsk(RELTIM dlytim)
+		-
+-29		S			ER		ras_tex(ID tskid, TEXPTN rasptn)
+		S			ER		iras_tex(ID tskid, TEXPTN rasptn)
+		S			ER		dis_tex()
+		S			ER		ena_tex()
+-33		S			bool_t	sns_tex()
+		S			ER		ref_tex(ID tskid, T_RTEX *pk_rtex)
+		-
+		-
+-37		S			ER		sig_sem(ID semid)
+		S			ER		isig_sem(ID semid)
+		S			ER		wai_sem(ID semid)
+		S			ER		pol_sem(ID semid)
+-41		S			ER		twai_sem(ID semid, TMO tmout)
+		-
+		-
+		-
+-45		S			ER		set_flg(ID flgid, FLGPTN setptn)
+		S			ER		iset_flg(ID flgid, FLGPTN setptn)
+		S			ER		clr_flg(ID flgid, FLGPTN clrptn)
+		S			ER		wai_flg(ID flgid, FLGPTN waiptn, \
+											MODE wfmode, FLGPTN *p_flgptn)
+-49		S			ER		pol_flg(ID flgid, FLGPTN waiptn, \
+											MODE wfmode, FLGPTN *p_flgptn)
+		S			ER		twai_flg(ID flgid, FLGPTN waiptn, \
+									MODE wfmode, FLGPTN *p_flgptn, TMO tmout)
+		-
+		-
+-53		S			ER		snd_dtq(ID dtqid, intptr_t data)
+		S			ER		psnd_dtq(ID dtqid, intptr_t data)
+		S			ER		ipsnd_dtq(ID dtqid, intptr_t data)
+		S			ER		tsnd_dtq(ID dtqid, intptr_t data, TMO tmout)
+-57		S			ER		fsnd_dtq(ID dtqid, intptr_t data)
+		S			ER		ifsnd_dtq(ID dtqid, intptr_t data)
+		S			ER		rcv_dtq(ID dtqid, intptr_t *p_data)
+		S			ER		prcv_dtq(ID dtqid, intptr_t *p_data)
+-61		S			ER		trcv_dtq(ID dtqid, intptr_t *p_data, TMO tmout)
+		-
+		-
+		-
+-65		S			ER		snd_pdq(ID pdqid, intptr_t data, PRI datapri)
+		S			ER		psnd_pdq(ID pdqid, intptr_t data, PRI datapri)
+		S			ER		ipsnd_pdq(ID pdqid, intptr_t data, PRI datapri)
+		S			ER		tsnd_pdq(ID pdqid, intptr_t data, \
+													PRI datapri, TMO tmout)
+-69		S			ER		rcv_pdq(ID pdqid, intptr_t *p_data, \
+											   			PRI *p_datapri)
+		S			ER		prcv_pdq(ID pdqid, intptr_t *p_data, \
+														PRI *p_datapri)
+		S			ER		trcv_pdq(ID pdqid, intptr_t *p_data, \
+													PRI *p_datapri, TMO tmout)
+		-
+-73		-			ER		snd_mbx(ID mbxid, T_MSG *pk_msg)
+		-			ER		rcv_mbx(ID mbxid, T_MSG **ppk_msg)
+		-			ER		prcv_mbx(ID mbxid, T_MSG **ppk_msg)
+		-			ER		trcv_mbx(ID mbxid, T_MSG **ppk_msg, TMO tmout)
+-77		P			ER		loc_mtx(ID mtxid)
+		P			ER		ploc_mtx(ID mtxid)
+		P			ER		tloc_mtx(ID mtxid, TMO tmout)
+		P			ER		unl_mtx(ID mtxid)
+-81		-					snd_mbf
+		-					psnd_mbf
+		-					tsnd_mbf
+		-					rcv_mbf
+-85		-					prcv_mbf
+		-					trcv_mbf
+		-
+		-
+-89		S			ER		get_mpf(ID mpfid, void **p_blk)
+		S			ER		pget_mpf(ID mpfid, void **p_blk)
+		S			ER		tget_mpf(ID mpfid, void **p_blk, TMO tmout)
+		S			ER		rel_mpf(ID mpfid, void *blk)
+-93		S			ER		get_tim(SYSTIM *p_systim)
+		S[GET_UTM]	ER		get_utm(SYSUTM *p_sysutm)
+		-
+		P[OVRHDR]	ER		ref_ovr(ID tskid, T_ROVR *pk_rovr)
+-97		S			ER		sta_cyc(ID cycid)
+		S			ER		stp_cyc(ID cycid)
+		-
+		-
+-101	S			ER		sta_alm(ID almid, RELTIM almtim)
+		S			ER		ista_alm(ID almid, RELTIM almtim)
+		S			ER		stp_alm(ID almid)
+		S			ER		istp_alm(ID almid)
+-105	P[OVRHDR]	ER		sta_ovr(ID tskid, OVRTIM ovrtim)
+		P[OVRHDR]	ER		ista_ovr(ID tskid, OVRTIM ovrtim)
+		P[OVRHDR]	ER		stp_ovr(ID tskid)
+		P[OVRHDR]	ER		istp_ovr(ID tskid)
+-109	-			ER		sac_sys(const ACVCT *p_acvct)
+		-			ER		ref_sys(T_RSYS *pk_rsys)
+		S			ER		rot_rdq(PRI tskpri)
+		S			ER		irot_rdq(PRI tskpri)
+-113	P			ER		get_did(ID *p_domid)
+		-
+		S			ER		get_tid(ID *p_tskid)
+		S			ER		iget_tid(ID *p_tskid)
+-117	S			ER		loc_cpu()
+		S			ER		iloc_cpu()
+		S			ER		unl_cpu()
+		S			ER		iunl_cpu()
+-121	S			ER		dis_dsp()
+		S			ER		ena_dsp()
+		S			bool_t	sns_ctx()
+		S			bool_t	sns_loc()
+-125	S			bool_t	sns_dsp()
+		S			bool_t	sns_dpn()
+		S			bool_t	sns_ker()
+		S			ER		ext_ker()
+-129	-			ER		att_mem(const T_AMEM *pk_amem)
+		-			ER		det_mem(const void *base)
+		-			ER		sac_mem(const void *base, const ACVCT *p_acvct)
+		P			ER		prb_mem(const void *base, SIZE size, \
+													ID tskid, MODE pmmode)
+-133	-			ER		ref_mem(const void *base, T_RMEM *pk_rmem)
+		-
+		-			ER		att_pma(const T_APMA *pk_apma)
+		-
+-137	-			ER		cfg_int(INTNO intno, const T_CINT *pk_cint)
+		S[DIS_INT]	ER		dis_int(INTNO intno)
+		S[ENA_INT]	ER		ena_int(INTNO intno)
+		-			ER		ref_int(INTNO intno, T_RINT *pk_rint)
+-141	S			ER		chg_ipm(PRI intpri)
+		S			ER		get_ipm(PRI *p_intpri)
+		-
+		-
+-145	S			bool_t	xsns_dpn(void *p_excinf)
+		S			bool_t	xsns_xpn(void *p_excinf)
+		-
+		-
+-149	-			ER		ref_cfg(T_RCFG *pk_rcfg)
+		-			ER		ref_ver(T_RV		ER *pk_rver)
+		-
+		-
+-153	-
+		-
+		-
+		-
+-157	-
+		-
+		-
+		-
+-161	-
+		S			ER		ini_sem(ID semid)
+		S			ER		ini_flg(ID flgid)
+		S			ER		ini_dtq(ID dtqid)
+-165	S			ER		ini_pdq(ID pdqid)
+		-			ER		ini_mbx(ID mbxid)
+		P			ER		ini_mtx(ID mtxid)
+		-					ini_mbf
+-169	S			ER		ini_mpf(ID mpfid)
+		-
+		-
+		-
+-173	-
+		-
+		-
+		-
+-177	S			ER		ref_tsk(ID tskid, T_RTSK *pk_rtsk)
+		S			ER		ref_sem(ID semid, T_RSEM *pk_rsem)
+		S			ER		ref_flg(ID flgid, T_RFLG *pk_rflg)
+		S			ER		ref_dtq(ID dtqid, T_RDTQ *pk_rdtq)
+-181	S			ER		ref_pdq(ID pdqid, T_RPDQ *pk_rpdq)
+		-			ER		ref_mbx(ID mbxid, T_RMBX *pk_rmbx)
+		P			ER		ref_mtx(ID mtxid, T_RMTX *pk_rmtx)
+		-					ref_mbf
+-185	S			ER		ref_mpf(ID mpfid, T_RMPF *pk_rmpf)
+		S			ER		ref_cyc(ID cycid, T_RCYC *pk_rcyc)
+		S			ER		ref_alm(ID almid, T_RALM *pk_ralm)
+		-			ER		ref_isr(ID isrid, T_RISR *pk_risr)
+-189	-			ER		ref_spn(ID spnid, T_RALM *pk_rspn)
+		-
+		-
+		-
+-193	-			ER_ID	acre_tsk(const T_CTSK *pk_ctsk)
+		-			ER_ID	acre_sem(const T_CSEM *pk_csem)
+		-			ER_ID	acre_flg(const T_CFLG *pk_cflg)
+		-			ER_ID	acre_dtq(const T_CDTQ *pk_cdtq)
+-197	-			ER_ID	acre_pdq(const T_CPDQ *pk_cpdq)
+		-			ER_ID	acre_mbx(const T_CMBX *pk_cmbx)
+		-			ER_ID	acre_mtx(const T_CMTX *pk_cmtx)
+		-					acre_mbf
+-201	-			ER_ID	acre_mpf(const T_CMPF *pk_cmpf)
+		-			ER_ID	acre_cyc(const T_CCYC *pk_ccyc)
+		-			ER_ID	acre_alm(const T_CALM *pk_calm)
+		-			ER_ID	acre_isr(const T_CISR *pk_cisr)
+-205	-			ER_ID	acre_spn(const T_CSPN *pk_cspn)
+		-
+		-
+		-
+-209	-			ER		del_tsk(ID tskid)
+		-			ER		del_sem(ID semid)
+		-			ER		del_flg(ID flgid)
+		-			ER		del_dtq(ID dtqid)
+-213	-			ER		del_pdq(ID pdqid)
+		-			ER		del_mbx(ID mbxid)
+		-			ER		del_mtx(ID mtxid)
+		-					del_mbf
+-217	-			ER		del_mpf(ID mpfid)
+		-			ER		del_cyc(ID cycid)
+		-			ER		del_alm(ID almid)
+		-			ER		del_isr(ID isrid)
+-221	-			ER		del_spn(ID spnid)
+		-
+		-
+		-
+-225	-			ER		sac_tsk(ID tskid, const ACVCT *p_acvct)
+		-			ER		sac_sem(ID semid, const ACVCT *p_acvct)
+		-			ER		sac_flg(ID flgid, const ACVCT *p_acvct)
+		-			ER		sac_dtq(ID dtqid, const ACVCT *p_acvct)
+-229	-			ER		sac_pdq(ID pdqid, const ACVCT *p_acvct)
+		-
+		-			ER		sac_mtx(ID mtxid, const ACVCT *p_acvct)
+		-					sac_mbf
+-233	-			ER		sac_mpf(ID mpfid, const ACVCT *p_acvct)
+		-			ER		sac_cyc(ID cycid, const ACVCT *p_acvct)
+		-			ER		sac_alm(const T_CALM *pk_calm)
+		-			ER		sac_isr(ID isrid, const ACVCT *p_acvct)
+-237	-			ER		sac_spn(ID spnid, const ACVCT *p_acvct)
+		-
+		-
+		-
+-241	-			ER		def_tex(ID tskid, const T_DTEX *pk_dtex)
+		-			ER		def_ovr(const T_DOVR *pk_dovr)
+		-			ER		def_inh(INHNO inhno, const T_DINH *pk_dinh)
+		-			ER		def_exc(EXCNO excno, const T_DEXC *pk_dexc)
+-245	-			ER		def_svc(FN fncd, const T_DSVC *pk_dsvc)
+		-
+		-
+		-
+-249	-
+		-
+		-
+		-
+-253	-
+		-
+		-
+		-
+-257	-			ER		mact_tsk(ID tskid, ID prcid)
+		-			ER		imact_tsk(ID tskid, ID prcid)
+		-			ER		mig_tsk(ID tskid, ID prcid)
+		-
+-261	-			ER		msta_cyc(ID cycid, ID prcid)
+		-
+		-			ER		msta_alm(ID almid, RELTIM almtim, ID prcid)
+		-			ER		imsta_alm(ID almid, RELTIM almtim, ID prcid)
+-265	-			ER		mrot_rdq(PRI tskpri, ID prcid)
+		-			ER		imrot_rdq(PRI tskpri, ID prcid)
+		-			ER		get_pid(ID *p_prcid)
+		-			ER		iget_pid(ID *p_prcid)
+-269	-
+		-
+		-
+		-
+-273	-			ER		loc_spn(ID spnid)
+		-			ER		iloc_spn(ID spnid)
+		-			ER		try_spn(ID spnid)
+		-			ER		itry_spn(ID spnid)
+-277	-			ER		unl_spn(ID spnid)
+		-			ER		iunl_spn(ID spnid)
+		-
+		-
+-281	-
+		-
+		-
+		-
+-285	-
+		-
+		-
+		-
+# ここまで

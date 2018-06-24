@@ -1,0 +1,35 @@
+PACKAGE hrp2_arch_sh12a_gcc
+VERSION 2.1.0
+
+Makefile.prc
+Makefile.sh2a
+MANIFEST
+prc.tf
+prc_cfg1_out.h
+prc_cmt.c
+prc_cmt.cfg
+prc_cmt.h
+prc_config.c
+prc_config.h
+prc_def.csv
+prc_design.txt
+prc_insn.h
+prc_kernel.h
+prc_offset.tf
+prc_mem.tf
+prc_rename.def
+prc_rename.h
+prc_sil.h
+prc_stddef.h
+prc_support.S
+prc_syssvc.h
+prc_unrename.h
+prc_user.txt
+sh2a.tf
+sh2a_config.h
+sh7211.h
+sh7211.tf
+sh7211_config.h
+shelf.ld
+start.S
+

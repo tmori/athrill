@@ -1,0 +1,6 @@
+PACKAGE hrp2
+
+MANIFEST
+trace_config.c
+trace_config.h
+trace_dump.c
