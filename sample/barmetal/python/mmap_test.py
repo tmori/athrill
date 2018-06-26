@@ -1,4 +1,5 @@
 import mmap
+import fcntl
 import io
 from ctypes import *
 
@@ -90,18 +91,39 @@ class MmapCanBus:
         self.mm = None
 
     def open(self, can_message_size):
-        f = open(self.mmap_filepath, "r+b")
-        self.mm = mmap.mmap(fileno=f.fileno(), length=0, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ | mmap.PROT_WRITE)
+        self.f = open(self.mmap_filepath, "r+b")
+        self.mm = mmap.mmap(fileno=self.f.fileno(), length=0, flags=mmap.MAP_SHARED, prot=mmap.PROT_READ | mmap.PROT_WRITE)
         self.can_message_size = can_message_size
 
-    def read(self, id):
-        off = id * self.can_message_size;
-        return self.mm[off:off+self.can_message_size]
+    def _ex_lock(self):
+        try:
+            fcntl.flock(self.f.fileno(), fcntl.LOCK_EX)
+            return True
+        except IOError:
+            return False
 
-    def write(self, id, can_message):
+    def _ex_unlock(self):
+        fcntl.flock(self.f.fileno(), fcntl.LOCK_UN)
+
+    def receive(self, id):
+        off = id * self.can_message_size;
+        if (self._ex_lock() == True):
+            bin = self.mm[off:off+self.can_message_size]
+            self._ex_unlock()
+            return bin
+        else:
+            return None
+
+    def send(self, id, can_message):
         off = id * self.can_message_size
-        self.mm.seek(off)
-        self.mm.write(can_message)
+
+        if (self._ex_lock() == True):
+            self.mm.seek(off)
+            self.mm.write(can_message)
+            self._ex_unlock()
+            return True
+        else:
+            return False
 
     def close(self):
         if self.mm is None:
@@ -114,7 +136,7 @@ def test():
     canbus.open(sizeof(CanDataStructure))
 
     #READ sample
-    binary = canbus.read(3)
+    binary = canbus.receive(3)
     reader = CanDataStructureReader(binary)
     print(str(reader.isArrival()))
     print(str(reader.isSended()))
@@ -139,7 +161,7 @@ def test():
     can_message.write(5, 128)
     can_message.write(6, 127)
     can_message.write(7, 99)
-    canbus.write(3, can_message.getBinaryData())
+    canbus.send(3, can_message.getBinaryData())
     canbus.close()
 
 if __name__ == '__main__':
