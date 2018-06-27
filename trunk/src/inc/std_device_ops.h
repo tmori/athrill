@@ -2,6 +2,31 @@
 #define _STD_DEVICE_OPS_H_
 
 #include "cpu_config_ops.h"
+#ifdef OS_LINUX
+#include <sys/time.h>
+
+static inline void cpuemu_timeval_sub(struct timeval *tv1, struct timeval *tv2, struct timeval *tv_result)
+{
+	tv_result->tv_sec = tv1->tv_sec - tv2->tv_sec;
+	if (tv1->tv_usec >= tv2->tv_usec) {
+		tv_result->tv_usec = tv1->tv_usec - tv2->tv_usec;
+	}
+	else {
+		tv_result->tv_usec = (1000000 + tv1->tv_usec) - tv2->tv_usec;
+	}
+	return;
+}
+static inline void cpuemu_timeval_add(struct timeval *tv1, struct timeval *tv2, struct timeval *tv_result)
+{
+	tv_result->tv_sec = tv1->tv_sec + tv2->tv_sec;
+	tv_result->tv_usec = tv1->tv_usec + tv2->tv_usec;
+	if (tv_result->tv_usec >= 1000000) {
+		tv_result->tv_usec -= 1000000;
+		tv_result->tv_sec++;
+	}
+	return;
+}
+#endif /* OS_LINUX */
 
 /*
  * スキップ可能な最大クロック数
@@ -10,6 +35,10 @@
 typedef struct {
 	uint64 clock;
 	uint64 intclock;//割込み処理で消費している時間
+#ifdef OS_LINUX
+	struct timeval elaps_tv;
+	struct timeval start_tv;
+#endif /* OS_LINUX */
 
 
 	/**************************************

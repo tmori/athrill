@@ -16,6 +16,9 @@
 #include "target/target_os_api.h"
 #include <string.h>
 #include "file.h"
+#ifdef OS_LINUX
+#include <sys/time.h>
+#endif /* OS_LINUX */
 #define SYMBOL_CANDIATE_NUM		10
 
 
@@ -398,7 +401,12 @@ void dbg_std_executor_elaps(void *executor)
 {
 	CpuEmuElapsType elaps;
 	cpuemu_get_elaps(&elaps);
+#ifdef OS_LINUX
+	printf("clock = cpu "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64" real_time  %ld.%ld\n",
+			elaps.total_clocks, elaps.intr_clocks, elaps.elaps_tv.tv_sec, elaps.elaps_tv.tv_usec);
+#else
 	printf("clock = cpu "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64"\n", elaps.total_clocks, elaps.intr_clocks);
+#endif /* OS_LINUX */
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), PRINT_FMT_UINT64"  OK", elaps.total_clocks));
 	return;
 }

@@ -94,6 +94,11 @@ void cpuemu_init(void *(*cpu_run)(void *), void *opt)
 	else {
 		virtual_cpu.core_id_num = CPU_CONFIG_CORE_NUM;
 	}
+#ifdef OS_LINUX
+	memset(&cpuemu_dev_clock.start_tv, 0, sizeof(struct timeval));
+	memset(&cpuemu_dev_clock.elaps_tv, 0, sizeof(struct timeval));
+#endif /* OS_LINUX */
+
 	cpu_init();
 	device_init(&virtual_cpu, &cpuemu_dev_clock);
 	cputhr_control_init();
@@ -126,8 +131,36 @@ void cpuemu_get_elaps(CpuEmuElapsType *elaps)
 {
 	elaps->total_clocks = cpuemu_dev_clock.clock;
 	elaps->intr_clocks = cpuemu_dev_clock.intclock;
+#ifdef OS_LINUX
+	elaps->elaps_tv = cpuemu_dev_clock.elaps_tv;
+#endif /* OS_LINUX */
+
 	return;
 }
+
+#ifdef OS_LINUX
+void cpuemu_start_elaps(void)
+{
+	(void) gettimeofday(&cpuemu_dev_clock.start_tv, NULL);
+	return;
+}
+
+void cpuemu_end_elaps(void)
+{
+	struct timeval current;
+	struct timeval elaps_tv;
+
+	if (cpuemu_dev_clock.start_tv.tv_sec == 0) {
+		return;
+	}
+
+	(void) gettimeofday(&current, NULL);
+	cpuemu_timeval_sub(&current, &cpuemu_dev_clock.start_tv, &elaps_tv);
+	cpuemu_timeval_add(&elaps_tv, &cpuemu_dev_clock.elaps_tv, &cpuemu_dev_clock.elaps_tv);
+
+	return;
+}
+#endif /* OS_LINUX */
 
 uint32 cpuemu_get_retaddr(CoreIdType core_id)
 {

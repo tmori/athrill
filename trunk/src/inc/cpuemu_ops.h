@@ -5,13 +5,23 @@
 #include "cpu_config.h"
 #include "target_cpu.h"
 #include "cpu_config_ops.h"
+#ifdef OS_LINUX
+#include <sys/time.h>
+#endif /* OS_LINUX */
 
 typedef struct {
 	uint64	total_clocks;
 	uint64	intr_clocks;
+#ifdef OS_LINUX
+	struct timeval elaps_tv;
+#endif /* OS_LINUX */
 } CpuEmuElapsType;
 extern void cpuemu_init(void *(*cpu_run)(void *), void *opt);
 extern void cpuemu_get_elaps(CpuEmuElapsType *elaps);
+#ifdef OS_LINUX
+extern void cpuemu_start_elaps(void);
+extern void cpuemu_end_elaps(void);
+#endif /* OS_LINUX */
 extern uint32 cpuemu_get_retaddr(CoreIdType core_id);
 extern Std_ReturnType cpuemu_get_addr_pointer(uint32 addr, uint8 **data);
 extern void cpuemu_get_register(CoreIdType core_id, TargetCoreType *cpu);

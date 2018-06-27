@@ -676,10 +676,24 @@ void cpuctrl_del_all_data_watch_points(void)
 void cpuctrl_set_debug_mode(bool on)
 {
 	if (on == TRUE) {
+		/*
+		 * CPU ==> DBG
+		 */
+#ifdef OS_LINUX
+		if (dbg_cpuctrl_dbg_mode != DBG_CPUCTRL_DBG_MODE_NORMAL) {
+			cpuemu_end_elaps();
+		}
+#endif /* OS_LINUX */
 		dbg_cpuctrl_dbg_mode = DBG_CPUCTRL_DBG_MODE_NORMAL;
 	}
 	else {
+		/*
+		 * DBG ==> CPU
+		 */
 		dbg_cpuctrl_dbg_mode = DBG_CPUCTRL_DBG_MODE_NONE;
+#ifdef OS_LINUX
+		cpuemu_start_elaps();
+#endif /* OS_LINUX */
 	}
 	return;
 }
