@@ -335,6 +335,9 @@ void dbg_std_executor_next(void *executor)
 	cpuctrl_set_debug_mode(TRUE);
 	dbg_log_set_view_mode(TRUE);
 	dbg_log_set_print_mode(TRUE);
+#ifdef OS_LINUX
+	cpuemu_start_elaps();
+#endif /* OS_LINUX */
 
 	cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped();
 
@@ -345,6 +348,9 @@ void dbg_std_executor_next(void *executor)
 	target_os_api_sleep(50);
 	dbg_log_set_print_mode(FALSE);
 	dbg_log_set_view_mode(org_view_mode);
+#ifdef OS_LINUX
+	cpuemu_end_elaps();
+#endif /* OS_LINUX */
 	return;
 }
 

@@ -690,10 +690,12 @@ void cpuctrl_set_debug_mode(bool on)
 		/*
 		 * DBG ==> CPU
 		 */
-		dbg_cpuctrl_dbg_mode = DBG_CPUCTRL_DBG_MODE_NONE;
 #ifdef OS_LINUX
-		cpuemu_start_elaps();
+		if (dbg_cpuctrl_dbg_mode != DBG_CPUCTRL_DBG_MODE_NONE) {
+			cpuemu_start_elaps();
+		}
 #endif /* OS_LINUX */
+		dbg_cpuctrl_dbg_mode = DBG_CPUCTRL_DBG_MODE_NONE;
 	}
 	return;
 }

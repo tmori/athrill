@@ -13,6 +13,7 @@ static inline void cpuemu_timeval_sub(struct timeval *tv1, struct timeval *tv2, 
 	}
 	else {
 		tv_result->tv_usec = (1000000 + tv1->tv_usec) - tv2->tv_usec;
+		tv_result->tv_sec--;
 	}
 	return;
 }

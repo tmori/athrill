@@ -142,6 +142,7 @@ void cpuemu_get_elaps(CpuEmuElapsType *elaps)
 void cpuemu_start_elaps(void)
 {
 	(void) gettimeofday(&cpuemu_dev_clock.start_tv, NULL);
+	//printf("start sec=%ld usec=%ld\n", cpuemu_dev_clock.start_tv.tv_sec, cpuemu_dev_clock.start_tv.tv_usec);
 	return;
 }
 
@@ -157,6 +158,9 @@ void cpuemu_end_elaps(void)
 	(void) gettimeofday(&current, NULL);
 	cpuemu_timeval_sub(&current, &cpuemu_dev_clock.start_tv, &elaps_tv);
 	cpuemu_timeval_add(&elaps_tv, &cpuemu_dev_clock.elaps_tv, &cpuemu_dev_clock.elaps_tv);
+	//printf("current sec=%ld usec=%ld\n", current.tv_sec, current.tv_usec);
+	//printf("elaps sec=%ld usec=%ld\n", elaps_tv.tv_sec, elaps_tv.tv_usec);
+	//printf("total sec=%ld usec=%ld\n", cpuemu_dev_clock.elaps_tv.tv_sec, cpuemu_dev_clock.elaps_tv.tv_usec);
 
 	return;
 }
