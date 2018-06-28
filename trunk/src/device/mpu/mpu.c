@@ -85,7 +85,8 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 	printf("search_region:not found error:addr=0x%x\n", addr);
 	return NULL;
 }
-uint8 *mpu_address_get_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 size, void *mmap_addr) 
+
+static MpuAddressRegionType *mpu_address_search_region(uint32 addr, uint32 size)
 {
 	uint32 i;
 	MpuAddressRegionType *region = NULL;
@@ -100,8 +101,29 @@ uint8 *mpu_address_get_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 si
 				((start <  paddr_end) && (paddr_end <= end))
 			) {
 			region = &mpu_address_map.dynamic_map[i];
+			break;
 		}
 	}
+
+	return region;
+}
+
+uint8 *mpu_address_get_rom(uint32 addr, uint32 size)
+{
+	MpuAddressRegionType *region = NULL;
+
+	region = mpu_address_search_region(addr, size);
+	if (region->type == READONLY_MEMORY) {
+		return region->data;
+	}
+	return NULL;
+}
+
+uint8 *mpu_address_set_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 size, void *mmap_addr)
+{
+	MpuAddressRegionType *region = NULL;
+
+	region = mpu_address_search_region(addr, size);
 
 	if (region == NULL) {
 		mpu_address_map.dynamic_map_num++;

@@ -111,14 +111,14 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 	CachedOperationCodeType *cached_code = NULL;
 
 	for (i = 0; i < memap->rom_num; i++) {
-		ptr = mpu_address_get_rom_ram(memap->rom[i].type, memap->rom[i].start, memap->rom[i].size * 1024, NULL);
+		ptr = mpu_address_set_rom_ram(memap->rom[i].type, memap->rom[i].start, memap->rom[i].size * 1024, NULL);
 		if (ptr == NULL) {
 			printf("Invalid elf file: can not load rom addr=0x%x\n", memap->rom[i].start);
 			return STD_E_INVALID;
 		}
 	}
 	for (i = 0; i < memap->ram_num; i++) {
-		ptr = mpu_address_get_rom_ram(memap->ram[i].type, memap->ram[i].start, memap->ram[i].size * 1024, memap->ram[i].mmap_addr);
+		ptr = mpu_address_set_rom_ram(memap->ram[i].type, memap->ram[i].start, memap->ram[i].size * 1024, memap->ram[i].mmap_addr);
 		if (ptr == NULL) {
 			printf("Invalid elf file: can not load ram addr=0x%x\n", memap->ram[i].start);
 			return STD_E_INVALID;
@@ -152,10 +152,9 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 		/*
 		 * ROM領域のみロードする．
 		 */
-		ptr = mpu_address_get_rom_ram(TRUE, phdr->p_paddr, phdr->p_filesz, NULL);
+		ptr = mpu_address_get_rom(phdr->p_paddr, phdr->p_filesz);
 		if (ptr == NULL) {
-			printf("Invalid elf file: can not load rom addr=0x%x\n", phdr->p_vaddr);
-			return STD_E_INVALID;
+			continue;
 		}
 		err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, phdr->p_paddr, &ptr);
 		if (err != STD_E_OK) {
