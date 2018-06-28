@@ -408,7 +408,7 @@ void dbg_std_executor_elaps(void *executor)
 	CpuEmuElapsType elaps;
 	cpuemu_get_elaps(&elaps);
 #ifdef OS_LINUX
-	printf("clock = cpu "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64" real_time  %ld.%ld\n",
+	printf("clock = cpu "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64" real_time  %ld.%06ld\n",
 			elaps.total_clocks, elaps.intr_clocks, elaps.elaps_tv.tv_sec, elaps.elaps_tv.tv_usec);
 #else
 	printf("clock = cpu "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64"\n", elaps.total_clocks, elaps.intr_clocks);
