@@ -113,7 +113,9 @@ void cpuemu_init(void *(*cpu_run)(void *), void *opt)
 	else {
 		cpuemu_is_cui_mode = FALSE;
 	}
+#ifdef OS_LINUX
 	device_init_athrill_device();
+#endif /* OS_LINUX */
 	return;
 }
 
@@ -282,7 +284,9 @@ void *cpuemu_thread_run(void* arg)
 		/**
 		 * デバイス実行実行
 		 */
+#ifdef OS_LINUX
 		device_supply_clock_athrill_device();
+#endif /* OS_LINUX */
 		device_supply_clock(&cpuemu_dev_clock);
 
 		/**
