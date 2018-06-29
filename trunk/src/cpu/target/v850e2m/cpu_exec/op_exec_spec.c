@@ -2,7 +2,87 @@
 #include "cpu.h"
 #include "bus.h"
 #include "device.h"
-#include <stdio.h> //TODO
+#include <stdio.h>
+
+static int set_sysreg_grp_bnk(CpuRegisterType *cpu, uint32 sysreg)
+{
+	uint32 bnk = (sysreg & 0x000000FF);
+	uint32 grp = (sysreg & 0x0000FF00) >> 16U;
+	uint32 reg_bnk;
+	uint32 reg_grp;
+	
+	switch (grp) {
+	case 0x00:
+		reg_grp = SYS_GRP_CPU;
+		if (bnk == 0x00) {
+			reg_bnk = SYS_GRP_CPU_BNK_0;
+		}
+		else if (bnk == 0x10) {
+			reg_bnk = SYS_GRP_CPU_BNK_1;
+		}
+		else if (bnk == 0x11) {
+			reg_bnk = SYS_GRP_CPU_BNK_2;
+		}
+		else {
+			goto errdone;
+		}
+		break;
+	case 0x10:
+		reg_grp = SYS_GRP_PROSESSOR;
+		if (bnk == 0x00) {
+			reg_bnk = SYS_GRP_CPU_BNK_0;
+		}
+		else if (bnk == 0x01) {
+			reg_bnk = SYS_GRP_CPU_BNK_1;
+		}
+		else if (bnk == 0x10) {
+			reg_bnk = SYS_GRP_CPU_BNK_2;
+		}
+		else {
+			goto errdone;
+		}
+		break;
+	case 0x11:
+		reg_grp = SYS_GRP_PMU;
+		if (bnk == 0x00) {
+			reg_bnk = SYS_GRP_CPU_BNK_0;
+		}
+		else {
+			goto errdone;
+		}
+		break;
+	case 0x20:
+		reg_grp = SYS_GRP_FPU;
+		if (bnk == 0x00) {
+			reg_bnk = SYS_GRP_CPU_BNK_0;
+		}
+		else {
+			goto errdone;
+		}
+		break;
+	case 0xFF:
+		reg_grp = SYS_GRP_USER;
+		if (bnk == 0x00) {
+			reg_bnk = SYS_GRP_CPU_BNK_0;
+		}
+		else if (bnk == 0xFF) {
+			reg_bnk = SYS_GRP_CPU_BNK_1;
+		}
+		else {
+			goto errdone;
+		}
+		break;
+	default:
+		goto errdone;
+	}
+	cpu->sys.current_grp = reg_grp;
+	cpu->sys.current_bnk = reg_bnk;
+	return 0;
+
+errdone:
+	printf("ERROR: invalid set sysreg(0x%x)\n", sysreg);
+	return -1;
+}
 
 static int get_sysreg(CpuRegisterType *cpu, uint32 regid, uint32 **regp)
 {
@@ -46,9 +126,16 @@ int op_exec_ldsr(TargetCoreType *cpu)
 		printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
 		return -1;
 	}
+	if (regid == 31U) { /* BSEL */
+		ret = set_sysreg_grp_bnk(&cpu->reg, cpu->reg.r[reg2]);
+		if (ret < 0) {
+			printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
+			return -1;
+		}
+	}
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LDSR r%d(0x%x) regID(%d):0x%x\n", cpu->reg.pc, reg2, cpu->reg.r[reg2], regid, *sysreg));
 	*sysreg = cpu->reg.r[reg2];
-
+	
 	cpu->reg.pc += 4;
 
 	return 0;

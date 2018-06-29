@@ -341,6 +341,10 @@ void dbg_std_executor_next(void *executor)
 
 	cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped();
 
+#ifdef OS_LINUX
+	cpuemu_end_elaps();
+#endif /* OS_LINUX */
+
 	/*
 	 * ここにsleepを入れないと，cont => q コマンド実行後，ログ出力されなくなるため，
 	 * 一時的に本修正対応する．
@@ -348,9 +352,6 @@ void dbg_std_executor_next(void *executor)
 	target_os_api_sleep(50);
 	dbg_log_set_print_mode(FALSE);
 	dbg_log_set_view_mode(org_view_mode);
-#ifdef OS_LINUX
-	cpuemu_end_elaps();
-#endif /* OS_LINUX */
 	return;
 }
 
