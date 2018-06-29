@@ -7,4 +7,10 @@
 extern void device_init_athrill_device(void);
 extern void device_supply_clock_athrill_device(void);
 
+typedef struct {
+	int fd;
+	void *addr;
+} AthrillDeviceMmapInfoType;
+extern void athrill_device_set_mmap_info(AthrillDeviceMmapInfoType *info);
+
 #endif /* _ATHRILL_DEVICE_H_ */

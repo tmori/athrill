@@ -546,7 +546,7 @@ void intc_clr_nmi(TargetCoreType *cpu)
 static int get_imrno(uint32 regaddr, uint32**imraddr)
 {
 	int imrno = -1;
-	*imraddr = (uint32*)(regaddr & 0x03FFFFFF);
+	*imraddr = (uint32*)CAST_UINT32_TO_ADDR(regaddr & 0x03FFFFFF);
 	switch (regaddr) {
 	case MASK_INTC_ADDR(INTC_REG_IMR0):
 		imrno = 0;

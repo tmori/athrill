@@ -639,6 +639,7 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 				int fd;
 				int err;
 				struct stat statbuf;
+				AthrillDeviceMmapInfoType info;
 				fd = open(filepath, O_RDWR);
 				ASSERT(fd >= 0);
 				err = fstat(fd, &statbuf);
@@ -650,6 +651,9 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 				memp->mmap_addr = mmap(NULL, memp->size * 1024, (PROT_READ|PROT_WRITE), MAP_SHARED, fd, 0);
 				ASSERT(memp->mmap_addr != NULL);
 				printf("MMAP(%s filesize=%lu)", filepath, statbuf.st_size);
+				info.fd = fd;
+				info.addr = memcfg_token_container.array[1].body.hex.value;
+				athrill_device_set_mmap_info(&info);
 			}
 		}
 #endif /* OS_LINUX */
