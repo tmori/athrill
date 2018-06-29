@@ -224,6 +224,38 @@ int op_exec_ldb(TargetCoreType *cpu)
 	cpu->reg.pc += 4;
 	return 0;
 }
+int op_exec_ld_b_14(TargetCoreType *cpu)
+{
+	uint32 addr;
+	sint32 disp;
+	uint32 reg1 = cpu->decoded_code->type14.reg1;
+	uint32 reg3 = cpu->decoded_code->type14.reg3;
+	sint8 data8;
+	Std_ReturnType err;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	disp = op_sign_extend(22, (cpu->decoded_code->type14.disp_high << 7U) | cpu->decoded_code->type14.disp_low);
+
+	addr = cpu->reg.r[reg1] + disp;
+
+	err = bus_get_data8(cpu->core_id, addr, (uint8*)&data8);
+	if (err != STD_E_OK) {
+		return -1;
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.B disp23(%d),r%d(0x%x), r%d(0x%x) addr=0x%x:0x%x\n",
+			cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg3, cpu->reg.r[reg3], addr, data8));
+
+	cpu->reg.r[reg3] = data8;
+
+	cpu->reg.pc += 6;
+	return 0;
+}
 
 int op_exec_ldbu(TargetCoreType *cpu)
 {
@@ -259,6 +291,41 @@ int op_exec_ldbu(TargetCoreType *cpu)
 	cpu->reg.pc += 4;
 	return 0;
 }
+
+int op_exec_ld_bu_14(TargetCoreType *cpu)
+{
+	uint32 addr;
+	sint32 disp;
+	uint32 reg1 = cpu->decoded_code->type14.reg1;
+	uint32 reg3 = cpu->decoded_code->type14.reg3;
+	uint8 data8;
+	Std_ReturnType err;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	disp = op_sign_extend(22, (cpu->decoded_code->type14.disp_high << 7U) | cpu->decoded_code->type14.disp_low);
+
+	addr = cpu->reg.r[reg1] + disp;
+
+	err = bus_get_data8(cpu->core_id, addr, &data8);
+	if (err != STD_E_OK) {
+		return -1;
+	}
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.BU disp23(%d),r%d(0x%x), r%d(0x%x):0x%x\n",
+			cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg3, cpu->reg.r[reg3], data8));
+
+	cpu->reg.r[reg3] = data8;
+
+	cpu->reg.pc += 6;
+	return 0;
+}
+
 int op_exec_ldhw(TargetCoreType *cpu)
 {
 	uint32 addr;
@@ -312,6 +379,73 @@ int op_exec_ldhw(TargetCoreType *cpu)
 	return 0;
 }
 
+int op_exec_ld_h_14(TargetCoreType *cpu)
+{
+	uint32 addr;
+	sint32 disp;
+	uint32 reg1 = cpu->decoded_code->type14.reg1;
+	uint32 reg3 = cpu->decoded_code->type14.reg3;
+	sint16 data16;
+	Std_ReturnType err;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	disp = op_sign_extend(22, (cpu->decoded_code->type14.disp_high << 7U) | cpu->decoded_code->type14.disp_low);
+
+	addr = cpu->reg.r[reg1] + disp;
+
+	err = bus_get_data16(cpu->core_id, addr, (uint16*)&data16);
+	if (err != STD_E_OK) {
+		return -1;
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.H disp23(%d),r%d(0x%x), r%d(0x%x):0x%x\n",
+			cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg3, cpu->reg.r[reg3], data16));
+
+	cpu->reg.r[reg3] = data16;
+
+	cpu->reg.pc += 6;
+	return 0;
+}
+
+int op_exec_ld_w_14(TargetCoreType *cpu)
+{
+	uint32 addr;
+	sint32 disp;
+	uint32 reg1 = cpu->decoded_code->type14.reg1;
+	uint32 reg3 = cpu->decoded_code->type14.reg3;
+	sint32 data32;
+	Std_ReturnType err;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	disp = op_sign_extend(22, (cpu->decoded_code->type14.disp_high << 7U) | cpu->decoded_code->type14.disp_low);
+
+	addr = cpu->reg.r[reg1] + disp;
+
+	err = bus_get_data32(cpu->core_id, addr, (uint32*)&data32);
+	if (err != STD_E_OK) {
+		return -1;
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.W disp23(%d),r%d(0x%x), r%d(0x%x):0x%x\n",
+			cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg3, cpu->reg.r[reg3], data32));
+
+	cpu->reg.r[reg3] = data32;
+
+	cpu->reg.pc += 6;
+	return 0;
+}
+
+
 int op_exec_ldhu(TargetCoreType *cpu)
 {
 	uint32 addr;
@@ -343,5 +477,37 @@ int op_exec_ldhu(TargetCoreType *cpu)
 	cpu->reg.r[reg2] = ret;
 
 	cpu->reg.pc += 4;
+	return 0;
+}
+int op_exec_ld_hu_14(TargetCoreType *cpu)
+{
+	uint32 addr;
+	sint32 disp;
+	uint32 reg1 = cpu->decoded_code->type14.reg1;
+	uint32 reg3 = cpu->decoded_code->type14.reg3;
+	uint16 data16;
+	Std_ReturnType err;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	disp = op_sign_extend(22, (cpu->decoded_code->type14.disp_high << 7U) | cpu->decoded_code->type14.disp_low);
+
+	addr = cpu->reg.r[reg1] + disp;
+
+	err = bus_get_data16(cpu->core_id, addr, (uint16*)&data16);
+	if (err != STD_E_OK) {
+		return -1;
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LD.HU disp23(%d),r%d(0x%x), r%d(0x%x):0x%x\n",
+			cpu->reg.pc, disp, reg1, cpu->reg.r[reg1], reg3, cpu->reg.r[reg3], data16));
+
+	cpu->reg.r[reg3] = data16;
+
+	cpu->reg.pc += 6;
 	return 0;
 }

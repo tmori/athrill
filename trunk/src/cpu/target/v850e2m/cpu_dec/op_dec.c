@@ -1,9 +1,4 @@
-#include "../cpu_dec/op_dec.h"
-
-typedef struct {
-	int (*decode) (uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code);
-} OpDecoderType;
-
+#include "cpu_dec/op_dec.h"
 
 static int OpDecode1(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code);
 static int OpDecode2(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code);
@@ -18,7 +13,8 @@ static int OpDecode10(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_cod
 static int OpDecode11(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code);
 static int OpDecode12(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code);
 static int OpDecode13(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code);
-static OpDecoderType OpDecoder[OP_CODE_FORMAT_NUM] = {
+static int OpDecode14(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code);
+OpDecoderType OpDecoder[OP_CODE_FORMAT_NUM] = {
 	{ OpDecode1 },
 	{ OpDecode2 },
 	{ OpDecode3 },
@@ -32,148 +28,10 @@ static OpDecoderType OpDecoder[OP_CODE_FORMAT_NUM] = {
 	{ OpDecode11 },
 	{ OpDecode12 },
 	{ OpDecode13 },
+	{ OpDecode14 },
 };
 
 
-static OpCodeFormatId is_LD_HU(uint16 code[OP_DECODE_MAX])
-{
-	uint16 opcode = code[0] >> 5U;
-	uint16 reg2 = code[0] & 0xF800;
-	uint16 bit16 = code[1] & 0x0001;
-
-	opcode = opcode & 0x003F;
-	if (opcode != 0b111111) {
-		return OP_CODE_FORMAT_UNKNOWN;
-	}
-	if ((reg2 == 0U) || (bit16 == 0U)) {
-		return OP_CODE_FORMAT_UNKNOWN;
-	}
-	return OP_CODE_FORMAT_7;
-}
-static OpCodeFormatId is_SLD_BU_HU(uint16 code[OP_DECODE_MAX])
-{
-	uint16 opcode = code[0] >> 4U;
-	uint16 reg2 = code[0] & 0xF800;
-
-	opcode = opcode & 0x003E;
-	if (opcode != 0b0000110) {
-		return OP_CODE_FORMAT_UNKNOWN;
-	}
-	if ((reg2 == 0U)) {
-		return OP_CODE_FORMAT_UNKNOWN;
-	}
-	return OP_CODE_FORMAT_4;
-}
-static OpCodeFormatId is_CMOV(uint16 code[OP_DECODE_MAX])
-{
-	uint16 opcode = code[0] >> 5U;
-	uint16 subop = ((code[1] >> 5U) & 0x003F);
-
-	opcode = opcode & 0x003F;
-	if (opcode != 0b111111) {
-		return OP_CODE_FORMAT_UNKNOWN;
-	}
-	switch (subop) {
-	case 0b011000:
-	//case 0b011010:
-		return OP_CODE_FORMAT_12;
-	case 0b011001:
-	//case 0b011011:
-		return OP_CODE_FORMAT_11;
-	default:
-		return OP_CODE_FORMAT_UNKNOWN;
-	}
-}
-static OpCodeFormatId getSpecialFormatId(uint16 code[OP_DECODE_MAX])
-{
-	OpCodeFormatId id;
-
-	id = is_LD_HU(code);
-	if (id != OP_CODE_FORMAT_UNKNOWN) {
-		return id;
-	}
-	id = is_SLD_BU_HU(code);
-	if (id != OP_CODE_FORMAT_UNKNOWN) {
-		return id;
-	}
-	id = is_CMOV(code);
-	if (id != OP_CODE_FORMAT_UNKNOWN) {
-		return id;
-	}
-	return OP_CODE_FORMAT_UNKNOWN;
-}
-
-/*
- *
- */
-int OpDecode(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code)
-{
-	uint16 opcode =  ( (code[0] >> 5) & 0x3F );
-	uint16 subcode = ( (code[1] >> 5) & 0x3F );
-	OpCodeFormatId id;
-
-	//printf("code0=0x%x\n", code[0]);
-	//printf("code1=0x%x\n", code[1]);
-	//printf("opcode=0x%x\n", opcode);
-	id = getSpecialFormatId(code);
-	if (id == OP_CODE_FORMAT_UNKNOWN) {
-		id = OpCode2FormatId(opcode, subcode);
-		if (id == OP_CODE_FORMAT_UNKNOWN) {
-			return -1;
-		}
-		if (id == OP_CODE_FORMAT_5) {
-			/*
-			 * この時点でFORMAT5と判断された場合，
-			 * FORMAT7 or FORMAT13判定が必要となる．
-			 */
-			/*
-			 * 16bit != 0 の場合はFORMAT7 or FORMAT13
-			 */
-			if ((code[1] & 0x0001) != 0) {
-				/*
-				 * reg2 != 0 の場合はFORMAT7
-				 * reg2 == 0 の場合はFORMAT13
-				 */
-				uint16 reg2 = (code[0] >> 11U);
-				if (reg2 != 0U) {
-					id = OP_CODE_FORMAT_7;
-				}
-				else {
-					id = OP_CODE_FORMAT_13;
-				}
-			}
-		}
-		else if (id == OP_CODE_FORMAT_6) {
-			/*
-			 * この時点でFORMAT6と判断された場合，
-			 * FORMAT13判定が必要となる．
-			 */
-			/*
-			 * opcode=0b11001X かつ　reg2==0 の場合はFORMAT13
-			 */
-			uint16 opcode5 = ( (code[0] >> 6U) & 0x001F );
-			uint16 reg2 = (code[0] >> 11U);
-			if ((opcode5 == 0b11001) && reg2 == 0U) {
-				id = OP_CODE_FORMAT_13;
-			}
-		}
-		else if (id == OP_CODE_FORMAT_9) {
-			/*
-			 * この時点でFORMAT9と判断された場合，
-			 * FORMAT11判定が必要となる．
-			 */
-			uint16 bit20 = (code[1] & 0x0008);
-			//printf("code0=0x%x\n", code[0]);
-			//printf("code1=0x%x\n", code[1]);
-			if (bit20 != 0) {
-				id = OP_CODE_FORMAT_11;
-				//printf("CAXI\n");
-			}
-		}
-	}
-	decoded_code->type_id = id;
-	return OpDecoder[id].decode(code, decoded_code);
-}
 static int OpDecode1(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code)
 {
 	decoded_code->type1.opcode = ( (code[0] >> 5) & 0x003F );
@@ -357,6 +215,30 @@ static int OpDecode13(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_cod
 	decoded_code->type13.list[25] = ((t2 & 0x0200) != 0) ? 1U : 0U; /* 30 */
 	decoded_code->type13.list[24] = ((t2 & 0x0400) != 0) ? 1U : 0U; /* 31 */
 
+
+	return 0;
+}
+
+static int OpDecode14(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code)
+{
+#if 0
+	typedef struct {
+		uint16 sub1;	/* 15-11 */
+		uint16 opcode;	/* 10-5 */
+		uint16 reg1;	/* 4-0 */
+		uint16 reg3;	/* 31-27 */
+		uint16 disp_low;	/* 26-20 */
+		uint16 sub2;	/* 19-16 */
+		uint16 disp_high;	/* 47-32 */
+	} OpCodeFormatType14;
+#endif
+	decoded_code->type14.sub1		= ( (code[0] >> 11) & 0x001F );
+	decoded_code->type14.opcode		= ( (code[0] >> 5)  & 0x003F );
+	decoded_code->type14.reg1		= ( (code[0] >>  0) & 0x001F );
+	decoded_code->type14.reg3		= ( (code[1] >> 11) & 0x001F );
+	decoded_code->type14.disp_low	= ( (code[1] >>  4) & 0x007F );
+	decoded_code->type14.sub2		= ( (code[1] >>  0) & 0x000F );
+	decoded_code->type14.disp_high	= code[2];
 
 	return 0;
 }

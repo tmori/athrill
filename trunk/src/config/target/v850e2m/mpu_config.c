@@ -11,7 +11,6 @@
 #define MPU_ADDRESS_REGION_SIZE_INX_PH0		(1024U * 4U)
 #define MPU_ADDRESS_REGION_SIZE_INX_PH1		(1024U * 12U)
 
-
 static uint8 memory_data_CPU[MPU_ADDRESS_REGION_SIZE_INX_CPU * CPU_CONFIG_CORE_NUM];
 static uint8 memory_data_INTC[MPU_ADDRESS_REGION_SIZE_INX_INTC * CPU_CONFIG_CORE_NUM];
 static uint8 memory_data_SERIAL[MPU_ADDRESS_REGION_SIZE_INX_SERIAL];
@@ -29,7 +28,7 @@ MpuAddressMapType mpu_address_map = {
 		.dynamic_map = NULL,
 		.map = {
 				/*
-				 * INDEX 0:DEVICE(割込みコントローラ)
+				 * INDEX 2:DEVICE(割込みコントローラ)
 				 */
 				{
 						.type		= DEVICE,
@@ -65,7 +64,6 @@ MpuAddressMapType mpu_address_map = {
 						.data		= memory_data_SERIAL,
 						.ops		= &serial_memory_operation
 				},
-
 
 				/*
 				 * INDEX :DEVICE(その他内蔵周辺I/O領域)

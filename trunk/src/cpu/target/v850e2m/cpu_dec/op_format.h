@@ -3,7 +3,7 @@
 
 #include "std_types.h"
 
-#define OP_CODE_FORMAT_NUM	13
+#define OP_CODE_FORMAT_NUM	14
 typedef enum {
 	OP_CODE_FORMAT_1 = 0,
 	OP_CODE_FORMAT_2,
@@ -18,18 +18,9 @@ typedef enum {
 	OP_CODE_FORMAT_11,
 	OP_CODE_FORMAT_12,
 	OP_CODE_FORMAT_13,
+	OP_CODE_FORMAT_14,
 	OP_CODE_FORMAT_UNKNOWN,
 } OpCodeFormatId;
-
-typedef struct {
-	OpCodeFormatId id;
-} OpCode2FormatType;
-
-#define OP_CODE_NUM		(16)
-#define OP_CODE_NUM		(16)
-
-extern OpCodeFormatId OpCode2FormatId(uint8 opcode, uint8 subcode);
-
 
 
 /*
@@ -167,4 +158,17 @@ typedef struct {
 	uint16 gen;		/* 20-16 */
 	uint16 rfu;		/* 15-11 */
 } OpCodeFormatType13;
+
+/*
+ * ロード／ストア命令48ビット形式（Format XIV）
+ */
+typedef struct {
+	uint16 sub1;	/* 15-11 */
+	uint16 opcode;	/* 10-5 */
+	uint16 reg1;	/* 4-0 */
+	uint16 reg3;	/* 31-27 */
+	uint32 disp_low;	/* 26-20 */
+	uint16 sub2;	/* 19-16 */
+	uint32 disp_high;	/* 47-32 */
+} OpCodeFormatType14;
 #endif /* _OP_FORMAT_H_ */

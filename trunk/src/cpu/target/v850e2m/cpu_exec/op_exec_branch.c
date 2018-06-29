@@ -1,43 +1,16 @@
 #include "cpu_exec/op_exec_ops.h"
 #include "cpu.h"
 
-/*
- * Format1
- */
-int op_exec_jmp(TargetCoreType *cpu)
+bool op_exec_cond(TargetCoreType *cpu, uint16 cond)
 {
-	uint32 reg1 = cpu->decoded_code->type1.reg1;
-	if (reg1 >= CPU_GREG_NUM) {
-		return -1;
-	}
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JMP r%d(0x%x)\n", cpu->reg.pc, reg1, cpu->reg.r[reg1]));
-	cpu->reg.pc = cpu->reg.r[reg1];
-	return 0;
-}
-
-
-/*
- * Format3
- */
-int op_exec_bcond(TargetCoreType *cpu)
-{
-	uint16 cond = cpu->decoded_code->type3.cond;
 	uint16 is_br = FALSE;
 	uint16 flg_s = CPU_ISSET_S(&cpu->reg);
 	uint16 flg_ov = CPU_ISSET_OV(&cpu->reg);
 	uint16 flg_z = CPU_ISSET_Z(&cpu->reg);
 	uint16 flg_cy = CPU_ISSET_CY(&cpu->reg);
 	uint16 flg_sat = CPU_ISSET_SAT(&cpu->reg);
-	uint32 disp_u;
-	sint32 disp;
-
-	disp_u = cpu->decoded_code->type3.disp << 1;
-	disp = op_sign_extend(8, disp_u);//1�r�b�g�V�t�g�����̂ŁC7��8�ƂȂ����D
 
 	switch (cond) {
-	/*
-	 * �����t������
-	 */
 	case 0b1110:	//BGE
 		if ((flg_s ^ flg_ov) == FALSE) {
 			is_br = TRUE;
@@ -59,9 +32,6 @@ int op_exec_bcond(TargetCoreType *cpu)
 		}
 		break;
 
-	/*
-	 * ���������Ȃ�����
-	 */
 	case 0b1011:	//BH
 		if ((flg_cy | flg_z) == FALSE) {
 			is_br = TRUE;
@@ -85,9 +55,6 @@ int op_exec_bcond(TargetCoreType *cpu)
 		}
 		break;
 
-	/*
-	 * ����
-	 */
 	case 0b0010:	//BE
 /*	case 0b0010: */	//BZ
 		if ((flg_z) == TRUE) {
@@ -100,9 +67,6 @@ int op_exec_bcond(TargetCoreType *cpu)
 		}
 		break;
 
-	/*
-	 * ���̑�
-	 */
 	case 0b0100:	//BN
 		if ((flg_s) == TRUE) {
 			is_br = TRUE;
@@ -134,6 +98,12 @@ int op_exec_bcond(TargetCoreType *cpu)
 	default:
 		break;
 	}
+	return is_br;
+}
+
+static void op_exec_bcond(TargetCoreType *cpu, uint16 cond, sint32 disp, sint32 code_size)
+{
+	uint16 is_br = op_exec_cond(cpu, cond);
 	if (is_br == TRUE) {
 		sint32 pc = cpu->reg.pc;
 		pc = pc + disp;
@@ -141,10 +111,39 @@ int op_exec_bcond(TargetCoreType *cpu)
 		cpu->reg.pc = pc;
 	}
 	else {
-		sint32 pc = cpu->reg.pc + 2;
+		sint32 pc = cpu->reg.pc + code_size;
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: Bcond(0x%x):0x%x\n", cpu->reg.pc, cond, pc));
 		cpu->reg.pc = pc;
 	}
+}
+/*
+ * Format1
+ */
+int op_exec_jmp(TargetCoreType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code->type1.reg1;
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JMP r%d(0x%x)\n", cpu->reg.pc, reg1, cpu->reg.r[reg1]));
+	cpu->reg.pc = cpu->reg.r[reg1];
+	return 0;
+}
+
+
+/*
+ * Format3
+ */
+int op_exec_bcond_3(TargetCoreType *cpu)
+{
+	uint16 cond = cpu->decoded_code->type3.cond;
+	uint32 disp_u;
+	sint32 disp;
+
+	disp_u = cpu->decoded_code->type3.disp << 1;
+	disp = op_sign_extend(8, disp_u);
+
+	op_exec_bcond(cpu, cond, disp, 2);
 	return 0;
 }
 
@@ -173,3 +172,60 @@ int op_exec_jr(TargetCoreType *cpu)
 	cpu->reg.pc = pc;
 	return 0;
 }
+
+
+/*
+ * Format6
+ */
+int op_exec_jmp_6(TargetCoreType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code->type6.reg1;
+	uint32 disp = cpu->decoded_code->type6.imm;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JMP disp32(%u) r%d(0x%x)\n", cpu->reg.pc, disp, reg1, cpu->reg.r[reg1] + disp));
+	cpu->reg.pc = cpu->reg.r[reg1] + disp;
+
+	return 0;
+}
+
+int op_exec_jarl_6(TargetCoreType *cpu)
+{
+	sint32 reg1 = cpu->decoded_code->type6.reg1;
+	uint32 disp = cpu->decoded_code->type6.imm;
+	uint32 pc = (sint32)cpu->reg.pc;
+
+	pc += disp;
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JARL disp32(%u) r%u(0x%x):0x%x r%u(0x%x)\n",
+			cpu->reg.pc,
+			disp,
+			reg1, cpu->reg.r[reg1],
+			pc,
+			reg1, cpu->reg.pc + 6));
+
+	cpu->reg.r[reg1] = cpu->reg.pc + 6;
+
+	cpu->reg.pc = pc;
+	return 0;
+}
+
+int op_exec_jr_6(TargetCoreType *cpu)
+{
+	uint32 disp = cpu->decoded_code->type6.imm;
+	uint32 pc = (uint32)cpu->reg.pc;
+
+	pc += disp;
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: JR disp32(%u):0x%x\n",
+			cpu->reg.pc,
+			disp,
+			pc));
+
+	cpu->reg.pc = pc;
+	return 0;
+}
+

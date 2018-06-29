@@ -374,3 +374,98 @@ int op_exec_not1_9(TargetCoreType *cpu)
 	return 0;
 }
 
+static int op_exec_schlr_9(TargetCoreType *cpu, uint32 search_bitval, bool search_left)
+{
+	sint32 reg2 = cpu->decoded_code->type9.reg2;
+	sint32 reg3 = cpu->decoded_code->type9.rfu2;
+	uint32 reg2_data = cpu->reg.r[reg2];
+	uint32 i;
+	uint32 count = 0;
+	bool isFound = FALSE;
+	uint32 result;
+	char *dir = NULL;
+
+	if (search_left == TRUE) {
+		dir = "L";
+		for (i = 0; i < 32; i++) {
+			if ((reg2_data & (1U << (31 - i))) == search_bitval) {
+				isFound = TRUE;
+				break;
+			}
+			else {
+				count++;
+			}
+		}
+	}
+	else {
+		dir = "R";
+		for (i = 0; i < 32; i++) {
+			if ((reg2_data & (1U << (i))) == search_bitval) {
+				isFound = TRUE;
+				break;
+			}
+			else {
+				count++;
+			}
+		}
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
+				"0x%x: SCH%dR r%d(0x%x) r%d(0x%x):%u\n",
+				cpu->reg.pc,
+				search_bitval,
+				reg3, cpu->reg.r[reg2], reg3, cpu->reg.r[reg3],
+				count + 1));
+	}
+
+	//CY 最後にビット（search_bitval）が見つかったとき 1，そうでないとき 0
+	if (count == 31) {
+		CPU_SET_CY(&cpu->reg);
+	}
+	else {
+		CPU_SET_CY(&cpu->reg);
+	}
+
+	CPU_CLR_OV(&cpu->reg);
+	CPU_CLR_S(&cpu->reg);
+
+	//ビット（search_bitval）が見つからなかったとき 1，そうでないとき 0
+	if (isFound == FALSE) {
+		CPU_SET_Z(&cpu->reg);
+		result = 0;
+	}
+	else {
+		CPU_CLR_Z(&cpu->reg);
+		result = count + 1;
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(),
+			"0x%x: SCH%d%s r%d(0x%x) r%d(0x%x):psw=0x%x, %u\n",
+			cpu->reg.pc,
+			search_bitval,
+			dir,
+			reg2, cpu->reg.r[reg2], reg3, cpu->reg.r[reg3],
+			sys_get_cpu_base(&cpu->reg)->r[SYS_REG_PSW], result));
+
+	cpu->reg.r[reg3] = result;
+	cpu->reg.pc += 4;
+
+	return 0;
+}
+
+/*
+ * Format9
+ */
+int op_exec_sch0l_9(TargetCoreType *cpu)
+{
+	return op_exec_schlr_9(cpu, 0, TRUE);
+}
+int op_exec_sch1l_9(TargetCoreType *cpu)
+{
+	return op_exec_schlr_9(cpu, 1, TRUE);
+}
+int op_exec_sch0r_9(TargetCoreType *cpu)
+{
+	return op_exec_schlr_9(cpu, 0, FALSE);
+}
+int op_exec_sch1r_9(TargetCoreType *cpu)
+{
+	return op_exec_schlr_9(cpu, 1, FALSE);
+}

@@ -3,25 +3,11 @@
 #include "std_cpu_ops.h"
 #include <stdio.h>
 #include "cpu_common/cpu_ops.h"
-#include "cpu_common/op_exec.h"
-#include "cpu_dec/op_dec.h"
+#include "cpu_dec/op_parse.h"
+#include "cpu_exec/op_exec.h"
+#include "mpu_types.h"
 
-CpuType virtual_cpu = {
-	.cores = {
-		/*
-		 * INDEX 0
-		 */
-		{
-			.core.core_id	=	CPU_CONFIG_CORE_ID_0,
-		},
-		/*
-		 * INDEX 1
-		 */
-		{
-			.core.core_id	=	CPU_CONFIG_CORE_ID_1,
-		}
-	},
-};
+CpuType virtual_cpu;
 
 void cpu_init(void)
 {
@@ -68,6 +54,7 @@ void cpu_set_current_core(CoreIdType core_id)
 
 Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 {
+	OperationCodeType optype;
 	int ret;
 	Std_ReturnType err;
 	uint32 inx;
@@ -76,15 +63,16 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 	if (virtual_cpu.cores[core_id].core.is_halt == TRUE) {
 		return STD_E_OK;
 	}
+
 	cached_code = virtual_cpu_get_cached_code(virtual_cpu.cores[core_id].core.reg.pc);
 	inx = virtual_cpu.cores[core_id].core.reg.pc - cached_code->code_start_addr;
 	if (cached_code->codes[inx].op_exec == NULL) {
 		/*
 		 * 命令取得する
 		 */
-		err = bus_get_data32(core_id,
+		err = bus_get_pointer(core_id,
 				virtual_cpu.cores[core_id].core.reg.pc,
-				(uint32*)virtual_cpu.cores[core_id].core.current_code);
+				(uint8**)&(virtual_cpu.cores[core_id].core.current_code));
 		if (err != STD_E_OK) {
 			return err;
 		}
@@ -92,18 +80,26 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 		/*
 		 * デコード
 		 */
-		ret = OpDecode(virtual_cpu.cores[core_id].core.current_code,
-				&cached_code->codes[inx].decoded_code);
+		ret = op_parse(virtual_cpu.cores[core_id].core.current_code,
+				&cached_code->codes[inx].decoded_code, &optype);
 		if (ret < 0) {
 			printf("Decode Error\n");
 			return STD_E_DECODE;
 		}
+		if (op_exec_table[optype.code_id].exec == NULL) {
+			printf("Not supported code(%d fmt=%d) Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
+					optype.code_id, optype.format_id,
+					virtual_cpu.cores[core_id].core.current_code[0],
+					virtual_cpu.cores[core_id].core.current_code[1],
+					virtual_cpu.cores[core_id].core.decoded_code->type_id);
+			return STD_E_EXEC;
+		}
+
 		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
-		virtual_cpu.cores[core_id].core.op_exec = NULL;
 		/*
 		 * 命令実行
 		 */
-		ret = OpExec(&virtual_cpu.cores[core_id].core);
+		ret = op_exec_table[optype.code_id].exec(&virtual_cpu.cores[core_id].core);
 		if (ret < 0) {
 			printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
 					virtual_cpu.cores[core_id].core.current_code[0],
@@ -111,7 +107,7 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 					virtual_cpu.cores[core_id].core.decoded_code->type_id);
 			return STD_E_EXEC;
 		}
-		cached_code->codes[inx].op_exec = virtual_cpu.cores[core_id].core.op_exec;
+		cached_code->codes[inx].op_exec = op_exec_table[optype.code_id].exec;
 	}
 	else {
 		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
@@ -124,8 +120,8 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 			return STD_E_EXEC;
 		}
 		virtual_cpu.cores[core_id].core.reg.r[0] = 0U;
-	}
 
+	}
 	return STD_E_OK;
 }
 
@@ -149,3 +145,118 @@ void cpu_illegal_opcode_trap(CoreIdType core_id)
 
 	return;
 }
+
+
+static Std_ReturnType cpu_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data);
+static Std_ReturnType cpu_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data);
+
+MpuAddressRegionOperationType cpu_register_operation = {
+		.get_data8 = NULL,
+		.get_data16 = NULL,
+		.get_data32 = cpu_get_data32,
+		.put_data8 = NULL,
+		.put_data16 = NULL,
+		.put_data32 = cpu_put_data32,
+};
+static uint32 *get_cpu_register_addr(MpuAddressRegionType *region, TargetCoreType *core, uint32 addr)
+{
+	uint32 inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR) / sizeof(uint32);
+
+	//printf("get_cpu_register_addr:inx=%u\n", inx);
+	if (inx >= 0 && inx <= 31) {
+		return (uint32*)&core->reg.r[inx];
+	}
+	else if (addr == CPU_CONFIG_ADDR_PEID) {
+		inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR) * core->core_id;
+		return (uint32*)&region->data[inx];
+	}
+	else if ((addr >= CPU_CONFIG_ADDR_MEV_0) && (addr <= CPU_CONFIG_ADDR_MEV_7)) {
+		inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR);
+		return (uint32*)&region->data[inx];
+	}
+	else if ((addr >= CPU_CONFIG_ADDR_MIR_0) && (addr <= CPU_CONFIG_ADDR_MIR_1)) {
+		inx = (addr - CPU_CONFIG_DEBUG_REGISTER_ADDR);
+		return (uint32*)&region->data[inx];
+	}
+	return NULL;
+}
+static Std_ReturnType cpu_get_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 *data)
+{
+	uint32 *registerp = get_cpu_register_addr(region, &virtual_cpu.current_core->core, addr);
+	if (registerp == NULL) {
+		return STD_E_SEGV;
+	}
+	else if (addr == CPU_CONFIG_ADDR_PEID) {
+		*registerp = (core_id + 1);
+	}
+	*data = *registerp;
+	return STD_E_OK;
+}
+
+static Std_ReturnType cpu_put_data32(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint32 data)
+{
+	uint32 *registerp = get_cpu_register_addr(region, &virtual_cpu.current_core->core, addr);
+	if (registerp == NULL) {
+		return STD_E_SEGV;
+	}
+	else if (addr == CPU_CONFIG_ADDR_PEID) {
+		return STD_E_SEGV;
+	}
+	else if ((addr == CPU_CONFIG_ADDR_MIR_0)) {
+		intc_cpu_trigger_interrupt(core_id, CPU_CONFIG_ADDR_MIR_0_INTNO);
+		return STD_E_OK;
+	}
+	else if ((addr == CPU_CONFIG_ADDR_MIR_1)) {
+		intc_cpu_trigger_interrupt(core_id, CPU_CONFIG_ADDR_MIR_1_INTNO);
+		return STD_E_OK;
+	}
+	*registerp = data;
+	return STD_E_OK;
+}
+
+
+uint32 cpu_get_pc(const TargetCoreType *core)
+{
+	return core->reg.pc;
+}
+uint32 cpu_get_ep(const TargetCoreType *core)
+{
+	return core->reg.r[30];
+}
+uint32 cpu_get_current_core_id(void)
+{
+	return ((const TargetCoreType *)virtual_cpu.current_core)->core_id;
+}
+uint32 cpu_get_current_core_pc(void)
+{
+	return cpu_get_pc((const TargetCoreType *)virtual_cpu.current_core);
+}
+
+uint32 cpu_get_current_core_register(uint32 inx)
+{
+	return ((TargetCoreType *)virtual_cpu.current_core)->reg.r[inx];
+}
+
+uint32 cpu_get_sp(const TargetCoreType *core)
+{
+	return core->reg.r[3];
+}
+uint32 cpu_get_current_core_sp(void)
+{
+	return cpu_get_sp((const TargetCoreType *)virtual_cpu.current_core);
+}
+uint32 cpu_get_current_core_ep(void)
+{
+	return cpu_get_ep((const TargetCoreType *)virtual_cpu.current_core);
+}
+
+
+uint32 cpu_get_return_addr(const TargetCoreType *core)
+{
+	return core->reg.r[31];
+}
+CoreIdType cpu_get_core_id(const TargetCoreType *core)
+{
+	return core->core_id;
+}
+

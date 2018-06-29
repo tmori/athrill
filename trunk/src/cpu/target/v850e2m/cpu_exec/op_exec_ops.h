@@ -19,6 +19,12 @@ extern int op_exec_sldh(TargetCoreType *cpu);
 extern int op_exec_sldhu(TargetCoreType *cpu);
 extern int op_exec_sldw(TargetCoreType *cpu);
 
+extern int op_exec_ld_b_14(TargetCoreType *cpu);
+extern int op_exec_ld_bu_14(TargetCoreType *cpu);
+extern int op_exec_ld_h_14(TargetCoreType *cpu);
+extern int op_exec_ld_hu_14(TargetCoreType *cpu);
+extern int op_exec_ld_w_14(TargetCoreType *cpu);
+
 /*
  * ストア命令
  */
@@ -27,6 +33,10 @@ extern int op_exec_ssth(TargetCoreType *cpu);
 extern int op_exec_stb(TargetCoreType *cpu);
 extern int op_exec_sthw(TargetCoreType *cpu);
 extern int op_exec_sstw(TargetCoreType *cpu);
+extern int op_exec_st_b_14(TargetCoreType *cpu);
+extern int op_exec_st_h_14(TargetCoreType *cpu);
+extern int op_exec_st_w_14(TargetCoreType *cpu);
+//extern int xxx(TargetCoreType *cpu);
 
 /*
  * 乗算命令
@@ -61,6 +71,7 @@ extern int op_exec_setf(TargetCoreType *cpu);
 extern int op_exec_div(TargetCoreType *cpu);
 extern int op_exec_divu(TargetCoreType *cpu);
 extern int op_exec_divhu(TargetCoreType *cpu);
+extern int op_exec_divqu_11(TargetCoreType *cpu);
 extern int op_exec_divh_11(TargetCoreType *cpu);
 extern int op_exec_divh_1(TargetCoreType *cpu);
 extern int op_exec_mul(TargetCoreType *cpu);
@@ -69,6 +80,13 @@ extern int op_exec_mulu(TargetCoreType *cpu);
 extern int op_exec_cmov_11(TargetCoreType *cpu);
 extern int op_exec_cmov_12(TargetCoreType *cpu);
 
+extern int op_exec_adf_11(TargetCoreType *cpu);
+extern int op_exec_sbf_11(TargetCoreType *cpu);
+extern int op_exec_sasf_9(TargetCoreType *cpu);
+
+extern int op_exec_mac_11(TargetCoreType *cpu);
+extern int op_exec_macu_11(TargetCoreType *cpu);
+
 /*
  * 飽和演算命令
  */
@@ -76,6 +94,10 @@ extern int op_exec_satsubi(TargetCoreType *cpu);
 extern int op_exec_satadd_1(TargetCoreType *cpu);
 extern int op_exec_satsub_1(TargetCoreType *cpu);
 extern int op_exec_satadd_2(TargetCoreType *cpu);
+
+extern int op_exec_satadd_11(TargetCoreType *cpu);
+extern int op_exec_satsub_11(TargetCoreType *cpu);
+extern int op_exec_satsubr_1(TargetCoreType *cpu);
 
 /*
  * 論理演算命令
@@ -95,18 +117,33 @@ extern int op_exec_sar_2(TargetCoreType *cpu);
 extern int op_exec_shl_9(TargetCoreType *cpu);
 extern int op_exec_shr_9(TargetCoreType *cpu);
 extern int op_exec_sar_9(TargetCoreType *cpu);
+extern int op_exec_shl_11(TargetCoreType *cpu);
+extern int op_exec_shr_11(TargetCoreType *cpu);
+extern int op_exec_sar_11(TargetCoreType *cpu);
+extern int op_exec_hsh_12(TargetCoreType *cpu);
+extern int op_exec_hsw_12(TargetCoreType *cpu);
+extern int op_exec_bsh_12(TargetCoreType *cpu);
+extern int op_exec_bsw_12(TargetCoreType *cpu);
 extern int op_exec_tst(TargetCoreType *cpu);
 extern int op_exec_zxb(TargetCoreType *cpu);
 extern int op_exec_zxh(TargetCoreType *cpu);
+
+extern int op_exec_sch0l_9(TargetCoreType *cpu);
+extern int op_exec_sch1l_9(TargetCoreType *cpu);
+extern int op_exec_sch0r_9(TargetCoreType *cpu);
+extern int op_exec_sch1r_9(TargetCoreType *cpu);
 
 /*
  * 分岐命令
  */
 extern int op_exec_jr(TargetCoreType *cpu);
+extern int op_exec_jr_6(TargetCoreType *cpu);
+extern int op_exec_jarl_6(TargetCoreType *cpu);
 extern int op_exec_jmp(TargetCoreType *cpu);
+extern int op_exec_jmp_6(TargetCoreType *cpu);
 extern int op_exec_cmp_1(TargetCoreType *cpu);
 extern int op_exec_cmp_2(TargetCoreType *cpu);
-extern int op_exec_bcond(TargetCoreType *cpu);
+extern int op_exec_bcond_3(TargetCoreType *cpu);
 
 /*
  * ビット命令

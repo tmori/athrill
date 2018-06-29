@@ -50,7 +50,11 @@ extern int op_chk_and_set_borrow(CpuRegisterType *cpu, uint32 a, uint32 b);
 extern int op_chk_and_set_overflow(CpuRegisterType *cpu, sint64 a, sint64 b);
 extern int op_chk_and_set_zero(CpuRegisterType *cpu, sint32 result);
 extern int op_chk_and_set_sign(CpuRegisterType *cpu, sint32 result);
+extern bool op_exec_cond(TargetCoreType *cpu, uint16 cond);
 
+extern int op_chk_and_set_carry3(CpuRegisterType *cpu, uint32 a, uint32 b, uint32 c);
+extern int op_chk_and_set_borrow3(CpuRegisterType *cpu, uint32 a, uint32 b, uint32 c);
+extern int op_chk_and_set_overflow3(CpuRegisterType *cpu, sint64 a, sint64 b, sint64 c);
 
 static inline sint32 op_addi(
 		CpuRegisterType *cpu,

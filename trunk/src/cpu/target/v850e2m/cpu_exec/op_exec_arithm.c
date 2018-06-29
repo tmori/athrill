@@ -46,11 +46,47 @@ int op_chk_and_set_carry(CpuRegisterType *cpu, uint32 a32, uint32 b32)
 	}
 	return 0;
 }
+int op_chk_and_set_carry3(CpuRegisterType *cpu, uint32 a32, uint32 b32, uint32 c32)
+{
+	uint64 tmp1 = a32;
+	uint64 tmp2 = b32;
+	uint64 tmp3 = c32;
+	uint64 result = tmp1 + tmp2 + tmp3;
+
+	if (result > CPU_REG_UINT_MAX) {
+		//printf("SET_CY:a32=%llx b32=%llx result=%llx\n", tmp1, tmp2, result);
+		CPU_SET_CY(cpu);
+	}
+	else {
+		//printf("CLR_CY:a32=%llx b32=%llx result=%llx\n", tmp1, tmp2, result);
+		CPU_CLR_CY(cpu);
+	}
+	return 0;
+}
+
 int op_chk_and_set_borrow(CpuRegisterType *cpu, uint32 a32, uint32 b32)
 {
 	uint64 tmp1 = a32;
 	uint64 tmp2 = b32;
 	uint64 result = tmp1 - tmp2;
+
+	if (result & 0x100000000ULL) {
+		//printf("SET_CY:a32=%llx b32=%llx result=%llx\n", tmp1, tmp2, result);
+		CPU_SET_CY(cpu);
+	}
+	else {
+		//printf("CLR_CY:a32=%llx b32=%llx result=%llx\n", tmp1, tmp2, result);
+		CPU_CLR_CY(cpu);
+	}
+	return 0;
+}
+
+int op_chk_and_set_borrow3(CpuRegisterType *cpu, uint32 a32, uint32 b32, uint32 c32)
+{
+	uint64 tmp1 = a32;
+	uint64 tmp2 = b32;
+	uint64 tmp3 = c32;
+	uint64 result = tmp1 - tmp2 - tmp3;
 
 	if (result & 0x100000000ULL) {
 		//printf("SET_CY:a32=%llx b32=%llx result=%llx\n", tmp1, tmp2, result);
@@ -82,6 +118,22 @@ int op_chk_and_set_overflow(CpuRegisterType *cpu, sint64 a64, sint64 b64)
 	}
 	return 0;
 }
+int op_chk_and_set_overflow3(CpuRegisterType *cpu, sint64 a64, sint64 b64, sint64 c64)
+{
+	sint64 result = a64 + b64 + c64;
+
+	if (result > (sint64)CPU_REG_PLUS_MAX) {
+		CPU_SET_OV(cpu);
+	}
+	else if (result < (sint64)CPU_REG_MINUS_MAX) {
+		CPU_SET_OV(cpu);
+	}
+	else {
+		CPU_CLR_OV(cpu);
+	}
+	return 0;
+}
+
 int op_chk_and_set_zero(CpuRegisterType *cpu, sint32 result)
 {
 	if (result == 0) {
@@ -637,6 +689,29 @@ int op_exec_setf(TargetCoreType *cpu)
 
 	return 0;
 }
+int op_exec_sasf_9(TargetCoreType *cpu)
+{
+	uint32 reg2 = cpu->decoded_code->type9.reg2;
+	uint16 cond = cpu->decoded_code->type9.gen;
+	sint32 result;
+
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	result = cpu->reg.r[reg2] << 1U;
+	if (op_exec_cond(cpu, cond) == TRUE) {
+		result |= 1;
+	}
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SASF cond(0x%x),r%d(%d):%d\n",
+			cpu->reg.pc, cond, reg2, cpu->reg.r[reg2], result));
+
+	cpu->reg.r[reg2] = result;
+
+	cpu->reg.pc += 4;
+
+	return 0;
+}
 /*
  * Format 11
  */
@@ -748,6 +823,61 @@ int op_exec_divhu(TargetCoreType *cpu)
 	cpu->reg.pc += 4;
 	return 0;
 }
+int op_exec_divqu_11(TargetCoreType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
+	uint32 reg1_data = cpu->reg.r[reg1];
+	uint32 reg2_data = cpu->reg.r[reg2];
+	uint32 reg3_data = cpu->reg.r[reg3];
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	/*
+	 * GR [reg2] ← GR [reg2] ÷ GR [reg1]
+	 */
+	if (reg1_data == 0U) {
+		CPU_SET_OV(&cpu->reg);
+	}
+	else {
+		CPU_CLR_OV(&cpu->reg);
+		cpu->reg.r[reg2] = ( (uint32)reg2_data / ((uint32)((uint16)reg1_data)) );
+		/*
+		 * GR [reg3] ← GR [reg2] % GR [reg1]
+		 */
+		cpu->reg.r[reg3] = ( (uint32)reg2_data % ((uint32)((uint16)reg1_data)) );
+	}
+
+	/*
+	 * Z 演算結果が0のとき1，そうでないとき0
+	 */
+	op_chk_and_set_zero(&cpu->reg, (sint32)cpu->reg.r[reg2]);
+	/*
+	 * S 演算結果が負のとき1，そうでないとき0
+	 */
+	op_chk_and_set_sign(&cpu->reg, (sint32)cpu->reg.r[reg2]);
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DIVQU r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
+			cpu->reg.pc,
+			reg1, reg1_data,
+			reg2, reg2_data,
+			reg3, reg3_data,
+			reg2, cpu->reg.r[reg2],
+			reg3, cpu->reg.r[reg3]));
+
+	cpu->reg.pc += 4;
+	return 0;
+}
+
 int op_exec_divh_11(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code->type11.reg1;
@@ -1112,6 +1242,224 @@ int op_exec_cmov_12(TargetCoreType *cpu)
 			reg2, reg2_data,
 			reg3, reg3_data,
 			reg3, cpu->reg.r[reg3]));
+
+	cpu->reg.pc += 4;
+	return 0;
+}
+
+
+/*
+ * Format11
+ */
+int op_exec_adf_11(TargetCoreType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
+	sint32 reg1_data;
+	sint32 reg2_data;
+	sint32 add_data = 0;
+	sint32 result;
+	uint16 cond =
+			  ((cpu->decoded_code->type11.rfu) << 1U)
+			| (cpu->decoded_code->type11.sub2);
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+
+	reg1_data = cpu->reg.r[reg1];
+	reg2_data = cpu->reg.r[reg2];
+	if (op_exec_cond(cpu, cond) == TRUE) {
+		add_data = 1;
+	}
+	else {
+		add_data = 0;
+	}
+	result = reg2_data + reg1_data + add_data;
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ADF cond=0x%x, r%d(%d),r%d(%d),r%d(%d):%d\n",
+			cpu->reg.pc,
+			cond,
+			reg1, cpu->reg.r[reg1],
+			reg2, cpu->reg.r[reg2],
+			reg3, cpu->reg.r[reg3],
+			result));
+
+	cpu->reg.r[reg3] = result;
+
+	op_chk_and_set_carry3(&cpu->reg, reg2_data, reg1_data, add_data);
+	op_chk_and_set_overflow3(&cpu->reg, reg2_data, reg1_data, add_data);
+	op_chk_and_set_zero(&cpu->reg, result);
+	op_chk_and_set_sign(&cpu->reg, result);
+
+	cpu->reg.pc += 4;
+	return 0;
+}
+int op_exec_sbf_11(TargetCoreType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
+	sint32 reg1_data;
+	sint32 reg2_data;
+	sint32 add_data = 0;
+	sint32 result;
+	uint16 cond =
+			  ((cpu->decoded_code->type11.rfu) << 1U)
+			| (cpu->decoded_code->type11.sub2);
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (op_exec_cond(cpu, cond) == TRUE) {
+		add_data = 1;
+	}
+	else {
+		add_data = 0;
+	}
+
+	reg2_data = cpu->reg.r[reg2];
+	reg1_data = cpu->reg.r[reg1];
+	result = reg2_data - reg1_data - add_data;
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SBF cond=0x%x, r%d(%d),r%d(%d),r%d(%d):%d\n",
+			cpu->reg.pc,
+			cond,
+			reg1, cpu->reg.r[reg1],
+			reg2, cpu->reg.r[reg2],
+			reg3, cpu->reg.r[reg3],
+			result));
+
+	cpu->reg.r[reg3] = result;
+
+
+	op_chk_and_set_borrow3(&cpu->reg, reg2_data, reg1_data, add_data);
+	op_chk_and_set_overflow3(&cpu->reg, reg2_data, -reg1_data, -add_data);
+	op_chk_and_set_zero(&cpu->reg, result);
+	op_chk_and_set_sign(&cpu->reg, result);
+
+	cpu->reg.pc += 4;
+	return 0;
+}
+
+int op_exec_mac_11(TargetCoreType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
+	uint32 reg4 = (cpu->decoded_code->type11.rfu << 1U) | cpu->decoded_code->type11.sub2;
+	uint32 reg3plus1 = reg3 + 1;
+	uint32 reg4plus1 = reg4 + 1;
+	sint64 reg1_data = cpu->reg.r[reg1];
+	sint64 reg2_data = cpu->reg.r[reg2];
+	sint64 reg3plus1_data = cpu->reg.r[reg3plus1];
+	sint64 reg3_data  = cpu->reg.r[reg3];
+	sint64 result1;
+	sint64 result2;
+	sint64 result;
+	sint32 *result_data;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg4 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if ((reg3 % 2) != 0) {
+		return -1;
+	}
+	if ((reg4 % 2) != 0) {
+		return -1;
+	}
+	result1 = reg2_data * reg1_data;
+	result2 = (reg3plus1_data << 32U) | reg3_data;
+
+	result = result1 + result2;
+	result_data = (sint32*)&result;
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: MAC r%d(%d),r%d(%d),r%d(%d),r%d(%d):%d, %d\n",
+			cpu->reg.pc,
+			reg1, cpu->reg.r[reg1],
+			reg2, cpu->reg.r[reg2],
+			reg3, cpu->reg.r[reg3],
+			reg4, cpu->reg.r[reg4],
+			result_data[0], result_data[1]));
+
+	cpu->reg.r[reg4] = result_data[0];
+	cpu->reg.r[reg4plus1] = result_data[1];
+
+	cpu->reg.pc += 4;
+	return 0;
+}
+
+int op_exec_macu_11(TargetCoreType *cpu)
+{
+	uint32 reg1 = cpu->decoded_code->type11.reg1;
+	uint32 reg2 = cpu->decoded_code->type11.reg2;
+	uint32 reg3 = cpu->decoded_code->type11.reg3;
+	uint32 reg4 = (cpu->decoded_code->type11.rfu << 1U) | cpu->decoded_code->type11.sub2;
+	uint32 reg3plus1 = reg3 + 1;
+	uint32 reg4plus1 = reg4 + 1;
+	sint64 reg1_data = cpu->reg.r[reg1];
+	sint64 reg2_data = cpu->reg.r[reg2];
+	sint64 reg3plus1_data = cpu->reg.r[reg3plus1];
+	sint64 reg3_data  = cpu->reg.r[reg3];
+	uint64 result1;
+	uint64 result2;
+	uint64 result;
+	uint32 *result_data;
+
+	if (reg1 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg2 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg3 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if (reg4 >= CPU_GREG_NUM) {
+		return -1;
+	}
+	if ((reg3 % 2) != 0) {
+		return -1;
+	}
+	if ((reg4 % 2) != 0) {
+		return -1;
+	}
+	result1 = reg2_data * reg1_data;
+	result2 = (reg3plus1_data << 32U) | reg3_data;
+
+	result = result1 + result2;
+	result_data = (uint32*)&result;
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: MAC r%d(%u),r%d(%u),r%d(%u),r%d(%u):%u, %u\n",
+			cpu->reg.pc,
+			reg1, cpu->reg.r[reg1],
+			reg2, cpu->reg.r[reg2],
+			reg3, cpu->reg.r[reg3],
+			reg4, cpu->reg.r[reg4],
+			result_data[0], result_data[1]));
+
+	cpu->reg.r[reg4] = result_data[0];
+	cpu->reg.r[reg4plus1] = result_data[1];
 
 	cpu->reg.pc += 4;
 	return 0;

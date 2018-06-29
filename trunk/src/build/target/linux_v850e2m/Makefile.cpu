@@ -27,7 +27,8 @@ CFLAGS	+= $(IFLAGS)
 
 OBJS	:=	op_exec.o
 OBJS	+=	op_dec.o
-OBJS	+=	op_format.o
+OBJS	+=	op_parse.o
+OBJS	+=	op_parse_private.o
 OBJS	+=	op_exec_bit.o
 OBJS	+=	op_exec_branch.o
 OBJS	+=	op_exec_dbg.o
