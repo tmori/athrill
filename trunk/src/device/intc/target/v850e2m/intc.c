@@ -543,10 +543,9 @@ void intc_clr_nmi(TargetCoreType *cpu)
 	return;
 }
 
-static int get_imrno(uint32 regaddr, uint32**imraddr)
+static int get_imrno(uint32 regaddr)
 {
 	int imrno = -1;
-	*imraddr = (uint32*)CAST_UINT32_TO_ADDR(regaddr & 0x03FFFFFF);
 	switch (regaddr) {
 	case MASK_INTC_ADDR(INTC_REG_IMR0):
 		imrno = 0;
@@ -591,7 +590,6 @@ static int get_xxICn(uint32 regaddr)
 static void intc_hook_update_reg8(CoreIdType core_id, uint32 regaddr, uint8 data)
 {
 	int imrno;
-	uint32 *imraddr;
 	uint8 *xxICn;
 	uint32 regaddr32;
 	uint32 *pregaddr32;
@@ -599,7 +597,7 @@ static void intc_hook_update_reg8(CoreIdType core_id, uint32 regaddr, uint8 data
 	int intno;
 
 	//printf("intc_hook_update_reg8:regaddr=0x%x data=0x%x\n", regaddr, data);
-	imrno = get_imrno(regaddr, &imraddr);
+	imrno = get_imrno(regaddr);
 	if (imrno >= 0) {
 		intno = imrno * 16;
 		for (i = 0; i < 8; i++, intno++) {
@@ -637,14 +635,13 @@ static void intc_hook_update_reg8(CoreIdType core_id, uint32 regaddr, uint8 data
 static void intc_hook_update_reg16(CoreIdType core_id, uint32 regaddr, uint16 data)
 {
 	int imrno;
-	uint32 *imraddr;
 	uint8 *xxICn;
 	uint32 regaddr32;
 	uint32 *pregaddr32;
 	int i;
 	int intno;
 
-	imrno = get_imrno(regaddr, &imraddr);
+	imrno = get_imrno(regaddr);
 	if (imrno < 0) {
 		return;
 	}

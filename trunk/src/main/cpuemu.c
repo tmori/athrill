@@ -652,7 +652,7 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 				ASSERT(memp->mmap_addr != NULL);
 				printf("MMAP(%s filesize=%lu)", filepath, statbuf.st_size);
 				info.fd = fd;
-				info.addr = memcfg_token_container.array[1].body.hex.value;
+				info.addr = CAST_UINT32_TO_ADDR(memcfg_token_container.array[1].body.hex.value);
 				athrill_device_set_mmap_info(&info);
 			}
 		}
