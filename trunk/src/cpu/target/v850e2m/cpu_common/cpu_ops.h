@@ -12,6 +12,33 @@
 #define CPU_PSW_EP		(1 << 6)
 #define CPU_PSW_NP		(1 << 7)
 
+#define CPU_PSW_PP_BIT			19U		//周辺装置保護
+#define CPU_PSW_NPV_BIT			18U		//システム・レジスタ保護
+#define CPU_PSW_DMP_BIT			17U		//データ・アクセス
+#define CPU_PSW_IMP_BIT			16U		//プログラム領域に対するメモリ保護
+#define IS_TRUSTED_PP(psw)		(((psw) & (1U << CPU_PSW_PP_BIT)) == 0x0)
+#define IS_TRUSTED_NPV(psw)		(((psw) & (1U << CPU_PSW_NPV_BIT)) == 0x0)
+#define IS_TRUSTED_DMP(psw)		(((psw) & (1U << CPU_PSW_DMP_BIT)) == 0x0)
+#define IS_TRUSTED_IMP(psw)		(((psw) & (1U << CPU_PSW_IMP_BIT)) == 0x0)
+
+#define CPU_PSW_PP		(1U << CPU_PSW_PP_BIT)
+#define CPU_PSW_NPV		(1U << CPU_PSW_NPV_BIT)
+#define CPU_PSW_IMP		(1U << CPU_PSW_IMP_BIT)
+#define CPU_PSW_DMP		(1U << CPU_PSW_DMP_BIT)
+
+
+#define CPU_SET_PP(cpu)		sys_get_cpu_base(cpu)->r[SYS_REG_PSW] |= CPU_PSW_PP
+#define CPU_CLR_PP(cpu)		sys_get_cpu_base(cpu)->r[SYS_REG_PSW] &= ~CPU_PSW_PP
+
+#define CPU_SET_NPV(cpu)	sys_get_cpu_base(cpu)->r[SYS_REG_PSW] |= CPU_PSW_NPV
+#define CPU_CLR_NPV(cpu)	sys_get_cpu_base(cpu)->r[SYS_REG_PSW] &= ~CPU_PSW_NPV
+
+#define CPU_SET_IMP(cpu)	sys_get_cpu_base(cpu)->r[SYS_REG_PSW] |= CPU_PSW_IMP
+#define CPU_CLR_IMP(cpu)	sys_get_cpu_base(cpu)->r[SYS_REG_PSW] &= ~CPU_PSW_IMP
+
+#define CPU_SET_DMP(cpu)	sys_get_cpu_base(cpu)->r[SYS_REG_PSW] |= CPU_PSW_DMP
+#define CPU_CLR_DMP(cpu)	sys_get_cpu_base(cpu)->r[SYS_REG_PSW] &= ~CPU_PSW_DMP
+
 #define CPU_SET_EP(cpu)		sys_get_cpu_base(cpu)->r[SYS_REG_PSW] |= CPU_PSW_EP
 #define CPU_CLR_EP(cpu)		sys_get_cpu_base(cpu)->r[SYS_REG_PSW] &= ~CPU_PSW_EP
 #define CPU_ISSET_EP(cpu)	( (sys_get_cpu_base(cpu)->r[SYS_REG_PSW] & CPU_PSW_EP) == CPU_PSW_EP )

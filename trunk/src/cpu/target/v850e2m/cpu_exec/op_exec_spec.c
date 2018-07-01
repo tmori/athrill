@@ -235,7 +235,6 @@ int op_exec_halt(TargetCoreType *cpu)
 	return 0;
 }
 
-
 int op_exec_trap(TargetCoreType *cpu)
 {
 	int ret = -1;
@@ -271,7 +270,6 @@ int op_exec_trap(TargetCoreType *cpu)
 
 	return 0;
 }
-
 int op_exec_switch(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code->type1.reg1;

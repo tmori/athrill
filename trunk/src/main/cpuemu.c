@@ -307,7 +307,7 @@ void *cpuemu_thread_run(void* arg)
 			dbg_notify_cpu_clock_supply_start(&virtual_cpu.cores[i].core);
 
 			err = cpu_supply_clock(i);
-			if (err != STD_E_OK) {
+			if ((err != STD_E_OK) && (cpu_illegal_access(i) == FALSE)) {
 				printf("CPU(pc=0x%x) Exception!!\n", cpu_get_pc(&virtual_cpu.cores[i].core));
 				fflush(stdout);
 				if (cpuemu_cui_mode() == TRUE) {

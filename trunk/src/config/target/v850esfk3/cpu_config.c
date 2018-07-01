@@ -117,3 +117,8 @@ void cpu_illegal_opcode_trap(CoreIdType core_id)
 
 	return;
 }
+
+bool cpu_illegal_access(CoreIdType core_id)
+{
+	return FALSE;
+}

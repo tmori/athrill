@@ -255,14 +255,7 @@ static inline uint32 cpu_get_psw(CpuSystemRegisterType *sys) {
 }
 
 
-#define PSW_PP_BIT			19U		//周辺装置保護
-#define PSW_NPV_BIT			18U		//システム・レジスタ保護
-#define PSW_DMP_BIT			17U		//データ・アクセス
-#define PSW_IMP_BIT			16U		//プログラム領域に対するメモリ保護
-#define IS_TRUSTED_PP(psw)		(((psw) & (1U << PSW_PP_BIT)) == 0x0)
-#define IS_TRUSTED_NPV(psw)		(((psw) & (1U << PSW_NPV_BIT)) == 0x0)
-#define IS_TRUSTED_DMP(psw)		(((psw) & (1U << PSW_DMP_BIT)) == 0x0)
-#define IS_TRUSTED_IMP(psw)		(((psw) & (1U << PSW_IMP_BIT)) == 0x0)
+
 
 static inline uint32 *cpu_get_mpu_settign_sysreg(CpuSystemRegisterType *sys) {
 	return sys->grp[SYS_GRP_PROSESSOR][SYS_GRP_CPU_BNK_1].r;

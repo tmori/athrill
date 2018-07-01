@@ -177,6 +177,9 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 		break;
 	case DEVICE:
 		permission = IS_TRUSTED_PP(psw);
+		if (permission == FALSE) {
+			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_PPI;
+		}
 		break;
 	default:
 		break;
@@ -184,6 +187,58 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 	return permission;
 }
 
+bool cpu_illegal_access(CoreIdType core_id)
+{
+	if (virtual_cpu.cores[core_id].core.mpu.exception_error_code == CpuExceptionError_None) {
+		return FALSE;
+	}
+	uint32 fepc = cpu_get_current_core_pc();
+	uint32 fepsw = cpu_get_psw(&virtual_cpu.cores[core_id].core.reg.sys);
+	uint32 feic = 0x0;
+	uint32 handler_code;
+	uint32 ecr;
+
+	switch (virtual_cpu.cores[core_id].core.mpu.exception_error_code) {
+	case CpuExceptionError_MIP:
+		feic = 0x0430;
+		handler_code = 0x0030;
+		break;
+	case CpuExceptionError_MDP:
+		feic = 0x0431;
+		handler_code = 0x0030;
+		break;
+	case CpuExceptionError_PPI:
+		feic = 0x0432;
+		handler_code = 0x0030;
+		break;
+	default:
+		/* not reached */
+		break;
+	}
+
+	CPU_SET_EP(&virtual_cpu.cores[core_id].core.reg);
+	CPU_SET_NP(&virtual_cpu.cores[core_id].core.reg);
+	CPU_SET_ID(&virtual_cpu.cores[core_id].core.reg);
+
+	CPU_CLR_PP(&virtual_cpu.cores[core_id].core.reg);
+	CPU_CLR_NPV(&virtual_cpu.cores[core_id].core.reg);
+	CPU_CLR_IMP(&virtual_cpu.cores[core_id].core.reg);
+	CPU_CLR_DMP(&virtual_cpu.cores[core_id].core.reg);
+
+
+	sys_get_cpu_base(&virtual_cpu.cores[core_id].core.reg)->r[SYS_REG_FEIC] = feic;
+	sys_get_cpu_base(&virtual_cpu.cores[core_id].core.reg)->r[SYS_REG_FEPSW] = fepsw;
+	sys_get_cpu_base(&virtual_cpu.cores[core_id].core.reg)->r[SYS_REG_FEPC] = fepc;
+
+	ecr = sys_get_cpu_base(&virtual_cpu.cores[core_id].core.reg)->r[SYS_REG_ECR];
+	ecr = ecr & 0x00FF;
+	ecr |= (feic << 16);
+	sys_get_cpu_base(&virtual_cpu.cores[core_id].core.reg)->r[SYS_REG_ECR] = ecr;
+	virtual_cpu.cores[core_id].core.reg.pc = handler_code;
+
+	virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_None;
+	return TRUE;
+}
 static void private_cpu_mpu_set_common_obj(TargetCoreMpuConfigType *config, uint32 au, uint32 al)
 {
 	config->al = (al & 0xFFFFFF0);
