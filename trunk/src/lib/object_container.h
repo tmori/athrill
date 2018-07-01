@@ -160,6 +160,17 @@ static inline void *object_container_find_first(ObjectContainerType *container, 
 	}
 	return NULL;
 }
+static inline void *object_container_find_first2(ObjectContainerType *container, bool (*object_filter) (const void *p, const void *arg), const void *arg)
+{
+	uint32 index;
+	for (index = 0; index < container->num_using_objects; index++) {
+		void *p = object_container_get_element(container, index);
+		if (object_filter(p, arg) == TRUE) {
+			return p;
+		}
+	}
+	return NULL;
+}
 
 
 static inline void object_container_delete(ObjectContainerType *container)

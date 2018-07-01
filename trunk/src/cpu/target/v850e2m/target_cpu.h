@@ -3,6 +3,7 @@
 
 #include "cpu_dec/op_dec.h"
 #include "std_types.h"
+#include "object_container.h"
 
 #define CPU_GREG_NUM			(32U)
 #define CPU_SYSREG_NUM			(28U)
@@ -245,17 +246,87 @@ static inline uint32 *cpu_get_sysreg(CpuSystemRegisterType *sys, uint32 inx) {
 	}
 }
 
+static inline uint32 cpu_get_psw(CpuSystemRegisterType *sys) {
+	return sys->grp[SYS_GRP_CPU][SYS_GRP_CPU_BNK_0].r[SYS_REG_PSW];
+}
+
+#define PSW_PP_BIT			19U		//周辺装置保護
+#define PSW_NPV_BIT			18U		//システム・レジスタ保護
+#define PSW_DMP_BIT			17U		//データ・アクセス
+#define PSW_IMP_BIT			16U		//プログラム領域に対するメモリ保護
+#define IS_TRUSTED_PP(psw)		(((psw) & (1U << PSW_PP_BIT)) == 0x0)
+#define IS_TRUSTED_NPV(psw)		(((psw) & (1U << PSW_NPV_BIT)) == 0x0)
+#define IS_TRUSTED_DMP(psw)		(((psw) & (1U << PSW_DMP_BIT)) == 0x0)
+#define IS_TRUSTED_IMP(psw)		(((psw) & (1U << PSW_IMP_BIT)) == 0x0)
+
+static inline uint32 *cpu_get_mpu_settign_sysreg(CpuSystemRegisterType *sys) {
+	return sys->grp[SYS_GRP_PROSESSOR][SYS_GRP_CPU_BNK_1].r;
+}
+
+
 static inline CpuSystemRegisterDataType *sys_get_cpu_base(CpuRegisterType *reg) {
 	return &reg->sys.grp[SYS_GRP_CPU][SYS_GRP_CPU_BNK_0];
 }
 
+typedef enum {
+	CpuExceptionError_None = 0,
+	CpuExceptionError_MIP,
+	CpuExceptionError_MDP,
+	CpuExceptionError_PPI,
+} CpuExceptionErrorCodeType;
+
+#define TARGET_CORE_MPU_CONFIG_EXEC_MAXNUM		5U
+#define TARGET_CORE_MPU_CONFIG_DATA_MAXNUM		6U
 
 typedef struct {
-	CoreIdType				core_id;
-	CpuRegisterType 		reg;
-	bool					is_halt;
-	uint16 					*current_code;
-	OpDecodedCodeType		*decoded_code;
+	bool								enable;
+	bool								is_mask_method;
+	/*
+	 * is_mask_method == FALSE
+	 *  => au: upper address
+	 *  => al: lower address
+	 *
+	 * is_mask_method == TRUE
+	 *  => au: mask
+	 *  => al: base address
+	 *
+	 *  マスク値を指定する場合は,必ず下位側から 1 を連続させた値を設定してください
+	 *  (000050FFHなどのように,1/0が交互に配置された場合の動作は保証しません)。
+	 */
+	uint32								au;
+	uint32								al;
+} TargetCoreMpuConfigType;
+
+typedef struct {
+	TargetCoreMpuConfigType				common;
+	bool								enable_read;
+	bool								enable_exec;
+} TargetCoreMpuExecConfigType;
+
+typedef struct {
+	TargetCoreMpuConfigType				common;
+	bool								enable_read;
+	bool								enable_write;
+} TargetCoreMpuDataConfigType;
+
+typedef struct {
+	ObjectContainerType					*region_permissions;
+} TargetCoreMpuConfigContainerType;
+
+typedef struct {
+	CpuExceptionErrorCodeType			exception_error_code;
+	TargetCoreMpuConfigContainerType	data_configs;
+	TargetCoreMpuConfigContainerType	exec_configs;
+} TargetCoreMpuType;
+
+typedef struct {
+	CoreIdType					core_id;
+	CpuRegisterType 			reg;
+	bool						is_halt;
+	uint16 						*current_code;
+	OpDecodedCodeType			*decoded_code;
+	TargetCoreMpuType			mpu;
 } TargetCoreType;
+
 
 #endif /* _CPU_REGISTER_H_ */

@@ -18,6 +18,227 @@ void cpu_init(void)
 	}
 	return;
 }
+typedef struct {
+	CpuMemoryAccessType access_type;
+	uint32 addr;
+	uint32 size;
+} CpuMemoryCheckType;
+
+/*
+ * FALSE: permission OK
+ * TRUE:  permission NG
+ */
+static bool dmp_object_filter(const void *p, const void *arg)
+{
+	TargetCoreMpuDataConfigType *config = (TargetCoreMpuDataConfigType*)p;
+	CpuMemoryCheckType *check_arg = (CpuMemoryCheckType*)arg;
+
+	if (config->common.enable == FALSE) {
+		return FALSE;
+	}
+	if (config->common.is_mask_method == FALSE) {
+		//TODO upper lower
+	}
+	else {
+		//TODO mask method
+	}
+	return TRUE;
+}
+
+static bool cpu_has_permission_dmp(CoreIdType core_id, CpuMemoryAccessType access_type, uint32 addr, uint32 size)
+{
+	ObjectContainerType *container = virtual_cpu.cores[core_id].core.mpu.data_configs.region_permissions;
+	void *obj;
+	CpuMemoryCheckType arg;
+
+	arg.access_type = access_type;
+	arg.addr = addr;
+	arg.size = size;
+
+	obj = object_container_find_first2(container, dmp_object_filter, &arg);
+	if (obj != NULL) {
+		return FALSE;
+	}
+	else {
+		return TRUE;
+	}
+}
+
+static bool cpu_has_permission_imp(CoreIdType core_id, CpuMemoryAccessType access_type, uint32 addr, uint32 size)
+{
+	return TRUE;
+}
+bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type, CpuMemoryAccessType access_type, uint32 addr, uint32 size)
+{
+	uint32 psw = cpu_get_psw(&virtual_cpu.cores[core_id].core.reg.sys);
+	bool permission = FALSE;
+
+	switch (region_type) {
+	case GLOBAL_MEMORY:
+		if (IS_TRUSTED_DMP(psw)) {
+			permission = TRUE;
+		}
+		else {
+			permission = cpu_has_permission_dmp(core_id, access_type, addr, size);
+		}
+
+		break;
+	case READONLY_MEMORY:
+		if (IS_TRUSTED_IMP(psw)) {
+			permission = TRUE;
+		}
+		else {
+			permission = cpu_has_permission_imp(core_id, access_type, addr, size);
+		}
+		break;
+	case DEVICE:
+		permission = IS_TRUSTED_PP(psw);
+		break;
+	default:
+		break;
+	}
+	return permission;
+}
+
+static void private_cpu_mpu_set_common_obj(TargetCoreMpuConfigType *config, uint32 au, uint32 al)
+{
+	config->al = (al & 0xFFFFFF0);
+	config->au = ( (au & 0xFFFFFF0) | 0x0F );
+
+	if ((al & 0x04) != 0x00) {
+		config->is_mask_method = TRUE;
+	}
+	else {
+		config->is_mask_method = FALSE;
+	}
+
+	if ((al & 0x01) != 0x00) {
+		config->enable = TRUE;
+	}
+	else {
+		config->enable = FALSE;
+	}
+	return;
+}
+
+void private_cpu_mpu_construct_containers(TargetCoreType *cpu)
+{
+	int i;
+	uint32 *setting_sysreg;
+
+	setting_sysreg = cpu_get_mpu_settign_sysreg(&cpu->reg.sys);
+
+	if (cpu->mpu.exec_configs.region_permissions != NULL) {
+		object_container_delete(cpu->mpu.exec_configs.region_permissions);
+		cpu->mpu.exec_configs.region_permissions = NULL;
+	}
+	if (cpu->mpu.data_configs.region_permissions != NULL) {
+		object_container_delete(cpu->mpu.data_configs.region_permissions);
+		cpu->mpu.data_configs.region_permissions = NULL;
+	}
+	cpu->mpu.exec_configs.region_permissions = object_container_create(sizeof(TargetCoreMpuExecConfigType), TARGET_CORE_MPU_CONFIG_EXEC_MAXNUM);
+	cpu->mpu.data_configs.region_permissions = object_container_create(sizeof(TargetCoreMpuDataConfigType), TARGET_CORE_MPU_CONFIG_DATA_MAXNUM);
+
+	/*
+	 * exec
+	 */
+	ObjectContainerType	*container;
+
+	container = cpu->mpu.exec_configs.region_permissions;
+	for (i = 0; i < TARGET_CORE_MPU_CONFIG_EXEC_MAXNUM; i++) {
+		TargetCoreMpuExecConfigType *obj = (TargetCoreMpuExecConfigType *)object_container_create_element(container);
+		uint32 al = setting_sysreg[SYS_REG_MPU_IPA0L + (i * 2)];
+		uint32 au = setting_sysreg[SYS_REG_MPU_IPA0U + (i * 2)];
+
+		private_cpu_mpu_set_common_obj(&obj->common, au, al);
+		if ((au & 0x02) != 0x00) {
+			obj->enable_read = TRUE;
+		}
+		else {
+			obj->enable_read = FALSE;
+		}
+
+		if ((al & 0x01) != 0x00) {
+			obj->enable_exec = TRUE;
+		}
+		else {
+			obj->enable_exec = FALSE;
+		}
+	}
+
+	/*
+	 * data
+	 */
+	for (i = 0; i < TARGET_CORE_MPU_CONFIG_DATA_MAXNUM; i++) {
+		TargetCoreMpuDataConfigType *obj = (TargetCoreMpuDataConfigType *)object_container_create_element(container);
+		uint32 al = setting_sysreg[SYS_REG_MPU_DPA0L + (i * 2)];
+		uint32 au = setting_sysreg[SYS_REG_MPU_DPA0U + (i * 2)];
+
+		private_cpu_mpu_set_common_obj(&obj->common, au, al);
+		if ((au & 0x02) != 0x00) {
+			obj->enable_read = TRUE;
+		}
+		else {
+			obj->enable_read = FALSE;
+		}
+
+		if ((al & 0x04) != 0x00) {
+			obj->enable_write = TRUE;
+		}
+		else {
+			obj->enable_write = FALSE;
+		}
+	}
+
+	return;
+}
+
+static void private_cpu_mpu_init(TargetCoreType *cpu)
+{
+	uint32 *setting_sysreg;
+
+	cpu->mpu.exception_error_code = CpuExceptionError_None;
+
+	//mpu register initial values
+	setting_sysreg = cpu_get_mpu_settign_sysreg(&cpu->reg.sys);
+	//IPA0L-IPA4L 			0000 0002H
+	setting_sysreg[SYS_REG_MPU_IPA0L] = 0x00000002;
+	setting_sysreg[SYS_REG_MPU_IPA1L] = 0x00000002;
+	setting_sysreg[SYS_REG_MPU_IPA2L] = 0x00000002;
+	setting_sysreg[SYS_REG_MPU_IPA3L] = 0x00000002;
+	setting_sysreg[SYS_REG_MPU_IPA4L] = 0x00000002;
+
+	//IPA0U-IPA4U 			0000 0000H
+	setting_sysreg[SYS_REG_MPU_IPA0U] = 0x00000000;
+	setting_sysreg[SYS_REG_MPU_IPA1U] = 0x00000000;
+	setting_sysreg[SYS_REG_MPU_IPA2U] = 0x00000000;
+	setting_sysreg[SYS_REG_MPU_IPA3U] = 0x00000000;
+	setting_sysreg[SYS_REG_MPU_IPA4U] = 0x00000000;
+
+	//DPA0L 				0000 0002H
+	setting_sysreg[SYS_REG_MPU_DPA0L] = 0x00000006;
+	//DPA1L-DPA4L 			0000 0002H
+	setting_sysreg[SYS_REG_MPU_DPA1L] = 0x00000002;
+	setting_sysreg[SYS_REG_MPU_DPA2L] = 0x00000002;
+	setting_sysreg[SYS_REG_MPU_DPA3L] = 0x00000002;
+	setting_sysreg[SYS_REG_MPU_DPA4L] = 0x00000002;
+	//DPA5L 				0000 0006H
+	setting_sysreg[SYS_REG_MPU_DPA5L] = 0x00000006;
+
+	//DPA0U 				0000 0006H
+	setting_sysreg[SYS_REG_MPU_DPA0U] = 0x00000006;
+	//DPA1U-DPA4U 			0000 0000H
+	setting_sysreg[SYS_REG_MPU_DPA1U] = 0x00000000;
+	setting_sysreg[SYS_REG_MPU_DPA2U] = 0x00000000;
+	setting_sysreg[SYS_REG_MPU_DPA3U] = 0x00000000;
+	setting_sysreg[SYS_REG_MPU_DPA4U] = 0x00000000;
+	//DPA5U 				0000 0000H
+	setting_sysreg[SYS_REG_MPU_DPA5U] = 0x00000000;
+
+	private_cpu_mpu_construct_containers(cpu);
+	return;
+}
+
 
 static void private_cpu_reset(TargetCoreType *cpu)
 {
@@ -34,6 +255,11 @@ static void private_cpu_reset(TargetCoreType *cpu)
 	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_PSW] = 0x20;
 
 	cpu->is_halt = FALSE;
+
+	/*
+	 * MPU
+	 */
+	private_cpu_mpu_init(cpu);
 	return;
 }
 

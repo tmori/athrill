@@ -1,5 +1,5 @@
-#include "mpu.h"
 #include "cpu_config.h"
+#include "mpu.h"
 #include "mpu_ops.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +25,7 @@ MpuAddressRegionOperationType	default_memory_operation = {
 		.get_pointer	= memory_get_pointer
 };
 
+#if 0
 static inline bool has_permission(MpuAddressRegionType *region, CoreIdType core_id)
 {
 	if (	(region->permission != MPU_ADDRESS_REGION_PERM_ALL) &&
@@ -33,6 +34,7 @@ static inline bool has_permission(MpuAddressRegionType *region, CoreIdType core_
 	}
 	return TRUE;
 }
+#endif
 
 static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 addr, uint32 search_size)
 {
@@ -49,11 +51,14 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 		if (	((start <= paddr_str) && (paddr_str < end)) &&
 				((start <  paddr_end) && (paddr_end <= end))
 			) {
+
+#if 0
 			//printf("1:passed1\n");
 			if (has_permission( &mpu_address_map.dynamic_map[i], core_id) == FALSE) {
 				printf("search_region:permission error:addr=0x%x\n", addr);
 				return NULL;
 			}
+#endif
 			//printf("2:passed1:%u:0x%p\n", i,  &mpu_address_map.map[i]);
 			return &mpu_address_map.dynamic_map[i];
 		}
@@ -73,11 +78,13 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 		if (	((start <= paddr_str) && (paddr_str < end)) &&
 				((start <  paddr_end) && (paddr_end <= end))
 			) {
+#if 0
 			//printf("1:passed1\n");
 			if (has_permission( &mpu_address_map.map[i], core_id) == FALSE) {
 				printf("search_region:permission error:addr=0x%x\n", addr);
 				return NULL;
 			}
+#endif
 			//printf("2:passed1:%u:0x%p\n", i,  &mpu_address_map.map[i]);
 			return &mpu_address_map.map[i];
 		}
@@ -198,6 +205,9 @@ Std_ReturnType mpu_get_data8(CoreIdType core_id, uint32 addr, uint8 *data)
 	if (region->ops->get_data8 == NULL) {
 		return STD_E_SEGV;
 	}
+	if (!CPU_HAS_PERMISSION(core_id, region->type, CpuMemoryAccess_READ, addr, 1U)) {
+		return STD_E_SEGV;
+	}
 	uint32 paddr = (addr & region->mask);
 	return region->ops->get_data8(region, core_id, paddr, data);
 }
@@ -208,6 +218,9 @@ Std_ReturnType mpu_get_data16(CoreIdType core_id, uint32 addr, uint16 *data)
 		return STD_E_SEGV;
 	}
 	if (region->ops->get_data16 == NULL) {
+		return STD_E_SEGV;
+	}
+	if (!CPU_HAS_PERMISSION(core_id, region->type, CpuMemoryAccess_READ, addr, 2U)) {
 		return STD_E_SEGV;
 	}
 	uint32 paddr = (addr & region->mask);
@@ -221,6 +234,9 @@ Std_ReturnType mpu_get_data32(CoreIdType core_id, uint32 addr, uint32 *data)
 		return STD_E_SEGV;
 	}
 	if (region->ops->get_data32 == NULL) {
+		return STD_E_SEGV;
+	}
+	if (!CPU_HAS_PERMISSION(core_id, region->type, CpuMemoryAccess_READ, addr, 4U)) {
 		return STD_E_SEGV;
 	}
 	uint32 paddr = (addr & region->mask);
@@ -244,6 +260,9 @@ Std_ReturnType mpu_put_data8(CoreIdType core_id, uint32 addr, uint8 data)
 		printf("mpu_put_data8:error: can not write data on ROM :addr=0x%x data=%u\n", addr, data);
 		return STD_E_SEGV;
 	}
+	if (!CPU_HAS_PERMISSION(core_id, region->type, CpuMemoryAccess_WRITE, addr, 1U)) {
+		return STD_E_SEGV;
+	}
 	uint32 paddr = (addr & region->mask);
 	err = region->ops->put_data8(region, core_id, paddr, data);
 	if (err != STD_E_OK) {
@@ -265,6 +284,9 @@ Std_ReturnType mpu_put_data16(CoreIdType core_id, uint32 addr, uint16 data)
 		printf("mpu_put_data16:error: can not write data on ROM :addr=0x%x data=%u\n", addr, data);
 		return STD_E_SEGV;
 	}
+	if (!CPU_HAS_PERMISSION(core_id, region->type, CpuMemoryAccess_WRITE, addr, 2U)) {
+		return STD_E_SEGV;
+	}
 	uint32 paddr = (addr & region->mask);
 	return region->ops->put_data16(region, core_id, paddr, data);
 }
@@ -282,7 +304,9 @@ Std_ReturnType mpu_put_data32(CoreIdType core_id, uint32 addr, uint32 data)
 		printf("mpu_put_data32:error: can not write data on ROM :addr=0x%x data=%u\n", addr, data);
 		return STD_E_SEGV;
 	}
-
+	if (!CPU_HAS_PERMISSION(core_id, region->type, CpuMemoryAccess_WRITE, addr, 4U)) {
+		return STD_E_SEGV;
+	}
 	uint32 paddr = (addr & region->mask);
 	return region->ops->put_data32(region, core_id, paddr, data);
 }
