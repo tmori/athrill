@@ -20,10 +20,47 @@ void cpu_init(void)
 }
 typedef struct {
 	CpuMemoryAccessType access_type;
-	uint32 addr;
-	uint32 size;
+	uint32 start;
+	uint32 end;
 } CpuMemoryCheckType;
 
+/*
+ *  not overlap confitions
+ *
+ *    access1                                  access2
+ * |------------|                           |------------|
+ * s            e                           s            e
+ *               |------------------------|
+ *               s        config          e
+ */
+#define IS_NOT_OVERLAP_RANGE(access_start, access_end, config_start, config_end)	\
+	( \
+			   ((access_start) > (config_end))	\
+			|| ((access_end) < (config_start))	\
+	)
+
+static bool is_overlap(TargetCoreMpuConfigType *config, CpuMemoryCheckType *check_arg)
+{
+	uint32 config_start;
+	uint32 config_end;
+
+	if (config->is_mask_method == FALSE) {
+		//upper lower
+		config_start = config->al;
+		config_end = config->au;
+	}
+	else {
+		//mask method
+		config_start = (config->al & (~config->au));
+		config_end = (config->al | config->au);
+	}
+	if (IS_NOT_OVERLAP_RANGE(config_start, config_end, check_arg->start, check_arg->end)) {
+		return FALSE;
+	}
+	else {
+		return TRUE;
+	}
+}
 /*
  * FALSE: permission OK
  * TRUE:  permission NG
@@ -33,16 +70,44 @@ static bool dmp_object_filter(const void *p, const void *arg)
 	TargetCoreMpuDataConfigType *config = (TargetCoreMpuDataConfigType*)p;
 	CpuMemoryCheckType *check_arg = (CpuMemoryCheckType*)arg;
 
-	if (config->common.enable == FALSE) {
+	if (config->common.enable_protection == FALSE) {
 		return FALSE;
 	}
-	if (config->common.is_mask_method == FALSE) {
-		//TODO upper lower
+	if (check_arg->access_type == CpuMemoryAccess_READ) {
+		if (config->enable_read == TRUE) {
+			return FALSE;
+		}
 	}
-	else {
-		//TODO mask method
+	else { //WRITE
+		if (config->enable_write == TRUE) {
+			return FALSE;
+		}
 	}
-	return TRUE;
+
+	return is_overlap(&config->common, check_arg);
+}
+/*
+ * FALSE: permission OK
+ * TRUE:  permission NG
+ */
+static bool dip_object_filter(const void *p, const void *arg)
+{
+	TargetCoreMpuExecConfigType *config = (TargetCoreMpuExecConfigType*)p;
+	CpuMemoryCheckType *check_arg = (CpuMemoryCheckType*)arg;
+
+	if (config->common.enable_protection == FALSE) {
+		return FALSE;
+	}
+	if (check_arg->access_type == CpuMemoryAccess_READ) {
+		if (config->enable_read == TRUE) {
+			return FALSE;
+		}
+		//does not check execute protection. the protection will be checked on the cpu_exec_xxx();
+	}
+	else { //WRITE
+		return TRUE;
+	}
+	return is_overlap(&config->common, check_arg);
 }
 
 static bool cpu_has_permission_dmp(CoreIdType core_id, CpuMemoryAccessType access_type, uint32 addr, uint32 size)
@@ -52,8 +117,8 @@ static bool cpu_has_permission_dmp(CoreIdType core_id, CpuMemoryAccessType acces
 	CpuMemoryCheckType arg;
 
 	arg.access_type = access_type;
-	arg.addr = addr;
-	arg.size = size;
+	arg.start = addr;
+	arg.end = addr + (size - 1);
 
 	obj = object_container_find_first2(container, dmp_object_filter, &arg);
 	if (obj != NULL) {
@@ -66,7 +131,21 @@ static bool cpu_has_permission_dmp(CoreIdType core_id, CpuMemoryAccessType acces
 
 static bool cpu_has_permission_imp(CoreIdType core_id, CpuMemoryAccessType access_type, uint32 addr, uint32 size)
 {
-	return TRUE;
+	ObjectContainerType *container = virtual_cpu.cores[core_id].core.mpu.exec_configs.region_permissions;
+	void *obj;
+	CpuMemoryCheckType arg;
+
+	arg.access_type = access_type;
+	arg.start = addr;
+	arg.end = addr + (size - 1);
+
+	obj = object_container_find_first2(container, dip_object_filter, &arg);
+	if (obj != NULL) {
+		return FALSE;
+	}
+	else {
+		return TRUE;
+	}
 }
 bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type, CpuMemoryAccessType access_type, uint32 addr, uint32 size)
 {
@@ -113,10 +192,10 @@ static void private_cpu_mpu_set_common_obj(TargetCoreMpuConfigType *config, uint
 	}
 
 	if ((al & 0x01) != 0x00) {
-		config->enable = TRUE;
+		config->enable_protection = TRUE;
 	}
 	else {
-		config->enable = FALSE;
+		config->enable_protection = FALSE;
 	}
 	return;
 }

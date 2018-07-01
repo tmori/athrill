@@ -279,7 +279,7 @@ typedef enum {
 #define TARGET_CORE_MPU_CONFIG_DATA_MAXNUM		6U
 
 typedef struct {
-	bool								enable;
+	bool								enable_protection;
 	bool								is_mask_method;
 	/*
 	 * is_mask_method == FALSE
