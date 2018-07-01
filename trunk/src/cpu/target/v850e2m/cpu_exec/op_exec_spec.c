@@ -225,6 +225,22 @@ int op_exec_reti(TargetCoreType *cpu)
 	}
 	return 0;
 }
+
+int op_exec_feret_10(TargetCoreType *cpu)
+{
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: FERET:0x%x\n", cpu->reg.pc, sys_get_cpu_base(&cpu->reg)->r[SYS_REG_FEPC]));
+	cpu->reg.pc = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_FEPC];
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_PSW] = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_FEPSW];
+	return 0;
+}
+int op_exec_eiret_10(TargetCoreType *cpu)
+{
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: EIRET:0x%x\n", cpu->reg.pc, sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPC]));
+	cpu->reg.pc = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPC];
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_PSW] = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPSW];
+	return 0;
+}
+
 int op_exec_halt(TargetCoreType *cpu)
 {
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: HALT:0x%x\n", cpu->reg.pc, cpu->reg.pc + 4));
