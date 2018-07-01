@@ -175,7 +175,7 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 		}
 		if (permission == FALSE) {
 			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MIP;
-			virtual_cpu.cores[core_id].core.mpu.error_address = addr;
+			virtual_cpu.cores[core_id].core.mpu.error_address = cpu_get_current_core_pc();
 			virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
 		}
 		break;
