@@ -48,14 +48,10 @@ typedef struct mpu_address_region_operation_type {
 
 extern MpuAddressRegionOperationType	default_memory_operation;
 
-typedef enum {
-	CpuMemoryAccess_READ = 0,
-	CpuMemoryAccess_WRITE,
-	CpuMemoryAccess_EXEC,
-} CpuMemoryAccessType;
-extern bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type, CpuMemoryAccessType access_type, uint32 addr, uint32 size);
 
 #ifdef CPU_CONFIG_MEMORY_PROTECTION_ENABLE
+#include "target_cpu.h"
+extern bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type, CpuMemoryAccessType access_type, uint32 addr, uint32 size);
 #define CPU_HAS_PERMISSION(core_id, region_type, access_type, addr, size) cpu_has_permission(core_id, region_type, access_type, addr, size)
 #else
 #define CPU_HAS_PERMISSION(core_id, region_type, access_type, addr, size) TRUE

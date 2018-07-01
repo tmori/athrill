@@ -2,6 +2,14 @@
 #define _CPU_OPS_H_
 #include "target_cpu.h"
 
+
+#define CPU_VMECR_VMMS	(1 << 1)
+#define CPU_VMECR_VMRMW	(1 << 2)
+#define CPU_VMECR_VMS	(1 << 3)
+#define CPU_VMECR_VMW	(1 << 4)
+#define CPU_VMECR_VMR	(1 << 5)
+#define CPU_VMECR_VMX	(1 << 6)
+
 #define CPU_PSW_ID		(1 << 5)
 #define CPU_PSW_SAT		(1 << 4)
 #define CPU_PSW_CY		(1 << 3)

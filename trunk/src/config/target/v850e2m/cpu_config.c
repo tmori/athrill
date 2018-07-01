@@ -162,6 +162,8 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 		}
 		if (permission == FALSE) {
 			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MDP;
+			virtual_cpu.cores[core_id].core.mpu.error_address = addr;
+			virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
 		}
 		break;
 	case READONLY_MEMORY:
@@ -173,12 +175,16 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 		}
 		if (permission == FALSE) {
 			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MIP;
+			virtual_cpu.cores[core_id].core.mpu.error_address = addr;
+			virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
 		}
 		break;
 	case DEVICE:
 		permission = IS_TRUSTED_PP(psw);
 		if (permission == FALSE) {
 			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_PPI;
+			virtual_cpu.cores[core_id].core.mpu.error_address = addr;
+			virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
 		}
 		break;
 	default:
@@ -197,6 +203,14 @@ bool cpu_illegal_access(CoreIdType core_id)
 	uint32 feic = 0x0;
 	uint32 handler_code;
 	uint32 ecr;
+	uint32 *factor_sysreg;
+	uint32 *setting_sysreg;
+
+	factor_sysreg = cpu_get_mpu_illegal_factor_sysreg(&virtual_cpu.cores[core_id].core.reg.sys);
+	setting_sysreg = cpu_get_mpu_settign_sysreg(&virtual_cpu.cores[core_id].core.reg.sys);
+
+	factor_sysreg[SYS_REG_MPV_VMADR] = virtual_cpu.cores[core_id].core.mpu.error_address;
+	factor_sysreg[SYS_REG_MPV_VMTID] = setting_sysreg[SYS_REG_MPU_TID];
 
 	switch (virtual_cpu.cores[core_id].core.mpu.exception_error_code) {
 	case CpuExceptionError_MIP:
@@ -210,6 +224,27 @@ bool cpu_illegal_access(CoreIdType core_id)
 	case CpuExceptionError_PPI:
 		feic = 0x0432;
 		handler_code = 0x0030;
+		break;
+	default:
+		/* not reached */
+		break;
+	}
+
+	switch (virtual_cpu.cores[core_id].core.mpu.error_access) {
+	case CpuMemoryAccess_READ:
+		factor_sysreg[SYS_REG_MPV_VMECR] |= CPU_VMECR_VMR;
+		factor_sysreg[SYS_REG_MPV_VMECR] &= ~CPU_VMECR_VMW;
+		factor_sysreg[SYS_REG_MPV_VMECR] &= ~CPU_VMECR_VMX;
+		break;
+	case CpuMemoryAccess_WRITE:
+		factor_sysreg[SYS_REG_MPV_VMECR] |= CPU_VMECR_VMW;
+		factor_sysreg[SYS_REG_MPV_VMECR] &= ~CPU_VMECR_VMR;
+		factor_sysreg[SYS_REG_MPV_VMECR] &= ~CPU_VMECR_VMX;
+		break;
+	case CpuMemoryAccess_EXEC:
+		factor_sysreg[SYS_REG_MPV_VMECR] |= CPU_VMECR_VMX;
+		factor_sysreg[SYS_REG_MPV_VMECR] &= ~CPU_VMECR_VMW;
+		factor_sysreg[SYS_REG_MPV_VMECR] &= ~CPU_VMECR_VMR;
 		break;
 	default:
 		/* not reached */
@@ -237,6 +272,7 @@ bool cpu_illegal_access(CoreIdType core_id)
 	virtual_cpu.cores[core_id].core.reg.pc = handler_code;
 
 	virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_None;
+	virtual_cpu.cores[core_id].core.mpu.error_access = CpuMemoryAccess_NONE;
 	return TRUE;
 }
 static void private_cpu_mpu_set_common_obj(TargetCoreMpuConfigType *config, uint32 au, uint32 al)

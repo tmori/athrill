@@ -254,13 +254,13 @@ static inline uint32 cpu_get_psw(CpuSystemRegisterType *sys) {
 	return sys->grp[SYS_GRP_CPU][SYS_GRP_CPU_BNK_0].r[SYS_REG_PSW];
 }
 
-
-
+static inline uint32 *cpu_get_mpu_illegal_factor_sysreg(CpuSystemRegisterType *sys) {
+	return sys->grp[SYS_GRP_PROSESSOR][SYS_GRP_CPU_BNK_0].r;
+}
 
 static inline uint32 *cpu_get_mpu_settign_sysreg(CpuSystemRegisterType *sys) {
 	return sys->grp[SYS_GRP_PROSESSOR][SYS_GRP_CPU_BNK_1].r;
 }
-
 
 static inline CpuSystemRegisterDataType *sys_get_cpu_base(CpuRegisterType *reg) {
 	return &reg->sys.grp[SYS_GRP_CPU][SYS_GRP_CPU_BNK_0];
@@ -311,8 +311,17 @@ typedef struct {
 	ObjectContainerType					*region_permissions;
 } TargetCoreMpuConfigContainerType;
 
+typedef enum {
+	CpuMemoryAccess_NONE = 0,
+	CpuMemoryAccess_READ,
+	CpuMemoryAccess_WRITE,
+	CpuMemoryAccess_EXEC,
+} CpuMemoryAccessType;
+
 typedef struct {
 	CpuExceptionErrorCodeType			exception_error_code;
+	uint32								error_address;
+	CpuMemoryAccessType					error_access;
 	TargetCoreMpuConfigContainerType	data_configs;
 	TargetCoreMpuConfigContainerType	exec_configs;
 } TargetCoreMpuType;
