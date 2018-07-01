@@ -98,11 +98,15 @@ static bool dip_object_filter(const void *p, const void *arg)
 	if (config->common.enable_protection == FALSE) {
 		return FALSE;
 	}
-	if (check_arg->access_type == CpuMemoryAccess_READ) {
+	if (check_arg->access_type == CpuMemoryAccess_EXEC) {
+		if (config->enable_exec == TRUE) {
+			return FALSE;
+		}
+	}
+	else if (check_arg->access_type == CpuMemoryAccess_READ) {
 		if (config->enable_read == TRUE) {
 			return FALSE;
 		}
-		//does not check execute protection. the protection will be checked on the cpu_exec_xxx();
 	}
 	else { //WRITE
 		return TRUE;
@@ -465,6 +469,7 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 	Std_ReturnType err;
 	uint32 inx;
 	CachedOperationCodeType *cached_code;
+	bool permission;
 
 	if (virtual_cpu.cores[core_id].core.is_halt == TRUE) {
 		return STD_E_OK;
@@ -492,6 +497,16 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 			printf("Decode Error\n");
 			return STD_E_DECODE;
 		}
+
+		permission = cpu_has_permission(core_id,
+				READONLY_MEMORY,
+				CpuMemoryAccess_EXEC,
+				virtual_cpu.cores[core_id].core.reg.pc,
+				OpFormatSize[cached_code->codes[inx].decoded_code.type_id]);
+		if (permission == FALSE) {
+			return STD_E_SEGV;
+		}
+
 		if (op_exec_table[optype.code_id].exec == NULL) {
 			printf("Not supported code(%d fmt=%d) Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
 					optype.code_id, optype.format_id,
@@ -517,6 +532,14 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 	}
 	else {
 		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
+		permission = cpu_has_permission(core_id,
+				READONLY_MEMORY,
+				CpuMemoryAccess_EXEC,
+				virtual_cpu.cores[core_id].core.reg.pc,
+				OpFormatSize[cached_code->codes[inx].decoded_code.type_id]);
+		if (permission == FALSE) {
+			return STD_E_SEGV;
+		}
 		ret = cached_code->codes[inx].op_exec(&virtual_cpu.cores[core_id].core);
 		if (ret < 0) {
 			printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",

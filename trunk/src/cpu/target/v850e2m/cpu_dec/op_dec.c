@@ -30,6 +30,22 @@ OpDecoderType OpDecoder[OP_CODE_FORMAT_NUM] = {
 	{ OpDecode13 },
 	{ OpDecode14 },
 };
+const uint32 OpFormatSize[OP_CODE_FORMAT_NUM] = {
+		2U, /* 1 */
+		2U, /* 2 */
+		2U, /* 3 */
+		2U, /* 4 */
+		4U, /* 5 */
+		4U, /* 6 */
+		4U, /* 7 */
+		4U, /* 8 */
+		4U, /* 9 */
+		4U, /* 10 */
+		4U, /* 11 */
+		4U, /* 12 */
+		4U, /* 13 */
+		6U, /* 14 */
+};
 
 
 static int OpDecode1(uint16 code[OP_DECODE_MAX], OpDecodedCodeType *decoded_code)

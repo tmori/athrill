@@ -9,5 +9,6 @@ typedef struct {
 } OpDecoderType;
 
 extern OpDecoderType OpDecoder[OP_CODE_FORMAT_NUM];
+extern const uint32 OpFormatSize[OP_CODE_FORMAT_NUM];
 
 #endif /* _OP_DEC_H_ */
