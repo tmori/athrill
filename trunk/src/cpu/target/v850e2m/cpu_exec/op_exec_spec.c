@@ -2,6 +2,7 @@
 #include "cpu.h"
 #include "bus.h"
 #include "device.h"
+#include "std_cpu_ops.h"
 #include <stdio.h>
 
 static int set_sysreg_grp_bnk(CpuRegisterType *cpu, uint32 sysreg)
@@ -131,6 +132,9 @@ int op_exec_ldsr(TargetCoreType *cpu)
 		if (ret < 0) {
 			printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
 			return -1;
+		}
+		if (cpu->reg.sys.sysreg[CPU_SYSREG_BSEL] == CPU_CONFIG_BSEL_MPU_BNK_SETTING) {
+			cpu_mpu_construct_containers(cpu->core_id);
 		}
 	}
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LDSR r%d(0x%x) regID(%d):0x%x\n", cpu->reg.pc, reg2, cpu->reg.r[reg2], regid, *sysreg));

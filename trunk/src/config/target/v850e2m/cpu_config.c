@@ -160,7 +160,9 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 		else {
 			permission = cpu_has_permission_dmp(core_id, access_type, addr, size);
 		}
-
+		if (permission == FALSE) {
+			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MDP;
+		}
 		break;
 	case READONLY_MEMORY:
 		if (IS_TRUSTED_IMP(psw)) {
@@ -168,6 +170,9 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 		}
 		else {
 			permission = cpu_has_permission_imp(core_id, access_type, addr, size);
+		}
+		if (permission == FALSE) {
+			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MIP;
 		}
 		break;
 	case DEVICE:
@@ -200,7 +205,7 @@ static void private_cpu_mpu_set_common_obj(TargetCoreMpuConfigType *config, uint
 	return;
 }
 
-void private_cpu_mpu_construct_containers(TargetCoreType *cpu)
+static void private_cpu_mpu_construct_containers(TargetCoreType *cpu)
 {
 	int i;
 	uint32 *setting_sysreg;
@@ -269,6 +274,11 @@ void private_cpu_mpu_construct_containers(TargetCoreType *cpu)
 		}
 	}
 
+	return;
+}
+void cpu_mpu_construct_containers(CoreIdType core_id)
+{
+	private_cpu_mpu_construct_containers(&virtual_cpu.cores[core_id].core);
 	return;
 }
 

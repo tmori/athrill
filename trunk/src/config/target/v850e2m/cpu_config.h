@@ -67,4 +67,10 @@
 #define CPU_CONFIG_ADDR_MIR_0_INTNO			0
 #define CPU_CONFIG_ADDR_MIR_1_INTNO			1
 
+
+/*
+ * BSEL プロセッサ保護設定バンク
+ */
+#define CPU_CONFIG_BSEL_MPU_BNK_SETTING		0x000000100001
+
 #endif /* _CPU_CONFIG_H_ */

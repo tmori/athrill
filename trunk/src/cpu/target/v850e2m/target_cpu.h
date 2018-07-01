@@ -10,6 +10,10 @@
 #define CPU_COMMON_SYSREG_NUM	(4U)
 #define CPU_SYSBNK_NUM			(3U)
 
+#define CPU_SYSREG_EIWR			(0U)
+#define CPU_SYSREG_FEWR			(1U)
+#define CPU_SYSREG_DBWR			(2U)
+#define CPU_SYSREG_BSEL			(3U)
 typedef enum {
 	SYS_GRP_CPU = 0,
 	SYS_GRP_PROSESSOR,
@@ -249,6 +253,7 @@ static inline uint32 *cpu_get_sysreg(CpuSystemRegisterType *sys, uint32 inx) {
 static inline uint32 cpu_get_psw(CpuSystemRegisterType *sys) {
 	return sys->grp[SYS_GRP_CPU][SYS_GRP_CPU_BNK_0].r[SYS_REG_PSW];
 }
+
 
 #define PSW_PP_BIT			19U		//周辺装置保護
 #define PSW_NPV_BIT			18U		//システム・レジスタ保護
