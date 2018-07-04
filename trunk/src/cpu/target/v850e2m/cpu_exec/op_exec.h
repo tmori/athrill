@@ -138,7 +138,7 @@ extern OpExecType op_exec_table[OP_EXEC_TABLE_NUM];
 #define op_exec_synce_1 NULL /* not supported */
 #define op_exec_syncm_1 NULL /* not supported */
 #define op_exec_syncp_1 NULL /* not supported */
-#define op_exec_syscall_10 NULL /* not supported */
+#define op_exec_syscall_10 op_exec_syscall_10
 #define op_exec_trap_10 op_exec_trap
 #define op_exec_tst_1 op_exec_tst
 //#define op_exec_tst1_8 op_exec_tst1_8

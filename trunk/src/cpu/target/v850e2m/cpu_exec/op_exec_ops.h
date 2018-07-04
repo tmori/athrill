@@ -176,6 +176,7 @@ extern int op_exec_caxi(TargetCoreType *cpu);
 
 extern int op_exec_feret_10(TargetCoreType *cpu);
 extern int op_exec_eiret_10(TargetCoreType *cpu);
+extern int op_exec_syscall_10(TargetCoreType *cpu);
 
 
 /*

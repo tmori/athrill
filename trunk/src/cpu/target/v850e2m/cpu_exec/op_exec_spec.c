@@ -287,7 +287,7 @@ int op_exec_trap(TargetCoreType *cpu)
 	return 0;
 }
 
-int op_exec_syscall(TargetCoreType *cpu)
+int op_exec_syscall_10(TargetCoreType *cpu)
 {
 	Std_ReturnType err;
 	uint32 pc;
