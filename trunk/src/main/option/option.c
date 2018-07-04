@@ -100,7 +100,10 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	  printf("t = %llu\n", cmd_option.timeout);
 	  printf("p = %s\n", (cmd_option.fifocfgpath != NULL) ? cmd_option.fifocfgpath : "NULL");
 #endif
-
+		if (optind >= argc) {
+			printf("ERROR: not found <load file>\n");
+			return NULL;
+		}
 	  memcpy(cmd_option.load_file.filepath.str, argv[optind], strlen(argv[optind]));
 	  cmd_option.load_file.filepath.str[strlen(argv[optind])] = '\0';
 	  cmd_option.load_file.filepath.len = strlen(argv[optind]);
