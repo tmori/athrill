@@ -10,6 +10,12 @@
 #define CPU_VMECR_VMR	(1 << 5)
 #define CPU_VMECR_VMX	(1 << 6)
 
+
+#define CPU_MPM_MPE		(1 << 0)
+#define CPU_MPM_AUE		(1 << 1)
+#define CPU_MPM_SPS		(1 << 2)
+#define CPU_ISSET_MPE(cpu)	( (cpu_get_mpu_settign_sysreg(cpu)[SYS_REG_MPU_MPM] & CPU_MPM_MPE) == CPU_MPM_MPE)
+
 #define CPU_PSW_ID		(1 << 5)
 #define CPU_PSW_SAT		(1 << 4)
 #define CPU_PSW_CY		(1 << 3)

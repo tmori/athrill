@@ -286,6 +286,78 @@ int op_exec_trap(TargetCoreType *cpu)
 
 	return 0;
 }
+
+int op_exec_syscall(TargetCoreType *cpu)
+{
+	Std_ReturnType err;
+	uint32 pc;
+	uint32 eipc;
+	uint32 eicc;
+	uint32 ecr;
+	uint32 addr;
+	uint32 data;
+	bool backupDmp = FALSE;
+	bool dmpIsTrusted = FALSE;
+	uint32 psw = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_PSW];
+	uint32 scbp = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_SCBP];
+	uint32 sccfg_size = (sys_get_cpu_base(&cpu->reg)->r[SYS_REG_SCCFG] & 0x000000FF);
+	uint32 vector8 = (cpu->decoded_code->type10.rfu3 << 5U)
+		| (cpu->decoded_code->type10.gen2);
+
+	eipc = cpu->reg.pc + 4U;
+	eicc = 0x8000 + vector8;
+	ecr = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_ECR];
+	ecr = ecr & 0x00FF;
+	ecr |= (eicc << 16);
+
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPC] = eipc;
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPSW] = psw;
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_ECR] = ecr;
+
+	CPU_SET_EP(&cpu->reg);
+	CPU_SET_ID(&cpu->reg);
+
+	if (CPU_ISSET_MPE(&cpu->reg.sys)) {
+		CPU_CLR_IMP(&cpu->reg);
+		CPU_CLR_DMP(&cpu->reg);
+		CPU_CLR_NPV(&cpu->reg);
+		CPU_CLR_PP(&cpu->reg);
+	}
+	else {
+		backupDmp = TRUE;
+		dmpIsTrusted = IS_TRUSTED_DMP(psw);
+		CPU_CLR_DMP(&cpu->reg);
+	}
+
+	if (vector8 <= sccfg_size) {
+		addr = scbp + (vector8 << 2U);
+	}
+	else {
+		addr = scbp;
+	}
+	err = bus_get_data32(cpu->core_id, addr, (uint32*)&data);
+	if (err != STD_E_OK) {
+		printf("ERROR:SYSCALL pc=0x%x vector8=%u addr=0x%x\n", 
+			cpu->reg.pc, vector8, addr);
+		return -1;
+	}
+	if (backupDmp == TRUE) {
+		if (dmpIsTrusted == TRUE) {
+			CPU_CLR_DMP(&cpu->reg);
+		}
+		else {
+			CPU_SET_DMP(&cpu->reg);
+		}
+	}
+	pc = scbp + data;
+	
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: SYSCALL vector8=%u addr=0x%x:0x%x\n", 
+		cpu->reg.pc, vector8, addr, pc));
+
+	cpu->reg.pc = pc;
+	return 0;
+}
+
 int op_exec_switch(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code->type1.reg1;
