@@ -218,6 +218,9 @@ DwarfDataSubprogramType *elf_dwarf_search_subprogram(char *funcname)
 	for (i = 0; i < my_types->current_array_size; i++) {
 		int len;
 		obj = (DwarfDataSubprogramType *)my_types->data[i];
+		if (obj->info.typename == NULL) {
+			continue;
+		}
 		len = strlen(obj->info.typename);
 		if (len != namelen) {
 			continue;

@@ -1,0 +1,6 @@
+[DONE> core0 pc=0xca4 main(+0) 0xca4: ADD imm5(-12),r3(117404812):117404800
+[DONE> core0 pc=0xca6 main(+2) 0xca6: ST.W r31(0x7f0), disp16(8) r3(0x6ff7480):0x7f0
+[DONE> core0 pc=0xcaa main(+6) 0xcaa: ST.W r29(0x0), disp16(4) r3(0x6ff7480):0x0
+[DONE> core0 pc=0xcae main(+a) 0xcae: MOV r3(117404800),r29(0)
+[DONE> core0 pc=0xcb0 main(+c) 0xcb0: MOV imm32(3756),r10(3776):3756
+[DONE> core0 pc=0xcb6 main(+12) 0xcb6: ST.W r10(0xeac), disp16(0) r29(0x6ff7480):0xeac

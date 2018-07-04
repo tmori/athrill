@@ -16,6 +16,9 @@ static unsigned int athrill_device_func_call __attribute__ ((section(".athrill_d
 
 int main(void)
 {
+	char *a = "10";
+
+	test_print_one(a);
 	timer_init();
 
 	printf("Hello World!!\n");
