@@ -8,7 +8,7 @@
 static int set_sysreg_grp_bnk(CpuRegisterType *cpu, uint32 sysreg)
 {
 	uint32 bnk = (sysreg & 0x000000FF);
-	uint32 grp = (sysreg & 0x0000FF00) >> 16U;
+	uint32 grp = (sysreg & 0x0000FF00) >> 8U;
 	uint32 reg_bnk;
 	uint32 reg_grp;
 	
@@ -155,7 +155,7 @@ int op_exec_stsr(TargetCoreType *cpu)
 	if (reg2 >= CPU_GREG_NUM) {
 		return -1;
 	}
-	if (regid >= CPU_SYSREG_NUM) {
+	if (regid >= CPU_GREG_NUM) {
 		return -1;
 	}
 	ret = get_sysreg(&cpu->reg, regid, &sysreg);

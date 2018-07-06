@@ -522,10 +522,11 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 		 */
 		ret = op_exec_table[optype.code_id].exec(&virtual_cpu.cores[core_id].core);
 		if (ret < 0) {
-			printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
+			printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x code_id=%u\n",
 					virtual_cpu.cores[core_id].core.current_code[0],
 					virtual_cpu.cores[core_id].core.current_code[1],
-					virtual_cpu.cores[core_id].core.decoded_code->type_id);
+					virtual_cpu.cores[core_id].core.decoded_code->type_id,
+					optype.code_id);
 			return STD_E_EXEC;
 		}
 		cached_code->codes[inx].op_exec = op_exec_table[optype.code_id].exec;
