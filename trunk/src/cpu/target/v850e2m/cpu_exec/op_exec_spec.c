@@ -133,12 +133,13 @@ int op_exec_ldsr(TargetCoreType *cpu)
 			printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
 			return -1;
 		}
-		if (cpu->reg.sys.sysreg[CPU_SYSREG_BSEL] == CPU_CONFIG_BSEL_MPU_BNK_SETTING) {
-			cpu_mpu_construct_containers(cpu->core_id);
-		}
 	}
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: LDSR r%d(0x%x) regID(%d):0x%x\n", cpu->reg.pc, reg2, cpu->reg.r[reg2], regid, *sysreg));
 	*sysreg = cpu->reg.r[reg2];
+	//printf("pu->reg.sys.sysreg[CPU_SYSREG_BSEL]=0x%x\n", cpu->reg.sys.sysreg[CPU_SYSREG_BSEL]);
+	if (cpu->reg.sys.sysreg[CPU_SYSREG_BSEL] == CPU_CONFIG_BSEL_MPU_BNK_SETTING) {
+		cpu_mpu_construct_containers(cpu->core_id);
+	}
 	
 	cpu->reg.pc += 4;
 

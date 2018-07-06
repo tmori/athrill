@@ -54,10 +54,13 @@ static bool is_overlap(TargetCoreMpuConfigType *config, CpuMemoryCheckType *chec
 		config_start = (config->al & (~config->au));
 		config_end = (config->al | config->au);
 	}
+
 	if (IS_NOT_OVERLAP_RANGE(config_start, config_end, check_arg->start, check_arg->end)) {
 		return FALSE;
 	}
 	else {
+		printf("ERROR:no permission: access_addr=0x%x access_end=0x%x config_addr=0x%x config_end=0x%x\n", 
+			check_arg->start, check_arg->end, config_start, config_end);
 		return TRUE;
 	}
 }
@@ -348,6 +351,7 @@ static void private_cpu_mpu_construct_containers(TargetCoreType *cpu)
 	/*
 	 * data
 	 */
+	container = cpu->mpu.data_configs.region_permissions;
 	for (i = 0; i < TARGET_CORE_MPU_CONFIG_DATA_MAXNUM; i++) {
 		TargetCoreMpuDataConfigType *obj = (TargetCoreMpuDataConfigType *)object_container_create_element(container);
 		uint32 al = setting_sysreg[SYS_REG_MPU_DPA0L + (i * 2)];
@@ -371,9 +375,62 @@ static void private_cpu_mpu_construct_containers(TargetCoreType *cpu)
 
 	return;
 }
+#if 0
+static void debug_print_mpu_status(TargetCoreType *cpu)
+{
+	int i;
+	uint32 *setting_sysreg;
+
+	setting_sysreg = cpu_get_mpu_settign_sysreg(&cpu->reg.sys);
+	/*
+	 * exec
+	 */
+	ObjectContainerType	*container;
+
+	container = cpu->mpu.exec_configs.region_permissions;
+	for (i = 0; i < TARGET_CORE_MPU_CONFIG_EXEC_MAXNUM; i++) {
+		TargetCoreMpuExecConfigType *obj = (TargetCoreMpuExecConfigType *)object_container_get_element(container, i);
+		uint32 al = setting_sysreg[SYS_REG_MPU_IPA0L + (i * 2)];
+		uint32 au = setting_sysreg[SYS_REG_MPU_IPA0U + (i * 2)];
+		printf("IPA%uL=0x%x\n", i, al);
+		printf("IPA%uU=0x%x\n", i, au);
+
+		printf(" enable_protection=%u\n", obj->common.enable_protection);
+		printf(" is_mask_method=%u\n", obj->common.is_mask_method);
+		printf(" al=0x%x\n", obj->common.al);
+		printf(" au=0x%x\n", obj->common.au);
+		printf(" enable_read=%u\n", obj->enable_read);
+		printf(" enable_exec=%u\n", obj->enable_exec);
+	}
+
+	/*
+	 * data
+	 */
+	container = cpu->mpu.data_configs.region_permissions;
+	for (i = 0; i < TARGET_CORE_MPU_CONFIG_DATA_MAXNUM; i++) {
+		TargetCoreMpuDataConfigType *obj = (TargetCoreMpuDataConfigType *)object_container_get_element(container, i);
+		uint32 al = setting_sysreg[SYS_REG_MPU_DPA0L + (i * 2)];
+		uint32 au = setting_sysreg[SYS_REG_MPU_DPA0U + (i * 2)];
+
+		printf("DPA%uL=0x%x\n", i, al);
+		printf("DPA%uU=0x%x\n", i, au);
+
+		printf(" enable_protection=%u\n", obj->common.enable_protection);
+		printf(" is_mask_method=%u\n", obj->common.is_mask_method);
+		printf(" al=0x%x\n", obj->common.al);
+		printf(" au=0x%x\n", obj->common.au);
+		printf(" enable_read=%u\n", obj->enable_read);
+		printf(" enable_write=%u\n", obj->enable_write);
+	}
+
+	return;
+}
+#endif
+
 void cpu_mpu_construct_containers(CoreIdType core_id)
 {
 	private_cpu_mpu_construct_containers(&virtual_cpu.cores[core_id].core);
+	//debug_print_mpu_status(&virtual_cpu.cores[core_id].core);
 	return;
 }
 
@@ -400,7 +457,7 @@ static void private_cpu_mpu_init(TargetCoreType *cpu)
 	setting_sysreg[SYS_REG_MPU_IPA4U] = 0x00000000;
 
 	//DPA0L 				0000 0002H
-	setting_sysreg[SYS_REG_MPU_DPA0L] = 0x00000006;
+	setting_sysreg[SYS_REG_MPU_DPA0L] = 0x00000002;
 	//DPA1L-DPA4L 			0000 0002H
 	setting_sysreg[SYS_REG_MPU_DPA1L] = 0x00000002;
 	setting_sysreg[SYS_REG_MPU_DPA2L] = 0x00000002;
@@ -420,6 +477,7 @@ static void private_cpu_mpu_init(TargetCoreType *cpu)
 	setting_sysreg[SYS_REG_MPU_DPA5U] = 0x00000000;
 
 	private_cpu_mpu_construct_containers(cpu);
+	//debug_print_mpu_status(cpu);
 	return;
 }
 

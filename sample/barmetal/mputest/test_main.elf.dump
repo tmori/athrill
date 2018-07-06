@@ -1,8 +1,8 @@
 
-test_main.elf:     file format elf32-v850-rh850
+test_main.elf:     ファイル形式 elf32-v850-rh850
 
 
-Disassembly of section .vector:
+セクション .vector の逆アセンブル:
 
 00000000 <__reset>:
    0:	80 07 d0 07 	jr	7d0 <__text>
@@ -252,7 +252,7 @@ Disassembly of section .vector:
  7c0:	80 07 f4 00 	jr	8b4 <_default_int_handler>
 	...
 
-Disassembly of section .text:
+セクション .text の逆アセンブル:
 
 000007d0 <__text>:
  7d0:	e0 07 60 01 	di	
@@ -270,18 +270,19 @@ Disassembly of section .text:
  7fc:	2a 06 01 00 	mov	0x7ff0001, r10
  800:	ff 07 
  802:	ea 97 20 00 	ldsr	r10, dbpc/ipa3l
- 806:	2a 06 06 10 	mov	0x7ff1006, r10
- 80a:	ff 07 
- 80c:	ea 9f 20 00 	ldsr	r10, dbpsw/ipa3u
- 810:	f3 5f 40 00 	stsr	dbpsw/ipa3u, r11
- 814:	00 52       	mov	0, r10
- 816:	ea ff 20 00 	ldsr	r10, bsel
- 81a:	e5 5f 40 00 	stsr	psw/vmtid, r11
- 81e:	4b 56 0f 00 	movhi	15, r11, r10
- 822:	ea 2f 20 00 	ldsr	r10, psw/vmtid
- 826:	e0 87 60 01 	ei	
- 82a:	80 ff ba 04 	jarl	ce4 <_main>, lp
- 82e:	e0 07 20 01 	halt	
+ 806:	f2 5f 40 00 	stsr	dbpc/ipa3l, r11
+ 80a:	2a 06 06 10 	mov	0x7ff1006, r10
+ 80e:	ff 07 
+ 810:	ea 9f 20 00 	ldsr	r10, dbpsw/ipa3u
+ 814:	f3 5f 40 00 	stsr	dbpsw/ipa3u, r11
+ 818:	00 52       	mov	0, r10
+ 81a:	ea ff 20 00 	ldsr	r10, bsel
+ 81e:	e5 5f 40 00 	stsr	psw/vmtid, r11
+ 822:	4b 56 0f 00 	movhi	15, r11, r10
+ 826:	ea 2f 20 00 	ldsr	r10, psw/vmtid
+ 82a:	e0 87 60 01 	ei	
+ 82e:	80 ff b6 04 	jarl	ce4 <_main>, lp
+ 832:	e0 07 20 01 	halt	
 	...
 
 00000840 <_disable_int_all>:

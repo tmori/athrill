@@ -29,7 +29,7 @@ _start:
 	 */
 	mov 0x07FF0001, r10
 	ldsr r10, dpa1l
-	/* stsr dpa1l, r11 */
+	stsr dpa1l, r11
 
 	/*
 	 * set DPA0U
