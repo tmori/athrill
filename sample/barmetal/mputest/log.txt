@@ -1,3 +1,17 @@
+[DONE> core0 pc=0x0 null(null) 0x0: JR disp22(2000):0x7d0
+[DONE> core0 pc=0x7d0 null(null) 0x7d0: DI
+[DONE> core0 pc=0x802 null(null) 0x802: LDSR r10(0x7ff0001) regID(8):0x2
+[DONE> core0 pc=0x806 null(null) 0x806: STSR regID(8) r11(0x3):0x7ff0001
+[DONE> core0 pc=0x80a null(null) 0x80a: MOV imm32(134156288),r10(134152193):134156288
+[DONE> core0 pc=0x810 null(null) 0x810: LDSR r10(0x7ff1000) regID(9):0x0
+[DONE> core0 pc=0x814 null(null) 0x814: STSR regID(9) r11(0x7ff0001):0x7ff1000
+[DONE> core0 pc=0x818 null(null) 0x818: MOV imm5(0),r10(134156288)
+[DONE> core0 pc=0x81a null(null) 0x81a: LDSR r10(0x0) regID(31):0x1001
+[DONE> core0 pc=0x81e null(null) 0x81e: STSR regID(5) r11(0x7ff1000):0x20
+[DONE> core0 pc=0x822 null(null) 0x822: MOVHI imm16(15),r11(32) r10(0):983072
+[DONE> core0 pc=0x826 null(null) 0x826: LDSR r10(0xf0020) regID(5):0x20
+[DONE> core0 pc=0x82a null(null) 0x82a: EI
+[DONE> core0 pc=0x82e null(null) 0x82e: JARL disp22(1206):0xce4 r31(0x832)
 [DONE> core0 pc=0xce4 main(+0) 0xce4: ADD imm5(-16),r3(117404812):117404796
 [DONE> core0 pc=0xce6 main(+2) 0xce6: ST.W r31(0x832), disp16(12) r3(0x6ff747c):0x832
 [DONE> core0 pc=0xcea main(+6) 0xcea: ST.W r29(0x0), disp16(8) r3(0x6ff747c):0x0
@@ -6,7 +20,3 @@
 [DONE> core0 pc=0xcf6 main(+12) 0xcf6: ST.W r10(0xe38), disp16(4) r29(0x6ff747c):0xe38
 [DONE> core0 pc=0xcfa main(+16) 0xcfa: MOV imm32(134152192),r10(3640):134152192
 [DONE> core0 pc=0xd00 main(+1c) 0xd00: ST.W r10(0x7ff0000), disp16(0) r29(0x6ff747c):0x7ff0000
-[DONE> core0 pc=0xd04 main(+20) 0xd04: LD.W disp16(0),r29(0x6ff747c), r10(0x7ff0000):0x7ff0000
-[DONE> core0 pc=0xd08 main(+24) 0xd08: JARL disp22(4):0xd0c r31(0xd0c)
-[DONE> core0 pc=0xd0c main(+28) 0xd0c: ADD imm5(4),r31(3340):3344
-[DONE> core0 pc=0xd0e main(+2a) 0xd0e: JMP r10(0x7ff0000)

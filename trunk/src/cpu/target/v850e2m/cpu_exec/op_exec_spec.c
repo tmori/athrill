@@ -97,6 +97,68 @@ static int get_sysreg(CpuRegisterType *cpu, uint32 regid, uint32 **regp)
 }
 
 /*
+ * protect:31-6
+ */
+#define PSW_PROTECT_VALUE(psw)	((psw) & 0xFFFFFFC0)
+static inline bool has_permission_psw_change(uint32 org_psw, uint32 new_psw)
+{
+	if (PSW_PROTECT_VALUE(org_psw) != PSW_PROTECT_VALUE(new_psw)) {
+		return FALSE;
+	}
+	return TRUE;
+}
+
+static bool ldsr_grp_cpu_has_permission(TargetCoreType *cpu, uint32 regid, uint32 reg2_data)
+{
+	bool permission = FALSE;
+	uint32 psw = cpu_get_psw(&cpu->reg.sys);
+	/*
+	 * SYS_GRP_CPU_BNK_0
+	 * SYS_GRP_CPU_BNK_1
+	 * SYS_GRP_CPU_BNK_2
+	 */
+	switch (cpu->reg.sys.current_bnk) {
+	case SYS_GRP_CPU_BNK_0:
+		if ((regid == SYS_REG_PSW)) {
+			permission = has_permission_psw_change(psw, reg2_data);
+		}
+		break;
+	case SYS_GRP_CPU_BNK_1:
+	case SYS_GRP_CPU_BNK_2:
+	default:
+		break;
+	}
+	return permission;
+}
+
+static bool ldsr_has_permission(TargetCoreType *cpu, uint32 regid, uint32 reg2_data)
+{
+	uint32 psw = cpu_get_psw(&cpu->reg.sys);
+	bool permission = FALSE;
+
+	if (IS_TRUSTED_NPV(psw)) {
+		return TRUE;
+	}
+	/*
+	 * SYS_GRP_CPU
+	 * SYS_GRP_PROSESSOR
+	 * SYS_GRP_PMU
+	 */
+	switch (cpu->reg.sys.current_grp) {
+	case SYS_GRP_CPU:
+		permission = ldsr_grp_cpu_has_permission(cpu, regid, reg2_data);
+		break;
+	case SYS_GRP_PROSESSOR:
+		break;
+	default:
+		/* not supported yet */
+		break;
+	}
+
+
+	return permission;
+}
+/*
  * Format9
  */
 int op_exec_ldsr(TargetCoreType *cpu)
@@ -113,6 +175,8 @@ int op_exec_ldsr(TargetCoreType *cpu)
 	 */
 	uint32 regid = cpu->decoded_code->type9.reg2;
 	uint32 reg2 = cpu->decoded_code->type9.gen;
+	uint32 *factor_sysreg = cpu_get_mpu_illegal_factor_sysreg(&cpu->reg.sys);
+	uint32 *setting_sysreg = cpu_get_mpu_settign_sysreg(&cpu->reg.sys);
 
 	if (reg2 >= CPU_GREG_NUM) {
 		printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
@@ -127,6 +191,16 @@ int op_exec_ldsr(TargetCoreType *cpu)
 		printf("ERROR: ldsr reg=%d regID=%d\n", reg2, regid);
 		return -1;
 	}
+	if (!ldsr_has_permission(cpu, regid, cpu->reg.r[reg2])) {
+		if (factor_sysreg[SYS_REG_MPV_VSECR] == 0U) {
+			factor_sysreg[SYS_REG_MPV_VSTID] = setting_sysreg[SYS_REG_MPU_TID];
+			factor_sysreg[SYS_REG_MPV_VSADR] = cpu->reg.pc;
+		}
+		factor_sysreg[SYS_REG_MPV_VSECR] = factor_sysreg[SYS_REG_MPV_VSECR] + 1U;
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: ERROR LDSR r%d(0x%x) regID(%d):NONE\n", cpu->reg.pc, reg2, cpu->reg.r[reg2], regid));
+		goto done;
+	}
+
 	if (regid == 31U) { /* BSEL */
 		ret = set_sysreg_grp_bnk(&cpu->reg, cpu->reg.r[reg2]);
 		if (ret < 0) {
@@ -140,7 +214,8 @@ int op_exec_ldsr(TargetCoreType *cpu)
 	if (cpu->reg.sys.sysreg[CPU_SYSREG_BSEL] == CPU_CONFIG_BSEL_MPU_BNK_SETTING) {
 		cpu_mpu_construct_containers(cpu->core_id);
 	}
-	
+
+done:	
 	cpu->reg.pc += 4;
 
 	return 0;
