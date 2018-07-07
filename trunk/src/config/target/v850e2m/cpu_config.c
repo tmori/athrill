@@ -112,7 +112,8 @@ static bool dip_object_filter(const void *p, const void *arg)
 		}
 	}
 	else { //WRITE
-		return TRUE;
+		/* do not check hear. write access must be checked on dmp */
+		return FALSE;
 	}
 	return is_overlap(&config->common, check_arg);
 }
@@ -161,6 +162,8 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 
 	switch (region_type) {
 	case GLOBAL_MEMORY:
+	case READONLY_MEMORY:
+		/* dmp check */
 		if (IS_TRUSTED_DMP(psw)) {
 			permission = TRUE;
 		}
@@ -171,9 +174,9 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MDP;
 			virtual_cpu.cores[core_id].core.mpu.error_address = addr;
 			virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
+			break;
 		}
-		break;
-	case READONLY_MEMORY:
+		/* imp check */
 		if (IS_TRUSTED_IMP(psw)) {
 			permission = TRUE;
 		}
@@ -520,6 +523,80 @@ void cpu_set_current_core(CoreIdType core_id)
 	return;
 }
 
+static Std_ReturnType cpu_supply_clock_not_cached(CoreIdType core_id, CachedOperationCodeType *cached_code, uint32 inx)
+{
+	int ret;
+	Std_ReturnType err;
+	static OpDecodedCodeType	decoded_code;
+	OpDecodedCodeType		*p_decoded_code;
+	OperationCodeType optype;
+	bool permission;
+
+	if (cached_code != NULL) {
+		p_decoded_code = &cached_code->codes[inx].decoded_code;
+		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
+	}
+	else {
+		p_decoded_code = &decoded_code;
+		virtual_cpu.cores[core_id].core.decoded_code = &decoded_code;
+	}
+	/*
+	 * 命令取得する
+	 */
+	err = bus_get_pointer(core_id,
+			virtual_cpu.cores[core_id].core.reg.pc,
+				(uint8**)&(virtual_cpu.cores[core_id].core.current_code));
+	if (err != STD_E_OK) {
+		return err;
+	}
+
+	/*
+	 * デコード
+	 */
+	ret = op_parse(virtual_cpu.cores[core_id].core.current_code,
+			p_decoded_code, &optype);
+	if (ret < 0) {
+		printf("Decode Error\n");
+		return STD_E_DECODE;
+	}
+
+	permission = cpu_has_permission(core_id,
+			READONLY_MEMORY,
+			CpuMemoryAccess_EXEC,
+			virtual_cpu.cores[core_id].core.reg.pc,
+			OpFormatSize[p_decoded_code->type_id]);
+	if (permission == FALSE) {
+		return STD_E_SEGV;
+	}
+
+	if (op_exec_table[optype.code_id].exec == NULL) {
+		printf("Not supported code(%d fmt=%d) Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
+				optype.code_id, optype.format_id,
+				virtual_cpu.cores[core_id].core.current_code[0],
+				virtual_cpu.cores[core_id].core.current_code[1],
+				virtual_cpu.cores[core_id].core.decoded_code->type_id);
+		return STD_E_EXEC;
+	}
+
+	/*
+	 * 命令実行
+	 */
+	ret = op_exec_table[optype.code_id].exec(&virtual_cpu.cores[core_id].core);
+	if (ret < 0) {
+		printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x code_id=%u\n",
+				virtual_cpu.cores[core_id].core.current_code[0],
+				virtual_cpu.cores[core_id].core.current_code[1],
+				virtual_cpu.cores[core_id].core.decoded_code->type_id,
+				optype.code_id);
+		return STD_E_EXEC;
+	}
+
+	if (cached_code != NULL) {
+		cached_code->codes[inx].op_exec = op_exec_table[optype.code_id].exec;
+	}
+	return STD_E_OK;
+}
+
 Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 {
 	OperationCodeType optype;
@@ -534,60 +611,14 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 	}
 
 	cached_code = virtual_cpu_get_cached_code(virtual_cpu.cores[core_id].core.reg.pc);
-	inx = virtual_cpu.cores[core_id].core.reg.pc - cached_code->code_start_addr;
-	if (cached_code->codes[inx].op_exec == NULL) {
-		/*
-		 * 命令取得する
-		 */
-		err = bus_get_pointer(core_id,
-				virtual_cpu.cores[core_id].core.reg.pc,
-				(uint8**)&(virtual_cpu.cores[core_id].core.current_code));
+	if (cached_code != NULL) {
+		inx = virtual_cpu.cores[core_id].core.reg.pc - cached_code->code_start_addr;
+	}
+	if ((cached_code == NULL) || (cached_code->codes[inx].op_exec == NULL)) {
+		err = cpu_supply_clock_not_cached(core_id, cached_code, inx);
 		if (err != STD_E_OK) {
 			return err;
 		}
-
-		/*
-		 * デコード
-		 */
-		ret = op_parse(virtual_cpu.cores[core_id].core.current_code,
-				&cached_code->codes[inx].decoded_code, &optype);
-		if (ret < 0) {
-			printf("Decode Error\n");
-			return STD_E_DECODE;
-		}
-
-		permission = cpu_has_permission(core_id,
-				READONLY_MEMORY,
-				CpuMemoryAccess_EXEC,
-				virtual_cpu.cores[core_id].core.reg.pc,
-				OpFormatSize[cached_code->codes[inx].decoded_code.type_id]);
-		if (permission == FALSE) {
-			return STD_E_SEGV;
-		}
-
-		if (op_exec_table[optype.code_id].exec == NULL) {
-			printf("Not supported code(%d fmt=%d) Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
-					optype.code_id, optype.format_id,
-					virtual_cpu.cores[core_id].core.current_code[0],
-					virtual_cpu.cores[core_id].core.current_code[1],
-					virtual_cpu.cores[core_id].core.decoded_code->type_id);
-			return STD_E_EXEC;
-		}
-
-		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
-		/*
-		 * 命令実行
-		 */
-		ret = op_exec_table[optype.code_id].exec(&virtual_cpu.cores[core_id].core);
-		if (ret < 0) {
-			printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x code_id=%u\n",
-					virtual_cpu.cores[core_id].core.current_code[0],
-					virtual_cpu.cores[core_id].core.current_code[1],
-					virtual_cpu.cores[core_id].core.decoded_code->type_id,
-					optype.code_id);
-			return STD_E_EXEC;
-		}
-		cached_code->codes[inx].op_exec = op_exec_table[optype.code_id].exec;
 	}
 	else {
 		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;

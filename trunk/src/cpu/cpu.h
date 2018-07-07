@@ -47,7 +47,6 @@ static inline CachedOperationCodeType *virtual_cpu_get_cached_code(uint32 pc)
 	/*
 	 * not reached.
 	 */
-	ASSERT(0);
 	return NULL;
 }
 

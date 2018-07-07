@@ -28,15 +28,15 @@ _start:
 	 * set DPA0L
 	 */
 	mov 0x07FF0001, r10
-	ldsr r10, dpa1l
-	stsr dpa1l, r11
+	ldsr r10, ipa1l
+	stsr ipa1l, r11
 
 	/*
 	 * set DPA0U
 	 */
 	mov 0x07FF1000, r10
-	ldsr r10, dpa1u
-	stsr dpa1u, r11
+	ldsr r10, ipa1u
+	stsr ipa1u, r11
 
 	/* mpu setting end */
 	mov 0x00000000, r10

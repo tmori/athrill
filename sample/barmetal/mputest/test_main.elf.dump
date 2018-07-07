@@ -269,12 +269,12 @@ test_main.elf:     ファイル形式 elf32-v850-rh850
  7f8:	e0 5f 40 00 	stsr	eipc/vip/mpm, r11
  7fc:	2a 06 01 00 	mov	0x7ff0001, r10
  800:	ff 07 
- 802:	ea 97 20 00 	ldsr	r10, dbpc/ipa3l
- 806:	f2 5f 40 00 	stsr	dbpc/ipa3l, r11
+ 802:	ea 47 20 00 	ldsr	r10, sr8/fpst/vpecr/dcv1
+ 806:	e8 5f 40 00 	stsr	sr8/fpst/vpecr/dcv1, r11
  80a:	2a 06 00 10 	mov	0x7ff1000, r10
  80e:	ff 07 
- 810:	ea 9f 20 00 	ldsr	r10, dbpsw/ipa3u
- 814:	f3 5f 40 00 	stsr	dbpsw/ipa3u, r11
+ 810:	ea 4f 20 00 	ldsr	r10, sr9/fpcc/vptid
+ 814:	e9 5f 40 00 	stsr	sr9/fpcc/vptid, r11
  818:	00 52       	mov	0, r10
  81a:	ea ff 20 00 	ldsr	r10, bsel
  81e:	e5 5f 40 00 	stsr	psw/vmtid, r11
@@ -736,12 +736,13 @@ test_main.elf:     ファイル形式 elf32-v850-rh850
  cf0:	2a 06 38 0e 	mov	0xe38, r10
  cf4:	00 00 
  cf6:	7d 57 05 00 	st.w	r10, 4[r29]
- cfa:	40 56 08 00 	movhi	8, r0, r10
- cfe:	7d 57 01 00 	st.w	r10, 0[r29]
- d02:	2a 06 00 00 	mov	0x7ff0000, r10
- d06:	ff 07 
- d08:	8a 57 01 00 	ld.bu	0[r10], r10
- d0c:	7d 57 01 00 	st.w	r10, 0[r29]
+ cfa:	2a 06 00 00 	mov	0x7ff0000, r10
+ cfe:	ff 07 
+ d00:	7d 57 01 00 	st.w	r10, 0[r29]
+ d04:	3d 57 01 00 	ld.w	0[r29], r10
+ d08:	80 ff 04 00 	jarl	d0c <_main+0x28>, lp
+ d0c:	44 fa       	add	4, lp
+ d0e:	6a 00       	jmp	[r10]
  d10:	3d 37 05 00 	ld.w	4[r29], r6
  d14:	2a 06 b8 0c 	mov	0xcb8, r10
  d18:	00 00 
