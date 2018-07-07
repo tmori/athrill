@@ -406,6 +406,61 @@ int op_exec_switch(TargetCoreType *cpu)
 	return 0;
 }
 
+static bool has_permission_prepare(TargetCoreType *cpu, uint16 start_reg, uint16 ff)
+{
+	uint16 i;
+	uint32 stack_write_off = (uint32)(cpu->reg.r[3]);	//sp:r3;
+	uint32 stack_write_size = 0;
+	uint32 program_read_off = cpu->reg.pc + 4U;;
+	uint32 program_read_size = 0;
+	bool permission;
+
+	for (i = start_reg; i < 32; i++) {
+		if (cpu->decoded_code->type13.list[i] == 0) {
+			continue;
+		}
+		stack_write_size += 4U;
+	}
+
+	switch (ff) {
+	case 0b00:
+		program_read_size = 0U;
+		break;
+	case 0b01:
+	case 0b10:
+		program_read_size = 2U;
+		break;
+	case 0b11:
+		program_read_size = 4U;
+		break;
+	default:
+		program_read_size = 0U;
+		break;
+	}
+	/*
+	 * stack write permission
+	 */
+	permission = cpu_has_permission(cpu->core_id,
+			GLOBAL_MEMORY,
+			CpuMemoryAccess_WRITE,
+			stack_write_off,
+			stack_write_size);
+	if (permission == FALSE) {
+		return FALSE;
+	}
+	if (program_read_size == 0U) {
+		return TRUE;
+	}
+	/*
+	 * program exec permission
+	 */
+	permission = cpu_has_permission(cpu->core_id,
+			READONLY_MEMORY,
+			CpuMemoryAccess_EXEC,
+			program_read_off,
+			program_read_size);
+	return permission;
+}
 /*
  * Format13
  */
@@ -420,6 +475,10 @@ int op_exec_prepare(TargetCoreType *cpu)
 	uint32 *sp = (uint32*)&(cpu->reg.r[3]);	//sp:r3
 	uint32 imm = ( cpu->decoded_code->type13.imm << 2U );
 	Std_ReturnType err;
+
+	if (has_permission_prepare(cpu, start_reg, ff) == FALSE) {
+		return -1;
+	}
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: PREPARE sp=0x%x ", cpu->reg.pc, *sp));
 	for (i = start_reg; i < 32; i++) {
@@ -483,6 +542,33 @@ int op_exec_prepare(TargetCoreType *cpu)
 	return 0;
 }
 
+
+static bool has_permission_dispose(TargetCoreType *cpu, uint16 start_reg)
+{
+	uint16 i;
+	uint32 stack_read_off = (uint32)(cpu->reg.r[3]);	//sp:r3;
+	uint32 stack_read_size = 0;
+	bool permission;
+
+	for (i = start_reg; i < 32; i++) {
+		if (cpu->decoded_code->type13.list[i] == 0) {
+			continue;
+		}
+		stack_read_size += 4U;
+	}
+
+	/*
+	 * stack read permission
+	 */
+	permission = cpu_has_permission(cpu->core_id,
+			GLOBAL_MEMORY,
+			CpuMemoryAccess_READ,
+			stack_read_off,
+			stack_read_size);
+
+	return permission;
+}
+
 int op_exec_dispose(TargetCoreType *cpu)
 {
 	uint16 reg1 = cpu->decoded_code->type13.gen;
@@ -493,6 +579,10 @@ int op_exec_dispose(TargetCoreType *cpu)
 	uint32 *sp = (uint32*)&(cpu->reg.r[3]);	//sp:r3
 	uint32 imm = ( cpu->decoded_code->type13.imm << 2U );
 	Std_ReturnType err;
+
+	if (has_permission_dispose(cpu, start_reg) == FALSE) {
+		return -1;
+	}
 
 	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DISPOSE imm=0x%x sp=0x%x ", cpu->reg.pc, imm, *sp));
 

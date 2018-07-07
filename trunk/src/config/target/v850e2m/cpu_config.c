@@ -599,7 +599,6 @@ static Std_ReturnType cpu_supply_clock_not_cached(CoreIdType core_id, CachedOper
 
 Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 {
-	OperationCodeType optype;
 	int ret;
 	Std_ReturnType err;
 	uint32 inx;
