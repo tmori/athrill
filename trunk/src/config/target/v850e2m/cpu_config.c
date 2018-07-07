@@ -378,32 +378,43 @@ static void private_cpu_mpu_construct_containers(TargetCoreType *cpu)
 
 	return;
 }
-#if 0
+
+
 static void debug_print_mpu_status(TargetCoreType *cpu)
 {
 	int i;
 	uint32 *setting_sysreg;
+	uint32 *factor_sysreg;
+	ObjectContainerType	*container;
 
+	factor_sysreg = cpu_get_mpu_illegal_factor_sysreg(&cpu->reg.sys);
 	setting_sysreg = cpu_get_mpu_settign_sysreg(&cpu->reg.sys);
+
+	printf("VSECR = 0x%08x\n", factor_sysreg[SYS_REG_MPV_VSECR]);
+	printf("VSTID = 0x%08x\n", factor_sysreg[SYS_REG_MPV_VSTID]);
+	printf("VSADR = 0x%08x\n", factor_sysreg[SYS_REG_MPV_VSADR]);
+	printf("VMECR = 0x%08x\n", factor_sysreg[SYS_REG_MPV_VMECR]);
+	printf("VMTID = 0x%08x\n", factor_sysreg[SYS_REG_MPV_VMTID]);
+	printf("VMADR = 0x%08x\n", factor_sysreg[SYS_REG_MPV_VMADR]);
+
+
+	printf("MPM = 0x%08x\n", setting_sysreg[SYS_REG_MPU_MPM]);
+	printf("MPC = 0x%08x\n", setting_sysreg[SYS_REG_MPU_MPC]);
+	printf("TID = 0x%08x\n", setting_sysreg[SYS_REG_MPU_TID]);
+
 	/*
 	 * exec
 	 */
-	ObjectContainerType	*container;
-
 	container = cpu->mpu.exec_configs.region_permissions;
 	for (i = 0; i < TARGET_CORE_MPU_CONFIG_EXEC_MAXNUM; i++) {
 		TargetCoreMpuExecConfigType *obj = (TargetCoreMpuExecConfigType *)object_container_get_element(container, i);
 		uint32 al = setting_sysreg[SYS_REG_MPU_IPA0L + (i * 2)];
 		uint32 au = setting_sysreg[SYS_REG_MPU_IPA0U + (i * 2)];
-		printf("IPA%uL=0x%x\n", i, al);
-		printf("IPA%uU=0x%x\n", i, au);
-
-		printf(" enable_protection=%u\n", obj->common.enable_protection);
-		printf(" is_mask_method=%u\n", obj->common.is_mask_method);
-		printf(" al=0x%x\n", obj->common.al);
-		printf(" au=0x%x\n", obj->common.au);
-		printf(" enable_read=%u\n", obj->enable_read);
-		printf(" enable_exec=%u\n", obj->enable_exec);
+		if (obj->common.enable_protection == TRUE) {
+			printf("IPA%uL = 0x%08x IPA%uU = 0x%08x mask_method = %u\n", i, al, i, au, obj->common.is_mask_method);
+			printf(" al = 0x%08x au = 0x%08x\n", obj->common.al, obj->common.au);
+			printf(" enable_read = %u enable_exec = %u\n", obj->enable_read, obj->enable_exec);
+		}
 	}
 
 	/*
@@ -414,21 +425,20 @@ static void debug_print_mpu_status(TargetCoreType *cpu)
 		TargetCoreMpuDataConfigType *obj = (TargetCoreMpuDataConfigType *)object_container_get_element(container, i);
 		uint32 al = setting_sysreg[SYS_REG_MPU_DPA0L + (i * 2)];
 		uint32 au = setting_sysreg[SYS_REG_MPU_DPA0U + (i * 2)];
-
-		printf("DPA%uL=0x%x\n", i, al);
-		printf("DPA%uU=0x%x\n", i, au);
-
-		printf(" enable_protection=%u\n", obj->common.enable_protection);
-		printf(" is_mask_method=%u\n", obj->common.is_mask_method);
-		printf(" al=0x%x\n", obj->common.al);
-		printf(" au=0x%x\n", obj->common.au);
-		printf(" enable_read=%u\n", obj->enable_read);
-		printf(" enable_write=%u\n", obj->enable_write);
+		if (obj->common.enable_protection == TRUE) {
+			printf("DPA%uL = 0x%08x DPA%uU = 0x%08x mask_method = %u\n", i, al, i, au, obj->common.is_mask_method);
+			printf(" al = 0x%08x au = 0x%08x\n", obj->common.al, obj->common.au);
+			printf(" enable_read = %u enable_write = %u\n", obj->enable_read, obj->enable_write);
+		}
 	}
 
 	return;
 }
-#endif
+void cpu_debug_print_mpu_status(CoreIdType core_id)
+{
+	debug_print_mpu_status(&virtual_cpu.cores[core_id].core);
+	return;
+}
 
 void cpu_mpu_construct_containers(CoreIdType core_id)
 {

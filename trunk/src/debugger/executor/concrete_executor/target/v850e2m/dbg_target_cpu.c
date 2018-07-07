@@ -75,9 +75,18 @@ void dbg_target_print_cpu(uint32 coreId)
 	 printf("EIPSW		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_EIPSW]);
 	 printf("ECR		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_ECR]);
 	 printf("PSW		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_PSW]);
+	 printf("SCCFG		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_SCCFG]);
+	 printf("SCBP		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_SCBP]);
 	 print_register("FEPC", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_FEPC], NULL);
 	 printf("FEPSW 		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_FEPSW]);
 	 printf("CTBP		0x%x\n", sys_get_cpu_base(&virtual_cpu.cores[coreId].core.reg)->r[SYS_REG_CTBP]);
+	 printf("EIWR		0x%x\n", virtual_cpu.cores[coreId].core.reg.sys.sysreg[CPU_SYSREG_EIWR]);
+	 printf("FEWR		0x%x\n", virtual_cpu.cores[coreId].core.reg.sys.sysreg[CPU_SYSREG_FEWR]);
+	 printf("BSEL		0x%x\n", virtual_cpu.cores[coreId].core.reg.sys.sysreg[CPU_SYSREG_BSEL]);
+	 //printf("SW_CTL		0x%x\n", virtual_cpu.cores[coreId].core.reg.sys.grp[SYS_GRP_CPU][SYS_GRP_CPU_BNK_1].r[SYS_REG_SW_CTL]);
+	 //printf("SW_CFG		0x%x\n", virtual_cpu.cores[coreId].core.reg.sys.grp[SYS_GRP_CPU][SYS_GRP_CPU_BNK_1].r[SYS_REG_SW_CFG]);
+	 //printf("SW_BASE		0x%x\n", virtual_cpu.cores[coreId].core.reg.sys.grp[SYS_GRP_CPU][SYS_GRP_CPU_BNK_1].r[SYS_REG_SW_BASE]);
 
+	 cpu_debug_print_mpu_status(coreId);
 	 return;
 }
