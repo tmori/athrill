@@ -34,7 +34,7 @@ _start:
 	/*
 	 * set DPA0U
 	 */
-	mov 0x07FF1006, r10
+	mov 0x07FF1000, r10
 	ldsr r10, dpa1u
 	stsr dpa1u, r11
 

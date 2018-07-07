@@ -20,7 +20,7 @@ int main(void)
 
 	int x = 1U << 19;
 
-	mmap_data[0] = x;
+	x = mmap_data[0];
 
 	test_print_one(a);
 	timer_init();

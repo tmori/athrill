@@ -340,7 +340,7 @@ static void private_cpu_mpu_construct_containers(TargetCoreType *cpu)
 			obj->enable_read = FALSE;
 		}
 
-		if ((al & 0x01) != 0x00) {
+		if ((au & 0x01) != 0x00) {
 			obj->enable_exec = TRUE;
 		}
 		else {
@@ -365,7 +365,7 @@ static void private_cpu_mpu_construct_containers(TargetCoreType *cpu)
 			obj->enable_read = FALSE;
 		}
 
-		if ((al & 0x04) != 0x00) {
+		if ((au & 0x04) != 0x00) {
 			obj->enable_write = TRUE;
 		}
 		else {
