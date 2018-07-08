@@ -16,6 +16,8 @@ KERNEL_OBJS	+= interrupt_table.o
 KERNEL_OBJS	+= timer.o
 KERNEL_OBJS	+= interrupt_asm.o
 KERNEL_OBJS	+= main.o
+KERNEL_OBJS += kernel_task.o
+KERNEL_OBJS += kernel_service.o
 
 USER_OBJS	:= user_task.o
 
@@ -32,6 +34,7 @@ IFLAGS	:= -I.
 IFLAGS	+= -I$(CPU_CONFIG_PATH)
 IFLAGS	+= -I$(ROOT_PATH)/kernel
 IFLAGS	+= -I$(ROOT_PATH)/user
+IFLAGS	+= -I$(ROOT_PATH)/inc
 
 VPATH	:= $(ROOT_PATH)/kernel
 VPATH	+= $(ROOT_PATH)/user
@@ -52,4 +55,4 @@ all: $(OBJS)
 
 
 clean:
-	rm -f $(OBJS) $(TARGET) *.map
+	rm -f $(OBJS) $(TARGET) *.map *.dump

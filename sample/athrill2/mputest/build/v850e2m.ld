@@ -1,9 +1,9 @@
 MEMORY
 {
 	KERNEL_ROM(raxi) : org = 0x00000000, len = 512k
-	KERNEL_RAM(wax)  : org = 0x06FF0000, len = 512k
+	KERNEL_RAM(wax)  : org = 0x06000000, len = 512k
 	USER_ROM(raxi)   : org = 0x00100000, len = 512k
-	USER_RAM(wax)    : org = 0x07FF0000, len = 512k
+	USER_RAM(wax)    : org = 0x07000000, len = 512k
 };
 
 
@@ -27,12 +27,14 @@ SECTIONS
 		interrupt_asm.o(.text)
 		interrupt_table.o(.text)
 		main.o(.text)
+		kernel_*.o(.text)
 		*(.text_kernel)
 	} > KERNEL_ROM
 
 	.text_user :	
 	{
 		user_*.o(.text)
+		*(.text_user)
 	} > USER_ROM
 
 	.rodata_kernel : 
@@ -43,6 +45,7 @@ SECTIONS
 		interrupt_asm.o(.rodata)
 		interrupt_table.o(.rodata)
 		main.o(.rodata)
+		kernel_*.o(.rodata)
 		*(.rodata_kernel)
 	} > KERNEL_ROM
 	. = ALIGN(4);
@@ -59,6 +62,7 @@ SECTIONS
 		interrupt_asm.o(.data)
 		interrupt_table.o(.data)
 		main.o(.data)
+		kernel_*.o(.data)
 		*(.data_kernel)
 		. = ALIGN(4);
 		_edata_kernel	=  . ;
@@ -77,6 +81,7 @@ SECTIONS
 		interrupt_table.o(.bss)
 		main.o(.bss)
 		interrupt_table.o(.bss)
+		kernel_*.o(.bss)
 		*(.bss_kernel)
 		. = ALIGN(4);
 		__bss_kernel_end = .;
@@ -118,6 +123,15 @@ SECTIONS
 	  __bss_kernel_end = .;
 	} > KERNEL_RAM
 
+	.bss_noclr_user	   :
+	{
+		. = ALIGN(4);
+		__bss_noclr_user_start = .;
+		*(.bss_noclr_user)
+		*(COMMON)
+		. = ALIGN(4);
+	  __bss_user_end = .;
+	} > USER_RAM
 
 
 	.comment 0 : { *(.comment) }	

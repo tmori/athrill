@@ -6,14 +6,15 @@
 #include "timer.h"
 
 unsigned char stack_data[STACK_SIZE] __attribute__ ((section(".bss_noclr_kernel")));
+extern void user_start(void);
 
 int main(void)
 {
 	timer_init();
 
-	printf("Hello World!!\n");
+	printf("Hello Kernel World!!\n");
 
-
+	user_start();
 	while (1) {
 		;
 	}

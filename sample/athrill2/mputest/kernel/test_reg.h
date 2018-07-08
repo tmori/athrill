@@ -26,6 +26,7 @@
 #define REG_IN_ADDR				CPU_CONFIG_DEBUG_REGADDR_R21
 
 #define STACK_SIZE              1024
+#define USER_STACK_SIZE         1024
 
 
 #define POS_R1      72
