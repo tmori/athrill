@@ -6,9 +6,9 @@
 .globl	_svc_table
 .type	_svc_table, @function
 _svc_table:
-    .word (12) /* get_data */
-    .word (8) /* set_data */
-    .word (4) /* printf */
+	.word (12) /* get_data */
+	.word (8) /* set_data */
+	.word (4) /* printf */
 	jr _svc_exception
 .size		_svc_table, .-_svc_table
 
@@ -29,24 +29,24 @@ _svc_exception:
 	addi   SVC_PUSH_SP , sp , sp
 	st.w	ep,     SVC_POS_EP[sp]
 	mov		sp ,    ep
-    sst.w	r11 ,   SVC_POS_R11[ep]
-    sst.w	r12 ,   SVC_POS_R12[ep]
-    sst.w	r13 ,   SVC_POS_R13[ep]
-    sst.w	r31 ,   SVC_POS_R31[ep]
+	sst.w	r11 ,   SVC_POS_R11[ep]
+	sst.w	r12 ,   SVC_POS_R12[ep]
+	sst.w	r13 ,   SVC_POS_R13[ep]
+	sst.w	r31 ,   SVC_POS_R31[ep]
 	stsr	eipc,   r11
 	sst.w	r11 ,   SVC_POS_EIPC[ep]
 	stsr	eipsw,  r11
 	sst.w	r11 ,   SVC_POS_EIPSW[ep]
-    stsr    eiic,   r13
+	stsr    eiic,   r13
 
-    /*
-     * index
-     */
-    andi   0x00FF, r13, r12
-    shl    2, r12 /* r12 * 4 */
+	/*
+	 * index
+	 */
+	andi   0x00FF, r13, r12
+	shl    2, r12 /* r12 * 4 */
 	Lea	    _svc_call_table , r11
-    add    r12, r11
-    ld.w    0[r11], r11
+	add    r12, r11
+	ld.w    0[r11], r11
 
 	Lea		end_svc_handler, lp
 	/* SVCハンドラを呼び出す */
