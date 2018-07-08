@@ -120,7 +120,7 @@ uint8 *mpu_address_get_rom(uint32 addr, uint32 size)
 	MpuAddressRegionType *region = NULL;
 
 	region = mpu_address_search_region(addr, size);
-	if (region->type == READONLY_MEMORY) {
+	if ((region != NULL) && (region->type == READONLY_MEMORY)) {
 		return region->data;
 	}
 	return NULL;

@@ -18,6 +18,7 @@ KERNEL_OBJS	+= interrupt_asm.o
 KERNEL_OBJS	+= main.o
 KERNEL_OBJS += kernel_task.o
 KERNEL_OBJS += kernel_service.o
+KERNEL_OBJS += svc_asm.o
 
 USER_OBJS	:= user_task.o
 

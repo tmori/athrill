@@ -20,6 +20,15 @@ int main(void)
 	}
 }
 
+void kernel_exception(uint32 fepc, uint32 fepsw)
+{
+	printf("Exception happened!!\n");
+
+	while (1) {
+		;
+	}
+}
+
 void bss_clear(void)
 {
 	unsigned char *p = &_bss_kernel_start;

@@ -1,10 +1,9 @@
 #include "kernel_service.h"
-
-extern ServiceReturnType svc_call_get_data(SrvUint32 inx, SrvUint32 *ret_data);
-extern ServiceReturnType svc_call_set_data(SrvUint32 inx, SrvUint32 data);
+#include "test_serial.h"
 
 #define KERNEL_TEST_DATA_NUM    5U
 SrvUint32 kernel_test_data[KERNEL_TEST_DATA_NUM];
+#define KERNEL_SERVICE_CALL_NUM 3U
 
 ServiceReturnType kernel_get_data(SrvUint32 inx, SrvUint32 *ret_data)
 {
@@ -26,14 +25,15 @@ ServiceReturnType kernel_set_data(SrvUint32 inx, SrvUint32 data)
     kernel_test_data[inx] = data;
     return SERVICE_E_OK;
 }
-#if 0
-ServiceReturnType svc_call_get_data(SrvUint32 inx, SrvUint32 *ret_data)
+void kernel_printf(const char* p)
 {
-    //TODO
+    if (p != NULL) {
+        printf(p);
+    }
 }
 
-ServiceReturnType svc_call_set_data(SrvUint32 inx, SrvUint32 data)
-{
-    //TODO
-}
-#endif
+void *svc_call_table[KERNEL_SERVICE_CALL_NUM] = {
+    (void*)kernel_get_data,
+    (void*)kernel_set_data,
+    (void*)kernel_printf,
+};

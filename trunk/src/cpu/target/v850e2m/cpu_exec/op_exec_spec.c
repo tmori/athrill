@@ -368,7 +368,7 @@ int op_exec_syscall_10(TargetCoreType *cpu)
 	Std_ReturnType err;
 	uint32 pc;
 	uint32 eipc;
-	uint32 eicc;
+	uint32 eiic;
 	uint32 ecr;
 	uint32 addr;
 	uint32 data;
@@ -381,12 +381,13 @@ int op_exec_syscall_10(TargetCoreType *cpu)
 		| (cpu->decoded_code->type10.gen2);
 
 	eipc = cpu->reg.pc + 4U;
-	eicc = 0x8000 + vector8;
+	eiic = 0x8000 + vector8;
 	ecr = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_ECR];
 	ecr = ecr & 0x00FF;
-	ecr |= (eicc << 16);
+	ecr |= (eiic << 16);
 
 	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPC] = eipc;
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIIC] = eiic;
 	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPSW] = psw;
 	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_ECR] = ecr;
 

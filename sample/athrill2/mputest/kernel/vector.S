@@ -3,7 +3,7 @@
 
 	.section .vectors,"ax"
 	.align	4
-	.global __reset
+	.global __reset, _kernel_exception
 __reset:
 	// Exception(RESET) 0x0 
 	jr _start
@@ -30,7 +30,7 @@ __reset:
 	nop
 	nop
 	// Exception(NOP) 0x3
-	nop
+	jr _exception
 	nop
 	nop
 	nop

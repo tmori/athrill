@@ -70,3 +70,12 @@ end_int_handler:
 	reti	/* 割込み元へ */
 
 
+
+.section	.text , "ax"
+.align	4
+.globl	_exception
+_exception:
+	stsr fepc, r6
+	stsr fepsw, r7
+	jr _kernel_exception
+

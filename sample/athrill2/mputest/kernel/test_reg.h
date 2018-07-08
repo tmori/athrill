@@ -51,4 +51,7 @@
 #define INTR_PUSH_SPSZ  -80
 #define INTR_POP_SPSZ    80
 
+
+#define SYSCALL_SIZE    2
+
 #endif /* _TEST_REG_H_ */

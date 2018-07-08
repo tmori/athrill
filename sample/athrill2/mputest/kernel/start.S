@@ -5,12 +5,21 @@
 
 .section	".text" , "ax"
 .align	4
-.globl	_start, _bss_clear, _data_init
+.globl	_start, _bss_clear, _data_init, _svc_table
 _start:
 	di
 	Lea _stack_data, r3
 	addi STACK_SIZE, sp r3
-	
+
+
+	/*
+	 * syscall setting
+	 */
+	mov     SYSCALL_SIZE, r6
+	ldsr    r6, sccfg
+	Lea     _svc_table, r6
+	ldsr    r6, scbp
+
 	jarl _bss_clear, lp
 	jarl _data_init, lp
 
@@ -88,31 +97,5 @@ _start:
 	jarl	 _main, r31
 	halt
 
-
-.section	".text_user" , "ax"
-.align	4
-.globl	_user_start, _user_task
-.type   _user_start, @function
-_user_start:
-	di
-
-	/*
-	 * set user stack
-	 */
-	Lea _user_stack_data, r3
-	addi USER_STACK_SIZE, sp r3
-	
-
-	/*
-	 * set pp npv dmp imp
-	 */
-	stsr psw, r11
-	movhi 0x0F, r11, r10
-	ldsr r10, psw
-
-	ei
-	jarl	 _user_task, r31
-	halt
-.size		_user_start, .-_user_start
 
 .end
