@@ -4,11 +4,13 @@
 .section	.text , "ax"
 .align	4
 .globl	_svc_table
+.type	_svc_table, @function
 _svc_table:
     .word (12) /* get_data */
     .word (8) /* set_data */
     .word (4) /* printf */
 	jr _svc_exception
+.size		_svc_table, .-_svc_table
 
 #define SVC_PUSH_SP     -28
 #define SVC_POP_SP       28
