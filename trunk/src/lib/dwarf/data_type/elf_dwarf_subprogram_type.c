@@ -251,6 +251,9 @@ DwarfLocalVariableType *elf_dwarf_search_local_variable(DwarfDataSubprogramType 
 		if (localVariable->ref == NULL) {
 			continue;
 		}
+		if (localVariable->name == NULL) {
+			continue;
+		}
 		len = strlen(localVariable->name);
 		if (namelen != len) {
 			continue;
