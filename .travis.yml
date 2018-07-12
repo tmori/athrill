@@ -1,5 +1,5 @@
 language: c
 compiler:
-	- gcc
+  - gcc
 script:
-	echo "test"
+  echo "test"
