@@ -5,3 +5,4 @@ script:
   - echo ${HOME}
   - pwd
   - ls -l
+  - sh test/do_build.sh
