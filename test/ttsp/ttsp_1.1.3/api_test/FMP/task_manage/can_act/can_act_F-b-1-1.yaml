@@ -1,0 +1,20 @@
+version: "$Id: can_act_F-b-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_can_act_F_b_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running-suspended
+      actcnt : 0
+      prcid  : PRC_SELF
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: can_act(TSK_SELF)
+    eruint : 0
+
+  post_condition:

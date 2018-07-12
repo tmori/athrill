@@ -1,0 +1,32 @@
+version: "$Id: wai_flg_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_eventflag_wai_flg_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var    :
+        flgptn:
+          type : FLGPTN
+          value: BIT_PATTERN_A
+      prcid  : PRC_SELF
+
+    FLG1:
+      type  : EVENTFLAG
+      flgptn: BIT_PATTERN_0A
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: wai_flg(FLG1, BIT_PATTERN_B, WAIT_FLG_MODE_A, &flgptn)
+    ercd   : E_CTX
+
+  post_condition:

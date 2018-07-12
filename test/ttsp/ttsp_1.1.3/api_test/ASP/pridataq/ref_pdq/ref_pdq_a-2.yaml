@@ -1,0 +1,26 @@
+version: "$Id: ref_pdq_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_ref_pdq_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rpdq:
+          type: T_RPDQ
+          stskid: ANY_OBJECT_ID
+          rtskid: ANY_OBJECT_ID
+          spdqcnt: ANY_DATA_CNT
+
+    PDQ1:
+      type   : P_DATAQUEUE
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do:
+    id     : TASK1
+    syscall: ref_pdq(PDQ1,&rpdq)
+    ercd   : E_CTX
+
+  post_condition:

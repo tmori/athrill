@@ -1,0 +1,41 @@
+version: "$Id: rel_wai_F-e-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_rel_wai_F_e_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : DELAY
+      lefttmo: RELATIVE_TIME_A
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: rel_wai(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+      porder : 3
+
+    TASK4:
+      porder: 2

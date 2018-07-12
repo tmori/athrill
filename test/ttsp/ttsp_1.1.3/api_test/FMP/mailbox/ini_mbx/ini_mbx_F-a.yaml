@@ -1,0 +1,27 @@
+version: "$Id: ini_mbx_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mailbox_ini_mbx_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    MBX1:
+      type    : MAILBOX
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: ini_mbx(MBX1)
+    ercd   : E_CTX
+
+  post_condition:

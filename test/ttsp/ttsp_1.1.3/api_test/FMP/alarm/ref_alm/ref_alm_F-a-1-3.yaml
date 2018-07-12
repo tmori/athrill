@@ -1,0 +1,36 @@
+version: "$Id: ref_alm_F-a-1-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_alarm_ref_alm_F_a_1_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        ralm:
+          type: T_RALM
+          almstat: ANY_ALARM_STAT
+          lefttim: RELATIVE_TIME_A
+          prcid  : ANY_OBJECT_ID
+      prcid  : PRC_SELF
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+      prcid  : PRC_SELF
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: ref_alm(ALM1, &ralm)
+    ercd   : E_CTX
+
+  post_condition:

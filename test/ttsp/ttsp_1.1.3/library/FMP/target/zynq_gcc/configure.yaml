@@ -1,0 +1,520 @@
+# $Id: configure.yaml 2 2012-05-09 02:23:52Z nces-shigihara $
+
+######################################################################
+# TTG環境設定ファイル
+# --------------------------------------------------------------------
+# テスト対象とするターゲットおよびテスト環境に合わせて，各パラメータを
+# 設定する．なお，項目によっては，TTG実行時のオプションによりテストプロ
+# グラム生成処理に使用されないが，TTG内部のデフォルト値は本ファイルの設
+# 定情報から取得しているため，パラメータは削除できない．そこで，設定し
+# たオプションに応じて，パラメータの設定要否がわかるように以下の凡例を
+# 付与している．
+# 【FMP】FMPカーネル指定時のみ設定が必要
+# 【GLB】グローバルタイマ方式指定時のみ設定が必要
+# 【PE2】プロセッサ数が2つ以上の時のみ設定が必要
+# 【PE3】プロセッサ数が3つ以上の時のみ設定が必要
+######################################################################
+
+######################################################################
+# ターゲットのハードウェアアーキテクチャに関する設定
+######################################################################
+
+# プロセッサ数【FMP】
+# [0より大きい整数]
+prc_num: 2
+
+# マスタプロセッサID【FMP】
+# (メインタスクを起動するプロセッサ)
+# [0より大きい整数]
+main_prcid: 1
+
+# メインタスク用クラス名【FMP】
+# (初期割付PEがmain_prcidであり，全PEへ割付可能なクラス)
+# [文字列]
+main_class: TCL_1
+
+# タイマアーキテクチャ【FMP】
+# [local: ローカルタイマ方式， global: グローバルタイマ方式]
+timer_arch: local
+
+# システム時刻管理プロセッサID【FMP】【GLB】
+# [0より大きい整数]
+time_manage_prcid: 1
+
+# 割付け可能プロセッサがシステム時刻管理プロセッサのみであるクラス【FMP】【GLB】
+# (グローバルタイマ時のタイムイベントハンドラが所属するクラス)
+# [文字列]
+time_manage_class: TCL_SYSTIM_PRC
+
+# タイマ割込みの割込み優先度
+# [文字列か0より小さい整数]
+timer_int_pri: -20
+
+# スピンロックの数(0の場合無制限)【FMP】
+# [0以上の整数]
+spinlock_num: 0
+
+# IRCアーキテクチャタイプ【FMP】
+# [local: ローカルIRCのみサポート，global: グローバルIRCのみサポート，
+#   combination: ローカルIRC，グローバルIRC両方サポート]
+irc_arch: local
+
+# APIのget_utmをサポートするか
+# [true: サポートする，false: サポートしない]
+api_support_get_utm: true
+
+# APIのena_intをサポートするか
+# [true: サポートする，false: サポートしない]
+api_support_ena_int: true
+
+# APIのdis_intをサポートするか
+# [true: サポートする，false: サポートしない]
+api_support_dis_int: true
+
+# 自プロセッサへのプロセッサ間割込みを発行可能なターゲットであるか【FMP】
+# [true: サポート, false: 未サポート]
+own_ipi_raise: true
+
+# CPUロック中にCPU例外が発生しても元のコンテキストに戻れるターゲットかどうか
+# [true: 戻れる, false: 戻れない]
+enable_exc_in_cpulock: true
+
+# 非タスクコンテキストからの割込み優先度マスク変更をサポートしているかどうか
+# (※未使用)
+# [true: サポート, false: 未サポート]
+enable_chg_ipm_in_non_task: false
+
+
+######################################################################
+# ターゲット依存部毎に用意するターゲット依存API
+######################################################################
+
+# システム時刻制御関数の有無
+# [true: 有り，false: 無し]
+func_time: true
+
+# 割込み発生関数の有無
+# [true: 有り，false: 無し]
+func_interrupt: true
+
+# CPU例外発生関数の有無
+# [true: 有り，false: 無し]
+func_exception: true
+
+
+######################################################################
+# 必要に応じて変更可能なパラメータ
+######################################################################
+
+# テストプログラムでシステム時刻を止めずに進めたままとするか
+# (func_timeがfalseの時はtrueとする)
+# [true: 全テストケースにおいて時間を進める, false: 全テストケースにおいて時間を停止]
+all_gain_time: false
+
+# スタック共有モード
+# [true: 共有する, false: 共有しない]
+stack_share: true
+
+# 出力するファイルのファイル名
+# (例："out" の場合 out.c,out.h,out.cfg が生成される)
+# [文字列]
+out_file_name: out
+
+# スピンロック取得待ちを確認するためのループ回数【FMP】
+# [0以上の整数]
+wait_spin_loop: 0xFFFFF
+
+# CPU例外ハンドラの引数とする変数名
+# [文字列]
+exception_arg_name: p_excinf
+
+# YAMLファイル読み込みに使用するライブラリ
+# [yaml: YAMLライブラリ，kwalify: Kwalifyライブラリ]
+yaml_lib: kwalify
+
+# GCOVを取得するか
+# (SkyEye依存部のみで使用可能)
+# [true: 取得する, false: 取得しない]
+enable_gcov: false
+
+# TLV用トレースログを取得するか
+# (※未使用)
+# [true: 取得する, false: 取得しない]
+enable_log: false
+
+
+######################################################################
+# 変数置換用マクロ定義(マクロ名は変更不可)
+######################################################################
+macro:
+#
+# プロセッサID，クラス，割込み，CPU例外に関するマクロ
+#
+
+# プロセッサIDの指定【FMP】
+# [0より大きい整数]
+  MAIN_PRCID  : main_prcid
+  PRC_SELF    : 1
+  PRC_OTHER   : 2
+  PRC_OTHER_1 : 2
+  PRC_OTHER_2 : 3
+
+# クラス指定(CLS_初期PE_割付可能PE)【FMP】
+# [文字列]
+  CLS_SELF_ALL             : TCL_1
+  CLS_OTHER_ALL            : TCL_2         #【PE2】
+  CLS_OTHER_1_ALL          : TCL_2         #【PE3】
+  CLS_OTHER_2_ALL          : TCL_3         #【PE3】
+  CLS_SELF_ONLY_SELF       : TCL_1_ONLY
+  CLS_OTHER_ONLY_OTHER     : TCL_2_ONLY    #【PE2】
+  CLS_OTHER_1_ONLY_OTHER_1 : TCL_2_ONLY    #【PE3】
+  CLS_OTHER_2_ONLY_OTHER_2 : TCL_3_ONLY    #【PE3】
+
+# 割込み番号指定
+# [文字列か0以上の整数]
+  INTNO_SELF_INH_A       : TTSP_INTNO_A
+  INTNO_SELF_INH_B       : TTSP_INTNO_B
+  INTNO_SELF_INH_C       : TTSP_INTNO_C
+  INTNO_SELF_ISR_A       : TTSP_INTNO_D
+  INTNO_SELF_ISR_B       : TTSP_INTNO_E
+  INTNO_SELF_ISR_C       : TTSP_INTNO_F
+  INTNO_OTHER_INH_A      : TTSP_INTNO_PE2_A    #【PE2】
+  INTNO_OTHER_INH_B      : TTSP_INTNO_PE2_B    #【PE2】
+  INTNO_OTHER_INH_C      : TTSP_INTNO_PE2_C    #【PE2】
+  INTNO_OTHER_ISR_A      : TTSP_INTNO_PE2_D    #【PE2】
+  INTNO_OTHER_ISR_B      : TTSP_INTNO_PE2_E    #【PE2】
+  INTNO_OTHER_ISR_C      : TTSP_INTNO_PE2_F    #【PE2】
+  INTNO_OTHER_1_INH_A    : TTSP_INTNO_PE2_A    #【PE3】
+  INTNO_OTHER_1_INH_B    : TTSP_INTNO_PE2_B    #【PE3】
+  INTNO_OTHER_1_INH_C    : TTSP_INTNO_PE2_C    #【PE3】
+  INTNO_OTHER_1_ISR_A    : TTSP_INTNO_PE2_D    #【PE3】
+  INTNO_OTHER_1_ISR_B    : TTSP_INTNO_PE2_E    #【PE3】
+  INTNO_OTHER_1_ISR_C    : TTSP_INTNO_PE2_F    #【PE3】
+  INTNO_OTHER_2_INH_A    : TTSP_INTNO_PE3_A    #【PE3】
+  INTNO_OTHER_2_INH_B    : TTSP_INTNO_PE3_B    #【PE3】
+  INTNO_OTHER_2_INH_C    : TTSP_INTNO_PE3_C    #【PE3】
+  INTNO_OTHER_2_ISR_A    : TTSP_INTNO_PE3_D    #【PE3】
+  INTNO_OTHER_2_ISR_B    : TTSP_INTNO_PE3_E    #【PE3】
+  INTNO_OTHER_2_ISR_C    : TTSP_INTNO_PE3_F    #【PE3】
+  INTNO_GLOBAL_IRC_INH_A : TTSP_GLOBAL_IRC_INTNO_A    #【FMP】
+  INTNO_GLOBAL_IRC_INH_B : TTSP_GLOBAL_IRC_INTNO_B    #【FMP】
+  INTNO_GLOBAL_IRC_INH_C : TTSP_GLOBAL_IRC_INTNO_C    #【FMP】
+  INTNO_GLOBAL_IRC_ISR_A : TTSP_GLOBAL_IRC_INTNO_D    #【FMP】
+  INTNO_GLOBAL_IRC_ISR_B : TTSP_GLOBAL_IRC_INTNO_E    #【FMP】
+  INTNO_GLOBAL_IRC_ISR_C : TTSP_GLOBAL_IRC_INTNO_F    #【FMP】
+
+# 割込みハンドラ番号指定
+# [文字列か0以上の整数]
+  INHNO_SELF_A            : TTSP_INHNO_A
+  INHNO_SELF_B            : TTSP_INHNO_B
+  INHNO_SELF_C            : TTSP_INHNO_C
+  INHNO_OTHER_A           : TTSP_INHNO_PE2_A    #【PE2】
+  INHNO_OTHER_B           : TTSP_INHNO_PE2_B    #【PE2】
+  INHNO_OTHER_C           : TTSP_INHNO_PE2_C    #【PE2】
+  INHNO_OTHER_1_A         : TTSP_INHNO_PE2_A    #【PE3】
+  INHNO_OTHER_1_B         : TTSP_INHNO_PE2_B    #【PE3】
+  INHNO_OTHER_1_C         : TTSP_INHNO_PE2_C    #【PE3】
+  INHNO_OTHER_2_A         : TTSP_INHNO_PE3_A    #【PE3】
+  INHNO_OTHER_2_B         : TTSP_INHNO_PE3_B    #【PE3】
+  INHNO_OTHER_2_C         : TTSP_INHNO_PE3_C    #【PE3】
+  INHNO_GLOBAL_IRC_SELF_A : TTSP_GLOBAL_IRC_INTNO_A    #【FMP】
+  INHNO_GLOBAL_IRC_SELF_B : TTSP_GLOBAL_IRC_INTNO_B    #【FMP】
+  INHNO_GLOBAL_IRC_SELF_C : TTSP_GLOBAL_IRC_INTNO_C    #【FMP】
+
+# 不正な割込み番号指定
+# [文字列か0以上の整数]
+  INTNO_INVALID_SELF     : TTSP_INVALID_INTNO
+  INTNO_INVALID_OTHER    : TTSP_INVALID_INTNO_PE2    #【PE2】
+  INTNO_INVALID_OTHER_1  : TTSP_INVALID_INTNO_PE2    #【PE3】
+  INTNO_INVALID_OTHER_2  : TTSP_INVALID_INTNO_PE3    #【PE3】
+  INTNO_NOT_SET_SELF     : TTSP_NOT_SET_INTNO
+  INTNO_NOT_SET_OTHER    : TTSP_NOT_SET_INTNO_PE2    #【PE2】
+  INTNO_NOT_SET_OTHER_1  : TTSP_NOT_SET_INTNO_PE2    #【PE3】
+  INTNO_NOT_SET_OTHER_2  : TTSP_NOT_SET_INTNO_PE3    #【PE3】
+  INTNO_NOT_SELF_SELF    : TTSP_NOT_SELF_INTNO_PE1   #【FMP】
+  INTNO_NOT_SELF_OTHER   : TTSP_NOT_SELF_INTNO_PE2   #【PE2】
+  INTNO_NOT_SELF_OTHER_1 : TTSP_NOT_SELF_INTNO_PE2   #【PE3】
+  INTNO_NOT_SELF_OTHER_2 : TTSP_NOT_SELF_INTNO_PE3   #【PE3】
+
+# CPU例外ハンドラ番号指定
+# [文字列か0以上の整数]
+  EXCNO_SELF_A    : TTSP_EXCNO_A
+  EXCNO_OTHER_A   : TTSP_EXCNO_PE2_A    #【PE2】
+  EXCNO_OTHER_1_A : TTSP_EXCNO_PE2_A    #【PE3】
+  EXCNO_OTHER_2_A : TTSP_EXCNO_PE3_A    #【PE3】
+
+
+#
+# グローバルタイマ時のプロセッサID，クラス，割込み，CPU例外に関するマクロ【GLB】
+#
+
+# グローバルタイマ時のプロセッサIDの指定【GLB】
+# [0より大きい整数]
+  PRC_TIMER_SELF    : 1
+  PRC_TIMER_OTHER   : 2    #【PE2】
+  PRC_TIMER_OTHER_1 : 2    #【PE3】
+  PRC_TIMER_OTHER_2 : 3    #【PE3】
+
+# グローバルタイマ時のクラス指定(CLS_初期PE_割付可能PE)【GLB】
+# [文字列]
+  CLS_TIMER_SELF_ALL                   : TCL_1
+  CLS_TIMER_OTHER_ALL                  : TCL_2    #【PE2】
+  CLS_TIMER_OTHER_1_ALL                : TCL_2    #【PE3】
+  CLS_TIMER_OTHER_2_ALL                : TCL_3    #【PE3】
+  CLS_TIMER_ONLY_TIMER                 : TCL_SYSTIM_PRC
+  CLS_TIMER_OTHER_ONLY_TIMER_OTHER     : TCL_2_ONLY    #【PE2】
+  CLS_TIMER_OTHER_1_ONLY_TIMER_OTHER_1 : TCL_2_ONLY    #【PE3】
+  CLS_TIMER_OTHER_2_ONLY_TIMER_OTHER_2 : TCL_3_ONLY    #【PE3】
+
+# グローバルタイマ時の割込み番号指定【GLB】
+# [文字列か0以上の整数]
+  INTNO_TIMER_SELF_INH_A    : TTSP_INTNO_A
+  INTNO_TIMER_SELF_INH_B    : TTSP_INTNO_B
+  INTNO_TIMER_SELF_INH_C    : TTSP_INTNO_C
+  INTNO_TIMER_SELF_ISR_A    : TTSP_INTNO_D
+  INTNO_TIMER_SELF_ISR_B    : TTSP_INTNO_E
+  INTNO_TIMER_SELF_ISR_C    : TTSP_INTNO_F
+  INTNO_TIMER_OTHER_INH_A   : TTSP_INTNO_PE2_A    #【PE2】
+  INTNO_TIMER_OTHER_INH_B   : TTSP_INTNO_PE2_B    #【PE2】
+  INTNO_TIMER_OTHER_INH_C   : TTSP_INTNO_PE2_C    #【PE2】
+  INTNO_TIMER_OTHER_ISR_A   : TTSP_INTNO_PE2_D    #【PE2】
+  INTNO_TIMER_OTHER_ISR_B   : TTSP_INTNO_PE2_E    #【PE2】
+  INTNO_TIMER_OTHER_ISR_C   : TTSP_INTNO_PE2_F    #【PE2】
+  INTNO_TIMER_OTHER_1_INH_A : TTSP_INTNO_PE2_A    #【PE3】
+  INTNO_TIMER_OTHER_1_INH_B : TTSP_INTNO_PE2_B    #【PE3】
+  INTNO_TIMER_OTHER_1_INH_C : TTSP_INTNO_PE2_C    #【PE3】
+  INTNO_TIMER_OTHER_1_ISR_A : TTSP_INTNO_PE2_D    #【PE3】
+  INTNO_TIMER_OTHER_1_ISR_B : TTSP_INTNO_PE2_E    #【PE3】
+  INTNO_TIMER_OTHER_1_ISR_C : TTSP_INTNO_PE2_F    #【PE3】
+  INTNO_TIMER_OTHER_2_INH_A : TTSP_INTNO_PE3_A    #【PE3】
+  INTNO_TIMER_OTHER_2_INH_B : TTSP_INTNO_PE3_B    #【PE3】
+  INTNO_TIMER_OTHER_2_INH_C : TTSP_INTNO_PE3_C    #【PE3】
+  INTNO_TIMER_OTHER_2_ISR_A : TTSP_INTNO_PE3_D    #【PE3】
+  INTNO_TIMER_OTHER_2_ISR_B : TTSP_INTNO_PE3_E    #【PE3】
+  INTNO_TIMER_OTHER_2_ISR_C : TTSP_INTNO_PE3_F    #【PE3】
+
+# グローバルタイマ時の割込みハンドラ番号指定【GLB】
+# [文字列か0以上の整数]
+  INHNO_TIMER_SELF_A    : TTSP_INHNO_A
+  INHNO_TIMER_SELF_B    : TTSP_INHNO_B
+  INHNO_TIMER_SELF_C    : TTSP_INHNO_C
+  INHNO_TIMER_OTHER_A   : TTSP_INHNO_PE2_A    #【PE2】
+  INHNO_TIMER_OTHER_B   : TTSP_INHNO_PE2_B    #【PE2】
+  INHNO_TIMER_OTHER_C   : TTSP_INHNO_PE2_C    #【PE2】
+  INHNO_TIMER_OTHER_1_A : TTSP_INHNO_PE2_A    #【PE3】
+  INHNO_TIMER_OTHER_1_B : TTSP_INHNO_PE2_B    #【PE3】
+  INHNO_TIMER_OTHER_1_C : TTSP_INHNO_PE2_C    #【PE3】
+  INHNO_TIMER_OTHER_2_A : TTSP_INHNO_PE3_A    #【PE3】
+  INHNO_TIMER_OTHER_2_B : TTSP_INHNO_PE3_B    #【PE3】
+  INHNO_TIMER_OTHER_2_C : TTSP_INHNO_PE3_C    #【PE3】
+
+# グローバルタイマ時の不正な割込み番号指定【GLB】
+# [文字列か0以上の整数]
+  INTNO_TIMER_INVALID_SELF    : TTSP_INVALID_INTNO
+  INTNO_TIMER_INVALID_OTHER   : TTSP_INVALID_INTNO_PE2    #【PE2】
+  INTNO_TIMER_INVALID_OTHER_1 : TTSP_INVALID_INTNO_PE2    #【PE3】
+  INTNO_TIMER_INVALID_OTHER_2 : TTSP_INVALID_INTNO_PE3    #【PE3】
+  INTNO_TIMER_NOT_SET_SELF    : TTSP_NOT_SET_INTNO
+  INTNO_TIMER_NOT_SET_OTHER   : TTSP_NOT_SET_INTNO_PE2    #【PE2】
+  INTNO_TIMER_NOT_SET_OTHER_1 : TTSP_NOT_SET_INTNO_PE2    #【PE3】
+  INTNO_TIMER_NOT_SET_OTHER_2 : TTSP_NOT_SET_INTNO_PE3    #【PE3】
+
+# グローバルタイマ時のCPU例外ハンドラ番号指定【GLB】
+# [文字列か0以上の整数]
+  EXCNO_TIMER_SELF_A    : TTSP_EXCNO_A
+  EXCNO_TIMER_OTHER_A   : TTSP_EXCNO_PE2_A    #【PE2】
+  EXCNO_TIMER_OTHER_1_A : TTSP_EXCNO_PE2_A    #【PE3】
+  EXCNO_TIMER_OTHER_2_A : TTSP_EXCNO_PE3_A    #【PE3】
+
+
+#
+# 共通マクロ
+#
+
+# タスク優先度
+# [1以上，16以下の整数]
+# [TSK_PRI_HIGH < TSK_PRI_MID < TSK_PRI_LOW]
+  TSK_PRI_HIGH : 9
+  TSK_PRI_MID  : 10
+  TSK_PRI_LOW  : 11
+
+# bitmap_search関数カバレッジ網羅用
+# [1以上，4以下の整数]
+  TSK_PRI_LE_4     : 4
+# [1以上，TSK_PRI_LE_4以下の整数]
+  TSK_PRI_LE_LE_4  : 2
+# [13以上，16以下の整数]
+  TSK_PRI_GE_13    : 16
+# [1以上，TSK_PRI_GE_13以下整数]
+  TSK_PRI_LE_GE_13 : 5
+
+# データ優先度
+# [1以上，16以下の整数]
+# [DATA_PRI_HIGH < DATA_PRI_MID < DATA_PRI_LOW <= DATA_PRI_MAX]
+  DATA_PRI_HIGH : 1
+  DATA_PRI_MID  : 2
+  DATA_PRI_LOW  : 3
+  DATA_PRI_MAX  : 4
+
+# メッセージ優先度
+# [1以上，16以下の整数]
+# [MSG_PRI_HIGH < MSG_PRI_MID < MSG_PRI_LOW <= MSG_PRI_MAX]
+  MSG_PRI_HIGH : 1
+  MSG_PRI_MID  : 2
+  MSG_PRI_LOW  : 3
+  MSG_PRI_MAX  : 4
+
+# イベントフラグビットパターン
+# [BIT_PATTERN_*，BIT_PATTERN_0* がすべてビットユニークである]
+# [0より大きい整数]
+  BIT_PATTERN_A  : 0x00000001
+  BIT_PATTERN_B  : 0x00000010
+  BIT_PATTERN_C  : 0x00000100
+  BIT_PATTERN_D  : 0x00001000
+  BIT_PATTERN_E  : 0x00010000
+# [0以上の整数]
+  BIT_PATTERN_0A : 0x00000000
+  BIT_PATTERN_0B : 0x00100000
+  BIT_PATTERN_0C : 0x01000000
+
+# イベントフラグ待ちモード
+# [TWF_ANDW，TWF_ORW]
+  WAIT_FLG_MODE_A : TWF_ANDW
+  WAIT_FLG_MODE_B : TWF_ORW
+  WAIT_FLG_MODE_C : TWF_ANDW
+  WAIT_FLG_MODE_D : TWF_ORW
+  WAIT_FLG_MODE_E : TWF_ANDW
+
+# データ
+# [文字列か整数]
+  DATA_A : 0x00000001
+  DATA_B : 0x00000010
+  DATA_C : 0x00000100
+  DATA_D : 0x00001000
+  DATA_E : 0x00010000
+  DATA_F : 0x00100000
+
+# 拡張情報
+# [文字列か整数]
+  EXINF_A : 0x00000001
+  EXINF_B : 0x00000010
+  EXINF_C : 0x00000100
+  EXINF_D : 0x00001000
+  EXINF_E : 0x00010000
+
+# タイムアウト値
+# (TMO型用, タイムティック指定/タイムアウト値などに使用)
+# [0より大きい整数]
+  FOREVER_TIME      : 100
+  ANY_ELAPSED_TIME  : 3
+
+# 相対時間
+# (RELTIM型用, dly_tsk/sta_almなどに使用)
+# [0以上の整数]
+  RELATIVE_TIME_A   : 3
+  RELATIVE_TIME_B   : 6
+  RELATIVE_TIME_C   : 9
+
+# 時間を止めないテストケースで用いる時間
+# [0より大きい整数]
+  ACTIVATE_ALARM_TIME : 30
+  WAIT_ALARM_TIME     : 35
+
+# セマフォ
+# [0より大きい整数]
+# [ANY_MAX_SEMCNT > ANY_NOW_SEMCNT]
+  ANY_MAX_SEMCNT : 2
+  ANY_NOW_SEMCNT : 1
+# [0以上の整数]
+# [ANY_MAX_SEMCNT >= ANY_INI_SEMCNT]
+  ANY_INI_SEMCNT : 1
+
+# 固定長メモリプール
+# [0より大きい整数]
+# [ANY_INI_BLKCNT >= ANY_NOW_BLKCNT]
+  ANY_INI_BLKCNT : 2
+  ANY_NOW_BLKCNT : 1
+  ANY_BLKSZ      : 256
+
+# 例外要因ビットパターン
+# [TEXPTN_*，TEXPTN_0* がすべてビットユニークである]
+# [0より大きい整数]
+  TEXPTN_A  : 0x00000001
+  TEXPTN_B  : 0x00000010
+  TEXPTN_C  : 0x00000100
+# [0以上の整数]
+  TEXPTN_0A : 0x00000000
+
+# 割込み優先度
+# [文字列か0より小さい整数]
+  INT_PRI_TIMER : timer_int_pri
+  INT_PRI_HIGH  : TTSP_HIGH_INTPRI
+  INT_PRI_MID   : TTSP_MID_INTPRI
+  INT_PRI_LOW   : TTSP_LOW_INTPRI
+
+# 割込みサービスルーチン優先度
+# [1以上，16以下の整数]
+# [ISR_PRI_HIGH < ISR_PRI_MID < ISR_PRI_LOW]
+  ISR_PRI_HIGH : 9
+  ISR_PRI_MID  : 10
+  ISR_PRI_LOW  : 11
+
+# 任意の割込み優先度マスク
+# [文字列か0より小さい整数]
+  ANY_IPM : TMIN_INTPRI
+
+# タイマ割込みより低い任意の割込み優先度マスク
+# [文字列か0より小さい整数]
+  ANY_IPM_FOR_TIMER : timer_int_pri + 1
+
+# 任意の属性
+# [文字列か0以上の整数]
+  ANY_ATT_CYC : TA_NULL
+  ANY_ATT_INH : TA_NULL
+  ANY_ATT_ISR : TA_NULL
+  ANY_ATT_SEM : TA_NULL
+  ANY_ATT_FLG : TA_NULL
+  ANY_ATT_DTQ : TA_NULL
+  ANY_ATT_PDQ : TA_NULL
+  ANY_ATT_MBX : TA_NULL
+  ANY_ATT_MPF : TA_NULL
+
+# 任意のオブジェクトID
+# [文字列か0以上の整数]
+  ANY_OBJECT_ID : 1
+
+# 任意のタスク状態
+# [文字列か0以上の整数]
+  ANY_TASK_STAT : TS_DORMANT
+
+# 任意の待ちタスク要因
+# [文字列か0以上の整数]
+  ANY_TASK_WAIT : TS_WAIT_SLP
+
+# 任意のタスク例外禁止状態
+# [文字列か0以上の整数]
+  ANY_TEX_STAT : TTEX_ENA
+
+# 任意のアラームハンドラ起動状態
+# [文字列か0以上の整数]
+  ANY_ALARM_STAT : TALM_STA
+
+# 任意の周期ハンドラ起動状態
+# [文字列か0以上の整数]
+  ANY_CYCLIC_STAT : TCYC_STA
+
+# 任意のデータ格納数
+# [文字列か0以上の整数]
+  ANY_DATA_CNT : 3
+
+# 任意の番地
+# [文字列か0以上の整数]
+  ANY_ADDRESS : 0x12345678
+
+# 任意のキューイング数
+# [文字列か0以上の整数]
+  ANY_QUEUING_CNT : 1
+
+# 任意のスピンロック状態【FMP】
+# [文字列か0以上の整数]
+  ANY_SPINLOCK_STAT : 1

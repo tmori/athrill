@@ -1,0 +1,36 @@
+version: "$Id: DEF_TEX_F-b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_staticAPI_DEF_TEX_F_b:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      exinf  : EXINF_A
+      tskstat: running
+      prcid  : PRC_OTHER
+      class  : CLS_OTHER_ALL
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK1
+      texstat: TTEX_DIS
+      hdlstat: STP
+      pndptn : 0
+
+  do_0:
+    id     : TASK1
+    syscall: ena_tex()
+    ercd   : E_OK
+
+  post_condition_0:
+    TEX1:
+      texstat: TTEX_ENA
+
+  do_1:
+    id     : TASK1
+    syscall: ras_tex(TASK1, TEXPTN_A)
+
+  post_condition_1:
+    TEX1:
+      texstat: TTEX_DIS
+      hdlstat: ACTIVATE
+      texptn : TEXPTN_A
+      pndptn : 0

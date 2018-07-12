@@ -1,0 +1,28 @@
+version: "$Id: ini_mbx_c-1-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mailbox_ini_mbx_c_1_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : MBX1
+
+    MBX1:
+      type    : MAILBOX
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ini_mbx(MBX1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended
+
+    MBX1:
+      wtsklist:

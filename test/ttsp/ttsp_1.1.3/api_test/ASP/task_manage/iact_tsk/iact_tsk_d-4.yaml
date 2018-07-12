@@ -1,0 +1,68 @@
+version: "$Id: iact_tsk_d-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_iact_tsk_d_4:
+  note: TESRY_003
+
+  variation:
+    gain_time: true
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+
+    TASK1:
+      type   : TASK
+      tskstat: dormant
+      itskpri: TSK_PRI_MID
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+
+  do_0:
+    id     : TASK2
+    syscall: sta_alm(ALM1, ACTIVATE_ALARM_TIME)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    ALM1:
+      almstat: TALM_STA
+
+  do_1:
+    id     : TASK2
+    syscall: slp_tsk()
+    gcov   : false
+
+  post_condition_1:
+    TASK2:
+      tskstat: waiting
+      wobjid : SLEEP
+
+    ALM1:
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+  do_2:
+    id     : ALM1
+    syscall: iact_tsk(TASK1)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_2:
+    TASK1:
+      tskstat: ready
+
+  do_3:
+    id     : ALM1
+    code   : return
+    gcov   : false
+
+  post_condition_3:
+    TASK1:
+      tskstat: running
+
+    ALM1:
+      hdlstat: STP

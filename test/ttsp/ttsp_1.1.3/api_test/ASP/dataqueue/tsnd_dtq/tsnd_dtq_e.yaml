@@ -1,0 +1,55 @@
+version: "$Id: tsnd_dtq_e.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_tsnd_dtq_e:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 2
+      datalist :
+        - data : DATA_A
+        - data : DATA_B
+
+  do_0:
+    id     : TASK1
+    syscall: tsnd_dtq(DTQ1, DATA_C, ANY_ELAPSED_TIME)
+    ercd   : E_DLT
+    gcov   : true
+
+  post_condition_0:
+    TASK1:
+      tskstat: waiting
+      wobjid : DTQ1
+      lefttmo: ANY_ELAPSED_TIME
+
+    TASK2:
+      tskstat: running
+
+    DTQ1:
+      stsklist :
+        - TASK1:
+            data: DATA_C
+
+  do_1:
+    id     : TASK2
+    syscall: ini_dtq(DTQ1)
+    gcov   : false
+
+  post_condition_1:
+    TASK1:
+      tskstat: running
+
+    TASK2:
+      tskstat: ready
+
+    DTQ1:
+      stsklist :
+      datalist :

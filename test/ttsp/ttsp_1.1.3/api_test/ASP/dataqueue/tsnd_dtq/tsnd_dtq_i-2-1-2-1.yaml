@@ -1,0 +1,31 @@
+version: "$Id: tsnd_dtq_i-2-1-2-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_tsnd_dtq_i_2_1_2_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqatr : TA_TPRI
+      dtqcnt : 3
+      stsklist:
+      datalist:
+        - data: DATA_A
+        - data: DATA_B
+        - data: DATA_C
+
+  do:
+    id     : TASK1
+    syscall: tsnd_dtq(DTQ1, DATA_D, ANY_ELAPSED_TIME)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : DTQ1
+      lefttmo: ANY_ELAPSED_TIME
+
+    DTQ1:
+      stsklist:
+        - TASK1:
+           data: DATA_D

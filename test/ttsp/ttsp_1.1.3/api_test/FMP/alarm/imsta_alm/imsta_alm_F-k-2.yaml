@@ -1,0 +1,56 @@
+version: "$Id: imsta_alm_F-k-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_alarm_imsta_alm_F_k_2:
+  variation:
+    timer_arch: local
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    ALM2:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+      class  : CLS_OTHER_ALL
+      prcid  : PRC_OTHER
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+  do_0:
+    id     : ALM1
+    syscall: imsta_alm(ALM2, RELATIVE_TIME_A, TPRC_INI)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_0:
+    ALM2:
+      almstat: TALM_STA
+      hdlstat: STP
+      lefttim: RELATIVE_TIME_A
+      prcid  : PRC_OTHER
+
+  do_1:
+    id     : ALM1
+    code   : return
+    gcov   : false
+
+  post_condition_1:
+    0:
+      ALM1:
+        almstat: TALM_STP
+        hdlstat: STP
+
+    RELATIVE_TIME_A:
+      ALM2:
+        lefttim: 0
+
+    RELATIVE_TIME_A+1:
+      ALM2:
+        almstat: TALM_STP
+        hdlstat: ACTIVATE

@@ -1,0 +1,18 @@
+version: "$Id: loc_spn_F-b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_spin_lock_loc_spn_F_b_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_UNL
+
+  do:
+    id     : TASK1
+    syscall: loc_spn(0)
+    ercd   : E_ID
+
+  post_condition:

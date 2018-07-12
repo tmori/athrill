@@ -1,0 +1,60 @@
+version: "$Id: iset_flg_g-3-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_iset_flg_g_3_2:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+
+    TASK4:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+
+    FLG1:
+      type  : EVENTFLAG
+      flgatr: (TA_WMUL|TA_CLR)
+      flgptn: BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_A
+            wfmode: TWF_ORW
+        - TASK3:
+            waiptn: BIT_PATTERN_B
+            wfmode: TWF_ORW
+        - TASK4:
+            waiptn: BIT_PATTERN_C
+            wfmode: TWF_ORW
+
+  do:
+    id     : ALM1
+    syscall: iset_flg(FLG1, BIT_PATTERN_A|BIT_PATTERN_B|BIT_PATTERN_C)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    FLG1:
+      flgptn: 0x00
+      wtsklist:
+        - TASK3:
+            waiptn: BIT_PATTERN_B
+            wfmode: TWF_ORW
+        - TASK4:
+            waiptn: BIT_PATTERN_C
+            wfmode: TWF_ORW

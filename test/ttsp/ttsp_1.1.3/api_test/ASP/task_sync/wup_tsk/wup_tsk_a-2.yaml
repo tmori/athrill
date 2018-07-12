@@ -1,0 +1,23 @@
+version: "$Id: wup_tsk_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_wup_tsk_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do:
+    id     : TASK1
+    syscall: wup_tsk(TASK2)
+    ercd   : E_CTX
+
+  post_condition:

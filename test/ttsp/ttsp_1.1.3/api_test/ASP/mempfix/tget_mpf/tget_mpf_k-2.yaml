@@ -1,0 +1,43 @@
+version: "$Id: tget_mpf_k-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mempfix_tget_mpf_k_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var    :
+        blk1:
+          type: void*
+        blk2:
+          type: void*
+
+    MPF1:
+      type   : MEMORYPOOL
+      blkcnt : 2
+      fblkcnt: 2
+      blksz  : ANY_BLKSZ
+
+  do_0:
+    id     : TASK1
+    syscall: tget_mpf(MPF1,&blk1,ANY_ELAPSED_TIME)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    MPF1:
+      fblkcnt: 1
+      mpf    : blk1
+
+  do_1:
+    id     : TASK1
+    syscall: tget_mpf(MPF1,&blk2,ANY_ELAPSED_TIME)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_1:
+    TASK1 :
+      var :
+        blk2:
+          value: blk1+ANY_BLKSZ
+
+    MPF1:
+      fblkcnt: 0

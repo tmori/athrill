@@ -1,0 +1,45 @@
+version: "$Id: ATT_INI_F-b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_staticAPI_ATT_INI_F_b_1:
+  pre_condition:
+    INI1:
+      type : INIRTN
+      exinf: EXINF_A
+      global : true
+      do   :
+        syscall: sns_ker()
+        bool   : true
+
+    INI2:
+      type : INIRTN
+      exinf: EXINF_B
+      global : true
+      do   :
+        syscall: sns_ker()
+        bool   : true
+
+    INI3:
+      type : INIRTN
+      exinf: EXINF_C
+      prcid: PRC_SELF
+      class: CLS_SELF_ALL
+      do   :
+        syscall: sns_ker()
+        bool   : true
+
+    INI4:
+      type : INIRTN
+      exinf: EXINF_D
+      prcid: PRC_SELF
+      class: CLS_SELF_ALL
+      do   :
+        syscall: sns_ker()
+        bool   : true
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+  do:
+
+  post_condition:

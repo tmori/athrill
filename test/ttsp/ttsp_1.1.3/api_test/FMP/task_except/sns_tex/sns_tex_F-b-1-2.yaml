@@ -1,0 +1,33 @@
+version: "$Id: sns_tex_F-b-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_except_sns_tex_F_b_1_2:
+  pre_condition:
+    ALM1:
+      type    : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+      prcid   : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running-suspended
+      prcid  : PRC_SELF
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK1
+      texstat: TTEX_DIS
+      hdlstat: STP
+      pndptn : TEXPTN_0A
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_SELF
+      chg_ipm: INT_PRI_TIMER
+
+  do:
+    id     : ALM1
+    syscall: sns_tex()
+    bool   : true
+
+  post_condition:

@@ -1,0 +1,19 @@
+version: "$Id: ini_sem_d-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_ini_sem_d_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    SEM1:
+      type   : SEMAPHORE
+      maxsem : ANY_MAX_SEMCNT
+      isemcnt: ANY_INI_SEMCNT
+      semcnt : ANY_INI_SEMCNT
+
+  do:
+    id     : TASK1
+    syscall: ini_sem(SEM1)
+    ercd   : E_OK
+
+  post_condition:

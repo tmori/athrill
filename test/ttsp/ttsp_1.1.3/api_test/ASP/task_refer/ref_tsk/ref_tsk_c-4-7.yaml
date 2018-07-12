@@ -1,0 +1,42 @@
+version: "$Id: ref_tsk_c-4-7.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_refer_ref_tsk_c_4_7:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rtsk:
+          type: T_RTSK
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MBX1
+      lefttmo: ANY_ELAPSED_TIME
+      var    : 
+        pk_msg:
+          type: T_MSG*
+
+    MBX1:
+      type   : MAILBOX
+      wtsklist : 
+        - TASK2:
+            var: pk_msg
+
+  do:
+    id     : TASK1
+    syscall: ref_tsk(TASK2,&rtsk)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rtsk:
+          tskstat: TTS_WAI
+          tskwait: TTW_MBX
+          wobjid : MBX1
+          lefttmo: ANY_ELAPSED_TIME
+          tskpri : TSK_PRI_MID
+          tskbpri: TSK_PRI_MID
+          actcnt : 0
+          wupcnt : 0

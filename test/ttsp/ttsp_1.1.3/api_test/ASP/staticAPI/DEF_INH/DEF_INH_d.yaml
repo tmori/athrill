@@ -1,0 +1,23 @@
+version: "$Id: DEF_INH_d.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_staticAPI_DEF_INH_d:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    INH1:
+      type   : INTHDR
+      intatr : TA_NULL
+      intno  : INTNO_SELF_INH_A
+      intpri : INT_PRI_MID
+      inhno  : INHNO_SELF_A
+      intstat: TA_ENAINT
+      hdlstat: STP
+
+  do:
+    id  : TASK1
+    code: ttsp_int_raise(INTNO_SELF_INH_A)
+
+  post_condition:
+    INH1:
+      hdlstat: ACTIVATE

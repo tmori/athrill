@@ -1,0 +1,45 @@
+version: "$Id: wai_sem_F-e-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_semaphore_wai_sem_F_e_1_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : SEM1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : SEM1
+      prcid  : PRC_OTHER
+
+    SEM1:
+      type    : SEMAPHORE
+      sematr  : TA_NULL
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+        - TASK3:
+
+  do:
+    id     : TASK1
+    syscall: wai_sem(SEM1)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : SEM1
+
+    SEM1:
+      wtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK1:

@@ -1,0 +1,61 @@
+version: "$Id: isig_sem_f-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_isig_sem_f_1_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : SEM1
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SEM1
+
+    SEM1:
+      type   : SEMAPHORE
+      maxsem : ANY_MAX_SEMCNT
+      semcnt : 0
+      wtsklist:
+        - TASK2:
+        - TASK3:
+
+  do_0:
+    id     : ALM1
+    syscall: isig_sem(SEM1)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_0:
+    TASK2:
+      tskstat: ready
+
+    SEM1:
+      wtsklist:
+        - TASK3:
+
+  do_1:
+    id     : ALM1
+    code   : return
+    gcov   : false
+
+  post_condition_1:
+    ALM1:
+      almstat: TALM_STP
+      hdlstat: STP
+
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running

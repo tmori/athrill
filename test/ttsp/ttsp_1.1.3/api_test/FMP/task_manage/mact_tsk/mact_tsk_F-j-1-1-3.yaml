@@ -1,0 +1,43 @@
+version: "$Id: mact_tsk_F-j-1-1-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_mact_tsk_F_j_1_1_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: dormant
+      itskpri: TSK_PRI_LOW
+      actcnt : 0
+      prcid  : PRC_OTHER_1
+
+    TASK3:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_LOW
+      actcnt : 0
+      prcid  : PRC_OTHER_2
+
+    TASK4:
+      type   : TASK
+      tskstat: ready
+      tskpri : TSK_PRI_LOW
+      prcid  : PRC_OTHER_2
+
+  do:
+    id     : TASK1
+    syscall: mact_tsk(TASK2, PRC_OTHER_2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+      tskpri : TSK_PRI_LOW
+      prcid  : PRC_OTHER_2
+      porder : 3
+
+    TASK4:
+      porder : 2

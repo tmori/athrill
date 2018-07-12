@@ -1,0 +1,33 @@
+version: "$Id: ini_pdq_d-1-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_ini_pdq_d_1_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : PDQ1
+
+    PDQ1:
+      type: P_DATAQUEUE
+      rtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ini_pdq(PDQ1)
+
+  post_condition:
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running
+      wobjid : 
+
+    PDQ1:
+      rtsklist:

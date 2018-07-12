@@ -1,0 +1,21 @@
+version: "$Id: sta_cyc_b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_cyclic_sta_cyc_b_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    CYC1:
+      type    : CYCLE
+      cycatr  : TA_NULL
+      cycstat : TCYC_STP
+      hdlstat : STP
+      cycphs  : RELATIVE_TIME_A
+      cyctim  : RELATIVE_TIME_B
+
+  do:
+    id     : TASK1
+    syscall: sta_cyc(TNUM_CYCID+1)
+    ercd   : E_ID
+
+  post_condition:

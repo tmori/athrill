@@ -1,0 +1,317 @@
+
+	DEF_ICS テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: DEF_ICS.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+DEF_ICS		非タスクコンテキスト用スタック領域の設定〔S〕
+
+【静的API】
+	DEF_ICS({ SIZE istksz, STK_T *istk })
+
+【パラメータ】
+　＊非タスクコンテキスト用スタック領域の設定情報
+	SIZE		istksz		非タスクコンテキスト用スタック領域のサイズ
+							（バイト数）
+	STK_T		istk		非タスクコンテキスト用スタック領域の先頭番地
+
+【エラーコード】
+	E_RSATR			予約属性（属する保護ドメインかクラスが不正）
+	E_PAR			パラメータエラー（istksz，istkが不正，その他の条件
+					については機能の項を参照すること）
+	E_NOMEM			メモリ不足（非タスクコンテキスト用スタック領域が確
+					保できない）
+	E_OBJ			オブジェクト状態エラー（非タスクコンテキスト用スタッ
+					ク領域がすでに設定されている）
+
+【機能】
+
+各パラメータで指定した非タスクコンテキスト用スタック領域の設定情報に従っ
+て，非タスクコンテキスト用スタック領域を設定する．
+
+istkszは整数定数式パラメータ，istkは一般定数式パラメータである．コンフィ
+ギュレータは，静的APIのメモリ不足（E_NOMEM）エラーを検出することができ
+ない．
+
+istkをNULLとした場合，istkszで指定したサイズのスタック領域を，コンフィ
+ギュレータが確保する．istkszにターゲット定義の制約に合致しないサイズを
+指定した時には，ターゲット定義の制約に合致するようにサイズを大きい方に
+丸めて確保する．
+
+スタック領域をアプリケーションで確保する場合には，istkszで指定したサイ
+ズのスタック領域を確保し，istkにその先頭番地を指定する．スタック領域を
+アプリケーションで確保するために用意しているデータ型とマクロについては，
+CRE_TSKの機能の項を参照すること．
+
+保護機能対応カーネルでは，istkとistkszで指定した非タスクコンテキスト用
+のスタック領域がカーネル専用のメモリオブジェクトに含まれない場合，
+E_PARエラーとなる．
+
+DEF_ICSにより非タスクコンテキスト用スタック領域を設定しない場合，ターゲッ
+ト定義のデフォルトのサイズのスタック領域を，コンフィギュレータが確保す
+る．
+
+マルチプロセッサ対応カーネルでは，非タスクコンテキスト用スタック領域は
+プロセッサ毎に確保する必要がある．DEF_ICSにより設定する非タスクコンテキ
+スト用スタック領域は，DEF_ICSの記述をその囲みの中に含むクラスの初期割付
+けプロセッサが使用する．そのプロセッサに対してすでに非タスクコンテキス
+ト用スタック領域が設定されている場合には，E_OBJエラーとなる．
+
+保護機能対応カーネルにおいて，DEF_ICSは，カーネルドメインの囲みの中に記
+述しなければならない．そうでない場合には，E_RSATRエラーとなる．
+
+istkやistkszにターゲット定義の制約に合致しない先頭番地やサイズを指定し
+た時には，E_PARエラーとなる．
+
+【μITRON4.0仕様との関係】
+
+μITRON4.0仕様に定義されていない静的APIである．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) 対象非タスクコンテキスト用スタック領域を属させるクラスの囲みの外
+      に記述した場合，E_RSATRエラーが返ること．(ASP:-，EX_NEW_STATE)
+
+【備考】
+・E_NOMEMは返らないため，テストは必要ない．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-b) スレーブプロセッサでistkとistkszから非タスクコンテキストが用いる
+      スタック領域が設定される．
+
+      (F-b-1) istkをNULLとした場合，istkszで指定したサイズのスタック領
+              域が確保される．istkszがCHECK_STKSZ_ALIGNの倍数に一致し
+              ていない時は大きい方に丸めたサイズで確保される．
+              (ASP:d-1，EX_OTHER_PRC)
+
+      (F-b-2) istkがNULLでない場合，スタック領域は自動的に確保されない．
+              (ASP:d-2，EX_OTHER_PRC)
+
+(F-c) スレーブプロセッサでDEF_ICSにより非タスクコンテキスト用スタック
+      領域を設定しない場合，ターゲット定義のデフォルトのサイズのスタッ
+      ク領域を，コンフィギュレータが確保する．(ASP:e，EX_OTHER_PRC)
+
+(F-d) 複数のプロセッサistkとistkszから非タスクコンテキストが用いるスタ
+      ック領域が設定される．
+
+      (F-d-1) istkをNULLとした場合，istkszで指定したサイズのスタック領
+              域が確保される．istkszがCHECK_STKSZ_ALIGNの倍数に一致し
+              ていない時は大きい方に丸めたサイズで確保される．
+              (ASP:-，EX_NEW_STATE)
+
+      (F-d-2) istkがNULLでない場合，スタック領域は自動的に確保されない．
+              (ASP:-，EX_NEW_STATE)
+
+【備考】
+・非タスクコンテキストでの確認にはCPU例外ハンドラを使用するため，CPU例
+  外発生関数が用意できないターゲットでは(F-b-1)(F-b-2)(F-c)(F-d-1)
+  (F-d-2)を対象外する．
+・DEF_ICSは各プロセッサに1つしか定義できないため，スクラッチプログラム
+  とする．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 
+01 : $  非タスクコンテキスト用のスタック領域
+02 : $ 
+03 : /*$NL$
+04 : $SPC$*  Stack Area for Non-task Context$NL$
+05 : $SPC$*/$NL$
+06 : $NL$
+07 : 
+08 : $	// DEF_ICSがクラスの囲みに入れられているかチェック（E_RSATR）
+09 : $FOREACH ics ICS.ORDER_LIST$
+10 : 	$IF !LENGTH(ICS.CLASS[ics])$
+11 : 		$ERROR ICS.TEXT_LINE[ics]$E_RSATR: $FORMAT(_("illegal class id of `%1%\' in %2%"), ics, "DEF_ICS")$$END$
+12 : 	$END$
+13 : $END$
+14 : 
+15 : $FOREACH prcid RANGE(1, TNUM_PRCID)$
+16 : 
+17 : $def_ics_count = 0$
+18 : $icsid = 0$
+19 : $	// prcidに対してDEF_ICSがあるかチェック
+20 : $FOREACH ics ICS.ORDER_LIST$
+21 : 	$IF CLASS_AFFINITY_INI[ICS.CLASS[ics]] == prcid$
+22 : 		$def_ics_count = def_ics_count + 1$
+23 : 		$icsid = ics$
+24 : 	$END$
+25 : $END$
+26 : 
+27 : $	// 静的API「DEF_ICS」が複数ある（E_OBJ）
+28 : $IF def_ics_count > 1$
+29 : 	$ERROR$E_OBJ: $FORMAT(_("too many %1% for processor %2%"), "DEF_ICS", prcid)$$END$
+30 : $END$
+31 : 
+32 : $IF def_ics_count == 0$
+33 : $	// DEF_ICSがない場合のデフォルト値の設定
+34 : 	#ifdef DEFAULT_PRC$prcid$_ISTK$NL$
+35 : 	#define TOPPERS_PRC$prcid$_ISTKSZ		DEFAULT_PRC$prcid$_ISTKSZ$NL$
+36 : 	#define TOPPERS_PRC$prcid$_ISTK		DEFAULT_PRC$prcid$_ISTK$NL$
+37 : 	#else /* DEAULT_PRC$prcid$_ISTK */$NL$
+38 : 	$IF ISFUNCTION("GENERATE_ISTACK")$
+39 : 		$GENERATE_ISTACK(prcid)$
+40 : 	$ELSE$
+41 : 		static STK_T					_kernel_prc$prcid$_istack[COUNT_STK_T(DEFAULT_PRC$prcid$_ISTKSZ)];$NL$
+42 : 	$END$
+43 : 	#define TOPPERS_PRC$prcid$_ISTKSZ		ROUND_STK_T(DEFAULT_PRC$prcid$_ISTKSZ)$NL$
+44 : 	#define TOPPERS_PRC$prcid$_ISTK		_kernel_prc$prcid$_istack$NL$
+45 : 	#endif /* DEAULT_PRC$prcid$_ISTK */$NL$
+46 : $ELSE$
+47 : $ 	// istkszがスタック領域のサイズとして正しくない場合（E_PAR）
+48 : 	$IF !EQ(ICS.ISTK[icsid], "NULL") && CHECK_STKSZ_ALIGN
+49 : 							&& (ICS.ISTKSZ[icsid] & (CHECK_STKSZ_ALIGN - 1))$
+50 : 		$ERROR ICS.TEXT_LINE[icsid]$E_PAR: $FORMAT(_("%1% `%2%\' in %3% is not aligned"), "istksz", ICS.ISTKSZ[icsid], "DEF_ICS")$$END$
+51 : 	$END$
+52 : 
+53 : 	$IF EQ(ICS.ISTK[icsid], "NULL")$
+54 : $		// スタック領域の自動割付け
+55 : 		$IF ISFUNCTION("GENERATE_ISTACK_ICS")$
+56 : 			$GENERATE_ISTACK_ICS(prcid, icsid)$
+57 : 		$ELSE$
+58 : 			static STK_T				_kernel_prc$prcid$_istack[COUNT_STK_T($ICS.ISTKSZ[icsid]$)];$NL$
+59 : 		$END$
+60 : 		#define TOPPERS_PRC$prcid$_ISTKSZ		ROUND_STK_T($ICS.ISTKSZ[icsid]$)$NL$
+61 : 		#define TOPPERS_PRC$prcid$_ISTK		_kernel_prc$prcid$_istack$NL$
+62 : 	$ELSE$
+63 : 		#define TOPPERS_PRC$prcid$_ISTKSZ		($ICS.ISTKSZ[icsid]$)$NL$
+64 : 		#define TOPPERS_PRC$prcid$_ISTK		($ICS.ISTK[icsid]$)$NL$
+65 : 	$END$
+66 : $END$
+67 : $NL$
+
+
+[B] kernel_check.tf
+
+00 : $	// 非タスクコンテキスト用のスタック領域の先頭番地のチェック
+01 : 	$istk_table = SYMBOL("_kernel_istk_table")$
+02 : 	$FOREACH prcid RANGE(1, TNUM_PRCID)$
+03 : 		$istk = PEEK(istk_table, sizeof_STK_T_prt)$
+04 : 		$IF LENGTH(CHECK_STACK_ALIGN) && (istk & (CHECK_STACK_ALIGN - 1))$
+05 : 			$ERROR ICE.TEXT_LINE[1]$E_PAR: 
+06 : 				$FORMAT(_("%1% `%2%\' in %3% is not aligned"),
+07 : 				"istk", ICS.ISTK[1], "DEF_ICS")$$END$
+08 : 		$END$
+09 : 		$IF LENGTH(CHECK_STACK_NONNULL) && (istk == 0)$
+10 : 			$ERROR ICE.TEXT_LINE[1]$E_PAR: 
+11 : 				$FORMAT(_("%1% `%2%\' in %3% is null"),
+12 : 				"istk", ICS.ISTK[1], "DEF_ICS")$$END$
+13 : 		$END$
+14 : 		$istk_table = istk_table + sizeof_STK_T_prt$
+15 : 	$END$
+16 : $END$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 10 : !LENGTH(ICS.CLASS[ics])
+(A2) 21 : CLASS_AFFINITY_INI[ICS.CLASS[ics]] == prcid
+(A3) 28 : def_ics_count > 1
+(A4) 32 : def_ics_count == 0
+(A5) 38 : ISFUNCTION("GENERATE_ISTACK")
+(A6) 48 : !EQ(ICS.ISTK[icsid], "NULL")
+(A7) 49 : (ICS.ISTKSZ[icsid] & (CHECK_STKSZ_ALIGN - 1))
+(A8) 53 : EQ(ICS.ISTK[icsid], "NULL")
+(A9) 55 : ISFUNCTION("GENERATE_ISTACK_ICS")
+
+(B1) 04 : (istk & (CHECK_STACK_ALIGN - 1))
+(B2) 09 : (istk == 0)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (B1) (B2)
+(a)     F    TF   F    F    D    T    T    D    D    D    D
+(b)     F    TF   F    F    D    T    F    F    D    T    F
+(c)     F    TF   T    D    D    D    D    D    D    D    D
+(d-1)   F    TF   F    F    D    F   D/T   T    ?    F    F
+(d-2)   F    TF   F    F    D    T    F    F    D    F    F
+(e)     F    TF   F    T    ?    D    D    D    D    F    F
+(W_a)   F    TF   F    F    D    T    F    F    D    F    T
+(F-a)   T    D    D    D    D    D    D    D    D    F    F
+(F-b-1) F    FT   F    F    D    F   D/T   T    ?    F    F
+(F-b-2) F    FT   F    F    D    T    F    F    D    F    F
+(F-c)   F    FT   F    T    ?    D    D    D    D    F    F
+(F-d-1) F    FT   F    F    D    F   D/T   T    ?    F    F
+(F-d-2) F    FT   F    F    D    T    F    F    D    F    F
+-------------------------------------------------------------
+網羅    O    O    O    O    X    O    O    O    X    O    O
+
+【備考】
+・(A5)(A9)はターゲット依存のためホワイトボックステストを実施しない．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

@@ -1,0 +1,462 @@
+
+	ini_pdq テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: ini_pdq.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+ini_pdq		優先度データキューの再初期化〔T〕
+
+【C言語API】
+	ER ercd = ini_pdq(ID pdqid)
+
+【パラメータ】
+	ID			pdqid		対象優先度データキューのID番号
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（pdqidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象優先度データキューが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象優先度データキューに
+					対する管理操作が許可されていない）
+
+【機能】
+
+pdqidで指定した優先度データキュー（対象優先度データキュー）を再初期化す
+る．具体的な振舞いは以下の通り．
+
+対象優先度データキューの優先度データキュー管理領域は，格納されているデー
+タがない状態に初期化される．また，対象優先度データキューの送信待ち行列
+と受信待ち行列につながれたタスクは，それぞれの待ち行列の先頭のタスクか
+ら順に待ち解除される．待ち解除されたタスクには，待ち状態となったサービ
+スコールからE_DLTエラーが返る．
+
+【補足説明】
+
+送信待ち行列と受信待ち行列の両方にタスクがつながれていることはないため，
+別の待ち行列で待っていたタスクの間の待ち解除の順序は，規定する必要がな
+い．
+
+【使用上の注意】
+
+ini_pdqにより複数のタスクが待ち解除される場合，サービスコールの処理時間
+およびカーネル内での割込み禁止時間が，待ち解除されるタスクの数に比例し
+て長くなる．特に，多くのタスクが待ち解除される場合，カーネル内での割込
+み禁止時間が長くなるため，注意が必要である．
+
+優先度データキューを再初期化した場合に，アプリケーションとの整合性を保
+つのは，アプリケーションの責任である．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ER
+ini_pdq(ID pdqid)
+{
+	PDQCB	*p_pdqcb;
+	ER		ercd;
+	bool_t	dspreq;
+
+	LOG_INI_PDQ_ENTER(pdqid);
+	CHECK_TSKCTX_UNL();
+	CHECK_PDQID(pdqid);
+	p_pdqcb = get_pdqcb(pdqid);
+
+	t_lock_cpu();
+	t_acquire_obj_lock(&GET_OBJLOCK(p_pdqcb));
+	dspreq = init_wait_queue(&(p_pdqcb->swait_queue));
+	if (init_wait_queue(&(p_pdqcb->rwait_queue))) {
+		dspreq = true;
+	}
+	p_pdqcb->count = 0U;
+	p_pdqcb->p_head = NULL;
+	p_pdqcb->unused = 0U;
+	p_pdqcb->p_freelist = NULL;
+	ercd = E_OK;
+	release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+	if (dspreq) {
+		dispatch();
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_INI_PDQ_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] ini_pdq
+
+00 : ER
+01 : ini_pdq(ID pdqid)
+02 : {
+03 : 	PDQCB	*p_pdqcb;
+04 : 	ER		ercd;
+05 : 	bool_t	dspreq;
+06 : 
+07 : 	if (!sense_tskctx_unl()) {
+08 : 		ercd = E_CTX;
+09 : 		goto error_exit;
+10 : 	}
+11 : 	if (!(TMIN_PDQID <= (pdqid) && (pdqid) <= tmax_pdqid)) {
+12 :			ercd = E_ID;
+13 : 		goto error_exit;
+14 : 	}
+15 : 	p_pdqcb = p_pdqcb_table[(uint_t)((pdqid) - TMIN_PDQID)];
+16 : 
+17 : 	t_lock_cpu();
+18 : 	t_acquire_obj_lock(&GET_OBJLOCK(p_pdqcb));
+19 : 	dspreq = init_wait_queue(&(p_pdqcb->swait_queue));
+20 : 	if (init_wait_queue(&(p_pdqcb->rwait_queue))) {
+21 : 		dspreq = true;
+22 : 	}
+23 : 	p_pdqcb->count = 0U;
+24 : 	p_pdqcb->p_head = NULL;
+25 : 	p_pdqcb->unused = 0U;
+26 : 	p_pdqcb->p_freelist = NULL;
+27 : 	ercd = E_OK;
+28 : 	release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+29 : 	if (dspreq) {
+30 : 		dispatch();
+31 : 	}
+32 : 	t_unlock_cpu();
+33 : 
+34 :   error_exit:
+35 : 	return(ercd);
+36 : }
+
+
+[B] init_wait_queue
+
+00 : bool_t
+01 : init_wait_queue(QUEUE *p_wait_queue)
+02 : {
+03 : 	TCB		*p_tcb;
+04 : 	bool_t	dspreq = false;
+05 : 	PCB		*p_pcb;
+06 : 
+07 : 	while (!queue_empty(p_wait_queue)) {
+08 : 		p_tcb = (TCB *) queue_delete_next(p_wait_queue);
+09 : 		/* タスクロックの取得 */
+10 : 		p_pcb = acquire_nested_tsk_lock_without_preemption(p_tcb);
+11 : 		wait_dequeue_tmevtb(p_tcb);
+12 : 		p_tcb->wercd = E_DLT;
+13 : 		if (make_non_wait(p_tcb)) {
+14 : 			if (dispatch_request(p_pcb)) {
+15 : 				dspreq = true;
+16 : 			}
+17 : 		}
+18 : 		release_tsk_lock(p_pcb);
+19 : 	}
+20 : 
+21 : 	return(dspreq);
+22 : }
+
+
+[C] wait_dequeue_tmevtb
+
+00 : Inline void
+01 : wait_dequeue_tmevtb(TCB *p_tcb)
+02 : {
+03 : 	if ((p_tcb->tmevtb).callback != NULL) {
+04 : 		tmevtb_dequeue(p_tcb->p_pcb->p_tevtcb, &(p_tcb->tmevtb));
+05 : 	}
+06 : }
+
+
+[D] tmevtb_dequeue
+
+00 : Inline RELTIM
+01 : tmevtb_dequeue(TEVTCB *p_tevtcb, TMEVTB *p_tmevtb)
+02 : {
+03 : 	return tmevtb_delete(p_tevtcb, p_tmevtb);
+04 : }
+
+
+[E] tmevtb_delete
+
+00 : RELTIM
+01 : tmevtb_delete(TEVTCB *p_tevtcb, TMEVTB *p_tmevtb)
+02 : {
+03 : 	uint_t	index = p_tmevtb->index;
+04 : 	uint_t	parent;
+05 : 	EVTTIM	event_time = ((p_tevtcb->p_tmevt_heap)[(p_tevtcb->last_index) - 1]).time;
+06 : 	EVTTIM	time;
+07 : 	RELTIM	left_time;
+08 : 
+09 : 	/*
+10 : 	 *  タイムイベントまでの残り時間を計算
+11 : 	 *  tmevt_leftim()とは異なり大きい方(current_timeとの差分)に丸める． 
+12 : 	 */
+13 : 	time = ((p_tevtcb->p_tmevt_heap)[(p_tevtcb->last_index) - 1]).time;
+14 : 	left_time = (RELTIM)(time - p_tevtcb->current_time);
+15 : 
+16 : 	/*
+17 : 	 *  削除によりタイムイベントヒープが空になる場合は何もしない．
+18 : 	 */
+19 : 	if (--(p_tevtcb->last_index) == 0) {
+20 : 		return(left_time);
+21 : 	}
+22 : 
+23 : 	/*
+24 : 	 *  削除したノードの位置に最後のノード（last_index+1の位置のノード）
+25 : 	 *  を挿入し，それを適切な位置へ移動させる．実際には，最後のノード
+26 : 	 *  を実際に挿入するのではなく，削除したノードの位置が空ノードにな
+27 : 	 *  るので，最後のノードを挿入すべき位置へ向けて空ノードを移動させ
+28 : 	 *  る．
+29 : 	 *  最後のノードのイベント発生時刻が，削除したノードの親ノードのイ
+30 : 	 *  ベント発生時刻より前の場合には，上に向かって挿入位置を探す．そ
+31 : 	 *  うでない場合には，下に向かって探す．
+32 : 	 */
+33 : 	if (index > 1 && (((event_time) - p_tevtcb->min_time) < 
+34 : 		((((p_tevtcb->p_tmevt_heap)[(parent = ((index) >> 1)) - 1]).time) - p_tevtcb->min_time))) {
+35 : 		/*
+36 : 		 *  親ノードをindexの位置に移動させる．
+37 : 		 */
+38 : 		((p_tevtcb->p_tmevt_heap)[(index) - 1]) = ((p_tevtcb->p_tmevt_heap)[(parent) - 1]);
+39 : 		((p_tevtcb->p_tmevt_heap)[(index) - 1]).p_tmevtb->index = index;
+40 : 
+41 : 		/*
+42 : 		 *  削除したノードの親ノードから上に向かって挿入位置を探す．
+43 : 		 */
+44 : 		index = tmevt_up(p_tevtcb, parent, event_time);
+45 : 	}
+46 : 	else {
+47 : 		/*
+48 : 		 *  削除したノードから下に向かって挿入位置を探す．
+49 : 		 */
+50 : 		index = tmevt_down(p_tevtcb, index, event_time);
+51 : 	}
+52 : 
+53 : 	/*
+54 : 	 *  最後のノードをindexの位置に挿入する．
+55 : 	 */ 
+56 : 	((p_tevtcb->p_tmevt_heap)[(index) - 1]) = ((p_tevtcb->p_tmevt_heap)[((p_tevtcb->last_index) + 1) - 1]);
+57 : 	((p_tevtcb->p_tmevt_heap)[(index) - 1]).p_tmevtb->index = index;
+58 : 
+59 : 	return(left_time);
+60 : }
+
+
+[F] tmevt_down
+
+00 : uint_t
+01 : tmevt_down(TEVTCB *p_tevtcb, uint_t index, EVTTIM time)
+02 : {
+03 : 	uint_t	child;
+04 : 
+05 : 	while ((child = ((index) << 1)) <= p_tevtcb->last_index) {
+06 : 		/*
+07 : 		 *  左右の子ノードのイベント発生時刻を比較し，早い方の
+08 : 		 *  子ノードの位置を child に設定する．以下の子ノード
+09 : 		 *  は，ここで選ばれた方の子ノードのこと．
+10 : 		 */
+11 : 		if (child + 1 <= p_tevtcb->last_index
+12 : 						&& ((((p_tevtcb->p_tmevt_heap)[(child + 1) - 1]).time) - p_tevtcb->min_time) 
+13 : 									< ((((p_tevtcb->p_tmevt_heap)[(child) - 1]).time) - p_tevtcb->min_time)){
+14 : 			child = child + 1;
+15 : 		}
+16 : 
+17 : 		/*
+18 : 		 *  子ノードのイベント発生時刻の方が遅い（または同じ）
+19 : 		 *  ならば，index が挿入位置なのでループを抜ける．
+20 : 		 */
+21 : 		if (((time) - p_tevtcb->min_time) <= ((((p_tevtcb->p_tmevt_heap)[(child) - 1]).time) - p_tevtcb->min_time)) {
+22 : 			break;
+23 : 		}
+24 : 
+25 : 		/*
+26 : 		 *  子ノードを index の位置に移動させる．
+27 : 		 */
+28 : 		((p_tevtcb->p_tmevt_heap)[(index) - 1]) = ((p_tevtcb->p_tmevt_heap)[(child) - 1]);
+29 : 		((p_tevtcb->p_tmevt_heap)[(index) - 1]).p_tmevtb->index = index;
+30 : 
+31 : 		/*
+32 : 		 *  index を子ノードの位置に更新．
+33 : 		 */
+34 : 		index = child;
+35 : 	}
+36 : 	return(index);
+37 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 07 : !sense_tskctx_unl()
+(A2) 11 : TMIN_PDQID <= (pdqid)
+(A3) 11 : (pdqid) <= tmax_pdqid
+(A4) 20 : init_wait_queue(&(p_pdqcb->rwait_queue))
+(A5) 29 : dspreq
+
+(B1) 07 : !queue_empty(p_wait_queue)
+(B2) 13 : make_non_wait(p_tcb)
+(B3) 14 : dispatch_request(p_pcb)
+
+(C1) 03 : (p_tcb->tmevtb).callback != NULL
+
+(E1) 19 : --(p_tevtcb->last_index) == 0
+(E2) 33 : index > 1
+(E3) 33 : (((event_time) - p_tevtcb->min_time) < 
+          ((((p_tevtcb->p_tmevt_heap)[(parent = ((index) >> 1)) - 1].time) - p_tevtcb->min_time))
+
+(F1) 05 : (child = ((index) << 1)) <= p_tevtcb->last_index
+(F2) 11 : child + 1 <= p_tevtcb->last_index
+(F3) 12 : ((((p_tevtcb->p_tmevt_heap)[(child + 1) - 1]).time) - p_tevtcb->min_time) < 
+          ((((p_tevtcb->p_tmevt_heap)[(child) - 1]).time) - p_tevtcb->min_time)
+(F4) 21 : ((time) - p_tevtcb->min_time) <= 
+          ((((p_tevtcb->p_tmevt_heap)[(child) - 1]).time) - p_tevtcb->min_time)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+             (A1) (A2) (A3) (A4) (A5) (B1) (B2) (B3) (C1) (E1) (E2) (E3) (F1) (F2) (F3)  (F4)
+(a-1)         T    D    D    D    D    D    D    D    D    D    D    D    D    D    D     D
+(a-2)         T    D    D    D    D    D    D    D    D    D    D    D    D    D    D     D
+(b-1)         F    F   D/T   D    D    D    D    D    D    D    D    D    D    D    D     D
+(b-2)         F    T    F    D    D    D    D    D    D    D    D    D    D    D    D     D
+(c-1-1-1)     F    T    T    F    T    TF   T    T    F    D    D    D    D    D    D     D
+(c-1-1-2)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(c-1-1-3)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(c-1-2)       F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(c-1-3)       F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(c-1-4)       F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(c-2-1)       F    T    T    F    F    TTTF FFF  DDD  FFF  D    D    D    D    D    D     D
+(c-2-2)       F    T    T    F    T    TTTF FTT  DTT  FFF  D    D    D    D    D    D     D
+(d-1-1-1)     F    T    T    T    T    TF   T    T    F    D    D    D    D    D    D     D
+(d-1-1-2)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(d-1-1-3)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(d-1-2)       F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(d-1-3)       F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(d-1-4)       F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(d-2-1)       F    T    T    F    F    TTTF FFF  DDD  FFF  D    D    D    D    D    D     D
+(d-2-2)       F    T    T    T    T    TTTF FTT  DTT  FFF  D    D    D    D    D    D     D
+(e-1)         F    T    T    F    F    F    D    D    D    D    D    D    D    D    D     D
+(e-2)         F    T    T    F    F    F    D    D    D    D    D    D    D    D    D     D
+(W_a)         F    T    T    F    T    TF   T    T    T    T    D    D    D    D    D     D
+(W_b)         F    T    T    F    T    TTF  TF   TD   TT   FT   F    D/FD F    D    D     D
+(W_c)         F    T    T    F    T    TF   T    T    T    F    F    D/F  TF   F    D/F   F
+(W_d)         F    T    T    F    T    TF   T    T    T    F    F    D/F  TTF  TF   FD/F  FF
+(W_e)         F    T    T    F    T    TF   T    T    T    F    F    D/F  TTTF TTF  FFD/F FFF
+(W_f)         F    T    T    F    T    TF   T    T    T    F    F    D/F  TF   T    T     F
+(W_g)         F    T    T    F    T    TF   T    T    T    F    T    T    D    D    D     D
+(W_h)         F    T    T    F    T    TF   T    T    T    F    T    F    T    T    F     T
+(W_i)         F    T    T    F    T    TF   T    T    T    F    T    F    T    F    D/T   T
+(F-a)         T    D    D    D    D    D    D    D    D    D    D    D    D    D    D     D
+(F-b-1-1-1)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-b-1-1-2)   F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-b-1-1-3)   F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-b-1-1-4)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-b-1-1-5)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-b-1-1-6)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-b-1-2)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-b-1-3)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-b-1-4)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-b-1-5-1)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-b-1-5-2)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-b-1-5-3)   F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-b-2-1)     F    T    T    F    F    TTTF FFF  DDD  FFF  D    D    D    D    D    D     D
+(F-b-2-2)     F    T    T    F    F    TTTF FTT  DFF  FFF  D    D    D    D    D    D     D
+(F-b-2-3)     F    T    T    F    F    TTTF TFF  FDD  FFF  D    D    D    D    D    D     D
+(F-b-2-4)     F    T    T    F    F    TTTF TTT  FFF  FFF  D    D    D    D    D    D     D
+(F-c-1-1-1)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-c-1-1-2)   F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-c-1-1-3)   F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-c-1-1-4)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-c-1-1-5)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-c-1-1-6)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-c-1-2)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-c-1-3)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-c-1-4)     F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-c-1-5-1)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-c-1-5-2)   F    T    T    F    F    TF   T    F    F    D    D    D    D    D    D     D
+(F-c-1-5-3)   F    T    T    F    F    TF   F    D    F    D    D    D    D    D    D     D
+(F-c-2-1)     F    T    T    F    F    TTTF FFF  DDD  F    D    D    D    D    D    D     D
+(F-c-2-2)     F    T    T    F    F    TTTF FTT  DFF  FFF  D    D    D    D    D    D     D
+(F-c-2-3)     F    T    T    F    F    TTTF TFF  FDD  FFF  D    D    D    D    D    D     D
+(F-c-2-4)     F    T    T    F    F    TTTF TTT  FFF  FFF  D    D    D    D    D    D     D
+(F-d)         F    T    T    F    T    TTF  TT   TF   FF   D    D    D    D    D    D     D
+---------------------------------------------------------------------------------------------
+網羅          O    O    O    O    O    O    O    O    O    O    O    O    O    O    O     O
+
+【備考】
+・(E2)のFalse判定に不具合があった場合に備え，(E3)をTrueとして不具合を検
+  出するために，ホワイトボックステストを追加する必要があるが，(E2)がFの
+  場合，親ノードは存在せず(E3)がD/Tになることはないため，実施できない．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+以上．

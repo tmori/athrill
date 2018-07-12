@@ -1,0 +1,40 @@
+version: "$Id: msta_alm_F-h-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_alarm_msta_alm_F_h_1_1:
+  variation:
+    timer_arch: local
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: msta_alm(ALM1, RELATIVE_TIME_A, PRC_SELF)
+    ercd   : E_OK
+
+  post_condition:
+    0:
+      TASK1:
+        tskstat: running
+
+      ALM1:
+        almstat: TALM_STA
+        hdlstat: STP
+        lefttim: RELATIVE_TIME_A
+
+    RELATIVE_TIME_A:
+      ALM1:
+        lefttim: 0
+
+    RELATIVE_TIME_A+1:
+      ALM1:
+        almstat: TALM_STP
+        hdlstat: ACTIVATE

@@ -1,0 +1,26 @@
+version: "$Id: ref_alm_F-b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_alarm_ref_alm_F_b_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        ralm:
+          type: T_RALM
+          almstat: ANY_ALARM_STAT
+          lefttim: RELATIVE_TIME_A
+          prcid  : ANY_OBJECT_ID
+      prcid  : PRC_SELF
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: ref_alm(TNUM_ALMID+1, &ralm)
+    ercd   : E_ID
+
+  post_condition:

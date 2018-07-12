@@ -1,0 +1,65 @@
+version: "$Id: trcv_dtq_F-e-1-1-1-5.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_dataqueue_trcv_dtq_F_e_1_1_1_5:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 3
+      stsklist:
+       - TASK2:
+           data : DATA_A
+      datalist:
+        - data : DATA_B
+        - data : DATA_C
+        - data : DATA_D
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK3
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: trcv_dtq(DTQ1, &data, ANY_ELAPSED_TIME)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        data:
+          value: DATA_B
+
+    TASK2:
+      tskstat: ready
+
+    DTQ1:
+      stsklist:
+      datalist:
+        - data : DATA_C
+        - data : DATA_D
+        - data : DATA_A

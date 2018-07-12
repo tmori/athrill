@@ -1,0 +1,56 @@
+version: "$Id: ini_pdq_F-c-2-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_ini_pdq_F_c_2_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 3
+      maxdpri : DATA_PRI_MAX
+      rtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK4:
+      datalist : 
+
+  do:
+    id     : TASK1
+    syscall: ini_pdq(PDQ1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    TASK3:
+      tskstat: ready
+
+    TASK4:
+      tskstat: running
+
+    PDQ1:
+      rtsklist:

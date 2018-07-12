@@ -1,0 +1,25 @@
+version: "$Id: trcv_dtq_i-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_trcv_dtq_i_3:
+  variation:
+    gain_time: true
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        p_data:
+          type: intptr_t 
+          value: DATA_A
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 0
+      rtsklist :
+
+  do:
+    id     : TASK1
+    syscall: trcv_dtq(DTQ1, &p_data, ANY_ELAPSED_TIME)
+    ercd   : E_TMOUT
+
+  post_condition:

@@ -1,0 +1,64 @@
+version: "$Id: dis_int_d-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_interrupt_dis_int_d_2:
+  note: TESRY_006
+
+  variation:
+    api_support_dis_int: true
+    api_support_ena_int: true
+
+  pre_condition:
+    INH1:
+      type   : INTHDR
+      intno  : INTNO_SELF_INH_A
+      intpri : INT_PRI_MID
+      inhno  : INHNO_SELF_A
+      intstat: TA_ENAINT
+      hdlstat: STP
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do_0:
+    id     : TASK1
+    syscall: dis_int(INTNO_SELF_INH_A)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_0:
+    INH1:
+      intstat: TA_DISINT
+
+  do_1:
+    id     : TASK1
+    code   : ttsp_int_raise(INTNO_SELF_INH_A)
+    gcov   : false
+
+  post_condition_1:
+
+  do_2:
+    id     : TASK1
+    syscall: ena_int(INTNO_SELF_INH_A)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_2:
+    INH1:
+      intstat: TA_ENAINT
+
+  do_3:
+    id     : TASK1
+    syscall: unl_cpu()
+    gcov   : false
+
+  post_condition_3:
+    INH1:
+      hdlstat: ACTIVATE
+
+    CPU_STATE:
+      loc_cpu: false
+      chg_ipm: INT_PRI_MID

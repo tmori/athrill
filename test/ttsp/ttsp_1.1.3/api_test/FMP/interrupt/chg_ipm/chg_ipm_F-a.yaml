@@ -1,0 +1,29 @@
+version: "$Id: chg_ipm_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_interrupt_chg_ipm_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type:    CPU_STATE
+      loc_cpu: true
+      prcid:   PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: chg_ipm(ANY_IPM)
+    ercd   : E_CTX
+
+  post_condition:

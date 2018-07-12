@@ -1,0 +1,26 @@
+version: "$Id: dis_int_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_interrupt_dis_int_F_a:
+  variation:
+    irc_arch: global
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    INH1:
+      type   : INTHDR
+      intno  : INTNO_GLOBAL_IRC_INH_A
+      intpri : INT_PRI_MID
+      inhno  : INHNO_GLOBAL_IRC_SELF_A
+      intstat: TA_ENAINT
+      hdlstat: STP
+      prcid:   PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: dis_int(INTNO_SELF_INH_A)
+    ercd   : E_PAR
+
+  post_condition:

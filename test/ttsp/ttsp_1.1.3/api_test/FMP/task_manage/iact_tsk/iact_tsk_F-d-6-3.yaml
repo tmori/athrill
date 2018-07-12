@@ -1,0 +1,33 @@
+version: "$Id: iact_tsk_F-d-6-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_iact_tsk_F_d_6_3:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running-suspended
+      actcnt : 0
+      prcid  : PRC_OTHER
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : ALM1
+    syscall: iact_tsk(TASK1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      actcnt : 1

@@ -1,0 +1,41 @@
+version: "$Id: ref_tex_F-d-3-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_except_ref_tex_F_d_3_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rtex:
+          type : T_RTEX
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DELAY
+      lefttmo: RELATIVE_TIME_A
+      prcid  : PRC_OTHER
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK3
+      texstat: TTEX_DIS
+      hdlstat: STP
+      pndptn : TEXPTN_0A
+
+  do:
+    id     : TASK1
+    syscall: ref_tex(TASK3, &rtex)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rtex:
+          texstat: TTEX_DIS
+          pndptn : TEXPTN_0A

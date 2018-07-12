@@ -1,0 +1,24 @@
+version: "$Id: rel_wai_F-c-5-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_rel_wai_F_c_5_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running-suspended
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: rel_wai(TASK2)
+    ercd   : E_OBJ
+
+  post_condition:

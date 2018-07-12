@@ -1,0 +1,541 @@
+
+	CRE_TSK テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: CRE_TSK.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+CRE_TSK		タスクの生成〔S〕
+acre_tsk	タスクの生成〔TD〕
+
+【静的API】
+　＊保護機能対応でないカーネルの場合
+	CRE_TSK(ID tskid, { ATR tskatr, intptr_t exinf, TASK task,
+									PRI itskpri, SIZE stksz, STK_T *stk })
+
+　＊保護機能対応カーネルの場合
+	CRE_TSK(ID tskid, { ATR tskatr, intptr_t exinf, TASK task,
+			PRI itskpri, SIZE stksz, STK_T *stk, SIZE sstksz, STK_T *sstk })
+	※ sstkszおよびsstkの記述は省略することができる．
+
+【C言語API】
+	ER_ID tskid = acre_tsk(const T_CTSK *pk_ctsk)
+
+【パラメータ】
+	ID			tskid		生成するタスクのID番号（CRE_TSKの場合）
+	T_CTSK *	pk_ctsk		タスクの生成情報を入れたパケットへのポイン
+							タ（静的APIを除く）
+
+　＊タスクの生成情報（パケットの内容）
+	ATR			tskatr		タスク属性
+	intptr_t	exinf		タスクの拡張情報
+	TASK		task		タスクのメインルーチンの先頭番地
+	PRI			itskpri		タスクの起動時優先度
+	SIZE		stksz		タスクのスタック領域のサイズ（バイト数）
+	STK_T *		stk			タスクのスタック領域の先頭番地
+	SIZE		sstksz		タスクのシステムスタック領域のサイズ（バイ
+							ト数，保護機能対応カーネルの場合，静的API
+							においては省略可）
+	STK_T *		sstk		タスクのシステムスタック領域の先頭番地（保
+							護機能対応カーネルの場合，静的APIにおいて
+							は省略可）
+
+【リターンパラメータ】
+	ER_ID		tskid		生成されたタスクのID番号（正の値）またはエ
+							ラーコード
+
+【エラーコード】
+	E_CTX〔s〕		コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_RSATR			予約属性（tskatrが不正または使用できない，属する保
+					護ドメインかクラスが不正）
+	E_PAR			パラメータエラー（task，itskpri，stksz，stk，sstksz，
+					sstkが不正，その他の条件については機能の項を参照す
+					ること）
+	E_OACV〔sP〕	オブジェクトアクセス違反（システム状態に対する管理
+					操作が許可されていない）
+	E_MACV〔sP〕	メモリアクセス違反（pk_ctskが指すメモリ領域への読出
+					しアクセスが許可されていない）
+	E_NOID〔sD〕	ID番号不足（割り付けられるタスクIDがない）
+	E_NOMEM			メモリ不足（スタック領域やシステムスタック領域が確
+					保できない）
+	E_OBJ			オブジェクト状態エラー（tskidで指定したタスクが登録
+					済み：CRE_TSKの場合）
+
+【機能】
+
+各パラメータで指定したタスク生成情報に従って，タスクを生成する．具体的
+な振舞いは以下の通り．
+
+まず，stkとstkszからタスクが用いるスタック領域が設定される．stkszに0を
+指定した時や，ターゲット定義の最小値よりも小さい値を指定した時には，
+E_PARエラーとなる．また，保護機能対応カーネルで，生成するタスクがユーザ
+タスクの場合には，sstkとsstkszからシステムスタック領域が設定される．こ
+の場合，sstkszに0を指定した時や，ターゲット定義の最小値よりも小さい値を
+指定した時には，E_PARエラーとなる．
+
+次に，生成されたタスクに対してタスク生成時に行うべき初期化処理が行われ，
+生成されたタスクは休止状態になる．さらに，tskatrにTA_ACTを指定した場合
+には，タスク起動時に行うべき初期化処理が行われ，生成されたタスクは実行
+できる状態になる．
+
+静的APIにおいては，tskidはオブジェクト識別名，tskatr，itskpri，stkszは
+整数定数式パラメータ，exinf，task，stkは一般定数式パラメータである．コ
+ンフィギュレータは，静的APIのメモリ不足（E_NOMEM）エラーを検出すること
+ができない．
+
+itskpriは，TMIN_TPRI以上，TMAX_TPRI以下でなければならない．
+
+〔stkにNULLを指定した場合〕
+
+stkをNULLとした場合，stkszで指定したサイズのスタック領域が，コンフィギュ
+レータまたはカーネルにより確保される．stkszにターゲット定義の制約に合致
+しないサイズを指定した時には，ターゲット定義の制約に合致するように大き
+い方に丸めたサイズで確保される．
+
+保護機能対応カーネルにおいて，生成するタスクがユーザタスクの場合，コン
+フィギュレータまたはカーネルにより確保されるスタック領域（ユーザスタッ
+ク領域）は，「2.11.6 ユーザタスクのユーザスタック領域」の節の規定に従っ
+て，メモリオブジェクトとしてカーネルに登録される．
+
+静的APIにおいて，生成するタスクが制約タスクの場合（tskatrにTA_RSTRを指
+定した場合），コンフィギュレータは，生成する制約タスクの起動時優先度毎
+にスタック領域を確保し，同じ起動時優先度を持つ制約タスクにそのスタック
+領域を共有させる．確保するスタック領域のサイズは，コンフィギュレータが
+スタック領域を確保し（stkにNULLを指定して生成され），同じ起動時優先度を
+持つ制約タスクのスタック領域のサイズ（stksz）の最大値となる．マルチプロ
+セッサ対応カーネルでは，以上のスタック領域の確保処理を，制約タスクの初
+期割付けプロセッサ毎に行う．
+
+〔stkにNULL以外を指定した場合〕
+
+スタック領域をアプリケーションで確保する場合には，stkszで指定したサイズ
+のスタック領域を確保し，stkにその先頭番地を指定する．スタック領域をアプ
+リケーションで確保するために，次のデータ型とマクロを用意している．
+
+	STK_T				スタック領域を確保するためのデータ型
+
+	COUNT_STK_T(sz)		サイズszのスタック領域を確保するために必要な
+						STK_T型の配列の要素数
+	ROUND_STK_T(sz)		要素数COUNT_STK_T(sz)のSTK_T型の配列のサイズ（sz
+						を，STK_T型のサイズの倍数になるように大きい方に
+						丸めた値）
+
+これらを用いてスタック領域を確保する方法は次の通り．
+
+STK_T	<スタック領域の変数名>[COUNT_STK_T(<スタック領域のサイズ>)];
+
+この時，stkには<スタック領域の変数名>を，stkszにはROUND_STK_T(<スタック
+領域のサイズ>)を指定する．
+
+この方法に従わず，stkやstkszにターゲット定義の制約に合致しない先頭番地
+やサイズを指定した時には，E_PARエラーとなる．
+
+保護機能対応カーネルにおいて，生成するタスクがシステムタスクの場合に，
+stkとstkszで指定したスタック領域がカーネル専用のメモリオブジェクトに含
+まれない場合，E_PARエラーとなる．
+
+保護機能対応カーネルにおいて，生成するタスクがユーザタスクの場合，stkと
+stkszで指定したスタック領域（ユーザスタック領域）は，「2.11.6 ユーザタ
+スクのユーザスタック領域」の節の規定に従って，メモリオブジェクトとして
+カーネルに登録される．そのため，上の方法を用いてスタック領域を確保して
+も，ターゲット定義の制約に合致する先頭番地とサイズとなるとは限らず，ス
+タック領域をアプリケーションで確保する方法は，ターゲット定義である．ま
+た，stkとstkszで指定したスタック領域が，登録済みのメモリオブジェクトと
+メモリ領域が重なる場合には，E_PARエラーとなる．
+
+〔sstkとsstkszの扱い〕
+
+保護機能対応カーネルにおけるsstkとsstkszの扱いは，生成するタスクがユー
+ザタスクの場合とシステムタスクの場合で異なる．
+
+生成するタスクがユーザタスクの場合の扱いは次の通り．
+
+sstkの記述を省略するか，sstkをNULLとした場合，sstkszで指定したサイズの
+システムスタック領域が，コンフィギュレータまたはカーネルにより確保され
+る．sstkszにターゲット定義の制約に合致しないサイズを指定した時には，ター
+ゲット定義の制約に合致するように大きい方に丸めたサイズで確保される．
+sstkszの記述も省略した場合には，ターゲット定義のデフォルトのサイズで確
+保される．
+
+sstkがNULLでない場合，sstkszで指定したサイズのシステムスタック領域を，
+アプリケーションで確保する．システムスタック領域をアプリケーションで確
+保するための方法は，上述のスタック領域の確保方法と同じである．その方法
+に従わず，sstkやsstkszにターゲット定義の制約に合致しない先頭番地やサイ
+ズを指定した時には，E_PARエラーとなる．また，stkとstkszで指定したシステ
+ムスタック領域がカーネル専用のメモリオブジェクトに含まれない場合，
+E_PARエラーとなる．
+
+生成するタスクがシステムタスクの場合の扱いは次の通り．
+
+sstkに指定することができるのは，NULLのみである．sstkにNULL以外を指定し
+た場合には，E_PARエラーとなる．
+
+sstkszに0以外の値を指定した場合で，stkがNULLの場合には，コンフィギュレー
+タまたはカーネルにより確保されるスタック領域のサイズに，sstkszが加えら
+れる．stkszにsstkszを加えた値が，ターゲット定義の制約に合致しないサイズ
+になる時には，ターゲット定義の制約に合致するように大きい方に丸めたサイ
+ズで確保される．
+
+sstkszに0以外の値を指定した場合で，stkがNULLでない場合には，E_PARエラー
+となる．
+
+sstkszに0を指定した場合，これらの処理は行わず，E_PARエラーにもならない．
+
+【TOPPERS/ASPカーネルにおける規定】
+
+ASPカーネルでは，CRE_TSKのみをサポートする．ただし，動的生成機能拡張パッ
+ケージでは，acre_tskもサポートする．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，CRE_TSKのみをサポートする．
+
+【TOPPERS/HRP2カーネルにおける規定】
+
+HRP2カーネルでは，CRE_TSKのみをサポートする．
+
+【μITRON4.0仕様との関係】
+
+taskのデータ型をTASKに，stkのデータ型をSTK_T *に変更した．COUNT_STK_Tと
+ROUND_STK_Tを新設し，スタック領域をアプリケーションで確保する方法を規定
+した．
+
+【μITRON4.0/PX仕様との関係】
+
+sstkのデータ型をSTK_T *に変更した．システムスタック領域をアプリケーショ
+ンで確保する方法を規定した．
+
+【未決定事項】
+
+サービスコール（acre_tsk）により，stkにNULLを指定して制約タスクを生成し
+た場合のスタック領域の確保方法については，今後の課題である．
+
+【仕様決定の理由】
+
+保護機能対応カーネルにおいて，sstkszおよびsstkの記述は省略することがで
+きることとしたのは，保護機能対応でないカーネル用のシステムコンフィギュ
+レーションファイルを，保護機能対応カーネルにも変更なしに使えるようにす
+るためである．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) tskatrがTA_NULL(=0)でもTA_ACT(=2)でもない時にE_RSATRが返ること．
+
+(b) taskがプログラムの開始番地として正しくない時にE_PARが返ること．
+
+(c) itskpriが不正の時にE_PARが返ること．
+
+    (c-1) itskpriが許容される最小値-1(TMIN_TPRI-1)の時にE_PARとなること．
+
+    (c-2) itskpriが許容される最大値+1(TMAX_TPRI+1)の時にE_PARとなること．
+
+(d) stkszが不正の時にE_PARが返ること．
+
+(e) stkが不正(スタック領域の先頭番地として正しくない)の時にE_PARが返る
+    こと．
+
+(f) tskidで指定したタスクが登録済みの時にE_OBJが返ること．
+
+【備考】
+・E_NOMEMは返らないため，テストは必要ない．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(g) 各パラメータで指定したタスク生成情報に従って，タスクを生成する．
+
+    (g-1) tskatrにTA_NULLを指定した場合は，生成されたタスクは行うべき初
+          期化処理が行われ，休止状態になる．
+
+    (g-2) tskatrにTA_ACTを指定した場合は，生成されたタスクは行うべき初
+          期化処理が行われ，他に優先的に実行されるタスクがなければ，実
+          行状態になる．
+
+    (g-3) tskatrにTA_ACTを指定した場合は，生成されたタスクは行うべき初
+          期化処理が行われ，他に優先的に実行されるタスクがあれば，実行
+          可能状態になる．
+
+(h) stkとstkszからタスクが用いるスタック領域が設定される．
+
+    (h-1) stkをNULLとした場合，stkszで指定したサイズのスタック領域が確
+          保される．stkszは，CHECK_STKSZ_ALIGNの倍数に一致するように
+          大きい方に丸めたサイズで確保される．
+
+    (h-2) stkがNULLでない場合，スタック領域は自動的に確保されない．
+
+
+【備考】
+・(g-1)(g-2)(h-2)については他のテストケース実行時に十分テストされている
+  ものとし，CRE_TSKのテストケースとして実施しない．ただし，条件網羅表作
+  成のために，テストケースは残している．
+・(g-3)はTA_ACTを属性に指定する必要があるため，スクラッチプログラムとす
+  る．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 
+01 : $  タスク
+02 : $ 
+03 : /*$NL$
+04 : $SPC$*  Task Management Functions$NL$
+05 : $SPC$*/$NL$
+06 : $NL$
+07 : 
+08 : $ タスクが1個以上存在することのチェック
+09 : $IF !LENGTH(TSK.ID_LIST)$
+10 : 	$ERROR$$FORMAT(_("no task is registered"))$$END$
+11 : $END$
+12 : 
+13 : $ タスクID番号の最大値
+14 : const ID _kernel_tmax_tskid = (TMIN_TSKID + TNUM_TSKID - 1);$NL$
+15 : $NL$
+16 : 
+17 : $ エラーチェック
+18 : $FOREACH tskid TSK.ID_LIST$
+19 : $	// tskatrが（［TA_ACT］）でない場合（E_RSATR）
+20 : 	$IF (TSK.TSKATR[tskid] & ~(TA_ACT|TARGET_TSKATR)) != 0$
+21 : 		$ERROR TSK.TEXT_LINE[tskid]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "tskatr", TSK.TSKATR[tskid], tskid, "CRE_TSK")$$END$
+22 : 	$END$
+23 : 
+24 : $	// (TMIN_TPRI <= itskpri && itskpri <= TMAX_TPRI)でない場合（E_PAR）
+25 : 	$IF !(TMIN_TPRI <= TSK.ITSKPRI[tskid] && TSK.ITSKPRI[tskid] <= TMAX_TPRI)$
+26 : 		$ERROR TSK.TEXT_LINE[tskid]$E_PAR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "itskpri", TSK.ITSKPRI[tskid], tskid, "CRE_TSK")$$END$
+27 : 	$END$
+28 : 
+29 : $ 	// texatrが（TA_NULL）でない場合（E_RSATR）
+30 : 	$IF LENGTH(TSK.TEXATR[tskid]) && TSK.TEXATR[tskid] != 0$
+31 : 		$ERROR DEF_TEX.TEXT_LINE[tskid]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "texatr", TSK.TEXATR[tskid], tskid, "DEF_TEX")$$END$
+32 : 	$END$
+33 : $END$
+34 : 
+35 : $ スタック領域の生成とそれに関するエラーチェック
+36 : $FOREACH tskid TSK.ID_LIST$
+37 : $	// stkszが0か，ターゲット定義の最小値（TARGET_MIN_STKSZ）よりも小さい場合（E_PAR）
+38 : 	$IF TSK.STKSZ[tskid] == 0 || (TARGET_MIN_STKSZ
+39 : 									&& TSK.STKSZ[tskid] < TARGET_MIN_STKSZ)$
+40 : 		$ERROR TSK.TEXT_LINE[tskid]$E_PAR: $FORMAT(_("%1% `%2%\' of `%3%\' in %4% is too small"), "stksz", TSK.STKSZ[tskid], tskid, "CRE_TSK")$$END$
+41 : 	$END$
+42 : $ 	// stkszがスタック領域のサイズとして正しくない場合（E_PAR）
+43 : 	$IF !EQ(TSK.STK[tskid], "NULL") && CHECK_STKSZ_ALIGN
+44 : 							&& (TSK.STKSZ[tskid] & (CHECK_STKSZ_ALIGN - 1))$
+45 : 		$ERROR TSK.TEXT_LINE[tskid]$E_PAR: $FORMAT(_("%1% `%2%\' of `%3%\' in %4% is not aligned"), "stksz", TSK.STKSZ[tskid], tskid, "CRE_TSK")$$END$
+46 : 	$END$
+47 : 
+48 : 	$IF EQ(TSK.STK[tskid],"NULL")$
+49 : 		static STK_T _kernel_stack_$tskid$[COUNT_STK_T($TSK.STKSZ[tskid]$)];$NL$
+50 : 		$TSK.TINIB_STKSZ[tskid] = FORMAT("ROUND_STK_T(%1%)", TSK.STKSZ[tskid])$
+51 : 		$TSK.TINIB_STK[tskid] = CONCAT("_kernel_stack_", tskid)$
+52 : 	$ELSE$
+53 : 		$TSK.TINIB_STKSZ[tskid] = TSK.STKSZ[tskid]$
+54 : 		$TSK.TINIB_STK[tskid] = TSK.STK[tskid]$
+55 : 	$END$
+56 : $END$
+57 : $NL$
+58 : 
+59 : $ タスク初期化ブロックの生成（タスクは1個以上存在する）
+60 : const TINIB _kernel_tinib_table[TNUM_TSKID] = {$NL$
+61 : $JOINEACH tskid TSK.ID_LIST ",\n"$
+62 : $	// タスク属性，拡張情報，起動番地，起動時優先度
+63 : 	$TAB${
+64 : 	$SPC$($TSK.TSKATR[tskid]$), (intptr_t)($TSK.EXINF[tskid]$),
+65 : 	$SPC$((TASK)($TSK.TASK[tskid]$)), INT_PRIORITY($TSK.ITSKPRI[tskid]$),
+66 : 
+67 : $	// タスク初期化コンテキストブロック，スタック領域
+68 : 	$IF USE_TSKINICTXB$
+69 : 		$GENERATE_TSKINICTXB(tskid)$
+70 : 	$ELSE$
+71 : 		$SPC$$TSK.TINIB_STKSZ[tskid]$, $TSK.TINIB_STK[tskid]$,
+72 : 	$END$
+73 : 
+74 : $	// タスク例外処理ルーチンの属性と起動番地
+75 : 	$SPC$($ALT(TSK.TEXATR[tskid],"TA_NULL")$), ($ALT(TSK.TEXRTN[tskid],"NULL")$) }
+76 : $END$$NL$
+77 : };$NL$
+78 : $NL$
+
+[B] kernel_check.tf
+
+00 : $	// タスクとタスク例外処理ルーチンの先頭番地のチェック
+01 : 	$tinib = SYMBOL("_kernel_tinib_table")$
+02 : 	$FOREACH tskid TSK.ID_LIST$
+03 : 		$task = PEEK(tinib + offsetof_TINIB_task, sizeof_FP)$
+04 : 		$IF CHECK_FUNC_ALIGN && (task & (CHECK_FUNC_ALIGN - 1)) != 0$
+05 : 			$ERROR TSK.TEXT_LINE[tskid]$E_PAR: 
+06 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is not aligned"),
+07 : 				"task", TSK.TASK[tskid], tskid, "CRE_TSK")$$END$
+08 : 		$END$
+09 : 		$IF CHECK_FUNC_NONNULL && task == 0$
+10 : 			$ERROR TSK.TEXT_LINE[tskid]$E_PAR: 
+11 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is null"),
+12 : 				"task", TSK.TASK[tskid], tskid, "CRE_TSK")$$END$
+13 : 		$END$
+14 : 		$texrtn = PEEK(tinib + offsetof_TINIB_texrtn, sizeof_FP)$
+15 : 		$IF CHECK_FUNC_ALIGN && (texrtn & (CHECK_FUNC_ALIGN - 1)) != 0$
+16 : 			$ERROR DEF_TEX.TEXT_LINE[tskid]$E_PAR: 
+17 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is not aligned"),
+18 : 				"texrtn", TSK.TEXRTN[tskid], tskid, "DEF_TEX")$$END$
+19 : 		$END$
+20 : 		$tinib = tinib + sizeof_TINIB$
+21 : 	$END$
+
+[C] kernel_check.tf
+00 : $	// タスクのスタック領域の先頭番地のチェック
+01 : 	$tinib = SYMBOL("_kernel_tinib_table")$
+02 : 	$FOREACH tskid TSK.ID_LIST$
+03 : 		$IF USE_TSKINICTXB$
+04 : 			$stk = GET_STK_TSKINICTXB(tinib)$
+05 : 		$ELSE$
+06 : 			$stk = PEEK(tinib + offsetof_TINIB_stk, sizeof_void_ptr)$
+07 : 		$END$
+08 : 		$IF CHECK_STACK_ALIGN && (stk & (CHECK_STACK_ALIGN - 1)) != 0$
+09 : 			$ERROR TSK.TEXT_LINE[tskid]$E_PAR: 
+10 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is not aligned"),
+11 : 				"stk", TSK.STK[tskid], tskid, "CRE_TSK")$$END$
+12 : 		$END$
+13 : 		$IF CHECK_STACK_NONNULL && stk == 0$
+14 : 			$ERROR TSK.TEXT_LINE[tskid]$E_PAR: 
+15 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is null"),
+16 : 				"stk", TSK.STK[tskid], tskid, "CRE_TSK")$$END$
+17 : 		$END$
+18 : 		$tinib = tinib + sizeof_TINIB$
+19 : 	$END$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  09 : !LENGTH(TSK.ID_LIST)
+(A2)  20 : (TSK.TSKATR[tskid] & ~(TA_ACT|TARGET_TSKATR)) != 0
+(A3)  25 : TMIN_TPRI <= TSK.ITSKPRI[tskid]
+(A4)  25 : TSK.ITSKPRI[tskid] <= TMAX_TPRI
+(A5)  30 : LENGTH(TSK.TEXATR[tskid])
+(A6)  30 : TSK.TEXATR[tskid] != 0
+(A7)  38 : TSK.STKSZ[tskid] == 0
+(A8)  43 : !EQ(TSK.STK[tskid], "NULL")
+(A9)  44 : (TSK.STKSZ[tskid] & (CHECK_STKSZ_ALIGN - 1))
+(A10) 48 : EQ(TSK.STK[tskid],"NULL")
+
+(B1) 04 : task & (CHECK_FUNC_ALIGN - 1)
+(B2) 09 : task == 0
+(B3) 15 : (texrtn & (CHECK_FUNC_ALIGN - 1))
+
+(C1) 08 : (stk & (CHECK_STACK_ALIGN - 1)) != 0
+(C2) 13 : stk == 0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (B1) (B2) (B3) (C1) (C2)
+(a)     F    T    D    D    D    D    D    D     D    D    D    D    D    D    D
+(b)     F    F    T    T    F    D    F    F    D/T   T    T    D    D    D    D
+(c-1)   F    F    F   D/T   D    D    D    D     D    D    D    D    D    D    D
+(c-2)   F    F    T    F    D    D    D    D     D    D    D    D    D    D    D
+(d)     F    F    T    T    F    D    F    T     T    D    D    D    D    D    D
+(e)     F    F    T    T    F    D    F    T     F    F    F    F    F    T    D
+(f)     F    F    T    T    F    D    F    F    D/F   T    F    F    F    F    F
+(g-1)   F    F    T    T    F    D    F    F    D/F   T    F    F    F    F    F
+(g-2)   F    F    T    T    F    D    F    F    D/F   T    F    F    F    F    F
+(g-3)   F    F    T    T    F    D    F    F    D/F   T    F    F    F    F    F
+(h-1)   F    F    T    T    F    D    F    F    D/F   T    F    F    F    F    F
+(h-2)   F    F    T    T    F    D    F    T     F    F    F    F    F    F    F
+----------------------------------------------------------------------------------
+網羅    X    O    O    O    X    X    X    O     O    O    O    X    X    O    X
+
+【備考】
+・(A1)(A7)(B2)(C2)の網羅をさせるために，以下にホワイトボックステストを実施
+  する．
+・(A5)(A6)(B3)はDEF_TEXに関する分岐のため，ここでは網羅しない．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (B1) (B2) (B3) (C1) (C2)
+(W_a)   T    D    D    D    F    D    D    D     D    D    D    D    D    D    D
+(W_b)   F    F    T    T    F    D    T    D     D    D    D    D    D    D    D
+(W_c)   F    F    T    T    F    D    F    F    D/T   T    F    T    D    D    D
+(W_d)   F    F    T    T    F    D    F    T     F    F    F    F    F    F    T
+----------------------------------------------------------------------------------
+網羅    O    O    O    O    X    X    O    O     O    O    O    O    X    O    O
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.2. テストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(W_a) タスクが0個の場合，"no task is registered"となる事．
+
+(W_b) stkszが0のとき．
+
+(W_c) taskが0のとき．
+
+(W_d) stkが0のとき．
+
+
+
+以上．

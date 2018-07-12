@@ -1,0 +1,49 @@
+version: "$Id: wai_sem_e.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_wai_sem_e:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+    SEM1:
+      type   : SEMAPHORE
+      semcnt : 0
+
+  do_0:
+    id     : TASK1
+    syscall: wai_sem(SEM1)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_0:
+    TASK1:
+      tskstat: waiting
+      wobjid : SEM1
+
+    TASK2:
+      tskstat: running
+
+    SEM1:
+      wtsklist:
+        - TASK1:
+
+  do_1:
+    id     : TASK2
+    syscall: sig_sem(SEM1)
+    gcov   : false
+
+  post_condition_1:
+    TASK1:
+      tskstat: running
+
+    TASK2:
+      tskstat: ready
+
+    SEM1:
+      wtsklist:

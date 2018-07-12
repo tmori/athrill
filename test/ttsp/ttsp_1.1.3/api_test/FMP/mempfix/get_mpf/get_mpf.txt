@@ -1,0 +1,310 @@
+
+	get_mpf テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: get_mpf.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+get_mpf		固定長メモリブロックの獲得〔T〕
+pget_mpf	固定長メモリブロックの獲得（ポーリング）〔T〕
+tget_mpf	固定長メモリブロックの獲得（タイムアウト付き）〔T〕
+
+【C言語API】
+	ER ercd = get_mpf(ID mpfid, void **p_blk)
+	ER ercd = pget_mpf(ID mpfid, void **p_blk)
+	ER ercd = tget_mpf(ID mpfid, void **p_blk, TMO tmout)
+
+【パラメータ】
+	ID			mpfid		対象固定長メモリプールのID番号
+	void **		p_blk		獲得した固定長メモリブロックの先頭番地を入
+							れるメモリ領域へのポインタ
+	TMO			tmout		タイムアウト時間（twai_mpfの場合）
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+	void *		blk			獲得した固定長メモリブロックの先頭番地
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し，ディスパッチ保留状態
+					からの呼出し：pget_mpfを除く）
+	E_NOSPT			未サポート機能（制約タスクからの呼出し：pget_mpfを除
+					く）
+	E_ID			不正ID番号（mpfidが不正）
+	E_PAR			パラメータエラー（tmoutが不正：tget_mpfの場合）
+	E_NOEXS〔D〕	オブジェクト未登録（対象固定長メモリプールが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象固定長メモリプールに
+					対する通常操作2が許可されていない）
+	E_MACV〔P〕		メモリアクセス違反（p_blkが指すメモリ領域への読出し
+					アクセスが許可されていない）
+	E_TMOUT			ポーリング失敗またはタイムアウト（get_mpfを除く）
+	E_RLWAI			待ち禁止状態または待ち状態の強制解除（pget_mpfを除
+					く）
+	E_DLT			待ちオブジェクトの削除または再初期化（pget_mpfを除
+					く）
+
+【機能】
+
+mpfidで指定した固定長メモリプール（対象固定長メモリプール）から固定長メ
+モリブロックを獲得し，その先頭番地をblkに返す．具体的な振舞いは以下の通
+り．
+
+対象固定長メモリプールの固定長メモリプール領域の中に，固定長メモリブロッ
+クを割り付けることのできる未割当てのメモリ領域がある場合には，固定長メ
+モリブロックが1つ割り付けられ，その先頭番地がblkに返される．
+
+未割当てのメモリ領域がない場合には，自タスクは固定長メモリプールの獲得
+待ち状態となり，対象固定長メモリプールの待ち行列につながれる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+get_mpf(ID mpfid, void **p_blk)
+{
+	MPFCB	*p_mpfcb;
+	ER		ercd;
+	PCB		*my_p_pcb;
+	TCB		*p_runtsk;
+
+	LOG_GET_MPF_ENTER(mpfid, p_blk);
+	CHECK_TSKCTX_UNL();
+	CHECK_MPFID(mpfid);
+	p_mpfcb = get_mpfcb(mpfid);
+
+	t_lock_cpu();
+	my_p_pcb = get_my_p_pcb();
+	T_CHECK_DISPATCH(my_p_pcb);
+
+  retry:
+	t_acquire_obj_lock(&GET_OBJLOCK(p_mpfcb));
+	if (p_mpfcb->fblkcnt > 0) {
+		get_mpf_block(p_mpfcb, p_blk);
+		release_obj_lock(&GET_OBJLOCK(p_mpfcb));
+		ercd = E_OK;
+	}
+	else {
+		if ((my_p_pcb = t_acquire_nested_tsk_lock_self(&GET_OBJLOCK(p_mpfcb))) == NULL){
+			goto retry;
+		}
+		p_runtsk = my_p_pcb->p_runtsk;
+		p_runtsk->tstat = (TS_WAITING | TS_WAIT_MPF);
+		wobj_make_wait((WOBJCB *) p_mpfcb, p_runtsk);
+		release_nested_tsk_lock(my_p_pcb);
+		release_obj_lock(&GET_OBJLOCK(p_mpfcb));
+		dispatch();
+		ercd = p_runtsk->wercd;
+		if (ercd == E_OK) {
+			*p_blk = p_runtsk->winfo_obj.mpf.blk;
+		}
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_GET_MPF_LEAVE(ercd, *p_blk);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] get_mpf
+
+00 : ER
+01 : get_mpf(ID mpfid, void **p_blk)
+02 : {
+03 : 	MPFCB	*p_mpfcb;
+04 : 	ER		ercd;
+05 : 	PCB		*my_p_pcb;
+06 : 	TCB		*p_runtsk;
+07 : 
+08 : 	if (!sense_tskctx_unl()) {
+09 : 		ercd = E_CTX;
+10 : 		goto error_exit;
+11 : 	}
+12 : 	if (!(TMIN_MPFID <= (mpfid) && (mpfid) <= tmax_mpfid)) {
+13 : 		ercd = E_ID;
+14 : 		goto error_exit;
+15 : 	}
+16 : 	p_mpfcb = p_mpfcb_table[(uint_t)((mpfid) - TMIN_MPFID)];
+17 : 
+18 : 	t_lock_cpu();
+19 : 	my_p_pcb = get_my_p_pcb();
+20 : 	if (!(my_p_pcb->dspflg)) {
+21 : 		ercd = E_CTX;
+22 : 		t_unlock_cpu();
+23 : 		goto error_exit;
+24 : 	}
+25 : 
+26 :   retry:
+27 : 	t_acquire_obj_lock(&GET_OBJLOCK(p_mpfcb));
+28 : 	if (p_mpfcb->fblkcnt > 0) {
+29 : 		get_mpf_block(p_mpfcb, p_blk);
+30 : 		release_obj_lock(&GET_OBJLOCK(p_mpfcb));
+31 : 		ercd = E_OK;
+32 : 	}
+33 : 	else {
+34 : 		if ((my_p_pcb = t_acquire_nested_tsk_lock_self(&GET_OBJLOCK(p_mpfcb))) == NULL){
+35 : 			goto retry;
+36 : 		}
+37 : 		p_runtsk = my_p_pcb->p_runtsk;
+38 : 		p_runtsk->tstat = (TS_WAITING | TS_WAIT_MPF);
+39 : 		wobj_make_wait((WOBJCB *) p_mpfcb, p_runtsk);
+40 : 		release_nested_tsk_lock(my_p_pcb);
+41 : 		release_obj_lock(&GET_OBJLOCK(p_mpfcb));
+42 : 		dispatch();
+43 : 		ercd = p_runtsk->wercd;
+44 : 		if (ercd == E_OK) {
+45 : 			*p_blk = p_runtsk->winfo_obj.mpf.blk;
+46 : 		}
+47 : 	}
+48 : 	t_unlock_cpu();
+49 : 
+50 :   error_exit:
+51 : 	return(ercd);
+52 : }
+
+
+[B] get_mpf_block
+
+00 : void
+01 : get_mpf_block(MPFCB *p_mpfcb, void **p_blk)
+02 : {
+03 : 	uint_t  blkidx;
+04 : 
+05 : 	if (p_mpfcb->freelist != ~0U) {
+06 : 		blkidx = p_mpfcb->freelist;
+07 : 		p_mpfcb->freelist = (p_mpfcb->p_mpfinib->p_mpfmb + blkidx)->next;
+08 : 	}
+09 : 	else {
+10 : 		blkidx = p_mpfcb->unused;
+11 : 		p_mpfcb->unused++;
+12 : 	}
+13 : 	*p_blk = (void *)((char *)(p_mpfcb->p_mpfinib->mpf)
+14 : 						+ p_mpfcb->p_mpfinib->blksz * blkidx);
+15 : 	p_mpfcb->fblkcnt--;
+16 : 	(p_mpfcb->p_mpfinib->p_mpfmb + blkidx)->next = ~1U;
+17 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 08 : !sense_tskctx_unl()
+(A2) 12 : TMIN_MPFID <= (mpfid)
+(A3) 12 : (mpfid) <= tmax_mpfid
+(A4) 20 : !(my_p_pcb->dspflg)
+(A5) 28 : p_mpfcb->fblkcnt > 0
+(A6) 44 : ercd == E_OK
+
+(B1) 05 : p_mpfcb->freelist != ~0U
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+           (A1) (A2) (A3) (A4) (A5) (B1) (A6)
+(a-1)       T    D    D    D    D    D    D
+(a-2)       T    D    D    D    D    D    D
+(a-3)       F    T    T    T    D    D    D
+(a-4)       F    T    T    T    D    D    D
+(b-1)       F    F   D/T   D    D    D    D
+(b-2)       F    T    F    D    D    D    D
+(c)         F    T    T    F    F    D    F
+(d)         F    T    T    F    F    D    F
+(e)         F    T    T    F    F    D    T
+(f)         F    T    T    F    T    F    D
+(g-1-1)     F    T    T    F    F    D    D
+(g-1-2)     F    T    T    F    F    D    D
+(g-1-3)     F    T    T    F    F    D    D
+(g-1-4)     F    T    T    F    F    D    D
+(g-2-1)     F    T    T    F    F    D    D
+(g-2-2)     F    T    T    F    F    D    D
+(g-2-3)     F    T    T    F    F    D    D
+(g-2-4)     F    T    T    F    F    D    D
+(h-1)       F    T    T    F    T    F    D
+(h-2)       F    T    T    F    T    F    D
+(W-a)       F    T    T    F    T    T    D
+(F-a)       T    D    D    D    D    D    D
+(F-b)       F    T    T    F    F    D    F
+(F-c)       F    T    T    F    F    D    F
+(F-d)       F    T    T    F    F    D    T
+(F-e-1-1)   F    T    T    F    F    D    D
+(F-e-1-2)   F    T    T    F    F    D    D
+(F-e-1-3)   F    T    T    F    F    D    D
+(F-e-2-1)   F    T    T    F    F    D    D
+(F-e-2-2)   F    T    T    F    F    D    D
+(F-e-2-3)   F    T    T    F    F    D    D
+---------------------------------------------
+網羅        O    O    O    O    O    O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+以上．

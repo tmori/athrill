@@ -1,0 +1,37 @@
+version: "$Id: ipsnd_pdq_f-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_ipsnd_pdq_f_2:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 3
+      maxdpri : DATA_PRI_MAX
+      rtsklist:
+      datalist:
+        - data:     DATA_A
+          datapri:  DATA_PRI_MID
+        - data:     DATA_B
+          datapri:  DATA_PRI_LOW
+
+  do:
+    id     : ALM1
+    syscall: ipsnd_pdq(PDQ1, DATA_C, DATA_PRI_HIGH)
+    ercd   : E_OK
+
+  post_condition:
+    PDQ1:
+      datalist:
+        - data:     DATA_C
+          datapri:  DATA_PRI_HIGH
+        - data:     DATA_A
+          datapri:  DATA_PRI_MID
+        - data:     DATA_B
+          datapri:  DATA_PRI_LOW

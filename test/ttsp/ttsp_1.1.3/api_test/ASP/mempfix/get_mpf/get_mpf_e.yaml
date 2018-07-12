@@ -1,0 +1,123 @@
+version: "$Id: get_mpf_e.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mempfix_get_mpf_e:
+  note: TESRY_007
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      var:
+        blk:
+          type : void*
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      var:
+        blk:
+          type : void*
+
+    MPF1:
+      type    : MEMORYPOOL
+      blkcnt  : ANY_INI_BLKCNT
+      fblkcnt : 1
+
+  do_0:
+    0:
+      id     : TASK1
+      syscall: dly_tsk(0)
+      ercd   : E_OK
+      gcov   : false
+
+  post_condition_0:
+    0:
+      TASK1:
+        tskstat: waiting
+        wobjid : DELAY
+        lefttmo: 0
+
+      TASK2:
+        tskstat: running
+
+  do_1:
+    0:
+      id     : TASK2
+      syscall: get_mpf(MPF1, &blk)
+      ercd   : E_OK
+      gcov   : false
+
+  post_condition_1:
+    0:
+      MPF1:
+        fblkcnt : 0
+
+  do_2:
+    0:
+      id     : TASK2
+      syscall: slp_tsk()
+      ercd   : E_OK
+      gcov   : false
+
+  post_condition_2:
+    0:
+      TASK2:
+        tskstat: waiting
+        wobjid : SLEEP
+
+    1:
+      TASK1:
+        tskstat: running
+
+  do_3:
+    1:
+      id     : TASK1
+      syscall: wup_tsk(TASK2)
+      ercd   : E_OK
+      gcov   : false
+
+  post_condition_3:
+    1:
+      TASK1:
+        tskstat: running
+
+      TASK2:
+        tskstat: ready
+
+  do_4:
+    1:
+      id     : TASK1
+      syscall: get_mpf(MPF1, &blk)
+      ercd   : E_OK
+      gcov   : true
+
+  post_condition_4:
+    1:
+      TASK1:
+        tskstat: waiting
+        wobjid : MPF1
+
+      TASK2:
+        tskstat: running
+
+      MPF1:
+        wtsklist:
+          - TASK1:
+
+  do_5:
+    1:
+      id     : TASK2
+      syscall: rel_mpf(MPF1, blk)
+      gcov   : false
+
+  post_condition_5:
+    1:
+      TASK1:
+        tskstat: running
+
+      TASK2:
+        tskstat: ready
+
+      MPF1:
+        wtsklist:

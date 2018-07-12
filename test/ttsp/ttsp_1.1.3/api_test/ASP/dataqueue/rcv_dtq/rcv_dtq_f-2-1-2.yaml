@@ -1,0 +1,57 @@
+version: "$Id: rcv_dtq_f-2-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_rcv_dtq_f_2_1_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : DTQ1
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: ready
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 3
+      stsklist:
+       - TASK2:
+           data: DATA_A
+      datalist:
+        - data : DATA_B
+        - data : DATA_C
+        - data : DATA_D
+
+  do:
+    id     : TASK1
+    syscall: rcv_dtq(DTQ1, &data)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        data:
+          value: DATA_B
+
+    TASK2:
+      tskstat: ready
+      porder: 2
+
+    TASK3:
+      porder: 1
+
+    DTQ1:
+      stsklist:
+      datalist:
+        - data : DATA_C
+        - data : DATA_D
+        - data : DATA_A

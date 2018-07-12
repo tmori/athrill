@@ -1,0 +1,19 @@
+version: "$Id: CRE_PDQ_e.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_staticAPI_CRE_PDQ_e:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    PDQ1:
+      type    : P_DATAQUEUE
+      pdqatr  : ANY_ATT_PDQ
+      maxdpri : DATA_PRI_MID
+      pdqcnt  : ANY_DATA_CNT
+      stsklist:
+      rtsklist:
+      datalist:
+
+  do:
+
+  post_condition:

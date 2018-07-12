@@ -1,0 +1,21 @@
+version: "$Id: get_tim_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_time_manage_get_tim_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        systim:
+          type: SYSTIM
+          value: ANY_ELAPSED_TIME
+
+    CPU_STATE:
+      type    : CPU_STATE
+      loc_cpu : true
+
+  do:
+    id     : TASK1
+    syscall: get_tim(&systim)
+    ercd   : E_CTX
+
+  post_condition:

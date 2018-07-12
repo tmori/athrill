@@ -1,0 +1,13 @@
+version: "$Id: chg_ipm_b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_interrupt_chg_ipm_b_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do:
+    id     : TASK1
+    syscall: chg_ipm(TIPM_ENAALL+1)
+    ercd   : E_PAR
+
+  post_condition:

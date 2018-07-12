@@ -1,0 +1,46 @@
+version: "$Id: get_mpf_g-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mempfix_get_mpf_g_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      var:
+        blk:
+          type: void*
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid: MPF1
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid: MPF1
+
+    MPF1:
+      type: MEMORYPOOL
+      mpfatr: TA_TPRI
+      blkcnt: ANY_INI_BLKCNT
+      fblkcnt: 0
+      wtsklist:
+        - TASK2:
+        - TASK3:
+
+  do:
+    id     : TASK1
+    syscall: get_mpf(MPF1,&blk)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid: MPF1
+
+    MPF1:
+      wtsklist:
+        - TASK1:
+        - TASK2:
+        - TASK3:

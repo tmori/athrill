@@ -1,0 +1,49 @@
+version: "$Id: imact_tsk_F-h-1-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_imact_tsk_F_h_1_1_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: dormant
+      itskpri: TSK_PRI_HIGH
+      actcnt : 0
+      prcid  : PRC_OTHER
+
+  do_0:
+    id     : ALM1
+    syscall: imact_tsk(TASK2, PRC_SELF)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+      tskpri : TSK_PRI_HIGH
+      prcid  : PRC_SELF
+
+  do_1:
+    id     : ALM1
+    code   : return
+    gcov   : false
+
+  post_condition_1:
+    ALM1:
+      almstat: TALM_STP
+      hdlstat: STP
+
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running

@@ -1,0 +1,58 @@
+version: "$Id: tsnd_pdq_g.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_tsnd_pdq_g:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    PDQ1:
+      type   : P_DATAQUEUE
+      pdqcnt : 0
+      rtsklist :
+
+  do_0:
+    id     : TASK2
+    syscall: tsnd_pdq(PDQ1, DATA_A, DATA_PRI_HIGH, ANY_ELAPSED_TIME)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_0:
+    TASK1:
+      tskstat: running
+
+    TASK2:
+      tskstat: waiting
+      wobjid : PDQ1
+      lefttmo : ANY_ELAPSED_TIME
+
+    PDQ1:
+      stsklist:
+        - TASK2:
+            data:     DATA_A
+            datapri:  DATA_PRI_HIGH
+
+  do_1:
+    id     : TASK1
+    syscall: rcv_pdq(PDQ1, &data, &datapri)
+    gcov   : false
+
+  post_condition_1:
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running
+
+    PDQ1:
+      stsklist:

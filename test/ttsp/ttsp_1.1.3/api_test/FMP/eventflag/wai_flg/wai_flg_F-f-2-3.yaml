@@ -1,0 +1,58 @@
+version: "$Id: wai_flg_F-f-2-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_eventflag_wai_flg_F_f_2_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: running
+      var    :
+        flgptn:
+          type: FLGPTN
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    FLG1:
+      type    : EVENTFLAG
+      flgatr  : (TA_WMUL|TA_TPRI)
+      flgptn  : BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_B
+            wfmode: WAIT_FLG_MODE_B
+        - TASK3:
+            waiptn: BIT_PATTERN_C
+            wfmode: WAIT_FLG_MODE_C
+
+  do:
+    id     : TASK1
+    syscall: wai_flg(FLG1, BIT_PATTERN_A, WAIT_FLG_MODE_A, &flgptn)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : FLG1
+
+    FLG1:
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_B
+            wfmode: WAIT_FLG_MODE_B
+        - TASK3:
+            waiptn: BIT_PATTERN_C
+            wfmode: WAIT_FLG_MODE_C
+        - TASK1:
+            waiptn: BIT_PATTERN_A
+            wfmode: WAIT_FLG_MODE_A

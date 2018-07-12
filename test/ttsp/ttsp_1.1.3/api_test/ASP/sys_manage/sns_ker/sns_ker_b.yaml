@@ -1,0 +1,21 @@
+version: "$Id: sns_ker_b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_sys_manage_sns_ker_b:
+  pre_condition:
+    TER1:
+      type   : TERRTN
+      do     :
+        syscall: sns_ker()
+        bool   : true
+        gcov   : true
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do:
+    id     : TASK1
+    syscall: sns_ker()
+    bool   : false
+    gcov   : false
+
+  post_condition:

@@ -1,0 +1,27 @@
+version: "$Id: ena_int_F-c.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_interrupt_ena_int_F_c:
+  variation:
+    irc_arch: combination
+    api_support_ena_int: true
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid:   PRC_SELF
+
+    INH1:
+      type   : INTHDR
+      intno  : INTNO_SELF_INH_A
+      intpri : INT_PRI_MID
+      inhno  : INHNO_SELF_A
+      intstat: TA_DISINT
+      hdlstat: STP
+      prcid:   PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: ena_int(INTNO_NOT_SELF_SELF)
+    ercd   : E_PAR
+
+  post_condition:

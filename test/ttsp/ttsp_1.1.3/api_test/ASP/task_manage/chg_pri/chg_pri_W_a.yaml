@@ -1,0 +1,25 @@
+version: "$Id: chg_pri_W_a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_chg_pri_W_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+
+  do:
+    id     : TASK1
+    syscall: chg_pri(TSK_SELF, TSK_PRI_LOW)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      tskpri : TSK_PRI_LOW

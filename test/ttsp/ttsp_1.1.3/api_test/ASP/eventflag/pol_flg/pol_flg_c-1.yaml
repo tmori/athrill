@@ -1,0 +1,21 @@
+version: "$Id: pol_flg_c-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_pol_flg_c_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        flgptn:
+          type: FLGPTN
+          value: BIT_PATTERN_A
+
+    FLG1:
+      type  : EVENTFLAG
+      flgptn: BIT_PATTERN_0A
+
+  do:
+    id     : TASK1
+    syscall: pol_flg(FLG1, 0x00, WAIT_FLG_MODE_A, &flgptn)
+    ercd   : E_PAR
+
+  post_condition:

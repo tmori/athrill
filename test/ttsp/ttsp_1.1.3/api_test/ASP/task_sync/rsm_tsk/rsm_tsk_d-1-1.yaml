@@ -1,0 +1,23 @@
+version: "$Id: rsm_tsk_d-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_rsm_tsk_d_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: suspended
+
+  do:
+    id     : TASK1
+    syscall: rsm_tsk(TASK2)
+
+  post_condition:
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running

@@ -1,0 +1,30 @@
+version: "$Id: stp_alm_F-a-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_alarm_stp_alm_F_a_1_1:
+  variation:
+    timer_arch: local
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    ALM2:
+      type   : ALARM
+      almstat: TALM_STA
+      hdlstat: STP
+      lefttim: RELATIVE_TIME_A
+      prcid  : PRC_OTHER
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+  do:
+    id     : ALM1
+    syscall: stp_alm(ALM2)
+    ercd   : E_CTX
+
+  post_condition:

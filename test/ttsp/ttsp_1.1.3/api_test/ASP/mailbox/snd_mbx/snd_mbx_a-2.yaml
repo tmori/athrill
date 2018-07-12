@@ -1,0 +1,23 @@
+version: "$Id: snd_mbx_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mailbox_snd_mbx_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        msg:
+          type: T_MSG
+
+    MBX1:
+      type   : MAILBOX
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do:
+    id     : TASK1
+    syscall: snd_mbx(MBX1, &msg)
+    ercd   : E_CTX
+
+  post_condition:

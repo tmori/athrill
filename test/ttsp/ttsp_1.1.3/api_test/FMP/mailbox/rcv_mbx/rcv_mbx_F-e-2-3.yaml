@@ -1,0 +1,48 @@
+version: "$Id: rcv_mbx_F-e-2-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mailbox_rcv_mbx_F_e_2_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        pk_msg:
+          type: T_MSG*
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : MBX1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : MBX1
+      prcid  : PRC_OTHER
+
+    MBX1:
+      type    : MAILBOX
+      mbxatr  : TA_TPRI
+      wtsklist:
+        - TASK2:
+        - TASK3:
+
+  do:
+    id     : TASK1
+    syscall: rcv_mbx(MBX1, &pk_msg)
+
+  post_condition_0:
+    TASK1:
+      tskstat: waiting
+      wobjid : MBX1
+
+    MBX1:
+      wtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK1:
+            var: pk_msg

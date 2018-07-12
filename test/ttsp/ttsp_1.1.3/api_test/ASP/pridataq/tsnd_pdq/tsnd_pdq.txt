@@ -1,0 +1,546 @@
+
+	tsnd_pdq テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: tsnd_pdq.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+snd_pdq		優先度データキューへの送信〔T〕
+psnd_pdq	優先度データキューへの送信（ポーリング）〔T〕
+ipsnd_pdq	優先度データキューへの送信（ポーリング）〔I〕
+tsnd_pdq	優先度データキューへの送信（タイムアウト付き）〔T〕
+
+【C言語API】
+	ER ercd = snd_pdq(ID pdqid, intptr_t data, PRI datapri)
+	ER ercd = psnd_pdq(ID pdqid, intptr_t data, PRI datapri)
+	ER ercd = ipsnd_pdq(ID pdqid, intptr_t data, PRI datapri)
+	ER ercd = tsnd_pdq(ID pdqid, intptr_t data, PRI datapri, TMO tmout)
+
+【パラメータ】
+	ID			pdqid		対象優先度データキューのID番号
+	intptr_t	data		送信データ
+	PRI			datapri		送信データの優先度
+	TMO			tmout		タイムアウト時間（tsnd_pdqの場合）
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：ipsnd_pdqを除く，タスクコンテキストからの呼出し：
+					ipsnd_pdqの場合，CPUロック状態からの呼出し，ディス
+					パッチ保留状態からの呼出し：snd_pdqとtsnd_pdqの場合）
+	E_NOSPT			未サポート機能（制約タスクからの呼出し：snd_pdqと
+					tsnd_pdqの場合）
+	E_ID			不正ID番号（pdqidが不正）
+	E_PAR			パラメータエラー（datapriが不正，tmoutが不正：
+					tsnd_pdqのみ）
+	E_NOEXS〔D〕	オブジェクト未登録（対象優先度データキューが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象優先度データキューに
+					対する通常操作1が許可されていない：ipsnd_pdqを除く）
+	E_TMOUT			ポーリング失敗またはタイムアウト（snd_pdqを除く）
+	E_RLWAI			待ち禁止状態または待ち状態の強制解除（snd_pdqと
+					tsnd_pdqの場合）
+	E_DLT			待ちオブジェクトの削除または再初期化（snd_pdqと
+					tsnd_pdqの場合）
+
+【機能】
+
+pdqidで指定した優先度データキュー（対象優先度データキュー）に，dataで指
+定したデータを，datapriで指定した優先度で送信する．具体的な振舞いは以下
+の通り．
+
+対象優先度データキューの受信待ち行列にタスクが存在する場合には，受信待
+ち行列の先頭のタスクが，dataで指定したデータを受信し，待ち解除される．
+待ち解除されたタスクには，待ち状態となったサービスコールからE_OKが返る．
+
+対象優先度データキューの受信待ち行列にタスクが存在せず，優先度データ
+キュー管理領域にデータを格納するスペースがある場合には，dataで指定した
+データが，datapriで指定したデータの優先度順で優先度データキュー管理領域
+に格納される．
+
+対象優先度データキューの受信待ち行列にタスクが存在せず，優先度データ
+キュー管理領域にデータを格納するスペースがない場合には，自タスクは優先
+度データキューへの送信待ち状態となり，対象優先度データキューの送信待ち
+行列につながれる．
+
+datapriは，TMIN_DPRI以上で，対象データキューに送信できるデータ優先度の
+最大値以下でなければならない．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) ディスパッチ保留状態で呼出す場合．
+
+    (a-1) 非タスクコンテキストから呼び出して，E_CTXエラーが返ること．
+
+    (a-2) CPUロック状態で呼び出して，E_CTXエラーが返ること．
+
+    (a-3) 割込み優先度マスクが全解除でない状態で呼び出して，
+          E_CTXエラーが返ること．
+
+    (a-4) ディスパッチ禁止状態で呼び出して，E_CTXエラーが返ること．
+
+(b) pdqidが不正の時にE_IDが返ること．
+
+    (b-1) pdqidが許容される最小値-1(=0)の時にE_IDが返ること．
+
+    (b-2) pdqidが許容される最大値+1(TNUM_PDQID+1)の時にE_IDが返ること．
+
+(c) datapriが不正の時にE_PARが返ること．
+
+    (c-1) datapriが許容される最小値-1(TMIN_DPRI-1)の時にE_PARが返ること．
+
+    (c-2) datapriが許容される最大値+1(DATA_PRI_MAX+1)の時に
+          E_PARが返ること．
+
+(d) tmoutが不正の時に、E_PARが返ること．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(e) 待ち状態の強制解除の時に，E_RLWAIが返ること．
+
+(f) 再初期化の時に，E_DLTが返ること．
+
+(g) 待ち状態が解除された時にE_OKが返ること．
+
+(h) tmoutにTMO_POLを指定する場合．
+
+    (h-1) 対象優先度データキューの受信待ち行列にタスクが存在せず，
+          優先度データキュー管理領域にデータを格納するスペースがある場
+          合には，dataで指定したデータが，datapriで指定したデータの優
+          先度順で優先度データキュー管理領域に格納されること．かつ，
+          データがない場合は，先頭に格納されること．
+
+    (h-2) 対象優先度データキューの受信待ち行列にタスクが存在せず，
+          優先度データキュー管理領域にデータを格納するスペースがない
+          場合に，ポーリングに失敗し，E_TMOUTが返ること．
+
+(i) tmoutにTMO_FEVRを指定する場合．
+
+    (i-1) 対象優先度データキューの受信待ち行列にタスクが存在せず，
+          優先度データキュー管理領域にデータを格納するスペースがある場
+          合には，dataで指定したデータが，datapriで指定したデータの優
+          先度順で優先度データキュー管理領域に格納されること．かつ，
+          データがない場合は，先頭に格納されること．
+
+    (i-2) 対象優先度データキューの受信待ち行列にタスクが存在せず，
+          優先度データキュー管理領域にデータを格納するスペースがない
+          場合に，永遠待ちになること．
+
+(j) tmoutに正常なタイムアウト時間(3)を指定する場合．
+
+    (j-1) 対象優先度データキューの受信待ち行列にタスクが存在する場合，
+          受信待ち行列の先頭のタスクが，dataで指定したデータを受信し，
+          待ち解除されること．(対象タスクとは，待ちタスクの待ち解除
+          されたタスクのことを示す．)
+
+          (j-1-1) 待ちタスクが1つの場合．(格納数は0)
+
+                  (j-1-1-1) 対象タスクの優先度が，実行状態のタスクより
+                            高い場合，実行状態になること．
+
+                  (j-1-1-2) 対象タスクの優先度が実行状態のタスクより
+                            低い場合，実行可能状態となり，同じ優先度の
+                            タスクの最後につながれること．
+
+                  (j-1-1-3) 対象タスクの優先度が実行状態のタスクと同じ
+                            場合，実行可能状態となり，同じ優先度の
+                            タスクの最後につながれること．
+
+                  (j-1-1-4) 対象タスクが，二重待ち状態の場合，
+                            強制待ちとなること．
+
+          (j-1-2) 待ちタスクが2つの場合．(格納数は3)
+
+                  (j-1-2-1) 対象タスクの優先度が，実行状態のタスクより
+                            高い場合，実行状態になること．
+
+                  (j-1-2-2) 対象タスクの優先度が実行状態のタスクより
+                            低い場合，実行可能状態となり，同じ優先度の
+                            タスクの最後につながれること．
+
+                  (j-1-2-3) 対象タスクの優先度が実行状態のタスクと同じ
+                            場合，実行可能状態となり，同じ優先度の
+                            タスクの最後につながれること．
+
+                  (j-1-2-4) 対象タスクが，二重待ち状態の場合，
+                            強制待ちとなること．
+
+    (j-2) 対象優先度データキューの受信待ち行列にタスクが存在しない場合．
+
+          (j-2-1) 優先度データキュー管理領域にデータを格納するスペース
+                  がない場合には，自タスクは優先度データキューへの送信
+                  待ち状態となり，対象優先度データキューの送信待ち行列
+                  につながれること．
+
+                  (j-2-1-1) 優先度データキューの送信待ち行列がFIFO順の
+                            場合は，新たに待ち状態に遷移したタスクは
+                            待ち行列の最後につながれること．(格納数は0)
+
+                            (j-2-1-1-1) 待ちタスクがない場合は，
+                                        先頭につながれる状態になること．
+
+                            (j-2-1-1-2) 優先度が中→低の順で待ちタスクが
+                                        あり，自タスクの優先度が高の場合．
+
+                            (j-2-1-1-3) 優先度が中→低の順で待ちタスクが
+                                        あり，自タスクの優先度が中の場合．
+
+                            (j-2-1-1-4) 優先度が高→中の順で待ちタスクが
+                                        あり，自タスクの優先度が低の場合．
+
+                  (j-2-1-2) 優先度データキューの送信待ち行列がタスク
+                            優先度順の場合には，新たに待ち状態に遷移
+                            したタスクがつながれること．
+                            (格納数は3，データ数は3)
+
+                            (j-2-1-2-1) 待ちタスクがない場合は，
+                                        先頭につながれる状態になること．
+
+                            (j-2-1-2-2) 優先度が中→低の順で待ちタスク
+                                        があり，自タスクの優先度が高の
+                                        場合．
+
+                            (j-2-1-2-3) 優先度が中→低の順で待ちタスクが
+                                        あり，自タスクの優先度が中の
+                                        場合．
+
+                            (j-2-1-2-4) 優先度が高→中の順で待ちタスク
+                                        があり，自タスクの優先度が低の
+                                        場合．
+
+          (j-2-2) 優先度データキュー管理領域にデータを格納するスペース
+                  がある場合には，dataで指定したデータが，datapriで
+                  指定したデータの優先度順で優先度データキュー管理領域
+                  に格納されること．
+
+                  (j-2-2-1) 優先度データキューにデータがない場合は，
+                            先頭に格納されること．
+
+                  (j-2-2-2) 優先度データキューにデータ優先度が中→低の
+                            順でデータがあり，データ優先度が高のデータ
+                            を送信する場合は，先頭に格納されること．
+
+                  (j-2-2-3) 優先度データキューにデータ優先度が中→低の
+                            順でデータがあり，データ優先度が中のデータ
+                            を送信する場合は，同じ優先度のデータの最後
+                            につながれること．
+
+                  (j-2-2-4) 優先度データキューにデータ優先度が高→中の
+                            順でデータがあり，データ優先度が低のデータ
+                            を送信する場合は，データの最後につながれる
+                            こと．
+
+    (j-3) タイムアウトの時に，E_TMOUTが返ること．
+
+【備考】
+
+・「datapriは，TMIN_DPRI以上で，対象データキューに送信できるデータ優
+  先度の最大値以下でなければならない．」は，エラーになる場合をテスト対
+  象とする．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+tsnd_pdq(ID pdqid, intptr_t data, PRI datapri, TMO tmout)
+{
+	PDQCB	*p_pdqcb;
+	WINFO_PDQ winfo_pdq;
+	TMEVTB	tmevtb;
+	bool_t	reqdsp;
+	ER		ercd;
+
+	LOG_TSND_PDQ_ENTER(pdqid, data, datapri, tmout);
+	CHECK_DISPATCH();
+	CHECK_PDQID(pdqid);
+	CHECK_TMOUT(tmout);
+	p_pdqcb = get_pdqcb(pdqid);
+	CHECK_PAR(TMIN_DPRI <= datapri && datapri <= p_pdqcb->p_pdqinib->maxdpri);
+
+	t_lock_cpu();
+	if (send_pridata(p_pdqcb, data, datapri, &reqdsp)) {
+		if (reqdsp) {
+			dispatch();
+		}
+		ercd = E_OK;
+	}
+	else if (tmout == TMO_POL) {
+		ercd = E_TMOUT;
+	}
+	else {
+		winfo_pdq.data = data;
+		winfo_pdq.datapri = datapri;
+		p_runtsk->tstat = (TS_WAITING | TS_WAIT_SPDQ);
+		wobj_make_wait_tmout((WOBJCB *) p_pdqcb, (WINFO_WOBJ *) &winfo_pdq,
+														&tmevtb, tmout);
+		dispatch();
+		ercd = winfo_pdq.winfo.wercd;
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_TSND_PDQ_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] tsnd_pdq
+
+00 : ER
+01 : tsnd_pdq(ID pdqid, intptr_t data, PRI datapri, TMO tmout)
+02 : {
+03 : 	PDQCB	*p_pdqcb;
+04 : 	WINFO_PDQ winfo_pdq;
+05 : 	TMEVTB	tmevtb;
+06 : 	bool_t	reqdsp;
+07 : 	ER		ercd;
+08 : 
+09 : 	if (sense_contex() || t_sense_lock() || !dspflg) {
+10 :               ercd = E_CTX;
+12 :               goto error_exit;
+13 :    }
+14 :    if (!((TMIN_PDQID <= (pdqid) && (pdqid) <= tmax_pdqid))) {
+15 :               ercd = E_ID;
+16 :               goto error_exit;  
+17 :    }
+18 :    if (!(TMO_FEVR <= (tmout))) {
+19 :               ercd = E_PAR;
+20 :               goto error_exit;  
+21 :    }
+22 : 	p_pdqcb = &(pdqcb_table[(uint_t)((pdqid) - TMIN_PDQID)])
+23 : 	if(!(TMIN_DPRI <= datapri && datapri <= p_pdqcb->p_pdqinib->maxdpri)){
+24 :                 ercd = E_PAR;
+25 :                 goto error_exit;
+26 :     }
+27 : 
+28 : 	t_lock_cpu();
+29 : 	if (send_pridata(p_pdqcb, data, datapri, &reqdsp)) {
+30 : 		if (reqdsp) {
+31 : 			dispatch();
+32 : 		}
+33 : 		ercd = E_OK;
+34 : 	}
+35 : 	else if (tmout == TMO_POL) {
+36 : 		ercd = E_TMOUT;
+37 : 	}
+38 : 	else {
+39 : 		winfo_pdq.data = data;
+40 : 		winfo_pdq.datapri = datapri;
+41 : 		p_runtsk->tstat = (TS_WAITING | TS_WAIT_SPDQ);
+42 : 		wobj_make_wait_tmout((WOBJCB *) p_pdqcb, (WINFO_WOBJ *) &winfo_pdq,
+43 : 														&tmevtb, tmout);
+44 : 		dispatch();
+45 : 		ercd = winfo_pdq.winfo.wercd;
+46 : 	}
+47 : 	t_unlock_cpu();
+48 : 
+49 :   error_exit:
+50 : 	return(ercd);
+51 : }
+
+
+[B] wobj_make_wait_tmout
+
+00 : void
+01 : wobj_make_wait_tmout(WOBJCB *p_wobjcb, WINFO_WOBJ *p_winfo_wobj,
+02 : 								TMEVTB *p_tmevtb, TMO tmout)
+03 : {
+04 : 	make_wait_tmout(&(p_winfo_wobj->winfo), p_tmevtb, tmout);
+05 : 	wobj_queue_insert(p_wobjcb);
+06 : 	p_winfo_wobj->p_wobjcb = p_wobjcb;
+07 : 	LOG_TSKSTAT(p_runtsk);
+08 : }
+
+
+[C] make_wait_tmout
+
+00 : void
+01 : make_wait_tmout(WINFO *p_winfo, TMEVTB *p_tmevtb, TMO tmout)
+02 : {
+03 :         (void) make_non_runnable(p_runtsk);
+04 :         p_runtsk->p_winfo = p_winfo;
+05 :         if (tmout > 0) {
+06 :                 p_winfo->p_tmevtb = p_tmevtb;
+07 :                 tmevtb_enqueue(p_tmevtb, (RELTIM) tmout,
+08 :                                                 (CBACK) wait_tmout, (void *) p_runtsk);
+09 :         }
+10 :         else {
+11 :                 assert(tmout == TMO_FEVR);
+12 :                 p_winfo->p_tmevtb = NULL;
+13 :         }
+14 : }
+
+
+[D] wait_tmout
+
+00 : void
+01 : wait_tmout(TCB *p_tcb)
+02 : {
+03 :         wait_dequeue_wobj(p_tcb);
+04 :         p_tcb->p_winfo->wercd = E_TMOUT;
+05 :         if (make_non_wait(p_tcb)) {
+06 :                 reqflg = true;
+07 :         }
+08 : 
+09 :         /*
+10 :          *  ここで優先度の高い割込みを受け付ける．
+11 :          */
+12 :         i_unlock_cpu();
+13 :         i_lock_cpu();
+14 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  09 : sense_context()
+(A2)  09 : t_sense_lock()
+(A3)  09 : !dspflg
+(A4)  14 : TMIN_PDQID <= (pdqid)
+(A5)  14 : (pdqid) <= tmax_pdqid
+(A6)  18 : !(TMO_FEVR <= (tmout))
+(A7)  23 : TMIN_DPRI <= datapri
+(A8)  23 : datapri <= p_pdqcb->p_pdqinib->maxdpri
+(A9)  29 : send_pridata(p_pdqcb, data, &reqdsp)
+(A10) 30 : reqdsp
+(A11) 35 : tmout == TMO_POL
+
+(C1)  05 : tmout > 0
+
+(D1)  05 : make_non_wait(p_tcb)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+           (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (A11) (C1) (D1)
+(a-1)       T   D/F  D/F   D    D    D    D    D    D    D     D     D    D  
+(a-2)       F    T   D/F   D    D    D    D    D    D    D     D     D    D  
+(a-3)       F    F    T    D    D    D    D    D    D    D     D     D    D  
+(a-4)       F    F    T    D    D    D    D    D    D    D     D     D    D  
+(b-1)       F    F    F    F   D/T   D    D    D    D    D     D     D    D  
+(b-2)       F    F    F    T    F    D    D    D    D    D     D     D    D  
+(c-1)       F    F    F    T    T    T    F   D/F   D    D     D     D    D  
+(c-2)       F    F    F    T    T    T    T    F    D    D     D     D    D  
+(d)         F    F    F    T    T    F    D    D    D    D     D     D    D  
+(e)         F    F    F    T    T    T    T    T    F    D     F     T    D  
+(f)         F    F    F    T    T    T    T    T    F    D     F     T    D  
+(g)         F    F    F    T    T    T    T    T    F    D     F     T    D  
+(h-1)       F    F    F    T    T    T    T    T    T    F     D     D    D  
+(h-2)       F    F    F    T    T    T    T    T    F    D     T     D    D  
+(i-1)       F    F    F    T    T    T    T    T    T    F     D     D    D  
+(i-2)       F    F    F    T    T    T    T    T    F    D     F     F    D  
+(j-1-1-1)   F    F    F    T    T    T    T    T    T    T     D     D    D  
+(j-1-1-2)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-1-1-3)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-1-1-4)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-1-2-1)   F    F    F    T    T    T    T    T    T    T     D     D    D  
+(j-1-2-2)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-1-2-3)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-1-2-4)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-2-1-1-1) F    F    F    T    T    T    T    T    F    D     F     T    D  
+(j-2-1-1-2) F    F    F    T    T    T    T    T    F    D     F     T    D  
+(j-2-1-1-3) F    F    F    T    T    T    T    T    F    D     F     T    D  
+(j-2-1-1-4) F    F    F    T    T    T    T    T    F    D     F     T    D  
+(j-2-1-2-1) F    F    F    T    T    T    T    T    F    D     F     T    D  
+(j-2-1-2-2) F    F    F    T    T    T    T    T    F    D     F     T    D  
+(j-2-1-2-3) F    F    F    T    T    T    T    T    F    D     F     T    D  
+(j-2-1-2-4) F    F    F    T    T    T    T    T    F    D     F     T    D  
+(j-2-2-1)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-2-2-2)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-2-2-3)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-2-2-4)   F    F    F    T    T    T    T    T    T    F     D     D    D  
+(j-3)       F    F    F    T    T    T    T    T    F    D     F     T    T  
+-----------------------------------------------------------------------------
+網羅        O    O    O    O    O    O    O    O    O    O     O     O    X  
+
+【備考】
+
+・(D1)の網羅をさせるために，以下にホワイトボックステストを実施する．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  
+[網羅させるための追加テスト]
+
+           (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (A11) (C1) (D1)
+(W_a)       F    F    F    T    T    T    T    T    F    D     F     T    F  
+-----------------------------------------------------------------------------
+網羅        O    O    O    O    O    O    O    O    O    O     O     O    O  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.2. テストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(W_a)  以下の条件が成り立つ時
+
+  ・tmoutに正常なタイムアウト時間(3)を指定する場合．
+  ・タイムアウトの時に，E_TMOUTが返ること．
+  ・実行可能状態のタスクが存在する場合
+
+
+
+以上．

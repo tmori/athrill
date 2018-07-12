@@ -1,0 +1,35 @@
+version: "$Id: ref_sem_F-b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_semaphore_ref_sem_F_b:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        pk_rsem:
+          type  : T_RSEM
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SEM1
+      prcid  : PRC_OTHER
+
+    SEM1:
+      type    : SEMAPHORE
+      isemcnt : ANY_INI_SEMCNT
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ref_sem(SEM1, &pk_rsem)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        pk_rsem:
+          wtskid: TASK2
+          semcnt: 0

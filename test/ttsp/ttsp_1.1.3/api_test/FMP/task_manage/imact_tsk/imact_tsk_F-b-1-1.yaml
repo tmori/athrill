@@ -1,0 +1,20 @@
+version: "$Id: imact_tsk_F-b-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_imact_tsk_F_b_1_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+  do:
+    id     : ALM1
+    syscall: imact_tsk(-1, PRC_SELF)
+    ercd   : E_ID
+
+  post_condition:

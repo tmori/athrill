@@ -1,0 +1,209 @@
+
+	irot_rdq テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: irot_rdq.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+rot_rdq		タスクの優先順位の回転〔T〕
+irot_rdq	タスクの優先順位の回転〔I〕
+
+【C言語API】
+	ER ercd = rot_rdq(PRI tskpri)
+	ER ercd = irot_rdq(PRI tskpri)
+
+【パラメータ】
+	PRI	　		tskpri		回転対象の優先度（対象優先度）
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：rot_rdqの場合，タスクコンテキストからの呼出し：
+					irot_rdqの場合，CPUロック状態からの呼出し）
+	E_NOSPT			未サポート機能（対象優先度の最も優先順位が高いタス
+					クが制約タスク）
+	E_PAR			パラメータエラー（tskpriが不正）
+	E_OACV〔P〕		オブジェクトアクセス違反（システム状態に対する通常
+					操作1が許可されていない）
+
+【機能】
+
+tskpriで指定した優先度（対象優先度）を持つ実行できる状態のタスクの中で，
+最も優先順位が高いタスクを，同じ優先度のタスクの中で最も優先順位が低い
+状態にする．対象優先度を持つ実行できる状態のタスクが無いか1つのみの場合
+には，何も行われずに正常終了する．
+
+rot_rdqにおいて，tskpriにTPRI_SELF（＝0）を指定すると，自タスクのベース
+優先度が対象優先度となる．
+
+対象優先度を持つ実行できる状態のタスクの中で，最も優先順位が高いタスク
+が制約タスクの場合には，E_NOSPTエラーとなる．
+
+tskpriは，TPRI_SELFであるか（rot_rdqの場合のみ），TMIN_TPRI以上，
+TMAX_TPRI以下でなければならない．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+１．仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) 不正なコンテキスト状態のスピンロック取得中から呼び出して，
+      E_CTXエラーが返ること．(ASP:a，EX_NEW_STATE)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+該当なし
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+irot_rdq(PRI tskpri)
+{
+	ER		ercd;
+	PCB		*my_p_pcb;
+
+	LOG_IROT_RDQ_ENTER(tskpri);
+	CHECK_INTCTX_UNL();
+	CHECK_TPRI(tskpri);
+
+	i_lock_cpu();
+	my_p_pcb = i_acquire_tsk_lock_self();
+	if (rotate_ready_queue(INT_PRIORITY(tskpri), my_p_pcb)) {
+		my_p_pcb->reqflg = true;
+	}
+	ercd = E_OK;
+	release_tsk_lock(my_p_pcb);
+	i_unlock_cpu();
+
+  error_exit:
+	LOG_IROT_RDQ_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] irot_rdq
+
+00 : ER
+01 : irot_rdq(PRI tskpri)
+02 : {
+03 : 	ER		ercd;
+04 : 	PCB		*my_p_pcb;
+05 : 
+06 : 	if (!sense_intctx_unl()) {
+07 : 		ercd = E_CTX;
+08 : 		goto error_exit;
+09 : 	}
+10 : 	if (!(TMIN_TPRI <= (tskpri) && (tskpri) <= TMAX_TPRI)) {
+11 : 		ercd = E_PAR;
+12 : 		goto error_exit;
+13 : 	}
+14 : 
+15 : 	i_lock_cpu();
+16 : 	my_p_pcb = i_acquire_tsk_lock_self();
+17 : 	if (rotate_ready_queue(((uint_t)((tskpri) - TMIN_TPRI)), my_p_pcb)) {
+18 : 		my_p_pcb->reqflg = true;
+19 : 	}
+20 : 	ercd = E_OK;
+21 : 	release_tsk_lock(my_p_pcb);
+22 : 	i_unlock_cpu();
+23 : 
+24 :   error_exit:
+25 : 	return(ercd);
+26 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 06 : !sense_intctx_unl()
+(A2) 10 : TMIN_TPRI <= (tskpri)
+(A3) 10 : (tskpri) <= TMAX_TPRI
+(A4) 17 : rotate_ready_queue(((uint_t)((tskpri) - TMIN_TPRI)), my_p_pcb)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+         (A1) (A2) (A3) (A4)
+(a-1)     T    D    D    D
+(a-2)     T    D    D    D
+(b-1)     F    F   D/T   D
+(b-2)     F    T    F    D
+(c-1-1)   F    T    T    T
+(c-1-2)   F    T    T    F
+(c-1-3)   F    T    T    F
+(c-2)     F    T    T    F
+(d-1-1)   F    T    T    T
+(d-1-2)   F    T    T    F
+(d-1-3)   F    T    T    F
+(d-2)     F    T    T    F
+(e_1)     F    T    T    F
+(e_2)     F    T    T    F
+(F-a)     T    D    D    D
+----------------------------
+網羅      O    O    O    O
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

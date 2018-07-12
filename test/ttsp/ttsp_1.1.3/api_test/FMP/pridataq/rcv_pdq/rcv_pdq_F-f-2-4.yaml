@@ -1,0 +1,63 @@
+version: "$Id: rcv_pdq_F-f-2-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_rcv_pdq_F_f_2_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    TASK4:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 0
+      maxdpri : DATA_PRI_MAX
+      stsklist : 
+        - TASK2:
+              data:     DATA_A
+              datapri:  DATA_PRI_HIGH
+        - TASK3:
+              data:     DATA_B
+              datapri:  DATA_PRI_MID
+
+  do:
+    id     : TASK1
+    syscall: rcv_pdq(PDQ1, &data, &datapri)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var    : 
+        data:
+          value: DATA_A
+        datapri:
+          value: DATA_PRI_HIGH
+
+    TASK2:
+      tskstat: suspended
+
+    PDQ1:
+      stsklist : 
+        - TASK3:
+              data:     DATA_B
+              datapri:  DATA_PRI_MID

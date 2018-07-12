@@ -1,0 +1,27 @@
+version: "$Id: rcv_pdq_a-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_rcv_pdq_a_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+          value: DATA_A
+        datapri:
+          type: PRI
+          value: DATA_PRI_MID
+
+    PDQ1:
+      type: P_DATAQUEUE
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+
+  do:
+    id     : TASK1
+    syscall: rcv_pdq(PDQ1, &data, &datapri)
+    ercd   : E_CTX
+
+  post_condition:

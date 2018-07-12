@@ -1,0 +1,246 @@
+
+	ista_alm テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: ista_alm.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+sta_alm		アラームハンドラの動作開始〔T〕
+ista_alm	アラームハンドラの動作開始〔I〕
+
+【C言語API】
+	ER ercd = sta_alm(ID almid, RELTIM almtim)
+	ER ercd = ista_alm(ID almid, RELTIM almtim)
+
+【パラメータ】
+	ID			almid		対象アラームハンドラのID番号
+	RELTIM		almtim		アラームハンドラの起動時刻（相対時間）
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：sta_almの場合，タスクコンテキストからの呼出し：
+					ista_almの場合，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（almidが不正）
+	E_PAR			パラメータエラー（almtimが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象アラームハンドラが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象アラームハンドラに対
+					する通常操作1が許可されていない：sta_almの場合）
+
+【機能】
+
+almidで指定したアラームハンドラ（対象アラームハンドラ）を動作開始する．
+具体的な振舞いは以下の通り．
+
+対象アラームハンドラが動作していない状態であれば，対象アラームハンドラ
+は動作している状態となる．アラームハンドラを起動する時刻は，sta_almを呼
+び出してから，almtimで指定した相対時間後に設定される．
+
+対象アラームハンドラが動作している状態であれば，アラームハンドラを起動
+する時刻の再設定のみが行われる．
+
+almtimは，TMAX_RELTIM以下でなければならない．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) 不正なコンテキスト状態で呼出す場合．
+
+    (a-1) タスクコンテキストから呼び出して，E_CTXエラーが返ること．
+
+    (a-2) CPUロック状態で呼び出して，E_CTXエラーが返ること．
+
+(b) almidが不正の時にE_IDが返ること．
+
+    (b-1) almidが許容される最小値-1(=0)の時にE_IDが返ること．
+
+    (b-2) almidが許容される最大値+1(TNUM_ALMID+1)の時にE_IDが返ること．
+
+(c) almtimが不正の時にE_PARが返ること．
+
+    (c-1) almtimが許容される最小値-1(-1)の時にE_PARが返ること．
+
+    (c-2) almtimが許容される最大値+1(TMAX_RELTIM+1)の時に
+          E_PARが返ること．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(d) 対象アラームハンドラが動作していない状態であれば，対象アラームハン
+    ドラは動作している状態となる．アラームハンドラを起動する時刻は，
+    ista_almを呼び出してから，almtimで指定した相対時間後に設定される．
+
+(e) 対象アラームハンドラが動作している状態であれば，アラームハンドラを
+    起動する時刻の再設定のみが行われる．
+
+(f) 相対時間に0を指定した場合，基準時刻後の最初のタイムティックでイベン
+    トの処理が行われる．
+
+(g) 相対時間に1を指定した場合，基準時刻後の2回目のタイムティックでイベン
+    トの処理が行われる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+ista_alm(ID almid, RELTIM almtim)
+{
+	ALMCB	*p_almcb;
+	ER		ercd;
+
+	LOG_ISTA_ALM_ENTER(almid, almtim);
+	CHECK_INTCTX_UNL();
+	CHECK_ALMID(almid);
+	CHECK_PAR(almtim <= TMAX_RELTIM);
+	p_almcb = get_almcb(almid);
+
+	i_lock_cpu();
+	if (p_almcb->almsta) {
+		tmevtb_dequeue(&(p_almcb->tmevtb));
+	}
+	else {
+		p_almcb->almsta = true;
+	}
+	tmevtb_enqueue(&(p_almcb->tmevtb), almtim,
+								(CBACK) call_almhdr, (void *) p_almcb);
+	ercd = E_OK;
+	i_unlock_cpu();
+
+  error_exit:
+	LOG_ISTA_ALM_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] ista_alm
+
+00 : ER
+01 : ista_alm(ID almid, RELTIM almtim)
+02 : {
+03 : 	ALMCB	*p_almcb;
+04 : 	ER		ercd;
+05 : 
+06 : 	if (!sense_context() || i_sense_lock()) {
+07 : 		ercd = E_CTX;
+08 : 		goto error_exit;
+09 : 	}
+10 : 	if (!(TMIN_ALMID <= almid && almid <= tmax_almid)) {
+11 : 		ercd = E_ID;
+12 : 		goto error_exit;
+13 : 	}
+14 : 	if (!(almtim <= TMAX_RELTIM)) {
+15 : 		ercd = E_PAR;
+16 : 		goto error_exit;
+17 : 	}
+18 : 	p_almcb = &(almcb_table[(uint_t)(almid - TMIN_ALMID)]);
+19 : 
+20 : 	i_lock_cpu();
+21 : 	if (p_almcb->almsta) {
+22 : 		tmevtb_dequeue(&(p_almcb->tmevtb));
+23 : 	}
+24 : 	else {
+25 : 		p_almcb->almsta = true;
+26 : 	}
+27 : 	tmevtb_enqueue(&(p_almcb->tmevtb), almtim,
+28 : 								(CBACK) call_almhdr, (void *) p_almcb);
+29 : 	ercd = E_OK;
+30 : 	i_unlock_cpu();
+31 : 
+32 :   error_exit:
+33 : 	return(ercd);
+34 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 06 : !sense_context()
+(A2) 06 : i_sense_lock()
+(A3) 10 : TMIN_ALMID <= almid
+(A4) 10 : almid <= tmax_almid
+(A5) 14 : !(almtim <= TMAX_RELTIM)
+(A6) 21 : p_almcb->almsta
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅の確認
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5) (A6)
+(a-1)   T   D/F   D    D    D    D
+(a-2)   F    T    D    D    D    D
+(b-1)   F    F    F   D/T   D    D
+(b-2)   F    F    T    F    D    D
+(c-1)   F    F    T    T    T    D
+(c-2)   F    F    T    T    T    D
+(d)     F    F    T    T    F    F
+(e)     F    F    T    T    F    T
+(f)     F    F    T    T    F    F
+(g)     F    F    T    T    F    F
+------------------------------------
+網羅    O    O    O    O    O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

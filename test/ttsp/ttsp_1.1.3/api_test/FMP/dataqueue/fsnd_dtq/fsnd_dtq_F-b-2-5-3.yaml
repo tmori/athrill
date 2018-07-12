@@ -1,0 +1,44 @@
+version: "$Id: fsnd_dtq_F-b-2-5-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_dataqueue_fsnd_dtq_F_b_2_5_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : DTQ1
+      var    : 
+        ttg_data:
+          type: intptr_t
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 3
+      rtsklist : 
+        - TASK2:
+            var: ttg_data
+        - TASK3:
+      datalist:
+
+  do:
+    id     : TASK1
+    syscall: fsnd_dtq(DTQ1, DATA_A)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended
+
+    DTQ1:
+      rtsklist:
+        - TASK3:

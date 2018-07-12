@@ -1,0 +1,16 @@
+version: "$Id: act_tsk_e-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_act_tsk_e_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      actcnt : 0
+
+  do:
+    id     : TASK1
+    syscall: act_tsk(TSK_SELF)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      actcnt : 1

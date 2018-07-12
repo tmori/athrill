@@ -1,0 +1,60 @@
+version: "$Id: ini_pdq_d-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_ini_pdq_d_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : PDQ1
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : PDQ1
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : PDQ1
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 3
+      maxdpri : DATA_PRI_MAX
+      rtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK4:
+      datalist : 
+
+  do:
+    id     : TASK1
+    syscall: ini_pdq(PDQ1)
+
+  post_condition:
+    TASK1:
+      tskstat: ready
+      porder: 1
+
+    TASK2:
+      tskstat: ready
+      wobjid : 
+      porder: 2
+
+    TASK3:
+      tskstat: ready
+      wobjid : 
+
+    TASK4:
+      tskstat: running
+      wobjid : 
+
+    PDQ1:
+      rtsklist:

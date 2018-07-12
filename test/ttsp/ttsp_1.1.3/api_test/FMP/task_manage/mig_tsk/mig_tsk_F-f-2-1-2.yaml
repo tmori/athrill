@@ -1,0 +1,33 @@
+version: "$Id: mig_tsk_F-f-2-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_mig_tsk_F_f_2_1_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: mig_tsk(TSK_SELF, PRC_OTHER)
+
+  post_condition:
+    TASK1:
+      tskstat: ready
+      prcid  : PRC_OTHER
+      porder: 3
+
+    TASK3:
+      porder: 2

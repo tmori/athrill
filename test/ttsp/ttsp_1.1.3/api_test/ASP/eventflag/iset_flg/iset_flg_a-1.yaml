@@ -1,0 +1,17 @@
+version: "$Id: iset_flg_a-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_iset_flg_a_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    FLG1:
+      type  : EVENTFLAG
+      flgptn: BIT_PATTERN_0A
+
+  do:
+    id     : TASK1
+    syscall: iset_flg(FLG1, BIT_PATTERN_0B)
+    ercd   : E_CTX
+
+  post_condition:

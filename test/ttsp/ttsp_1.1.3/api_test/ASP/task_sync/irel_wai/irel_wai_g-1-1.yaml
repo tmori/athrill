@@ -1,0 +1,54 @@
+version: "$Id: irel_wai_g-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_irel_wai_g_1_1:
+  pre_condition:
+    ALM1:
+      type    : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : SEM1
+      lefttmo: ANY_ELAPSED_TIME
+
+    SEM1:
+      type    : SEMAPHORE
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+
+  do_0:
+    id     : ALM1
+    syscall: irel_wai(TASK2)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_0:
+    TASK2:
+      tskstat: ready
+
+    SEM1:
+      wtsklist:
+
+  do_1:
+    id     : ALM1
+    code   : return
+    gcov   : false
+
+  post_condition_1:
+    ALM1:
+      almstat : TALM_STP
+      hdlstat : STP
+
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running

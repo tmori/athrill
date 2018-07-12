@@ -1,0 +1,24 @@
+version: "$Id: wai_sem_g-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_wai_sem_g_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    SEM1:
+      type   : SEMAPHORE
+      sematr : TA_NULL
+      semcnt : 0
+
+  do:
+    id     : TASK1
+    syscall: wai_sem(SEM1)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : SEM1
+
+    SEM1:
+      wtsklist:
+        - TASK1:

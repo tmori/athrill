@@ -1,0 +1,17 @@
+version: "$Id: clr_flg_b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_clr_flg_b_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    FLG1:
+      type  : EVENTFLAG
+      flgptn: BIT_PATTERN_0A
+
+  do:
+    id     : TASK1
+    syscall: clr_flg(0, BIT_PATTERN_0B)
+    ercd   : E_ID
+
+  post_condition:

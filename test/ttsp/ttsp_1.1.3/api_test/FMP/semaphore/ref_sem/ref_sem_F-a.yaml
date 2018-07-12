@@ -1,0 +1,33 @@
+version: "$Id: ref_sem_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_semaphore_ref_sem_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        rsem:
+          type  : T_RSEM
+          wtskid: ANY_OBJECT_ID
+          semcnt: ANY_INI_SEMCNT
+
+    SEM1:
+      type  : SEMAPHORE
+      semcnt: ANY_NOW_SEMCNT
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: ref_sem(SEM1, &rsem)
+    ercd   : E_CTX
+
+  post_condition:

@@ -1,0 +1,728 @@
+
+	mig_tsk テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: mig_tsk.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+mig_tsk		タスクの割付けプロセッサの変更〔TM〕
+
+【C言語API】
+	ER ercd = mig_tsk(ID tskid, ID prcid)
+
+【パラメータ】
+	ID			tskid		対象タスクのID番号
+	ID			prcid		タスクの割付けプロセッサのID番号
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し，対象タスクが自タスク
+					でディスパッチ保留状態からの呼出し）
+	E_NOSPT			未サポート機能（対象タスクが制約タスク）
+	E_ID			不正ID番号（tskid，prcidが不正）
+	E_PAR			パラメータエラー（対象タスクはprcidで指定したプロ
+					セッサに割り付けられない）
+	E_NOEXS〔D〕	オブジェクト未登録（対象タスクが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象タスクに対する通常操
+					作1が許可されていない）
+	E_OBJ			オブジェクト状態エラー（対象タスクが自タスクと異な
+					るプロセッサに割り付けられている）
+
+【機能】
+
+tskidで指定したタスクの割付けプロセッサを，prcidで指定したプロセッサに
+変更する．具体的な振舞いは以下の通り．
+
+対象タスクが，自タスクが割り付けられたプロセッサに割り付けられている場
+合には，対象タスクをprcidで指定したプロセッサに割り付ける．対象タスクが
+実行できる状態の場合には，prcidで指定したプロセッサに割り付けられた同じ
+優先度のタスクの中で，最も優先順位が低い状態となる．
+
+対象タスクが，自タスクが割付けられたプロセッサと異なるプロセッサに割り
+付けられている場合には，E_OBJエラーとなる．
+
+tskidにTSK_SELF（＝0）を指定すると，自タスクが対象タスクとなる．
+
+ディスパッチ保留状態で，対象タスクを自タスクとしてmig_tskを呼び出すと，
+E_CTXエラーとなる．
+
+prcidにTPRC_INI（＝0）を指定すると，対象タスクの割付けプロセッサを，そ
+れが属するクラスの初期割付けプロセッサに変更する．
+
+【補足説明】
+
+この仕様では，タスクをマイグレーションさせることができるのは，そのタス
+クと同じプロセッサに割り付けられたタスクのみである．そのため，CPUロック
+状態やディスパッチ禁止状態を用いて，他のタスクへのディスパッチが起こら
+ないようにすることで，自タスクが他のプロセッサへマイグレーションされる
+のを防ぐことができる．
+
+対象タスクが，最初からprcidで指定したプロセッサに割り付けられている場合
+には，割付けプロセッサの変更は起こらないが，優先順位が同一優先度のタス
+クの中で最低となる．
+
+【μITRON4.0仕様との関係】
+
+μITRON4.0仕様に定義されていないサービスコールである．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+mig_tsk(ID tskid, ID prcid)
+{
+	TCB		*p_tcb;
+	ER		ercd = E_OK;
+	PCB		*t_p_pcb;
+	PCB		*f_p_pcb;
+	bool_t	dspreq = false;
+	PCB		*my_p_pcb;
+#ifdef TOPPERS_SYSTIM_LOCAL
+	EVTTIM	left_time;
+#endif /* TOPPERS_SYSTIM_LOCAL */
+
+	LOG_MIG_TSK_ENTER(tskid, prcid);
+	CHECK_TSKCTX_UNL();
+	CHECK_TSKID_SELF(tskid);
+	CHECK_PRCID_INI(prcid);
+
+	t_lock_cpu();
+	p_tcb = get_tcb_self(tskid, get_my_p_pcb());
+	prcid = (prcid == TPRC_INI)? p_tcb->p_tinib->iaffinity : prcid;
+	T_CHECK_MIG(p_tcb->p_tinib->affinity_mask, prcid);
+
+	/* 現在割り付けられているプロセッサと移動先のプロセッサのタスクロックを取得 */
+	t_acquire_dual_tsk_lock(p_tcb, prcid, &f_p_pcb, &t_p_pcb);
+	my_p_pcb = get_my_p_pcb();
+	if (f_p_pcb != my_p_pcb) {
+		/*
+		 * 自タスクと同じプロセッサに割り付けられているタスクでなけれ
+		 * ばエラー． mig_tsk を呼び出したタスクがシステムコール呼出し後，
+		 * マイグレートされた場合にも，ここでエラーとなる
+		 */
+		ercd = E_OBJ;
+	}
+	else if (TSTAT_RUNNABLE(p_tcb->tstat)){
+		/* 実行可能状態 */
+		if(p_tcb == my_p_pcb->p_runtsk) {
+			/* 自タスクに対して発行 */
+			if (!(my_p_pcb->dspflg)) {
+				/* ディスパッチ禁止中ならエラー */
+				ercd = E_CTX;
+			}
+			else if (t_p_pcb == my_p_pcb) {
+				/* 同一プロセッサを指定 */
+				/* 優先順位を同一優先度のタスクの中で最低とする */
+				dspreq = set_lowest_precedence(p_tcb, my_p_pcb);
+				ercd = E_OK; 
+			}
+			else {
+				/* マイグレーション要求を処理 */
+				LOG_TSKMIG(p_tcb, my_p_pcb->prcid, prcid);
+				dispatch_and_migrate(prcid);
+				/* ここに戻ってくる時にはロックは解放されている */
+				ercd = E_OK;
+				t_unlock_cpu();
+				goto error_exit;
+			}
+		} 
+		else {
+			/* 他タスクの場合 */
+			if (t_p_pcb == my_p_pcb) {
+				/* 同一プロセッサを指定 */
+				/* 
+				 *  優先順位を同一優先度のタスクの中で最低とする．
+				 *  対象のタスクは最高優先順位のタスクでないため，タ
+				 *  スク切り替えは発生しない
+				 */
+				(void)set_lowest_precedence(p_tcb, my_p_pcb);
+				ercd = E_OK; 
+			}
+			else {
+				/* 異なるプロセッサを指定 */
+				/* レディーキューから外す */
+				make_non_runnable(p_tcb);
+				/* pcb の書き換え */
+				p_tcb->p_pcb = t_p_pcb;
+				LOG_TSKMIG(p_tcb, my_p_pcb->prcid, prcid);
+				/* 移行先のプロセッサでmake_runnable する*/
+				if (make_runnable(p_tcb)) {
+					dispatch_request(t_p_pcb);
+				}
+				ercd = E_OK;
+			}
+		}
+	}
+	else if (TSTAT_DORMANT(p_tcb->tstat)) {
+		/* 休止状態 */
+		LOG_TSKMIG(p_tcb, my_p_pcb->prcid, prcid);
+		p_tcb->p_pcb = t_p_pcb;
+		ercd = E_OK;
+	}
+	else {
+		/* 待ち状態 */
+		if ((p_tcb->tmevtb).callback == NULL) {
+			/* 時間待ちでない場合 */
+			LOG_TSKMIG(p_tcb, my_p_pcb->prcid, prcid);
+			p_tcb->p_pcb = t_p_pcb;
+			ercd = E_OK;
+		}
+		else {
+			/*
+			 * 時間待ちの場合 グローバルタイマ方式 なら必要なし
+			 */
+#ifdef TOPPERS_SYSTIM_LOCAL
+			/* キューから削除 */
+			left_time = tmevtb_dequeue(f_p_pcb->p_tevtcb, &(p_tcb->tmevtb));
+			LOG_TSKMIG(p_tcb, my_p_pcb->prcid, prcid);
+			/* 移動先のプロセッサのキューに挿入 */
+			tmevtb_insert(t_p_pcb->p_tevtcb, &(p_tcb->tmevtb), base_time(t_p_pcb->p_tevtcb) + left_time);
+#else  /* TOPPERS_SYSTIM_GLOBAL */
+			LOG_TSKMIG(p_tcb, my_p_pcb->prcid, prcid);
+#endif /* TOPPERS_SYSTIM_GLOBAL */
+			p_tcb->p_pcb = t_p_pcb;
+			ercd = E_OK;
+		}
+	}
+	release_dual_tsk_lock(f_p_pcb, t_p_pcb);
+	if (dspreq) {
+		dispatch();
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_MIG_TSK_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] mig_tsk(TOPPERS_SYSTIM_LOCAL)
+
+00 : ER
+01 : mig_tsk(ID tskid, ID prcid)
+02 : {
+03 : 	TCB		*p_tcb;
+04 : 	ER		ercd = E_OK;
+05 : 	PCB		*t_p_pcb;
+06 : 	PCB		*f_p_pcb;
+07 : 	bool_t	dspreq = false;
+08 : 	PCB		*my_p_pcb;
+09 : 	EVTTIM	left_time;
+10 : 
+11 : 	if (!sense_tskctx_unl()) {
+12 : 		ercd = E_CTX;
+13 : 		goto error_exit;
+14 : 	}
+15 : 	if (!((TMIN_TSKID <= (tskid) && (tskid) <= tmax_tskid) || (tskid) == TSK_SELF)) {
+16 : 		ercd = E_ID;
+17 : 		goto error_exit;
+18 : 	}
+19 : 	if (!((TMIN_PRCID <= (prcid) && (prcid) <= TNUM_PRCID) || (prcid) == TPRC_INI)) {
+20 : 		ercd = E_ID;
+21 : 		goto error_exit;
+22 :  	}
+23 : 
+24 : 	t_lock_cpu();
+25 : 	p_tcb = ((tskid) == TSK_SELF ? (get_my_p_pcb())->p_runtsk : (p_tcb_table[((uint_t)((tskid) - TMIN_TSKID))]));
+26 : 	prcid = (prcid == TPRC_INI)? p_tcb->p_tinib->iaffinity : prcid;
+27 : 	if (!((p_tcb->p_tinib->affinity_mask & (1 << (prcid - 1))) != 0)) {
+28 : 		ercd = E_PAR;
+29 : 		t_unlock_cpu();
+30 : 		goto error_exit;
+31 : 	}
+32 : 
+33 : 	/* 現在割り付けられているプロセッサと移動先のプロセッサのタスクロックを取得 */
+34 : 	t_acquire_dual_tsk_lock(p_tcb, prcid, &f_p_pcb, &t_p_pcb);
+35 : 	my_p_pcb = get_my_p_pcb();
+36 : 	if (f_p_pcb != my_p_pcb) {
+37 : 		/*
+38 : 		 * 自タスクと同じプロセッサに割り付けられているタスクでなけれ
+39 : 		 * ばエラー． mig_tsk を呼び出したタスクがシステムコール呼出し後，
+40 : 		 * マイグレートされた場合にも，ここでエラーとなる
+41 : 		 */
+42 : 		ercd = E_OBJ;
+43 : 	}
+44 : 	else if (((p_tcb->tstat) & TS_RUNNABLE) != 0U){
+45 : 		/* 実行可能状態 */
+46 : 		if(p_tcb == my_p_pcb->p_runtsk) {
+47 : 			/* 自タスクに対して発行 */
+48 : 			if (!(my_p_pcb->dspflg)) {
+49 : 				/* ディスパッチ禁止中ならエラー */
+50 : 				ercd = E_CTX;
+51 : 			}
+52 : 			else if (t_p_pcb == my_p_pcb) {
+53 : 				/* 同一プロセッサを指定 */
+54 : 				/* 優先順位を同一優先度のタスクの中で最低とする */
+55 : 				dspreq = set_lowest_precedence(p_tcb, my_p_pcb);
+56 : 				ercd = E_OK; 
+57 : 			}
+58 : 			else {
+59 : 				/* マイグレーション要求を処理 */
+60 : 				dispatch_and_migrate(prcid);
+61 : 				/* ここに戻ってくる時にはロックは解放されている */
+62 : 				ercd = E_OK;
+63 : 				t_unlock_cpu();
+64 : 				goto error_exit;
+65 : 			}
+66 : 		} 
+67 : 		else {
+68 : 			/* 他タスクの場合 */
+69 : 			if (t_p_pcb == my_p_pcb) {
+70 : 				/* 同一プロセッサを指定 */
+71 : 				/* 
+72 : 				 *  優先順位を同一優先度のタスクの中で最低とする．
+73 : 				 *  対象のタスクは最高優先順位のタスクでないため，タ
+74 : 				 *  スク切り替えは発生しない
+75 : 				 */
+76 : 				(void)set_lowest_precedence(p_tcb, my_p_pcb);
+77 : 				ercd = E_OK; 
+78 : 			}
+79 : 			else {
+80 : 				/* 異なるプロセッサを指定 */
+81 : 				/* レディーキューから外す */
+82 : 				make_non_runnable(p_tcb);
+83 : 				/* pcb の書き換え */
+84 : 				p_tcb->p_pcb = t_p_pcb;
+85 : 				/* 移行先のプロセッサでmake_runnable する*/
+86 : 				if (make_runnable(p_tcb)) {
+87 : 					dispatch_request(t_p_pcb);
+88 : 				}
+89 : 				ercd = E_OK;
+90 : 			}
+91 : 		}
+92 : 	}
+93 : 	else if ((p_tcb->tstat) == TS_DORMANT) {
+94 : 		/* 休止状態 */
+95 : 		p_tcb->p_pcb = t_p_pcb;
+96 : 		ercd = E_OK;
+97 : 	}
+98 : 	else {
+99 : 		/* 待ち状態 */
+100 : 		if ((p_tcb->tmevtb).callback == NULL) {
+101 : 			/* 時間待ちでない場合 */
+102 : 			p_tcb->p_pcb = t_p_pcb;
+103 : 			ercd = E_OK;
+104 : 		}
+105 : 		else {
+106 : 			/*
+107 : 			 * 時間待ちの場合 グローバルタイマ方式 なら必要なし
+108 : 			 */
+109 : 			/* キューから削除 */
+110 : 			left_time = tmevtb_dequeue(f_p_pcb->p_tevtcb, &(p_tcb->tmevtb));
+111 : 			/* 移動先のプロセッサのキューに挿入 */
+112 : 			tmevtb_insert(t_p_pcb->p_tevtcb, &(p_tcb->tmevtb), base_time(t_p_pcb->p_tevtcb) + left_time);
+113 : 			p_tcb->p_pcb = t_p_pcb;
+114 : 			ercd = E_OK;
+115 : 		}
+116 : 	}
+117 : 	release_dual_tsk_lock(f_p_pcb, t_p_pcb);
+118 : 	if (dspreq) {
+119 : 		dispatch();
+120 : 	}
+121 : 	t_unlock_cpu();
+122 : 
+123 :   error_exit:
+124 : 	return(ercd);
+125 : }
+
+
+[B] mig_tsk(TOPPERS_SYSTIM_GLOBAL)
+
+00 : ER
+01 : mig_tsk(ID tskid, ID prcid)
+02 : {
+03 : 	TCB		*p_tcb;
+04 : 	ER		ercd = E_OK;
+05 : 	PCB		*t_p_pcb;
+06 : 	PCB		*f_p_pcb;
+07 : 	bool_t	dspreq = false;
+08 : 	PCB		*my_p_pcb;
+09 : 
+10 : 	if (!sense_tskctx_unl()) {
+11 : 		ercd = E_CTX;
+12 : 		goto error_exit;
+13 : 	}
+14 : 	if (!((TMIN_TSKID <= (tskid) && (tskid) <= tmax_tskid) || (tskid) == TSK_SELF)) {
+15 : 		ercd = E_ID;
+16 : 		goto error_exit;
+17 : 	}
+18 : 	if (!((TMIN_PRCID <= (prcid) && (prcid) <= TNUM_PRCID) || (prcid) == TPRC_INI)) {
+19 : 		ercd = E_ID;
+20 :  		goto error_exit;
+21 : 	}
+22 : 
+23 : 	t_lock_cpu();
+24 : 	p_tcb = ((tskid) == TSK_SELF ? (get_my_p_pcb())->p_runtsk : (p_tcb_table[((uint_t)((tskid) - TMIN_TSKID))]));
+25 : 	prcid = (prcid == TPRC_INI)? p_tcb->p_tinib->iaffinity : prcid;
+26 : 	if (!((p_tcb->p_tinib->affinity_mask & (1 << (prcid - 1))) != 0)) {
+27 : 		ercd = E_PAR;
+28 : 		t_unlock_cpu();
+29 : 		goto error_exit;
+30 : 	}
+31 : 
+32 : 	/* 現在割り付けられているプロセッサと移動先のプロセッサのタスクロックを取得 */
+33 : 	t_acquire_dual_tsk_lock(p_tcb, prcid, &f_p_pcb, &t_p_pcb);
+34 : 	my_p_pcb = get_my_p_pcb();
+35 : 	if (f_p_pcb != my_p_pcb) {
+36 : 		/*
+37 : 		 * 自タスクと同じプロセッサに割り付けられているタスクでなけれ
+38 : 		 * ばエラー． mig_tsk を呼び出したタスクがシステムコール呼出し後，
+39 : 		 * マイグレートされた場合にも，ここでエラーとなる
+40 : 		 */
+41 : 		ercd = E_OBJ;
+42 : 	}
+43 : 	else if (((p_tcb->tstat) & TS_RUNNABLE) != 0U){
+44 : 		/* 実行可能状態 */
+45 : 		if(p_tcb == my_p_pcb->p_runtsk) {
+46 : 			/* 自タスクに対して発行 */
+47 : 			if (!(my_p_pcb->dspflg)) {
+48 : 				/* ディスパッチ禁止中ならエラー */
+49 : 				ercd = E_CTX;
+50 : 			}
+51 : 			else if (t_p_pcb == my_p_pcb) {
+52 : 				/* 同一プロセッサを指定 */
+53 : 				/* 優先順位を同一優先度のタスクの中で最低とする */
+54 : 				dspreq = set_lowest_precedence(p_tcb, my_p_pcb);
+55 : 				ercd = E_OK; 
+56 : 			}
+57 : 			else {
+58 : 				/* マイグレーション要求を処理 */
+59 : 				dispatch_and_migrate(prcid);
+60 : 				/* ここに戻ってくる時にはロックは解放されている */
+61 : 				ercd = E_OK;
+62 : 				t_unlock_cpu();
+63 : 				goto error_exit;
+64 : 			}
+65 : 		} 
+66 : 		else {
+67 : 			/* 他タスクの場合 */
+68 : 			if (t_p_pcb == my_p_pcb) {
+69 : 				/* 同一プロセッサを指定 */
+70 : 				/* 
+71 : 				 *  優先順位を同一優先度のタスクの中で最低とする．
+72 : 				 *  対象のタスクは最高優先順位のタスクでないため，タ
+73 : 				 *  スク切り替えは発生しない
+74 : 				 */
+75 : 				(void)set_lowest_precedence(p_tcb, my_p_pcb);
+76 : 				ercd = E_OK; 
+77 : 			}
+78 : 			else {
+79 : 				/* 異なるプロセッサを指定 */
+80 : 				/* レディーキューから外す */
+81 : 				make_non_runnable(p_tcb);
+82 : 				/* pcb の書き換え */
+83 : 				p_tcb->p_pcb = t_p_pcb;
+84 : 				/* 移行先のプロセッサでmake_runnable する*/
+85 : 				if (make_runnable(p_tcb)) {
+86 : 					dispatch_request(t_p_pcb);
+87 : 				}
+88 : 				ercd = E_OK;
+89 : 			}
+90 : 		}
+91 : 	}
+92 : 	else if ((p_tcb->tstat) == TS_DORMANT) {
+93 : 		/* 休止状態 */
+94 : 		p_tcb->p_pcb = t_p_pcb;
+95 : 		ercd = E_OK;
+96 : 	}
+97 : 	else {
+98 : 		/* 待ち状態 */
+99 : 		if ((p_tcb->tmevtb).callback == NULL) {
+100 : 			/* 時間待ちでない場合 */
+101 : 			p_tcb->p_pcb = t_p_pcb;
+102 : 			ercd = E_OK;
+103 : 		}
+104 : 		else {
+105 : 			/*
+106 : 			 * 時間待ちの場合 グローバルタイマ方式 なら必要なし
+107 : 			 */
+108 : 			p_tcb->p_pcb = t_p_pcb;
+109 : 			ercd = E_OK;
+110 : 		}
+111 : 	}
+112 : 	release_dual_tsk_lock(f_p_pcb, t_p_pcb);
+113 : 	if (dspreq) {
+114 : 		dispatch();
+115 : 	}
+116 : 	t_unlock_cpu();
+117 : 
+118 :   error_exit:
+119 : 	return(ercd);
+120 : }
+
+
+[C] set_lowest_precedence
+
+00 : bool_t
+01 : set_lowest_precedence(TCB *p_tcb, PCB *p_pcb)
+02 : {
+03 : 	uint_t	pri = p_tcb->priority;
+04 : 	QUEUE	*p_queue = &((p_pcb->ready_queue)[pri]);
+05 : 
+06 : 	queue_delete(&(p_tcb->task_queue));
+07 : 	queue_insert_prev(p_queue, &(p_tcb->task_queue));
+08 : 
+09 : 	if (p_pcb->p_schedtsk == p_tcb) {
+10 : 		p_pcb->p_schedtsk = (TCB *)(p_queue->p_next);
+11 : 		return(p_pcb->dspflg);
+12 : 	}
+13 : 	return(false);
+14 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  11  : !sense_tskctx_unl()
+(A2)  15  : TMIN_TSKID <= (tskid)
+(A3)  15  : (tskid) <= tmax_tskid
+(A4)  15  : (tskid) == TSK_SELF
+(A5)  19  : TMIN_PRCID <= (prcid)
+(A6)  19  : (prcid) <= TNUM_PRCID
+(A7)  19  : (prcid) == TPRC_INI
+(A8)  25  : (tskid) == TSK_SELF
+(A9)  26  : prcid == TPRC_INI
+(A10) 27  : !((p_tcb->p_tinib->affinity_mask & (1 << (prcid - 1))) != 0)
+(A11) 36  : f_p_pcb != my_p_pcb
+(A12) 44  : ((p_tcb->tstat) & TS_RUNNABLE) != 0U
+(A13) 46  : p_tcb == my_p_pcb->p_runtsk
+(A14) 48  : !(my_p_pcb->dspflg)
+(A15) 52  : t_p_pcb == my_p_pcb
+(A16) 69  : t_p_pcb == my_p_pcb
+(A17) 86  : make_runnable(p_tcb)
+(A18) 93  : (p_tcb->tstat) == TS_DORMANT
+(A19) 100 : (p_tcb->tmevtb).callback == NULL
+(A20) 118 : dspreq
+
+(B1)  10  : !sense_tskctx_unl()
+(B2)  14  : TMIN_TSKID <= (tskid)
+(B3)  14  : (tskid) <= tmax_tskid
+(B4)  14  : (tskid) == TSK_SELF
+(B5)  18  : TMIN_PRCID <= (prcid)
+(B6)  18  : (prcid) <= TNUM_PRCID
+(B7)  18  : (prcid) == TPRC_INI
+(B8)  24  : (tskid) == TSK_SELF
+(B9)  25  : prcid == TPRC_INI
+(B10) 26  : !((p_tcb->p_tinib->affinity_mask & (1 << (prcid - 1))) != 0)
+(B11) 35  : f_p_pcb != my_p_pcb
+(B12) 43  : ((p_tcb->tstat) & TS_RUNNABLE) != 0U
+(B13) 45  : p_tcb == my_p_pcb->p_runtsk
+(B14) 47  : !(my_p_pcb->dspflg)
+(B15) 51  : t_p_pcb == my_p_pcb
+(B16) 68  : t_p_pcb == my_p_pcb
+(B17) 85  : make_runnable(p_tcb)
+(B18) 92  : (p_tcb->tstat) == TS_DORMANT
+(B19) 99  : (p_tcb->tmevtb).callback == NULL
+(B20) 113 : dspreq
+
+(C1)  09  : p_pcb->p_schedtsk == p_tcb
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[TOPPERS_SYSTIM_LOCAL]
+
+                 (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (A11) (A12) (A13) (A14) (A15) (A16) (A17) (A18) (A19) (A20) (C1)
+(F-a-1)           T    D    D    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-a-2)           T    D    D    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-a-3)           T    D    D    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-a-4)           F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     T     D     D     D     D     D     F    D
+(F-a-5)           F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     T     D     D     D     D     D     F    D
+(F-b-1-1)         F    F   D/T   F    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-b-1-2)         F    F   D/T   F    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-b-2-1)         F    T    F    F    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-b-2-2)         F    T    F    F    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-c-1)           F    F   D/T   T    F   D/T   F    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-c-2)           F    F   D/T   T    T    F    F    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-d)             F    T    T   D/F   T    T   D/F   F    F     T     D     D     D     D     D     D     D     D     D     D    D
+(F-e-1)           F    T    T   D/F   T    T   D/F   F    F     F     T     D     D     D     D     D     D     D     D     F    D
+(F-e-2)           F    T    T   D/F   T    T   D/F   F    F     F     T     D     D     D     D     D     D     D     D     F    D
+(F-f-1-1)         F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     T     D     D     D     D     T    T
+(F-f-1-2)         F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     T     D     D     D     D     T    T
+(F-f-2-1-1)       F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-2)       F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-1)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-2)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-3)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-4)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-5)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-6)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-2-1)       F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-2-2)       F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-g-1-1)         F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     T     D     D     D     F    F
+(F-g-1-2)         F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     T     D     D     D     F    F
+(F-g-2-1-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     F     D     D     F    D
+(F-g-2-1-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     F     D     D     F    D
+(F-g-2-1-3-1)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-1-3-2)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     F     D     D     F    D
+(F-g-2-1-3-3)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     F     D     D     F    D
+(F-g-2-1-3-4)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-1-3-5)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-1-3-6)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-2-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-2-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-3-1-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-3-1-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-3-2-1-1)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-3-2-2-1)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-3-3-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-3-3-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-3-4-1-1)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-3-4-2-1)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-4-1)         F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-4-2)         F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-5-1-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-5-1-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-5-2-1-1)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-5-2-2-1)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-6-1)         F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     T     D     F    D
+(F-g-6-2)         F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     T     D     F    D
+(F-h-1-1)         F    F   D/T   T    F   D/T   T    T    T     F     F     T     T     F     T     D     D     D     D     T    T
+(F-h-1-2)         F    F   D/T   T    F   D/T   T    T    T     F     F     T     T     F     F     D     D     D     D     D    D
+(F-h-2-1)         F    T    T   D/F   F   D/T   T    F    T     F     F     T     F     D     D     T     D     D     D     F    F
+(F-h-2-2)         F    T    T   D/F   F   D/T   T    F    T     F     F     T     F     D     D     F     T     D     D     F    D
+-----------------------------------------------------------------------------------------------------------------------------------
+網羅              O    O    O    O    O    O    O    O    O     O     O     O     O     O     X     O     O     O     O     O    O
+
+
+[TOPPERS_SYSTIM_GLOBAL]
+
+                 (B1) (B2) (B3) (B4) (B5) (B6) (B7) (B8) (B9) (B10) (B11) (B12) (B13) (B14) (B15) (B16) (B17) (B18) (B19) (B20) (C1)
+(F-a-1)           T    D    D    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-a-2)           T    D    D    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-a-3)           T    D    D    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-a-4)           F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     T     D     D     D     D     D     F    D
+(F-a-5)           F    F   D/T   T    T    T   D/F   F    F     F     F     T     T     T     D     D     D     D     D     F    D
+(F-b-1-1)         F    F   D/T   F    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-b-1-2)         F    F   D/T   F    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-b-2-1)         F    T    F    F    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-b-2-2)         F    T    F    F    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-c-1)           F    F   D/T   T    F   D/T   F    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-c-2)           F    F   D/T   T    T    F    F    D    D     D     D     D     D     D     D     D     D     D     D     D    D
+(F-d)             F    T    T   D/F   T    T   D/F   F    F     T     D     D     D     D     D     D     D     D     D     D    D
+(F-e-1)           F    T    T   D/F   T    T   D/F   F    F     F     T     D     D     D     D     D     D     D     D     F    D
+(F-e-2)           F    T    T   D/F   T    T   D/F   F    F     F     T     D     D     D     D     D     D     D     D     F    D
+(F-f-1-1)         F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     T     D     D     D     D     T    T
+(F-f-1-2)         F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     T     D     D     D     D     T    T
+(F-f-2-1-1)       F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-2)       F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-1)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-2)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-3)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-4)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-5)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-1-3-6)     F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-2-1)       F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-f-2-2-2)       F    F   D/T   T    T    T   D/F   T    F     F     F     T     T     F     F     D     D     D     D     D    D
+(F-g-1-1)         F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     T     D     D     D     F    F
+(F-g-1-2)         F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     T     D     D     D     F    F
+(F-g-2-1-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     F     D     D     F    D
+(F-g-2-1-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     F     D     D     F    D
+(F-g-2-1-3-1)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-1-3-2)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     F     D     D     F    D
+(F-g-2-1-3-3)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     F     D     D     F    D
+(F-g-2-1-3-4)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-1-3-5)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-1-3-6)     F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-2-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     T     D     D     F    D
+(F-g-2-2-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     T     F     D     D     F     F     D     D     F    D
+(F-g-3-1-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-3-1-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-3-2-1-2)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-3-2-2-2)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-3-3-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-3-3-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-3-4-1-2)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-3-4-2-2)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-4-1)         F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-4-2)         F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-5-1-1)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-5-1-2)       F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     T     F    D
+(F-g-5-2-1-2)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-5-2-2-2)     F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     F     F     F    D
+(F-g-6-1)         F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     T     D     F    D
+(F-g-6-2)         F    T    T   D/F   T    T   D/F   F    F     F     F     F     D     D     D     D     D     T     D     F    D
+(F-h-1-1)         F    F   D/T   T    F   D/T   T    T    T     F     F     T     T     F     T     D     D     D     D     T    T
+(F-h-1-2)         F    F   D/T   T    F   D/T   T    T    T     F     F     T     T     F     F     D     D     D     D     D    D
+(F-h-2-1)         F    T    T   D/F   F   D/T   T    F    T     F     F     T     F     D     D     T     D     D     D     F    F
+(F-h-2-2)         F    T    T   D/F   F   D/T   T    F    T     F     F     T     F     D     D     F     T     D     D     F    D
+-----------------------------------------------------------------------------------------------------------------------------------
+網羅              O    O    O    O    O    O    O    O    O     O     O     O     O     O     X     O     O     O     O     O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+
+
+以上．

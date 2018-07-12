@@ -1,0 +1,131 @@
+version: "$Id: rel_mpf_F-c-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mempfix_rel_mpf_F_c_2:
+  note: TESRY_007
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        blk:
+          type: void*
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      prcid  : PRC_OTHER
+      var    :
+        blk:
+          type: void*
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: ready
+      prcid  : PRC_OTHER
+      var    :
+        blk:
+          type: void*
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      prcid  : PRC_OTHER
+
+    TASK5:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: ready
+      prcid  : PRC_OTHER
+
+    MPF1:
+      type   : MEMORYPOOL
+      mpfatr : TA_NULL
+      fblkcnt: 1
+
+  do_0:
+    id     : TASK1
+    syscall: get_mpf(MPF1, &blk)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    MPF1:
+      fblkcnt: 0
+
+  do_1:
+    id     : TASK2
+    syscall: get_mpf(MPF1, &blk)
+    gcov   : false
+
+  post_condition_1:
+    TASK2:
+      tskstat: waiting
+      wobjid : MPF1
+
+    TASK3:
+      tskstat: running
+
+    MPF1:
+      wtsklist:
+        - TASK2:
+
+  do_2:
+    id     : TASK3
+    syscall: get_mpf(MPF1, &blk)
+    gcov   : false
+
+  post_condition_2:
+    TASK3:
+      tskstat: waiting
+      wobjid : MPF1
+
+    TASK4:
+      tskstat: running
+
+    MPF1:
+      wtsklist:
+        - TASK2:
+        - TASK3:
+
+  do_3:
+    id     : TASK4
+    syscall: chg_pri(TASK2, TSK_PRI_LOW)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_3:
+    TASK2:
+      tskpri: TSK_PRI_LOW
+
+  do_4:
+    id     : TASK4
+    syscall: chg_pri(TASK3, TSK_PRI_LOW)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_4:
+    TASK3:
+      tskpri: TSK_PRI_LOW
+
+  do_5:
+    id     : TASK1
+    syscall: rel_mpf(MPF1, blk)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_5:
+    TASK2:
+      tskstat: ready
+      porder : 2
+
+    TASK5:
+      porder: 1
+
+    MPF1:
+      wtsklist:
+        - TASK3:

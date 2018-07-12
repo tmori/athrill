@@ -1,0 +1,51 @@
+version: "$Id: ras_tex_F-f-10-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_except_ras_tex_F_f_10_4:
+  note: TESRY_012
+
+  variation:
+    gcov_all: true
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running-suspended
+      prcid  : PRC_OTHER
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK2
+      texstat: TTEX_ENA
+      hdlstat: STP
+      pndptn : 0
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_OTHER
+
+  do_0:
+    id     : TASK1
+    syscall: ras_tex(TASK2, TEXPTN_A)
+    ercd   : E_OK
+
+  post_condition_0:
+    TEX1:
+      texstat: TTEX_DIS
+      hdlstat: ACTIVATE
+      texptn : TEXPTN_A
+      pndptn : 0
+
+  do_1:
+    id     : TEX1
+    code   : return
+
+  post_condition_1:
+    TEX1:
+      texstat: TTEX_ENA
+      hdlstat: STP
+      texptn : 0

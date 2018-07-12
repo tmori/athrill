@@ -1,0 +1,48 @@
+version: "$Id: ista_alm_g.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_alarm_ista_alm_g:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+    ALM2:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do_0:
+    id     : ALM1
+    syscall: ista_alm(ALM2, 1)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_0:
+    ALM2:
+      almstat: TALM_STA
+      hdlstat: STP
+      lefttim: 1
+
+  do_1:
+    id     : ALM1
+    code   : return
+    gcov   : false
+
+  post_condition_1:
+    0:
+      ALM1:
+        almstat: TALM_STP
+        hdlstat: STP
+
+    1:
+      ALM2:
+        lefttim: 0
+
+    2:
+      ALM2:
+        almstat: TALM_STP
+        hdlstat: ACTIVATE

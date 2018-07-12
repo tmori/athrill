@@ -1,0 +1,30 @@
+version: "$Id: chg_ipm_d.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_interrupt_chg_ipm_d:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: ready
+
+    CPU_STATE:
+      type   : CPU_STATE
+      chg_ipm: ANY_IPM
+
+  do:
+    id     : TASK1
+    syscall: chg_ipm(TIPM_ENAALL)
+
+  post_condition:
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running
+
+    CPU_STATE:
+      chg_ipm: TIPM_ENAALL

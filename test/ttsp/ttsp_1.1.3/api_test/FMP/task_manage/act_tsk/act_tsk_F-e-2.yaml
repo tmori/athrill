@@ -1,0 +1,22 @@
+version: "$Id: act_tsk_F-e-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_act_tsk_F_e_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running-suspended
+      actcnt : 0
+      prcid  : PRC_SELF
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      chg_ipm: ANY_IPM
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: act_tsk(TSK_SELF)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      actcnt : 1

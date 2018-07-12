@@ -1,0 +1,22 @@
+version: "$Id: can_act_F-c-3-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_can_act_F_c_3_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DELAY
+      lefttmo: RELATIVE_TIME_A
+      actcnt : 0
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: can_act(TASK2)
+    eruint : 0
+
+  post_condition:

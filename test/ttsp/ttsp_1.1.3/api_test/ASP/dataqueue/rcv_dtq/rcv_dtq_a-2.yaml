@@ -1,0 +1,24 @@
+version: "$Id: rcv_dtq_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_rcv_dtq_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t
+          value: DATA_A
+
+    DTQ1:
+      type: DATAQUEUE
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do:
+    id     : TASK1
+    syscall: rcv_dtq(DTQ1, &data)
+    ercd   : E_CTX
+
+  post_condition:

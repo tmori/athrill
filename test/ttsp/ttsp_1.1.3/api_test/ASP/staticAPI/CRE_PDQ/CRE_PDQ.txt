@@ -1,0 +1,298 @@
+
+	CRE_PDQ テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: CRE_PDQ.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+CRE_PDQ		優先度データキューの生成〔S〕
+acre_pdq	優先度データキューの生成〔TD〕
+
+【静的API】
+	CRE_PDQ(ID pdqid, { ATR pdqatr, uint_t pdqcnt, PRI maxdpri, void *pdqmb })
+
+【C言語API】
+	ER_ID pdqid = acre_pdq(const T_CPDQ *pk_cpdq)
+
+【パラメータ】
+	ID			pdqid		生成する優先度データキューのID番号（CRE_PDQ
+							の場合）
+	T_CPDQ *	pk_cpdq		優先度データキューの生成情報を入れたパケッ
+							トへのポインタ（静的APIを除く）
+
+　＊優先度データキューの生成情報（パケットの内容）
+	ATR			pdqatr		優先度データキュー属性
+	uint_t		pdqcnt		優先度データキュー管理領域に格納できるデー
+							タ数
+	PRI			maxdpri		優先度データキューに送信できるデータ優先度
+							の最大値
+	void *		pdqmb		優先度データキュー管理領域の先頭番地
+
+【リターンパラメータ】
+	ER_ID		pdqid		生成された優先度データキューのID番号（正の
+							値）またはエラーコード
+
+【エラーコード】
+	E_CTX〔s〕		コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_RSATR			予約属性（pdqatrが不正または使用できない，属する保
+					護ドメインかクラスが不正）
+	E_NOSPT			未サポート機能（pdqmbがサポートされていない値）
+	E_PAR			パラメータエラー（pdqmb，maxdpriが不正）
+	E_OACV〔sP〕	オブジェクトアクセス違反（システム状態に対する管理
+					操作が許可されていない）
+	E_MACV〔sP〕	メモリアクセス違反（pk_cpdqが指すメモリ領域への読出
+					しアクセスが許可されていない）
+	E_NOID〔sD〕	ID番号不足（割り付けられる優先度データキューIDがない）
+	E_NOMEM			メモリ不足（優先度データキュー管理領域が確保できない）
+	E_OBJ			オブジェクト状態エラー（pdqidで指定した優先度データ
+					キューが登録済み：CRE_PDQの場合）
+
+【機能】
+
+各パラメータで指定した優先度データキュー生成情報に従って，優先度データ
+キューを生成する．pdqcntとpdqmbから優先度データキュー管理領域が設定され，
+格納されているデータがない状態に初期化される．また，送信待ち行列と受信
+待ち行列は，空の状態に初期化される．
+
+静的APIにおいては，pdqidはオブジェクト識別名，pdqcntとmaxdpriは整数定数
+式パラメータ，pdqmbは一般定数式パラメータである．コンフィギュレータは，
+静的APIのメモリ不足（E_NOMEM）エラーを検出することができない．
+
+pdqmbをNULLとした場合，pdqcntで指定した数のデータを格納できる優先度デー
+タキュー管理領域を，コンフィギュレータまたはカーネルが確保する．
+
+maxdpriは，TMIN_DPRI以上，TMAX_DPRI以下でなければならない．
+
+〔pdqmbにNULL以外を指定した場合〕
+
+優先度データキュー管理領域をアプリケーションで確保する場合には，必要な
+サイズの優先度データキュー管理領域を確保し，pdqmbにその先頭番地を指定す
+る．優先度データキュー管理領域をアプリケーションで確保するために，次の
+マクロを用意している．
+
+	TSZ_PDQMB(pdqcnt)	pdqcntで指定した数のデータを格納できる優先度デー
+						タキュー管理領域のサイズ（バイト数）
+	TCNT_PDQMB(pdqcnt)	pdqcntで指定した数のデータを格納できる優先度デー
+						タキュー管理領域を確保するために必要なMB_T型の
+						配列の要素数
+
+これらを用いて優先度データキュー管理領域を確保する方法は次の通り．
+
+MB_T	<優先度データキュー管理領域の変数名>[TCNT_PDQMB(pdqcnt)];
+
+この時，pdqmbには<優先度データキュー管理領域の変数名>を指定する．
+
+この方法に従わず，pdqmbにターゲット定義の制約に合致しない先頭番地を指定
+した時には，E_PARエラーとなる．また，保護機能対応カーネルにおいて，
+pdqmbで指定した優先度データキュー管理領域がカーネル専用のメモリオブジェ
+クトに含まれない場合，E_PARエラーとなる．
+
+【TOPPERS/ASPカーネルにおける規定】
+
+ASPカーネルでは，CRE_PDQのみをサポートする．また，pdqmbにはNULLのみを指
+定することができる．NULL以外を指定した場合には，E_NOSPTエラーとなる．た
+だし，動的生成機能拡張パッケージでは，acre_pdqもサポートする．acre_pdq
+に対しては，pdqmbにNULL以外を指定できないという制限はない．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，CRE_PDQのみをサポートする．また，pdqmbにはNULLのみを渡
+すことができる．NULL以外を指定した場合には，E_NOSPTエラーとなる．
+
+【TOPPERS/HRP2カーネルにおける規定】
+
+HRP2カーネルでは，CRE_PDQのみをサポートする．また，pdqmbにはNULLのみを
+渡すことができる．NULL以外を指定した場合には，E_NOSPTエラーとなる．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) pdqatrがTA_NULL(=0)でもTA_TPRI(=0x01)でもない時にE_RSATRが返ること．
+
+(b) pdqmbにNULL以外を指定した場合に，E_NOSPTエラーとなること．
+
+(c) maxdpriが不正(TMIN_DPRI(=1)〜TMAX_DPRI(=16)以外)のとき，E_PARが返る
+    こと．
+
+     (c-1) maxdpriが許容される最小値-1(TMIN_DPRI-1)のとき．
+
+     (c-2) maxdpriが許容される最大値+1(TMAX_DPRI+1)のとき．
+
+(d) pdqidで指定した優先度データキューが登録済みのときにE_OBJが返ること．
+
+【備考】
+・E_NOMEMは返らないため，テストは必要ない．
+・ASPカーネルでは，pdqmbにNULL以外を指定した場合には，E_NOSPTエラーとな
+  るため，pdqmb不正によるE_PARが返ることを確認するテストは必要ない．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(e) pdqcntとpdqmbから優先度データキュー管理領域が設定され，格納されてい
+    るデータがない状態に初期化されること．また，送信待ち行列と受信待ち
+    行列は，空の状態に初期化されること．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 
+01 : $  優先度データキュー
+02 : $ 
+03 : /*$NL$
+04 : $SPC$*  Priority Dataqueue Functions$NL$
+05 : $SPC$*/$NL$
+06 : $NL$
+07 : 
+08 : $ 優先度データキューID番号の最大値
+09 : const ID _kernel_tmax_pdqid = (TMIN_PDQID + TNUM_PDQID - 1);$NL$
+10 : $NL$
+11 : 
+12 : $IF LENGTH(PDQ.ID_LIST)$
+13 : 	$FOREACH pdqid PDQ.ID_LIST$
+14 : $		// pdqatrが（［TA_TPRI］）でない場合（E_RSATR）
+15 : 		$IF (PDQ.PDQATR[pdqid] & ~TA_TPRI) != 0$
+16 : 			$ERROR PDQ.TEXT_LINE[pdqid]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "pdqatr", PDQ.PDQATR[pdqid], pdqid, "CRE_PDQ")$$END$
+17 : 		$END$
+18 : 
+19 : $		// (TMIN_DPRI <= maxdpri && maxdpri <= TMAX_DPRI)でない場合（E_PAR）
+20 : 		$IF !(TMIN_DPRI <= PDQ.MAXDPRI[pdqid] && PDQ.MAXDPRI[pdqid] <= TMAX_DPRI)$
+21 : 			$ERROR PDQ.TEXT_LINE[pdqid]$E_PAR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "maxdpri", PDQ.MAXDPRI[pdqid], pdqid, "CRE_PDQ")$$END$
+22 : 		$END$
+23 : 
+24 : $		// pdqmbがNULLでない場合（E_NOSPT）
+25 : 		$IF !EQ(PDQ.PDQMB[pdqid], "NULL")$
+26 : 			$ERROR PDQ.TEXT_LINE[pdqid]$E_NOSPT: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "pdqmb", PDQ.PDQMB[pdqid], pdqid, "CRE_PDQ")$$END$
+27 : 		$END$
+28 : 
+29 : $		// 優先度データキュー管理領域
+30 : 		$IF PDQ.PDQCNT[pdqid]$
+31 : 			static PDQMB _kernel_pdqmb_$pdqid$[$PDQ.PDQCNT[pdqid]$];$NL$
+32 : 		$END$
+33 : 	$END$
+34 : 
+35 : $	// 優先度データキュー初期化ブロックの生成
+36 : 	const PDQINIB _kernel_pdqinib_table[TNUM_PDQID] = {$NL$
+37 : 	$JOINEACH pdqid PDQ.ID_LIST ",\n"$
+38 : 		$TAB${ ($PDQ.PDQATR[pdqid]$), ($PDQ.PDQCNT[pdqid]$), ($PDQ.MAXDPRI[pdqid]$), $IF PDQ.PDQCNT[pdqid]$(_kernel_pdqmb_$pdqid$)$ELSE$NULL$END$ }
+39 : 	$END$$NL$
+40 : 	};$NL$
+41 : 	$NL$
+42 : 
+43 : $	// 優先度データキュー管理ブロック
+44 : 	PDQCB _kernel_pdqcb_table[TNUM_PDQID];$NL$
+45 : $ELSE$
+46 : 	TOPPERS_EMPTY_LABEL(const PDQINIB, _kernel_pdqinib_table);$NL$
+47 : 	TOPPERS_EMPTY_LABEL(PDQCB, _kernel_pdqcb_table);$NL$
+48 : $END$$NL$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 15 : (PDQ.PDQATR[pdqid] & ~TA_TPRI) != 0
+(A2) 20 : TMIN_DPRI <= PDQ.MAXDPRI[pdqid]
+(A3) 20 : PDQ.MAXDPRI[pdqid] <= TMAX_DPRI)
+(A4) 25 : !EQ(PDQ.PDQMB[pdqid], "NULL")
+(A5) 30 : PDQ.PDQCNT[pdqid]
+(A6) 38 : PDQ.PDQCNT[pdqid]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5) (A6)
+(a)     T    D    D    D    D    D
+(b)     F    T    T    T    D    D
+(c-1)   F    F   D/T   T    D    D
+(c-2)   F    T    F    F    D    D
+(d)     F    T    T    F    T    T
+(e)     F    T    T    F    T    T
+------------------------------------
+網羅    O    O    O    O    X    X
+
+【備考】
+・(A5)，(A6)の網羅をさせるために，
+  以下にホワイトボックステストを実施する．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       (A1) (A2) (A3) (A4) (A5) (A6)
+(W_a)   F    T    T    F    F    F
+------------------------------------
+網羅    O    O    O    O    O    O
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.2. テストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(W_a) 以下の条件が成り立つ時．
+
+  ・pdqcntが0のとき．
+
+
+
+以上．

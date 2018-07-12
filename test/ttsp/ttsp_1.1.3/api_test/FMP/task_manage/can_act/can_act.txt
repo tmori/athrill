@@ -1,0 +1,252 @@
+
+	can_act テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: can_act.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+can_act		タスク起動要求のキャンセル〔T〕
+
+【C言語API】
+	ER_UINT	actcnt = can_act(ID tskid)
+
+【パラメータ】
+	ID			tskid		対象タスクのID番号
+
+【リターンパラメータ】
+	ER_UINT		actcnt		キューイングされていた起動要求の数（正の値
+							または0）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（tskidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象タスクが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象タスクに対する通常操
+					作1が許可されていない）
+
+【機能】
+
+tskidで指定したタスク（対象タスク）に対する処理されていない起動要求をす
+べてキャンセルし，キャンセルした起動要求の数を返す．具体的な振舞いは以
+下の通り．
+
+対象タスクの起動要求キューイング数が0に設定され，0に設定する前の起動要
+求キューイング数が，サービスコールの返値として返される．また，マルチプ
+ロセッサ対応カーネルにおいては，対象タスクの次回起動時の割付けプロセッ
+サが未設定状態に戻される．
+
+tskidにTSK_SELF（＝0）を指定すると，自タスクが対象タスクとなる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER_UINT
+can_act(ID tskid)
+{
+	TCB		*p_tcb;
+	ER_UINT	ercd;
+	PCB		*p_pcb;
+
+	LOG_CAN_ACT_ENTER(tskid);
+	CHECK_TSKCTX_UNL();
+	CHECK_TSKID_SELF(tskid);
+
+	t_lock_cpu();
+	p_tcb = get_tcb_self(tskid, get_my_p_pcb());
+	p_pcb = t_acquire_tsk_lock(p_tcb);
+	ercd = p_tcb->actque ? 1 : 0;
+	p_tcb->actque = false;
+	p_tcb->actprc = TPRC_NONE;
+	release_tsk_lock(p_pcb);
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_CAN_ACT_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] can_act
+
+00 : ER_UINT
+01 : can_act(ID tskid)
+02 : {
+03 : 	TCB		*p_tcb;
+04 : 	ER_UINT	ercd;
+05 : 	PCB		*p_pcb;
+06 : 
+07 : 	if (!sense_tskctx_unl()) {
+08 : 		ercd = E_CTX;
+09 : 		goto error_exit;
+10 : 	}
+11 : 	if (!((TMIN_TSKID <= (tskid) && (tskid) <= tmax_tskid) || (tskid) == TSK_SELF)) {
+12 : 		ercd = E_ID;
+13 : 		goto error_exit;
+14 : 	}
+15 : 
+16 : 	t_lock_cpu();
+17 : 	p_tcb = ((tskid) == TSK_SELF ? (get_my_p_pcb())->p_runtsk : (p_tcb_table[((uint_t)((tskid) - TMIN_TSKID))]));
+18 : 	p_pcb = t_acquire_tsk_lock(p_tcb);
+19 : 	ercd = p_tcb->actque ? 1 : 0;
+20 : 	p_tcb->actque = false;
+21 : 	p_tcb->actprc = TPRC_NONE;
+22 : 	release_tsk_lock(p_pcb);
+23 : 	t_unlock_cpu();
+24 : 
+25 :   error_exit:
+26 : 	return(ercd);
+27 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 07 : !sense_tskctx_unl()
+(A2) 11 : TMIN_TSKID <= tskid
+(A3) 11 : tskid <= tmax_tskid
+(A4) 11 : (tskid) == TSK_SELF
+(A5) 11 : (tskid) == TSK_SELF
+(A6) 19 : p_tcb->actque
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅の確認
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+              (A1) (A2) (A3) (A4) (A5) (A6)
+(a-1)          T    D    D    D    D    D
+(a-2)          T    D    D    D    D    D
+(b-1)          F    F   D/T   F    D    D
+(b-2)          F    T    F    F    D    D
+(c-1)          F    F   D/T   T    T    F
+(c-2)          F    F   D/T   T    T    T
+(d-1-1)        F    T    T   D/F   F    F
+(d-1-2)        F    T    T   D/F   F    T
+(d-2-1)        F    T    T   D/F   F    F
+(d-2-2)        F    T    T   D/F   F    T
+(d-3-1)        F    T    T   D/F   F    F
+(d-3-2)        F    T    T   D/F   F    T
+(d-4-1)        F    T    T   D/F   F    F
+(d-4-2)        F    T    T   D/F   F    T
+(d-5-1)        F    T    T   D/F   F    F
+(d-5-2)        F    T    T   D/F   F    T
+(d-6-1)        F    T    T   D/F   F    F
+(d-6-2)        F    T    T   D/F   F    T
+(d-7-1)        F    T    T   D/F   F    F
+(d-7-2)        F    T    T   D/F   F    T
+(d-8-1)        F    T    T   D/F   F    F
+(d-8-2)        F    T    T   D/F   F    T
+(d-9)          F    T    T   D/F   F    F
+(F-a-1)        T    D    D    D    D    D
+(F-a-2)        T    D    D    D    D    D
+(F-a-3)        T    D    D    D    D    D
+(F-a-4)        T    D    D    D    D    D
+(F-b-1-1)      F    F   D/T   T    T    F
+(F-b-1-2)      F    F   D/T   T    T    T
+(F-b-2-1)      F    F   D/T   T    T    F
+(F-b-2-2)      F    F   D/T   T    T    T
+(F-c-1-1)      F    T    T   D/F   F    F
+(F-c-1-2)      F    T    T   D/F   F    T
+(F-c-2-1)      F    T    T   D/F   F    F
+(F-c-2-2)      F    T    T   D/F   F    T
+(F-c-3-1)      F    T    T   D/F   F    F
+(F-c-3-2)      F    T    T   D/F   F    T
+(F-c-4-1)      F    T    T   D/F   F    F
+(F-c-4-2)      F    T    T   D/F   F    T
+(F-c-5-1)      F    T    T   D/F   F    F
+(F-c-5-2)      F    T    T   D/F   F    T
+(F-c-6-1)      F    T    T   D/F   F    F
+(F-c-6-2)      F    T    T   D/F   F    T
+(F-c-7-1)      F    T    T   D/F   F    F
+(F-c-7-2)      F    T    T   D/F   F    T
+(F-c-8-1)      F    T    T   D/F   F    F
+(F-c-8-2)      F    T    T   D/F   F    T
+(F-c-9)        F    T    T   D/F   F    F
+(F-c-10-1)     F    T    T   D/F   F    F
+(F-c-10-2)     F    T    T   D/F   F    T
+(F-c-11-1-1)   F    T    T   D/F   F    T
+(F-c-11-1-2)   F    T    T   D/F   F    F
+(F-c-11-2-1)   F    T    T   D/F   F    T
+(F-c-11-2-2)   F    T    T   D/F   F    F
+(F-c-11-3-1)   F    T    T   D/F   F    T
+(F-c-11-3-2)   F    T    T   D/F   F    F
+(F-c-11-4-1)   F    T    T   D/F   F    T
+(F-c-11-4-2)   F    T    T   D/F   F    F
+(F-c-11-5-1)   F    T    T   D/F   F    F
+(F-c-11-5-2)   F    T    T   D/F   F    T
+-------------------------------------------
+網羅           O    O    O    O    O    O 
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

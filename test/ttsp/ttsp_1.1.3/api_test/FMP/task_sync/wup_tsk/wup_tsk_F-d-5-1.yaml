@@ -1,0 +1,30 @@
+version: "$Id: wup_tsk_F-d-5-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_wup_tsk_F_d_5_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      wupcnt : 0
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DELAY
+      lefttmo: RELATIVE_TIME_A
+      wupcnt : 0
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: wup_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      wupcnt : 1
