@@ -2,5 +2,5 @@ language: c
 compiler:
   - gcc
 script:
-  pwd
-  ls -l
+  - pwd
+  - ls -l
