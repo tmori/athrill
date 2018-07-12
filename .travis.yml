@@ -3,4 +3,4 @@ compiler:
   - gcc
 script:
   pwd
-	ls -l
+  ls -l
