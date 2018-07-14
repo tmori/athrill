@@ -1,0 +1,23 @@
+version: "$Id: imsta_alm_F-a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_alarm_imsta_alm_F_a_2:
+  variation:
+    timer_arch: global
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: imsta_alm(ALM1, RELATIVE_TIME_A, PRC_SELF)
+    ercd   : E_NOSPT
+
+  post_condition:

@@ -1,0 +1,244 @@
+
+	CRE_MBX テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: CRE_MBX.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+CRE_MBX		メールボックスの生成〔Sp〕
+acre_mbx	メールボックスの生成〔TpD〕
+
+【静的API】
+	CRE_MBX(ID mbxid, { ATR mbxatr, PRI maxmpri, void *mprihd })
+
+【C言語API】
+	ER_ID mbxid = acre_mbx(const T_CMBX *pk_cmbx)
+
+【パラメータ】
+	ID			mbxid		生成するメールボックスのID番号（CRE_MBXの場
+							合）
+	T_CMBX *	pk_cmbx		メールボックスの生成情報を入れたパケットへ
+							のポインタ（静的APIを除く）
+
+　＊メールボックスの生成情報（パケットの内容）
+	ATR			mbxatr		メールボックス属性
+	PRI			maxmpri		優先度メールボックスに送信できるメッセージ
+							優先度の最大値
+	void *		mprihd		優先度別のメッセージキューヘッダ領域の先頭
+							番地
+
+【リターンパラメータ】
+	ER_ID		mbxid		生成されたメールボックスのID番号（正の値）
+							またはエラーコード
+
+【エラーコード】
+	E_CTX〔s〕		コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_RSATR			予約属性（mbxatrが不正または使用できない，属するク
+					ラスが不正）
+	E_NOSPT			未サポート機能（mprihdがサポートされていない値）
+	E_PAR			パラメータエラー（mprihdが不正）
+	E_NOID〔sD〕	ID番号不足（割り付けられるメールボックスIDがない）
+	E_NOMEM			メモリ不足（優先度別のメッセージキューヘッダ領域が
+					確保できない）
+	E_OBJ			オブジェクト状態エラー（mbxidで指定したメールボック
+					スが登録済み：CRE_MBXの場合）
+
+【機能】
+
+各パラメータで指定したメールボックス生成情報に従って，メールボックスを
+生成する．メッセージキューはつながれているメッセージがない状態に初期化
+され，mprihdとmaxmpriから優先度別のメッセージキューヘッダ領域が設定され
+る．また，待ち行列は空の状態に初期化される．
+
+静的APIにおいては，mbxidはオブジェクト識別名，maxmpriは整数定数式パラメー
+タ，mprihdは一般定数式パラメータである．コンフィギュレータは，静的APIの
+メモリ不足（E_NOMEM）エラーを検出することができない．
+
+mprihdをNULLとした場合，mprihdの指定に合致したサイズの優先度別のメッセー
+ジキューヘッダ領域を，コンフィギュレータまたはカーネルが確保する．
+
+maxmpriは，TMIN_MPRI以上，TMAX_MPRI以下でなければならない．
+
+【TOPPERS/ASPカーネルにおける規定】
+
+ASPカーネルでは，CRE_MBXのみをサポートする．また，優先度別のメッセージ
+キューヘッダ領域は使用しておらず，mprihdにはNULLのみを指定することがで
+きる．NULL以外を指定した場合には，E_NOSPTエラーとなる．ただし，動的生成
+機能拡張パッケージでは，acre_mbxもサポートする．acre_mbxに対しても，
+mprihdにはNULLのみを指定することができる．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，CRE_MBXのみをサポートする．また，優先度別のメッセージ
+キューヘッダ領域は使用しておらず，mprihdにはNULLのみを渡すことができる．
+NULL以外を指定した場合には，E_NOSPTエラーとなる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) mbxatrがTA_NULL(=0)でもTA_TPRI(=0x01)でもTA_MPRI(=0x02)でもない
+    時にE_RSATRとなること．
+
+(b) mprihdにNULL以外を指定した場合に，E_NOSPTエラーとなること．
+
+(c) maxmpriが不正(TMIN_MPRI(=1)〜TMAX_MPRI(=16)以外)のとき，E_PARが返る
+    こと．
+
+         (c-1) maxmpriが許容される最小値-1(TMIN_MPRI-1)のとき．
+
+         (c-2) maxmpriが許容される最大値+1(TMAX_MPRI+1)のとき．
+
+(d) mbxidで指定したメールボックスが登録済みのときにE_OBJが返ること．
+
+【備考】
+・E_NOMEMは返らないため，テストは必要ない．
+・ASPカーネルでは，mprihdにNULL以外を指定した場合には，E_NOSPTエラーと
+  なるため，mprihd不正によるE_PARが返ることを確認するテストは必要ない．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(e) 各パラメータで指定したメールボックス生成情報に従って，メールボック
+    スが生成されること．メッセージキューはつながれているメッセージがな
+    い状態に初期化され，mprihdとmaxmpriから優先度別のメッセージキューヘッ
+    ダ領域が設定されること．また，待ち行列は空の状態に初期化されること．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 
+01 : $  メールボックス
+02 : $ 
+03 : /*$NL$
+04 : $SPC$*  Mailbox Functions$NL$
+05 : $SPC$*/$NL$
+06 : $NL$
+07 : 
+08 : $ メールボックスID番号の最大値
+09 : const ID _kernel_tmax_mbxid = (TMIN_MBXID + TNUM_MBXID - 1);$NL$
+10 : $NL$
+11 : 
+12 : $ メールボックス初期化ブロックの生成
+13 : $IF LENGTH(MBX.ID_LIST)$
+14 : 	const MBXINIB _kernel_mbxinib_table[TNUM_MBXID] = {$NL$
+15 : 	$JOINEACH mbxid MBX.ID_LIST ",\n"$
+16 : $		// mbxatrが（［TA_TPRI］｜［TA_MPRI］）でない場合（E_RSATR）
+17 : 		$IF (MBX.MBXATR[mbxid] & ~(TA_TPRI|TA_MPRI)) != 0$
+18 : 			$ERROR MBX.TEXT_LINE[mbxid]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "mbxatr", MBX.MBXATR[mbxid], mbxid, "CRE_MBX")$$END$
+19 : 		$END$
+20 : 
+21 : $		// (TMIN_MPRI <= maxmpri && maxmpri <= TMAX_MPRI)でない場合（E_PAR）
+22 : 		$IF !(TMIN_MPRI <= MBX.MAXMPRI[mbxid] && MBX.MAXMPRI[mbxid] <= TMAX_MPRI)$
+23 : 			$ERROR MBX.TEXT_LINE[mbxid]$E_PAR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "maxmpri", MBX.MAXMPRI[mbxid], mbxid, "CRE_MBX")$$END$
+24 : 		$END$
+25 : 
+26 : $		// mprihdがNULLでない場合（E_NOSPT）
+27 : 		$IF !EQ(MBX.MPRIHD[mbxid], "NULL")$
+28 : 			$ERROR MBX.TEXT_LINE[mbxid]$E_NOSPT: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "mprihd", MBX.MPRIHD[mbxid], mbxid, "CRE_MBX")$$END$
+29 : 		$END$
+30 : 
+31 : $		// メールボックス初期化ブロック
+32 : 		$TAB${ ($MBX.MBXATR[mbxid]$), ($MBX.MAXMPRI[mbxid]$) }
+33 : 	$END$$NL$
+34 : 	};$NL$
+35 : 	$NL$
+36 : 
+37 : $	// メールボックス管理ブロック
+38 : 	MBXCB _kernel_mbxcb_table[TNUM_MBXID];$NL$
+39 : $ELSE$
+40 : 	TOPPERS_EMPTY_LABEL(const MBXINIB, _kernel_mbxinib_table);$NL$
+41 : 	TOPPERS_EMPTY_LABEL(MBXCB, _kernel_mbxcb_table);$NL$
+42 : $END$$NL$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 18 : (MBX.MBXATR[mbxid] & ~(TA_TPRI|TA_MPRI)) != 0
+(A2) 22 : TMIN_MPRI <= MBX.MAXMPRI[mbxid]
+(A3) 22 : MBX.MAXMPRI[mbxid] <= TMAX_MPRI
+(A4) 27 : !EQ(MBX.MPRIHD[mbxid], "NULL")
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4)
+(a)     T    D    D    D 
+(b)     F    T    T    T
+(c-1)   F    F   D/T   D
+(c-2)   F    T    F    D
+(d)     F    T    T    F
+(e)     F    T    T    F
+--------------------------
+網羅    O    O    O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

@@ -1,0 +1,101 @@
+version: "$Id: rel_mpf_F-b-1-6.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mempfix_rel_mpf_F_b_1_6:
+  note: TESRY_007
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_OTHER
+
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        blk:
+          type: void*
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: ready
+      prcid  : PRC_SELF
+      var    :
+        blk:
+          type: void*
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    MPF1:
+      type   : MEMORYPOOL
+      fblkcnt: 1
+
+  do_0:
+    id     : TASK1
+    syscall: get_mpf(MPF1, &blk)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    MPF1:
+      fblkcnt: 0
+
+  do_1:
+    id     : TASK1
+    syscall: rot_rdq(TSK_PRI_HIGH)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_1:
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running
+
+  do_2:
+    id     : TASK2
+    syscall: get_mpf(MPF1, &blk)
+    gcov   : false
+
+  post_condition_2:
+    TASK2:
+      tskstat: waiting
+      wobjid : MPF1
+
+    TASK1:
+      tskstat: running
+
+    MPF1:
+      wtsklist:
+        - TASK2:
+
+  do_3:
+    id     : TASK1
+    syscall: mig_tsk(TASK2, PRC_OTHER)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_3:
+    TASK2:
+      prcid: PRC_OTHER
+
+  do_4:
+    id     : TASK1
+    syscall: rel_mpf(MPF1, blk)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_4:
+    TASK2:
+      tskstat: ready
+
+    MPF1:
+      wtsklist:

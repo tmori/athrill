@@ -1,0 +1,32 @@
+version: "$Id: iget_tid_F-b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_iget_tid_F_b_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      var    :
+        p_tskid:
+          type: ID
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+  do:
+    id     : ALM1
+    syscall: iget_tid(&p_tskid)
+    ercd   : E_OK
+
+  post_condition:
+    ALM1:
+      var:
+        p_tskid :
+          value: TASK1

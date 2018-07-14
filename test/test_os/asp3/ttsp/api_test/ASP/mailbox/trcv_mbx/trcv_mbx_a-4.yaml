@@ -1,0 +1,23 @@
+version: "$Id: trcv_mbx_a-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mailbox_trcv_mbx_a_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        pk_msg:
+          type: T_MSG*
+
+    MBX1:
+      type: MAILBOX
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+
+  do:
+    id     : TASK1
+    syscall: trcv_mbx(MBX1, &pk_msg, ANY_ELAPSED_TIME)
+    ercd   : E_CTX
+
+  post_condition:

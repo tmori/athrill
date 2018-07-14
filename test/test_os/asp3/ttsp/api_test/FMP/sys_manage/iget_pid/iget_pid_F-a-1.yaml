@@ -1,0 +1,23 @@
+version: "$Id: iget_pid_F-a-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_iget_pid_F_a_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var  :
+        p_prcid:
+          type : ID
+          value: ANY_OBJECT_ID
+      prcid : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: iget_pid(&p_prcid)
+    ercd   : E_CTX
+
+  post_condition:

@@ -1,0 +1,28 @@
+version: "$Id: ena_tex_F-c-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_except_ena_tex_F_c_1_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running-suspended
+      prcid  : PRC_SELF
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK1
+      texstat: TTEX_DIS
+      hdlstat: STP
+      pndptn : 0
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: ena_tex()
+    ercd   : E_OK
+
+  post_condition:
+    TEX1:
+      texstat: TTEX_ENA

@@ -1,0 +1,27 @@
+version: "$Id: ref_spn_F-a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_spin_lock_ref_spn_F_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rspn:
+          type: T_RSPN
+          spnstat: ANY_SPINLOCK_STAT
+      prcid  : PRC_SELF
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_UNL
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: ref_spn(SPN1, &rspn)
+    ercd   : E_CTX
+
+  post_condition:

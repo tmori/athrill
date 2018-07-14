@@ -1,0 +1,32 @@
+version: "$Id: ini_dtq_F-b-1-5-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_dataqueue_ini_dtq_F_b_1_5_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    DTQ1:
+      type  : DATAQUEUE
+      dtqcnt: 0
+      stsklist:
+        - TASK2:
+            data: DATA_A
+
+  do:
+    id     : TASK1
+    syscall: ini_dtq(DTQ1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended
+
+    DTQ1:
+      stsklist:

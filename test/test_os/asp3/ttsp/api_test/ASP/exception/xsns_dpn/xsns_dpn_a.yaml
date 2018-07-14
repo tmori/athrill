@@ -1,0 +1,18 @@
+version: "$Id: xsns_dpn_a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_exception_xsns_dpn_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    EXC1:
+      type   : EXCEPTION
+      excno  : EXCNO_SELF_A
+      hdlstat: ACTIVATE
+
+  do:
+    id     : EXC1
+    syscall: xsns_dpn(p_excinf)
+    bool   : false
+
+  post_condition:

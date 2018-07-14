@@ -1,0 +1,30 @@
+version: "$Id: twai_flg_k-2-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_twai_flg_k_2_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        flgptn:
+          type: FLGPTN
+
+    FLG1:
+      type  : EVENTFLAG
+      flgatr: (TA_WMUL|TA_TPRI)
+      flgptn: BIT_PATTERN_0A
+
+  do:
+    id     : TASK1
+    syscall: twai_flg(FLG1, BIT_PATTERN_A, WAIT_FLG_MODE_A, &flgptn, ANY_ELAPSED_TIME)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : FLG1
+      lefttmo: ANY_ELAPSED_TIME
+
+    FLG1:
+      wtsklist:
+        - TASK1:
+            waiptn: BIT_PATTERN_A
+            wfmode: WAIT_FLG_MODE_A

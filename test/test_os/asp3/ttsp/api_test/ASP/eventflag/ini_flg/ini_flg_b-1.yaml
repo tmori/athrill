@@ -1,0 +1,18 @@
+version: "$Id: ini_flg_b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_ini_flg_b_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    FLG1:
+      type   : EVENTFLAG
+      iflgptn: BIT_PATTERN_0A
+      flgptn : BIT_PATTERN_0B
+
+  do:
+    id     : TASK1
+    syscall: ini_flg(0)
+    ercd   : E_ID
+
+  post_condition:

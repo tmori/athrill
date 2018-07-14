@@ -1,0 +1,16 @@
+version: "$Id: tsnd_dtq_c.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_tsnd_dtq_c:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    DTQ1:
+      type   : DATAQUEUE
+
+  do:
+    id     : TASK1
+    syscall: tsnd_dtq(DTQ1, DATA_A, TMO_FEVR-1)
+    ercd   : E_PAR
+
+  post_condition:

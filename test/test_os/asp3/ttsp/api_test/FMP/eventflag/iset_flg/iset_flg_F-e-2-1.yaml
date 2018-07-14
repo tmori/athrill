@@ -1,0 +1,76 @@
+version: "$Id: iset_flg_F-e-2-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_eventflag_iset_flg_F_e_2_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    TASK5:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    FLG1:
+      type    : EVENTFLAG
+      flgatr  : TA_WMUL
+      flgptn  : BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_A|BIT_PATTERN_B
+            wfmode: TWF_ORW
+        - TASK3:
+            waiptn: BIT_PATTERN_A|BIT_PATTERN_B
+            wfmode: TWF_ORW
+        - TASK4:
+            waiptn: BIT_PATTERN_A|BIT_PATTERN_B
+            wfmode: TWF_ANDW
+
+  do:
+    id     : ALM1
+    syscall: iset_flg(FLG1, BIT_PATTERN_A)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+      porder : 1
+
+    TASK3:
+      tskstat: ready
+      porder : 2
+
+    FLG1:
+      flgptn  : BIT_PATTERN_0A|BIT_PATTERN_A
+      wtsklist:
+        - TASK4:
+            waiptn: BIT_PATTERN_A|BIT_PATTERN_B
+            wfmode: TWF_ANDW

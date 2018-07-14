@@ -1,0 +1,23 @@
+version: "$Id: can_act_d-8-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_can_act_d_8_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      actcnt : 0
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : DELAY
+      lefttmo: RELATIVE_TIME_A
+      actcnt : 1
+
+  do:
+    id     : TASK1
+    syscall: can_act(TASK2)
+    eruint : 1
+
+  post_condition:
+    TASK2:
+      actcnt : 0

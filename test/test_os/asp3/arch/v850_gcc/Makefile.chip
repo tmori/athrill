@@ -1,0 +1,44 @@
+#
+#		Makefile のチップ依存部（V850用）
+#
+#  $Id:  $
+# 
+
+#
+#  チップ依存部ディレクトリ名の定義
+#
+CHIPDIR = $(SRCDIR)/arch/$(CORE)_$(TOOL)
+
+#
+#  コンパイルオプション
+#
+INCLUDES := $(INCLUDES) -I$(CHIPDIR)
+INCLUDES += -I$(SRCDIR)/arch/gcc
+
+#
+#  カーネルに関する定義
+#
+KERNEL_DIRS := $(KERNEL_DIRS) $(CHIPDIR)
+KERNEL_ASMOBJS := $(KERNEL_ASMOBJS)  prc_support.o prc_sil.o 
+KERNEL_COBJS := $(KERNEL_COBJS) prc_config.o chip_timer.o
+
+#
+#  コンフィギュレータ関係の変数の定義
+#
+CFG2_OUT := kernel_cfg_asm.S $(CFG2_OUT)
+CFG_ASMOBJS := kernel_cfg_asm.o $(CFG_ASMOBJS)
+
+#
+#  コア依存部
+#
+#
+#  スタートアップモジュールに関する定義
+#
+#  START_OBJSをstart.oに設定し，LDFLAGSに-nostdlibを追加する．
+#
+START_OBJS = start.o 
+
+$(START_OBJS): %.o: %.S
+	$(CC) -c $(CFLAGS) $(KERNEL_CFLAGS) $<
+
+LDFLAGS := -nostdlib $(LDFLAGS)

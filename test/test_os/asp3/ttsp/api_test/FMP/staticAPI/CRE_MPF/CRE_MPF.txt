@@ -1,0 +1,409 @@
+
+	CRE_MPF テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: CRE_MPF.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+CRE_MPF		固定長メモリプールの生成〔S〕
+acre_mpf	固定長メモリプールの生成〔TD〕
+
+【静的API】
+	CRE_MPF(ID mpfid, { ATR mpfatr, uint_t blkcnt, uint_t blksz,
+										MPF_T *mpf, void *mpfmb })
+
+【C言語API】
+	ER_ID mpfid = acre_mpf(const T_CMPF *pk_cmpf)
+
+【パラメータ】
+	ID			mpfid		生成する固定長メモリプールのID番号（CRE_MPF
+							の場合）
+	T_CMPF *	pk_cmpf		固定長メモリプールの生成情報を入れたパケッ
+							トへのポインタ（静的APIを除く）
+
+　＊固定長メモリプールの生成情報（パケットの内容）
+	ATR			mpfatr		固定長メモリプール属性
+	uint_t		blkcnt		獲得できる固定長メモリブロックの数
+	uint_t		blksz		固定長メモリブロックのサイズ（バイト数）
+	MPF_T *		mpf			固定長メモリプール領域の先頭番地
+	void *		mpfmb		固定長メモリプール管理領域の先頭番地
+
+【リターンパラメータ】
+	ER_ID		mpfid		生成された固定長メモリプールのID番号（正の
+							値）またはエラーコード
+
+【エラーコード】
+	E_CTX〔s〕		コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_RSATR			予約属性（mpfatrが不正または使用できない，属する保
+					護ドメインかクラスが不正）
+	E_NOSPT			未サポート機能（mpfmbがサポートされていない値）
+	E_PAR			パラメータエラー（blkcnt，blksz，mpf，mpfmbが不正，
+					その他の条件については機能の項を参照すること）
+	E_OACV〔sP〕	オブジェクトアクセス違反（システム状態に対する管理
+					操作が許可されていない）
+	E_MACV〔sP〕	メモリアクセス違反（pk_cmpfが指すメモリ領域への読出
+					しアクセスが許可されていない）
+	E_NOID〔sD〕	ID番号不足（割り付けられる固定長メモリプールIDがな
+					い）
+	E_NOMEM			メモリ不足（固定長メモリプール領域や固定長メモリプー
+					ル管理領域が確保できない）
+	E_OBJ			オブジェクト状態エラー（mpfidで指定した固定長メモリ
+					プールが登録済み：CRE_MPFの場合）
+
+【機能】
+
+各パラメータで指定した固定長メモリプール生成情報に従って，固定長メモリ
+プールを生成する．mpf，blkcnt，blkszから固定長メモリプール領域が，
+mpfmbとblkcntから固定長メモリプール管理領域がそれぞれ設定され，メモリプー
+ル領域全体が未割当ての状態に初期化される．また，待ち行列は空の状態に初
+期化される．
+
+静的APIにおいては，mpfidはオブジェクト識別名，blkcntとblkszは整数定数式
+パラメータ，mpfとmpfmbは一般定数式パラメータである．コンフィギュレータ
+は，静的APIのメモリ不足（E_NOMEM）エラーを検出することができない．
+
+mpfをNULLとした場合，blkcntとblkszから決まるサイズの固定長メモリプール
+領域が，コンフィギュレータまたはカーネルにより確保される．
+
+保護機能対応カーネルでは，コンフィギュレータまたはカーネルにより確保さ
+れる固定長メモリプール領域は，固定長メモリプールと同じ保護ドメインに属
+し，固定長メモリプールと同じアクセス許可ベクタを持ったメモリオブジェク
+ト中に確保される．
+
+mpfmbをNULLとした場合，blkcntから決まるサイズの固定長メモリプール管理領
+域が，コンフィギュレータまたはカーネルにより確保される．
+
+blkcntとblkszは，0より大きい値でなければならない．
+
+〔mpfにNULL以外を指定した場合〕
+
+固定長メモリプール領域をアプリケーションで確保する場合には，blkcntと
+blkszから決まるサイズの固定長メモリプール領域を確保し，mpfにその先頭番
+地を指定する．固定長メモリプール領域をアプリケーションで確保するために，
+次のデータ型とマクロを用意している．
+
+	MPF_T				固定長メモリプール領域を確保するためのデータ型
+
+	COUNT_MPF_T(blksz)	固定長メモリブロックのサイズがblkszの固定長メモ
+						リプール領域を確保するために，固定長メモリブロッ
+						ク1つあたりに必要なMPF_T型の配列の要素数
+	ROUND_MPF_T(blksz)	要素数COUNT_MPF_T(blksz)のMPF_T型の配列のサイズ
+						（blkszを，MPF_T型のサイズの倍数になるように大き
+						い方に丸めた値）
+
+これらを用いて固定長メモリプール領域を確保する方法は次の通り．
+
+MPF_T	<固定長メモリプール領域の変数名>[(blkcnt) * COUNT_MPF_T(blksz)];
+
+この時，mpfには<固定長メモリプール領域の変数名>を指定する．
+
+これ以外の方法で固定長メモリプール領域を確保する場合には，先頭番地がター
+ゲット定義の制約に合致しており，上記の配列と同じサイズのメモリ領域を確
+保しなければならない．mpfにターゲット定義の制約に合致しない先頭番地を指
+定した時には，E_PARエラーとなる．
+
+保護機能対応カーネルでは，アプリケーションで確保する固定長メモリプール
+領域は，カーネルに登録されたメモリオブジェクトに含まれていなければなら
+ない．指定した固定長メモリプール領域が，カーネルに登録されたメモリオブ
+ジェクトに含まれていない場合，E_PARエラーとなる．
+
+〔mpfmbにNULL以外を指定した場合〕
+
+固定長メモリプール管理領域をアプリケーションで確保する場合には，必要な
+サイズの固定長メモリプール管理領域を確保し，mpfmbにその先頭番地を指定す
+る．固定長メモリプール管理領域をアプリケーションで確保するために，次の
+マクロを用意している．
+
+	TSZ_MPFMB(blkcnt)	blkcntで指定した数の固定長メモリブロックを管理
+						することができる固定長メモリプール管理領域のサ
+						イズ（バイト数）
+	TCNT_MPFMB(blkcnt)	blkcntで指定した数の固定長メモリブロックを管理
+						することができる固定長メモリプール管理領域を確
+						保するために必要なMB_T型の配列の要素数
+
+これらを用いて固定長メモリプール管理領域を確保する方法は次の通り．
+
+MB_T	<固定長メモリプール管理領域の変数名>[TCNT_MPFMB(blkcnt)];
+
+この時，mpfmbには<固定長メモリプール管理領域の変数名>を指定する．
+
+この方法に従わず，mpfmbにターゲット定義の制約に合致しない先頭番地を指定
+した時には，E_PARエラーとなる．また，保護機能対応カーネルにおいて，
+mpfmbで指定した固定長メモリプール管理領域がカーネル専用のメモリオブジェ
+クトに含まれない場合，E_PARエラーとなる．
+
+【補足説明】
+
+保護機能対応カーネルにおいて，固定長メモリプール領域をアプリケーション
+で確保する場合には，固定長メモリプール領域が属する保護ドメインとアクセ
+ス権の設定は変更されない．これらを適切に設定することは，アプリケーショ
+ンの責任である．
+
+【TOPPERS/ASPカーネルにおける規定】
+
+ASPカーネルでは，CRE_MPFのみをサポートする．また，mpfmbにはNULLのみを指
+定することができる．NULL以外を指定した場合には，E_NOSPTエラーとなる．た
+だし，動的生成機能拡張パッケージでは，acre_mpfもサポートする．acre_mpf
+に対しては，mpfmbにNULL以外を指定できないという制限はない．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，CRE_MPFのみをサポートする．また，mpfmbにはNULLのみを渡
+すことができる．NULL以外を指定した場合には，E_NOSPTエラーとなる．
+
+【μITRON4.0仕様との関係】
+
+mpfのデータ型をMPF_T *に変更した．COUNT_MPF_TとROUND_MPF_Tを新設し，固
+定長メモリプール領域をアプリケーションで確保する方法を規定した．また，
+μITRON4.0/PX仕様にあわせて，固定長メモリプール生成情報に，mpfmb を追加
+した．
+
+【μITRON4.0/PX仕様との関係】
+
+TCNT_MPFMBを新設し，固定長メモリプール管理領域をアプリケーションで確保
+する方法を規定した．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) 対象固定長メモリプールを属させるクラスの囲みの外に記述した場合，
+      E_RSATRエラーが返ること．(ASP:a，EX_NEW_STATE)
+
+【備考】
+・E_NOMEMは返らないため，テストは必要ない．
+・FMPカーネルでは，mpfmbにNULL以外を指定した場合には，E_NOSPTエラーとな
+  るため，mpfmb不正によるE_PARが返ることを確認するテストは必要ない．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+該当なし
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 
+01 : $  固定長メモリプール
+02 : $ 
+03 : /*$NL$
+04 : $SPC$*  Fixed-sized Memorypool Functions$NL$
+05 : $SPC$*/$NL$
+06 : $NL$
+07 : 
+08 : $ クラスの囲みに入れられているかのチェック
+09 : $FOREACH mpfid MPF.ID_LIST$
+10 : 	$IF !LENGTH(MPF.CLASS[mpfid])$
+11 : 		$ERROR MPF.TEXT_LINE[mpfid]$E_RSATR: $FORMAT(_("illegal class id of `%1%\' in %2%"), mpfid, "CRE_MPF")$$END$
+12 : 	$END$
+13 : $END$
+14 : 
+15 : $ 固定長メモリプールID番号の最大値
+16 : const ID _kernel_tmax_mpfid = (TMIN_MPFID + TNUM_MPFID - 1);$NL$
+17 : $NL$
+18 : 
+19 : $IF LENGTH(MPF.ID_LIST)$
+20 : 	$FOREACH mpfid MPF.ID_LIST$
+21 : $		// mpfatrが（［TA_TPRI］）でない場合（E_RSATR）
+22 : 		$IF (MPF.MPFATR[mpfid] & ~TA_TPRI) != 0$
+23 : 			$ERROR MPF.TEXT_LINE[mpfid]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "mpfatr", MPF.MPFATR[mpfid], mpfid, "CRE_MPF")$$END$
+24 : 		$END$
+25 : 
+26 : $		// blkcntが0の場合（E_PAR）
+27 : 		$IF MPF.BLKCNT[mpfid] == 0$
+28 : 			$ERROR MPF.TEXT_LINE[mpfid]$E_PAR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "blkcnt", MPF.BLKCNT[mpfid], mpfid, "CRE_MPF")$$END$
+29 : 		$END$
+30 : 
+31 : $		// blkszが0の場合（E_PAR）
+32 : 		$IF MPF.BLKSZ[mpfid] == 0$
+33 : 			$ERROR MPF.TEXT_LINE[mpfid]$E_PAR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "blksz", MPF.BLKSZ[mpfid], mpfid, "CRE_MPF")$$END$
+34 : 		$END$
+35 : 
+36 : $		// 固定長メモリプール領域
+37 : 		$IF EQ(MPF.MPF[mpfid], "NULL")$
+38 : 			$IF ISFUNCTION("GENERATE_MPF_T")$
+39 : 				$GENERATE_MPF_T(mpfid)$
+40 : 			$ELSE$
+41 : 				static MPF_T _kernel_mpf_$mpfid$[($MPF.BLKCNT[mpfid]$) * COUNT_MPF_T($MPF.BLKSZ[mpfid]$)];$NL$
+42 : 			$END$
+43 : 		$END$
+44 : 
+45 : $		// mpfmbがNULLでない場合（E_NOSPT）
+46 : 		$IF !EQ(MPF.MPFMB[mpfid], "NULL")$
+47 : 			$ERROR MPF.TEXT_LINE[mpfid]$E_NOSPT: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "mpfmb", MPF.MPFMB[mpfid], mpfid, "CRE_MPF")$$END$
+48 : 		$END$
+49 : 
+50 : $		// 固定長メモリプール管理領域
+51 : 		$IF ISFUNCTION("GENERATE_MPFMB")$
+52 : 			$GENERATE_MPFMB(mpfid)$
+53 : 		$ELSE$
+54 : 			static MPFMB _kernel_mpfmb_$mpfid$[$MPF.BLKCNT[mpfid]$];$NL$
+55 : 		$END$
+56 : 	$END$
+57 : 
+58 : $	// 固定長メモリプール初期化ブロックの生成
+59 : 	const MPFINIB _kernel_mpfinib_table[TNUM_MPFID] = {$NL$
+60 : 	$JOINEACH mpfid MPF.ID_LIST ",\n"$
+61 : 		$IF EQ(+TTYPE_KLOCK, +P_KLOCK)$
+62 : 			$TAB${ ($MPF.MPFATR[mpfid]$), (&(_kernel_prc$CLASS_OBJ_LOCK[MPF.CLASS[mpfid]]$_pcb.obj_lock)), ($MPF.BLKCNT[mpfid]$), ROUND_MPF_T($MPF.BLKSZ[mpfid]$), $IF EQ(MPF.MPF[mpfid],"NULL")$(_kernel_mpf_$mpfid$)$ELSE$($MPF.MPF[mpfid]$)$END$, (_kernel_mpfmb_$mpfid$) }
+63 : 		$ELSE$
+64 : 			$TAB${ ($MPF.MPFATR[mpfid]$), ($MPF.BLKCNT[mpfid]$), ROUND_MPF_T($MPF.BLKSZ[mpfid]$), $IF EQ(MPF.MPF[mpfid],"NULL")$(_kernel_mpf_$mpfid$)$ELSE$($MPF.MPF[mpfid]$)$END$, (_kernel_mpfmb_$mpfid$) }
+65 : 		$END$
+66 : 	$END$$NL$
+67 : 	};$NL$
+68 : 	$NL$
+69 : 
+70 : $	//  固定長メモリプール管理ブロック
+71 : 	$FOREACH mpfid MPF.ID_LIST$
+72 : 		$IF ISFUNCTION("GENERATE_MPFCB")$
+73 : 			$GENERATE_MPFCB(mpfid)$
+74 : 		$ELSE$
+75 : 			MPFCB _kernel_mpfcb_$mpfid$;$NL$
+76 : 		$END$
+77 : 	$END$$NL$
+78 : 
+79 : $	//  固定長メモリプール管理ブロックアクセステーブル
+80 : 	MPFCB* const _kernel_p_mpfcb_table[TNUM_MPFID] = {$NL$
+81 : 	$JOINEACH mpfid MPF.ID_LIST ",\n"$
+82 : 		$TAB$&_kernel_mpfcb_$mpfid$
+83 : 	$END$
+84 : 	$NL$
+85 : 	};$NL$
+86 : 
+87 : $ELSE$
+88 : 	TOPPERS_EMPTY_LABEL(const MPFINIB, _kernel_mpfinib_table);$NL$
+89 : 	TOPPERS_EMPTY_LABEL(MPFCB* const, _kernel_p_mpfcb_table);$NL$
+90 : $END$
+91 : $NL$
+92 : 
+
+
+[B] kernel_check.tf
+
+00 :$ 
+01 :$  固定長メモリプール領域の先頭番地のチェック
+02 :$ 
+03 :$	// 固定長メモリプール領域の先頭番地のチェック
+04 :	$mpfinib = SYMBOL("_kernel_mpfinib_table")$
+05 :	$FOREACH mpfid MPF.ID_LIST$
+06 :		$mpf = PEEK(mpfinib + offsetof_MPFINIB_mpf, sizeof_void_ptr)$
+07 :		$IF LENGTH(CHECK_MPF_ALIGN) && (mpf & (CHECK_MPF_ALIGN - 1))$
+08 :			$ERROR MPF.TEXT_LINE[mpfid]$E_PAR: 
+09 :				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is not aligned"),
+10 :				"mpf", MPF.MPF[mpfid], mpfid, "CRE_MPF")$$END$
+11 :		$END$
+12 :		$IF LENGTH(CHECK_MPF_NONNULL) && (mpf == 0)$
+13 :			$ERROR MPF.TEXT_LINE[mpfid]$E_PAR: 
+14 :				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is null"),
+15 :				"mpf", MPF.MPF[mpfid], mpfid, "CRE_MPF")$$END$
+16 :		$END$
+17 :		$mpfinib = mpfinib + sizeof_MPFINIB$
+18 :	$END$
+19 :$END$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  10 : !LENGTH(MPF.CLASS[mpfid])
+(A2)  22 : (MPF.MPFATR[mpfid] & ~TA_TPRI) != 0
+(A3)  27 : MPF.BLKCNT[mpfid] == 0
+(A4)  32 : MPF.BLKSZ[mpfid] == 0
+(A5)  37 : EQ(MPF.MPF[mpfid], "NULL")
+(A6)  38 : ISFUNCTION("GENERATE_MPF_T")
+(A7)  46 : !EQ(MPF.MPFMB[mpfid], "NULL")
+(A8)  51 : ISFUNCTION("GENERATE_MPFMB")
+(A9)  61 : EQ(+TTYPE_KLOCK, +P_KLOCK)
+(A10) 72 : ISFUNCTION("GENERATE_MPFCB")
+
+(B1)  07 : (mpf & (CHECK_MPF_ALIGN - 1))
+(B2)  12 : (mpf == 0)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (B1) (B2)
+(a)     F    T    D    D    D    D    D    D    D     D    D    D
+(b-1)   F    F    T    D    D    D    D    D    D     D    D    D
+(b-2)   F    F    F    T    D    D    D    D    D     D    D    D
+(b-3)   F    F    F    F    T    ?    F    ?   T|F    ?    T    D
+(c)     F    F    F    F    F    ?    T    D    D     D    D    D
+(d)     F    F    F    F    F    ?    F    ?   T|F    ?    D    D
+(e)     F    F    F    F    F    ?    F    ?   T|F    ?    F    F
+(W_a)   F    F    F    F    F    ?    F    ?   T|F    ?    F    T
+(F-a)   T    D    D    D    D    D    D    D    D     D    D    D
+-------------------------------------------------------------------
+網羅    O    O    O    O    O    X    O    X    O     X    O    O
+
+【備考】
+・(A6)(A8)(A10)はターゲット依存のためホワイトボックステストを実施しない．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

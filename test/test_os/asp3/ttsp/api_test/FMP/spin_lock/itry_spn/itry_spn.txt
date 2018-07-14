@@ -1,0 +1,327 @@
+
+	itry_spn テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: itry_spn.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+try_spn		スピンロックの取得（ポーリング）〔TM〕
+itry_spn	スピンロックの取得（ポーリング）〔IM〕
+
+【C言語API】
+	ER ercd = try_spn(ID spnid)
+	ER ercd = itry_spn(ID spnid)
+
+【パラメータ】
+	ID			spnid		対象スピンロックのID番号
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：try_spnの場合，タスクコンテキストからの呼出し：
+					itry_spnの場合，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（spnidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象スピンロックが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象スピンロックに対する
+					通常操作1が許可されていない：try_spnの場合）
+	E_OBJ			オブジェクト状態エラー（対象スピンロックが取得され
+					ている状態）
+
+【機能】
+
+spnidで指定したスピンロック（対象スピンロック）の取得を試みる．具体的な
+振舞いは以下の通り．
+
+対象スピンロックが取得されていない状態である場合には，プロセッサ間ロッ
+クの取得を試みる．ロックの取得に成功した場合には，スピンロックは取得さ
+れている状態になる．また，CPUロックフラグをセットしてCPUロック状態へ遷
+移し，サービスコールからリターンする．
+
+対象スピンロックが他のプロセッサによって取得されている状態である場合や，
+ロックの取得に失敗した場合（他のプロセッサがロックの取得に成功した場合）
+には，E_OBJエラーとする．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) 不正なコンテキスト状態で呼出す場合．
+
+      (F-a-1) タスクコンテキストから呼び出して，E_CTXエラーが返ること．
+
+      (F-a-2) CPUロック状態で呼び出して，E_CTXエラーが返ること．
+
+(F-b) spnidが不正の時にE_IDが返ること．
+
+      (F-b-1) spnidが許容される最小値-1(=0)の時にE_IDが返ること．
+
+      (F-b-2) spnidが許容される最大値+1(TNUM_SPNID+1)の時にE_IDが返るこ
+              と．
+
+(F-c) 対象スピンロックが他のプロセッサによって取得されている状態である
+      場合は，E_OBJエラーが返ること．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-d) 対象スピンロックが他のプロセッサによって取得されていない状態であ
+      る場合には，プロセッサ間ロックの取得を試みて，ロックの取得に成功
+      した場合には，スピンロックは取得されている状態になること．また，
+      CPUロックフラグをセットしてCPUロック状態へ遷移し，サービスコール
+      からリターンすること．
+
+【備考】
+・複数のプロセッサがループによって待っている場合に，他のプロセッサがロ
+  ックの取得に成功するかどうかは，ターゲッﾄ依存であるため，テストしない．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[TTYPE_SPN == NATIVE_SPN]
+
+ER
+itry_spn(ID spnid)
+{
+	ER		ercd;
+	SPNCB   *p_spncb;
+
+	LOG_ITRY_SPN_ENTER(spnid);
+	CHECK_INTCTX_UNL();
+	CHECK_SPNID(spnid);
+	p_spncb = get_spncb(spnid);
+
+	i_lock_cpu();
+	if (x_try_lock_spin(&(p_spncb->spn_lock))) {
+		i_unlock_cpu();
+		ercd = E_OBJ;
+	}
+	else {
+		p_spncb->lock_flg = true;
+		(get_my_p_pcb())->locspnid = spnid;
+		ercd = E_OK;
+	}
+
+  error_exit:
+	LOG_ITRY_SPN_LEAVE(ercd);
+	return(ercd);
+}
+
+
+[TTYPE_SPN == EMULATE_SPN]
+
+ER
+itry_spn(ID spnid)
+{
+	ER		ercd;
+	SPNCB   *p_spncb;
+	PCB		*my_p_pcb;
+
+	LOG_ITRY_SPN_ENTER(spnid);
+	CHECK_INTCTX_UNL();
+	CHECK_SPNID(spnid);
+	p_spncb = get_spncb(spnid);
+
+	i_lock_cpu();
+	i_acquire_obj_lock(&GET_OBJLOCK(p_spncb));
+	if (p_spncb->lock_flg) {
+		/* すでにロックされていた場合 */
+		release_obj_lock(&GET_OBJLOCK(p_spncb));
+		i_unlock_cpu();
+		ercd = E_OBJ;
+	}
+	else {
+		/* ロックされていなかった場合 */
+		my_p_pcb = get_my_p_pcb();
+		p_spncb->lock_flg = true;
+		my_p_pcb->locspnid = spnid;
+		release_obj_lock(&GET_OBJLOCK(p_spncb));
+		ercd = E_OK;
+	}
+
+  error_exit:
+	LOG_ITRY_SPN_LEAVE(ercd);
+	return(ercd);
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] itry_spn(TTYPE_SPN == NATIVE_SPN)
+
+00 : ER
+01 : itry_spn(ID spnid)
+02 : {
+03 : 	ER		ercd;
+04 : 	SPNCB	*p_spncb;
+05 : 
+06 : 	if (!sense_intctx_unl()) {
+07 : 		ercd = E_CTX;
+08 : 		goto error_exit;
+09 : 	}
+10 : 	if (!(TMIN_SPNID <= (spnid) && (spnid) <= tmax_spnid)) {
+11 : 		ercd = E_ID;
+12 : 		goto error_exit;
+13 : 	}
+14 : 	p_spncb = p_spncb_table[(uint_t)((spnid) - TMIN_SPNID)];
+15 : 
+16 : 	i_lock_cpu();
+17 : 	if (x_try_lock_spin(&(p_spncb->spn_lock))) {
+18 : 		i_unlock_cpu();
+19 : 		ercd = E_OBJ;
+20 : 	}
+21 : 	else {
+22 : 		p_spncb->lock_flg = true;
+23 : 		(get_my_p_pcb())->locspnid = spnid;
+24 : 		ercd = E_OK;
+25 : 	}
+26 : 
+27 :   error_exit:
+28 : 	return(ercd);
+29 : }
+
+
+[B] itry_spn(TTYPE_SPN == EMULATE_SPN)
+
+00 : ER
+01 : itry_spn(ID spnid)
+02 : {
+03 : 	ER		ercd;
+04 : 	SPNCB   *p_spncb;
+05 : 	PCB		*my_p_pcb;
+06 : 
+07 : 	if (!sense_intctx_unl()) {
+08 : 		ercd = E_CTX;
+09 : 		goto error_exit;
+10 : 	}
+11 : 	if (!(TMIN_SPNID <= (spnid) && (spnid) <= tmax_spnid)) {
+12 : 		ercd = E_ID;
+13 : 		goto error_exit;
+14 : 	}
+15 : 	p_spncb = p_spncb_table[(uint_t)((spnid) - TMIN_SPNID)];
+16 : 
+17 : 	i_lock_cpu();
+18 : 	i_acquire_obj_lock(&GET_OBJLOCK(p_spncb));
+19 : 	if (p_spncb->lock_flg) {
+20 : 		/* すでにロックされていた場合 */
+21 : 		release_obj_lock(&GET_OBJLOCK(p_spncb));
+22 : 		i_unlock_cpu();
+23 : 		ercd = E_OBJ;
+24 : 	}
+25 : 	else {
+26 : 		/* ロックされていなかった場合 */
+27 : 		my_p_pcb = get_my_p_pcb();
+28 : 		p_spncb->lock_flg = true;
+29 : 		my_p_pcb->locspnid = spnid;
+30 : 		release_obj_lock(&GET_OBJLOCK(p_spncb));
+31 : 		ercd = E_OK;
+32 : 	}
+33 : 
+34 :   error_exit:
+35 : 	return(ercd);
+36 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  06 : !sense_intctx_unl()
+(A2)  10 : TMIN_SPNID <= (spnid)
+(A3)  10 : (spnid) <= tmax_spnid
+(A4)  17 : x_try_lock_spin(&(p_spncb->spn_lock))
+
+(B1)  07 : !sense_intctx_unl()
+(B2)  11 : TMIN_SPNID <= (spnid)
+(B3)  11 : (spnid) <= tmax_spnid
+(B4)  19 : p_spncb->lock_flg
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[TTYPE_SPN == NATIVE_SPN]
+
+         (A1) (A2) (A3) (A4)
+(F-a-1)   T    D    D    D  
+(F-a-2)   T    D    D    D  
+(F-b-1)   F    F   D/T   D  
+(F-b-2)   F    T    F    D  
+(F-c)     F    T    T    T  
+(F-d)     F    T    T    F  
+----------------------------
+網羅      O    O    O    O  
+
+
+[TTYPE_SPN == EMULATE_SPN]
+
+         (B1) (B2) (B3) (B4)
+(F-a-1)   T    D    D    D  
+(F-a-2)   T    D    D    D  
+(F-b-1)   F    F   D/T   D  
+(F-b-2)   F    T    F    D  
+(F-c)     F    T    T    T  
+(F-d)     F    T    T    F  
+----------------------------
+網羅      O    O    O    O  
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

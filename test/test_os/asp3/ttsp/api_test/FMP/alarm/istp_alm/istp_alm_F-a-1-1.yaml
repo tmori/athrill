@@ -1,0 +1,21 @@
+version: "$Id: istp_alm_F-a-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_alarm_istp_alm_F_a_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STA
+      hdlstat: STP
+      lefttim: RELATIVE_TIME_A
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: istp_alm(ALM1)
+    ercd   : E_CTX
+
+  post_condition:

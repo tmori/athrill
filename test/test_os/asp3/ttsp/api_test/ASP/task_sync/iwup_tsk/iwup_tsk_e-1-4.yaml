@@ -1,0 +1,65 @@
+version: "$Id: iwup_tsk_e-1-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_iwup_tsk_e_1_4:
+  note: TESRY_003
+
+  variation:
+    gain_time: true
+
+  pre_condition:
+    ALM1:
+      type    : ALARM
+      almstat : TALM_STP
+      hdlstat : STP
+
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      wupcnt : 0
+
+  do_0:
+    id     : TASK1
+    syscall: sta_alm(ALM1, ACTIVATE_ALARM_TIME)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    ALM1:
+      almstat: TALM_STA
+
+  do_1:
+    id     : TASK1
+    syscall: slp_tsk()
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_1:
+    TASK1:
+      tskstat: waiting
+      wobjid : SLEEP
+
+    ALM1:
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+  do_2:
+    id     : ALM1
+    syscall: iwup_tsk(TASK1)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_2:
+    TASK1:
+      tskstat: ready
+
+  do_3:
+    id     : ALM1
+    code   : return
+    gcov   : false
+
+  post_condition_3:
+    TASK1:
+      tskstat: running
+
+    ALM1:
+      hdlstat: STP

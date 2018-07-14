@@ -1,0 +1,106 @@
+/*
+ *  TOPPERS/ASP Kernel
+ *      Toyohashi Open Platform for Embedded Real-Time Systems/
+ *      Advanced Standard Profile Kernel
+ * 
+ *  Copyright (C) 2016 by Embedded and Real-Time Systems Laboratory
+ *              Graduate School of Information Science, Nagoya Univ., JAPAN
+ * 
+ *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+ *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+ *      権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+ *      スコード中に含まれていること．
+ *  (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+ *      用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+ *      者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+ *      の無保証規定を掲載すること．
+ *  (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+ *      用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+ *      と．
+ *    (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+ *        作権表示，この利用条件および下記の無保証規定を掲載すること．
+ *    (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+ *        報告すること．
+ *  (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+ *      害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+ *      また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+ *      由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+ *      免責すること．
+ * 
+ *  本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+ *  よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+ *  に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+ *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+ *  の責任を負わない．
+ * 
+ *  $Id: tTestService.cdl 756 2016-10-03 10:47:38Z ertl-hiro $
+ */
+
+/*
+ *		テストプログラム用サービスのコンポーネント記述ファイル
+ */
+
+/*
+ *  自己診断サービスのシグニチャ
+ */
+signature sBuiltInTest {
+	ER		builtInTest(void);
+};
+
+/*
+ *  テストプログラム用サービスのシグニチャ
+ *
+ *  setBuiltInTestは，TECSの中では動的結合を使って実現すべきであるが，
+ *  C言語のアプリケーションから呼び出しやすくするために，TECSの作法違
+ *  反のコードとなっている．
+ *
+ *  getInterruptPriorityMaskは，そのままカーネルを呼び出すだけの関数で
+ *  ある．保護機能対応でないカーネルではそのままカーネルを呼べば良いが，
+ *  保護機能対応カーネルではカーネルを直接呼び出せるとは限らないので，
+ *  テストプログラム用サービス（カーネルドメインで動作することを想定）
+ *  として用意している．
+ */
+signature sTestService {
+	void	start([in, string] const char *progname);
+	void	setBuiltInTest([in] Descriptor(sBuiltInTest) desc);
+	void	checkPoint([in] uint_t count);
+	void	finishPoint([in] uint_t count);
+	void	assertError([in, string] const char *expr,
+							[in, string] const char *file, [in] int_t line);
+	void	serviceError([in] ER ercd,
+							[in, string] const char *file, [in] int_t line);
+	ER		getInterruptPriorityMask([out] PRI *p_ipm);
+};
+
+/*
+ *  テストプログラム用サービスのセルタイプ
+ */
+[singleton, active]
+celltype tTestService {
+	entry						sTestService	eTestService;
+	[dynamic, optional] call	sBuiltInTest	cBuiltInTest;
+	call						sSysLog			cSysLog;
+
+	var {
+		uint_t		check_count;	/* 最後に通過したチェックポイント */
+	};
+};
+
+/*
+ *  自己診断サービスのディスクリプタを取得するシグニチャ
+ */
+signature sGetBuiltInTestDescriptor {
+	ER		getDescriptor([out] Descriptor(sBuiltInTest) *p_desc,
+														[in] int_t i);
+};
+
+/*
+ *  自己診断サービスのディスクリプタを取得するセルタイプ
+ */
+[singleton, active]
+celltype tBuiltInTestAdaptor {
+	[ref_desc] call	sBuiltInTest				cBuiltInTest[];
+	entry			sGetBuiltInTestDescriptor	eGetBuiltInTestDescriptor;
+};

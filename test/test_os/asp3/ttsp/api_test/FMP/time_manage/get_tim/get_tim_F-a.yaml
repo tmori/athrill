@@ -1,0 +1,28 @@
+version: "$Id: get_tim_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_time_manage_get_tim_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        systim:
+          type: SYSTIM
+          value: ANY_ELAPSED_TIME
+      prcid  : PRC_SELF
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type:    CPU_STATE
+      loc_cpu: true
+      prcid:   PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: get_tim(&systim)
+    ercd   : E_CTX
+
+  post_condition:

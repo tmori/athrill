@@ -1,0 +1,253 @@
+
+	pol_flg テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: pol_flg.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+wai_flg		イベントフラグ待ち〔T〕
+pol_flg		イベントフラグ待ち（ポーリング）〔T〕
+twai_flg	イベントフラグ待ち（タイムアウト付き）〔T〕
+
+【C言語API】
+	ER ercd = wai_flg(ID flgid, FLGPTN waiptn, MODE wfmode, FLGPTN *p_flgptn)
+	ER ercd = pol_flg(ID flgid, FLGPTN waiptn, MODE wfmode, FLGPTN *p_flgptn)
+	ER ercd = twai_flg(ID flgid, FLGPTN waiptn,
+									MODE wfmode, FLGPTN *p_flgptn, TMO tmout)
+
+【パラメータ】
+	ID			flgid		対象イベントフラグのID番号
+	FLGPTN		waiptn		待ちビットパターン
+	MODE		wfmode		待ちモード
+	FLGPTN *	p_flgptn	待ち解除時のビットパターンを入れるメモリ領
+							域へのポインタ
+	TMO			tmout		タイムアウト時間（twai_flgの場合）
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+	FLGPTN		flgptn		待ち解除時のビットパターン
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し，ディスパッチ保留状態
+					からの呼出し：pol_flgを除く）
+	E_NOSPT			未サポート機能（制約タスクからの呼出し：pol_flgを除
+					く）
+	E_ID			不正ID番号（flgidが不正）
+	E_PAR			パラメータエラー（waiptn，wfmodeが不正，tmoutが不正：
+					twai_flgの場合）
+	E_NOEXS〔D〕	オブジェクト未登録（対象イベントフラグが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象イベントフラグに対す
+					る通常操作2が許可されていない）
+	E_MACV〔P〕		メモリアクセス違反（p_flgptnが指すメモリ領域への書
+					込みアクセスが許可されていない）
+	E_ILUSE			サービスコール不正使用（TA_WMUL属性でないイベントフ
+					ラグで待ちタスクあり）
+	E_TMOUT			ポーリング失敗またはタイムアウト（wai_flgを除く）
+	E_RLWAI			待ち禁止状態または待ち状態の強制解除（pol_flgを除く）
+	E_DLT			待ちオブジェクトの削除または再初期化（pol_flgを除く）
+
+【機能】
+
+flgidで指定したイベントフラグ（対象イベントフラグ）が，waiptnとwfmodeで
+指定した待ち解除の条件を満たすのを待つ．具体的な振舞いは以下の通り．
+
+対象イベントフラグが，waiptnとwfmodeで指定した待ち解除の条件を満たして
+いる場合には，対象イベントフラグのビットパターンの現在値がflgptnに返さ
+れる．対象イベントフラグがTA_CLR属性である場合には，対象イベントフラグ
+のビットパターンが0にクリアされる．
+
+待ち解除の条件を満たしていない場合には，自タスクはイベントフラグ待ち状
+態となり，対象イベントフラグの待ち行列につながれる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) スピンロック取得中に呼び出して，E_CTXエラーが返ること．
+      (ASP:a，EX_NEW_STATE)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+該当なし．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+pol_flg(ID flgid, FLGPTN waiptn, MODE wfmode, FLGPTN *p_flgptn)
+{
+	FLGCB	*p_flgcb;
+	ER		ercd;
+
+	LOG_POL_FLG_ENTER(flgid, waiptn, wfmode, p_flgptn);
+	CHECK_TSKCTX_UNL();
+	CHECK_FLGID(flgid);
+	CHECK_PAR(waiptn != 0U);
+	CHECK_PAR(wfmode == TWF_ORW || wfmode == TWF_ANDW);
+	p_flgcb = get_flgcb(flgid);
+
+	t_lock_cpu();
+	t_acquire_obj_lock(&GET_OBJLOCK(p_flgcb));
+	if ((p_flgcb->p_flginib->flgatr & TA_WMUL) == 0U
+					&& !queue_empty(&(p_flgcb->wait_queue))) {
+		ercd = E_ILUSE;
+	}
+	else if (check_flg_cond(p_flgcb, waiptn, wfmode, p_flgptn)) {
+		ercd = E_OK;
+	}
+	else {
+		ercd = E_TMOUT;
+	}
+	release_obj_lock(&GET_OBJLOCK(p_flgcb));
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_POL_FLG_LEAVE(ercd, *p_flgptn);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] pol_flg
+
+00 : ER
+01 : pol_flg(ID flgid, FLGPTN waiptn, MODE wfmode, FLGPTN *p_flgptn)
+02 : {
+03 : 	FLGCB	*p_flgcb;
+04 : 	ER		ercd;
+05 : 
+06 : 	if (!sense_tskctx_unl()) {
+07 : 		ercd = E_CTX;
+08 : 		goto error_exit;
+09 : 	}
+10 : 	if (!(TMIN_FLGID <= (flgid) && (flgid) <= tmax_flgid)) {
+11 : 		ercd = E_ID;
+12 : 		goto error_exit;
+13 : 	}
+14 : 	if (!(waiptn != 0U)) {
+15 : 		ercd = E_PAR;
+16 : 		goto error_exit;
+17 : 	}
+18 : 	if (!(wfmode == TWF_ORW || wfmode == TWF_ANDW)) {
+19 : 		ercd = E_PAR;
+20 : 		goto error_exit;
+21 : 	}
+22 : 	p_flgcb = (p_flgcb_table[((uint_t)((flgid) - TMIN_FLGID))]);
+23 : 
+24 : 	t_lock_cpu();
+25 : 	t_acquire_obj_lock(&GET_OBJLOCK(p_flgcb));
+26 : 	if ((p_flgcb->p_flginib->flgatr & TA_WMUL) == 0U
+27 : 					&& !queue_empty(&(p_flgcb->wait_queue))) {
+28 : 		ercd = E_ILUSE;
+29 : 	}
+30 : 	else if (check_flg_cond(p_flgcb, waiptn, wfmode, p_flgptn)) {
+31 : 		ercd = E_OK;
+32 : 	}
+33 : 	else {
+34 : 		ercd = E_TMOUT;
+35 : 	}
+36 : 	release_obj_lock(&GET_OBJLOCK(p_flgcb));
+37 : 	t_unlock_cpu();
+38 : 
+39 :   error_exit:
+40 : 	return(ercd);
+41 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 06 : !sense_tskctx_unl()
+(A2) 10 : TMIN_FLGID <= (flgid)
+(A3) 10 : (flgid) <= tmax_flgid
+(A4) 14 : !(waiptn != 0U)
+(A5) 18 : wfmode == TWF_ORW
+(A6) 18 : wfmode == TWF_ANDW
+(A7) 26 : (p_flgcb->p_flginib->flgatr & TA_WMUL) == 0U
+(A8) 27 : !queue_empty(&(p_flgcb->wait_queue))
+(A9) 30 : check_flg_cond(p_flgcb, waiptn, wfmode, p_flgptn)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9)
+(a-1)   T    D    D    D    D    D    D    D    D
+(a-2)   T    D    D    D    D    D    D    D    D
+(b-1)   F    F   D/T   D    D    D    D    D    D
+(b-2)   F    T    F    D    D    D    D    D    D
+(c-1)   F    T    T    T    D    D    D    D    D
+(c-2)   F    T    T    F    F    F    D    D    D
+(d-1)   F    T    T    F    T   D/F   T    T    D
+(d-2)   F    T    T    F    F    T    T    T    D
+(e-1)   F    T    T    F    F    T    T    F    T
+(e-2)   F    T    T    F    F    T    T    F    T
+(f)     F    T    T    F    F    T    T    F    F
+(W_a)   F    T    T    F    F    T    F   D/T   T
+(F-a)   T    D    D    D    D    D    D    D    D
+---------------------------------------------------
+網羅    O    O    O    O    O    O    O    O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

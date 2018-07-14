@@ -1,0 +1,33 @@
+version: "$Id: rcv_dtq_f-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_rcv_dtq_f_1_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 3
+      datalist:
+        - data : DATA_A
+        - data : DATA_B
+
+  do:
+    id     : TASK1
+    syscall: rcv_dtq(DTQ1, &data)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      tskstat: running
+      var:
+        data:
+          value: DATA_A
+
+    DTQ1:
+      datalist:
+        - data : DATA_B

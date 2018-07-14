@@ -1,0 +1,289 @@
+
+	CFG_INT テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: CFG_INT.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+CFG_INT		割込み要求ラインの属性の設定〔S〕
+cfg_int		割込み要求ラインの属性の設定〔TD〕
+
+【静的API】
+	CFG_INT(INTNO intno, { ATR intatr, PRI intpri })
+
+【C言語API】
+	ER ercd = cfg_int(INTNO intno, const T_CINT *pk_cint)
+
+【パラメータ】
+	INTNO		intno		割込み番号
+	T_CINT *	pk_cint		割込み要求ラインの属性の設定情報を入れたパ
+							ケットへのポインタ（静的APIを除く）
+
+　＊割込み要求ラインの属性の設定情報（パケットの内容）
+	ATR			intatr		割込み要求ライン属性
+	PRI			intpri		割込み優先度
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX〔s〕		コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_RSATR			予約属性（intatrが不正または使用できない，属する保
+					護ドメインかクラスが不正）
+	E_OACV〔sP〕	オブジェクトアクセス違反（システム状態に対する管理
+					操作が許可されていない）
+	E_MACV〔sP〕	メモリアクセス違反（pk_cintが指すメモリ領域への読出
+					しアクセスが許可されていない）
+	E_PAR			パラメータエラー（intno，intpriが不正）
+	E_OBJ			オブジェクト状態エラー（対象割込み要求ラインに対し
+					てすでに属性が設定されている：CFG_INTの場合，カーネ
+					ル管理の割込みか否かとintpriの値が整合していない）
+
+【機能】
+
+intnoで指定した割込み要求ライン（対象割込み要求ライン）に対して，各パラ
+メータで指定した属性を設定する．
+
+対象割込み要求ラインの割込み要求禁止フラグは，intatrにTA_ENAINTを指定し
+た場合にクリアされ，指定しない場合にセットされる．
+
+静的APIにおいては，intno，intatr，intpriは整数定数式パラメータである．
+
+cfg_intにおいて，ターゲット定義で，複数の割込み要求ラインの割込み優先度
+が連動して設定される場合がある．
+
+CFG_INTにおいて，対象割込み要求ラインに対してすでに属性が設定されている
+場合（言い換えると，同じ割込み番号に対するCFG_INTが複数ある場合）には，
+E_OBJエラーとなる．
+
+intpriに指定できる値は，基本的には，TMIN_INTPRI以上，TMAX_INTPRI以下の
+値である．ターゲット定義の拡張で，カーネル管理外の割込み要求ラインに対
+しても属性を設定できる場合には，TMIN_INTPRIよりも小さい値を指定すること
+ができる．このように拡張されている場合，カーネル管理外の割込み要求ライ
+ンを対象として，intpriにTMIN_INTPRI以上の値を指定した場合には，E_OBJエ
+ラーとなる．逆に，カーネル管理の割込み要求ラインを対象として，intpriが
+TMIN_INTPRIよりも小さい値である場合にも，E_OBJエラーとなる．
+
+対象割込み要求ラインに対して，設定できない割込み属性をintatrに指定した
+場合にはE_RSATRエラー，設定できない割込み優先度をintpriに指定した場合に
+はE_PARエラーとなる．ここで，設定できない割込み属性／割込み優先度には，
+ターゲット定義の制限によって設定できない値も含む．また，マルチプロセッ
+サ対応カーネルにおいて，cfg_intを呼び出したタスクが割り付けられているプ
+ロセッサから，対象割込み要求ラインの属性を設定できない場合も，これに該
+当する．
+
+保護機能対応カーネルにおいて，CFG_INTは，カーネルドメインの囲みの中に記
+述しなければならない．そうでない場合には，E_RSATRエラーとなる．また，
+cfg_intはカーネルオブジェクトを登録するサービスコールではないため，割込
+み要求ライン属性にTA_DOM(domid)を指定した場合にはE_RSATRエラーとなる．
+ただし，TA_DOM(TDOM_SELF)を指定した場合には，指定が無視され，E_RSATRエ
+ラーは検出されない．
+
+マルチプロセッサ対応カーネルで，CFG_INTの記述が，対象割込み要求ラインに
+対して登録された割込みサービスルーチン（または対象割込み番号に対応する
+割込みハンドラ番号に対して登録された割込みハンドラ）と異なるクラスの囲
+み中にある場合には，E_RSATRエラーとなる．
+
+【補足説明】
+
+ターゲット定義の制限によって設定できない割込み属性／割込み優先度は，主
+にターゲットハードウェアの制限から来るものである．例えば，対象割込み要
+求ラインに対して，トリガモードや割込み優先度が固定されていて，変更でき
+ないケースが考えられる．
+
+cfg_intにおいて，ターゲット定義で，複数の割込み要求ラインの割込み優先度
+が連動して設定されるのは，ターゲットハードウェアの制限により，異なる割
+込み要求ラインに対して，同一の割込み優先度しか設定できないケースに対応
+するための仕様である．この場合，CFG_INTにおいては，同一の割込み優先度し
+か設定できない割込み要求ラインに対して異なる割込み優先度を設定した場合
+には，E_PARエラーとなる．
+
+【TOPPERS/ASPカーネルにおける規定】
+
+ASPカーネルでは，CFG_INTのみをサポートする．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，CFG_INTのみをサポートする．
+
+【TOPPERS/HRP2カーネルにおける規定】
+
+HRP2カーネルでは，CFG_INTのみをサポートする．
+
+【μITRON4.0仕様との関係】
+
+μITRON4.0仕様に定義されていない静的APIおよびサービスコールである．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) intatrがTA_NULL(=0)でもTA_ENAINT(=0x01)でもTA_EDGE(=0x02)でもター
+    ゲットで定義された属性でもない時にE_RSATRとなること．
+
+(b) パラメータエラーのとき，E_PARが返ること．
+
+    (b-1) intnoが不正の時にE_PARが返ること．
+
+    (b-2) intpriが不正の場合．
+
+          (b-2-1) intpriが許容される最小値-1(TTSP_TMIN_INTPRI-1)のとき，
+                  E_PARが返ること．
+
+          (b-2-2) intpriが許容される最大値+1(TMAX_INTPRI+1)のとき，
+                  E_PARが返ること．
+
+(c) 対象割込み要求ラインに対してすでに属性が設定されているときE_OBJエラー
+    となること．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(d) 各パラメータの内容に従って割込み要求ラインの属性が設定されること．
+
+    (d-1) intatrがTA_NULLのときは割込み要求禁止フラグはセットされる．
+
+    (d-2) intatrがTA_ENAINTのときは割込み要求禁止フラグはクリアされる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 割込み要求ラインに関するエラーチェック
+01 : $i = 0$
+02 : $FOREACH intno INT.ORDER_LIST$
+03 : $	// intnoがCFG_INTに対する割込み番号として正しくない場合（E_PAR）
+04 : 	$IF !LENGTH(FIND(INTNO_CFGINT_VALID, INT.INTNO[intno]))$
+05 : 		$ERROR INT.TEXT_LINE[intno]$E_PAR: $FORMAT(_("illegal %1% `%2%\' in %3%"), "intno", INT.INTNO[intno], "CFG_INT")$$END$
+06 : 	$END$
+07 : 
+08 : $	// intnoがCFG_INTによって設定済みの場合（E_OBJ）
+09 : 	$j = 0$
+10 : 	$FOREACH intno2 INT.ORDER_LIST$
+11 : 		$IF INT.INTNO[intno] == INT.INTNO[intno2] && j < i$
+12 : 			$ERROR INT.TEXT_LINE[intno]$E_OBJ: $FORMAT(_("%1% `%2%\' in %3% is duplicated"), "intno", INT.INTNO[intno], "CFG_INT")$$END$
+13 : 		$END$
+14 : 		$j = j + 1$
+15 : 	$END$
+16 : 
+17 : $	// intatrが（［TA_ENAINT］｜［TA_EDGE］）でない場合（E_RSATR）
+18 : 	$IF (INT.INTATR[intno] & ~(TA_ENAINT|TA_EDGE|TARGET_INTATR)) != 0$
+19 : 		$ERROR INT.TEXT_LINE[intno]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of %3% `%4%\' in %5%"), "intatr", INT.INTATR[intno], "intno", INT.INTNO[intno], "CFG_INT")$$END$
+20 : 	$END$
+21 : 
+22 : $	// intpriがCFG_INTに対する割込み優先度として正しくない場合（E_PAR）
+23 : 	$IF !LENGTH(FIND(INTPRI_CFGINT_VALID, INT.INTPRI[intno]))$
+24 : 		$ERROR INT.TEXT_LINE[intno]$E_PAR: $FORMAT(_("illegal %1% `%2%\' in %3%"), "intpri", INT.INTPRI[intno], "CFG_INT")$$END$
+25 : 	$END$
+26 : 
+27 : $	// カーネル管理に固定されているintnoに対して，intpriにTMIN_INTPRI
+28 : $	// よりも小さい値が指定された場合（E_OBJ）
+29 : 	$IF LENGTH(FIND(INTNO_FIX_KERNEL, intno))$
+30 : 		$IF INT.INTPRI[intno] < TMIN_INTPRI$
+31 : 			$ERROR INT.TEXT_LINE[intno]$E_OBJ: $FORMAT(_("%1% `%2%\' must not have higher priority than %3%"), "intno", INT.INTNO[intno], "TMIN_INTPRI")$$END$
+32 : 		$END$
+33 : 	$END$
+34 : 
+35 : $	// カーネル管理外に固定されているintnoに対して，intpriにTMIN_INTPRI
+36 : $	// よりも小さい値が指定されなかった場合（E_OBJ）
+37 : 	$IF LENGTH(FIND(INTNO_FIX_NONKERNEL, intno))$
+38 : 		$IF INT.INTPRI[intno] >= TMIN_INTPRI$
+39 : 			$ERROR INT.TEXT_LINE[intno]$E_OBJ: $FORMAT(_("%1% `%2%\' must have higher priority than %3%"), "intno", INT.INTNO[intno], "TMIN_INTPRI")$$END$
+40 : 		$END$
+41 : 	$END$
+42 : 	$i = i + 1$
+43 : $END$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 04 : !LENGTH(FIND(INTNO_CFGINT_VALID, INT.INTNO[intno]))
+(A2) 11 : INT.INTNO[intno] == INT.INTNO[intno2]
+(A3) 11 : j < i
+(A4) 18 : (INT.INTATR[intno] & ~(TA_ENAINT|TA_EDGE|TARGET_INTATR)) != 0
+(A5) 23 : !LENGTH(FIND(INTPRI_CFGINT_VALID, INT.INTPRI[intno]))
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5)
+(a)     F    T    F    T    D
+(b-1)   T    D    D    D    D
+(b-2-1) F    T    F    F    T
+(b-2-2) F    T    F    F    T
+(c)     F    TT   FT   D    D
+(d-1)   F    TF   FD   F    F
+(d-2)   F    TF   FD   F    F
+-------------------------------
+網羅    O    O    O    O    O
+
+【備考】
+(d-1)(d-2)は1つのテストプログラムで実施するため，(A2)(A3)が網羅される．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+以上．

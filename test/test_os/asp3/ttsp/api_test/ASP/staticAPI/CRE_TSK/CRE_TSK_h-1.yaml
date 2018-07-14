@@ -1,0 +1,40 @@
+version: "$Id: CRE_TSK_h-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_staticAPI_CRE_TSK_h_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rtsk:
+          type: T_TTSP_RTSK
+
+  do_0:
+    id     : TASK1
+    syscall: ttsp_ref_tsk(TASK1, &rtsk)
+    ercd   : E_OK
+
+  post_condition_0:
+
+  do_1:
+    id  : TASK1
+    code: "#ifdef TTSP_STACK_SHARE\n\tcheck_assert(rtsk.stk == ttg_stack_1);\n\t#endif"
+
+  post_condition_1:
+
+  do_2:
+    id  : TASK1
+    code: check_assert(rtsk.stksz == TTSP_TASK_STACK_SIZE)
+
+  post_condition_2:
+
+  do_3:
+    id  : TASK1
+    code: check_assert(&rtsk > (T_TTSP_RTSK*)(rtsk.stk))
+
+  post_condition_3:
+
+  do_4:
+    id  : TASK1
+    code: check_assert(&rtsk < (T_TTSP_RTSK*)(rtsk.stk + rtsk.stksz))
+
+  post_condition_4:

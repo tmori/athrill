@@ -1,0 +1,33 @@
+version: "$Id: ref_dtq_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_dataqueue_ref_dtq_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rdtq:
+          type: T_RDTQ
+          stskid: ANY_OBJECT_ID
+          rtskid: ANY_OBJECT_ID
+          sdtqcnt: ANY_DATA_CNT
+      prcid  : PRC_SELF
+
+    DTQ1:
+      type  : DATAQUEUE
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: ref_dtq(DTQ1, &rdtq)
+    ercd   : E_CTX
+
+  post_condition:

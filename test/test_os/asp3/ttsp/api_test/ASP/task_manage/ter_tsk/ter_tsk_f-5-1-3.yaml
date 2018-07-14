@@ -1,0 +1,54 @@
+version: "$Id: ter_tsk_f-5-1-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_ter_tsk_f_5_1_3:
+  pre_condition:
+    TASK1:
+      type    : TASK
+      tskstat : running
+      tskpri  : TSK_PRI_LOW
+
+    TASK2:
+      type    : TASK
+      itskpri : TSK_PRI_HIGH
+      tskpri  : TSK_PRI_MID
+      tskstat : waiting
+      wobjid  : SEM1
+      actcnt  : 1
+      wupcnt  : 1
+      lefttmo : ANY_ELAPSED_TIME
+
+    SEM1:
+      type    : SEMAPHORE
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+
+    TEX2:
+      type   : TASK_EXC
+      task   : TASK2
+      texstat: TTEX_ENA
+      hdlstat: STP
+      pndptn : TEXPTN_A
+
+    CPU_STATE:
+      type   : CPU_STATE
+      chg_ipm: ANY_IPM
+
+  do:
+    id     : TASK1
+    syscall: ter_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat : ready
+      tskpri  : TSK_PRI_HIGH
+      actcnt  : 0
+      wupcnt  : 0
+      bootcnt : 1
+
+    TEX2:
+      texstat: TTEX_DIS
+      pndptn : 0
+
+    SEM1:
+      wtsklist:

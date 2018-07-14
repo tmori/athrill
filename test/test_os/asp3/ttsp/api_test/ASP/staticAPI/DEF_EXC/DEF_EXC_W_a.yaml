@@ -1,0 +1,24 @@
+version: "$Id: DEF_EXC_W_a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_staticAPI_DEF_EXC_W_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    EXC1:
+      type   : EXCEPTION
+      excno  : TTSP_EXCNO_A
+      hdlstat: STP
+
+    EXC2:
+      type   : EXCEPTION
+      excno  : TTSP_EXCNO_B
+      hdlstat: STP
+
+  do:
+    id  : TASK1
+    code: ttsp_cpuexc_raise(EXCNO_SELF_A)
+
+  post_condition:
+    EXC1:
+      hdlstat: ACTIVATE

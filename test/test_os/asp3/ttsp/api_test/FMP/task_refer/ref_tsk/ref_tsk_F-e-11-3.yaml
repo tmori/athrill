@@ -1,0 +1,42 @@
+version: "$Id: ref_tsk_F-e-11-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_refer_ref_tsk_F_e_11_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rtsk:
+          type: T_RTSK
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running-suspended
+      prcid  : PRC_OTHER
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK2
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: ref_tsk(TASK2,&rtsk)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rtsk:
+          tskstat: TTS_SUS
+          tskpri : TSK_PRI_MID
+          tskbpri: TSK_PRI_MID
+          actcnt : 0
+          wupcnt : 0
+          prcid  : PRC_OTHER
+          actprc : TPRC_NONE

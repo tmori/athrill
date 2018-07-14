@@ -1,0 +1,38 @@
+version: "$Id: dly_tsk_e.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_dly_tsk_e:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: ready
+
+  do:
+    id     : TASK1
+    syscall: dly_tsk(1)
+    ercd   : E_OK
+
+  post_condition:
+    0:
+      TASK1:
+        tskstat: waiting
+        wobjid : DELAY
+        lefttmo: 1
+
+      TASK2:
+        tskstat: running
+
+    1:
+      TASK1:
+        lefttmo: 0
+
+    2:
+      TASK1:
+        tskstat: running
+
+      TASK2:
+        tskstat: ready

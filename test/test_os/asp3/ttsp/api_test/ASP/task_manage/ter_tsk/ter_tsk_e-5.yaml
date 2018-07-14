@@ -1,0 +1,34 @@
+version: "$Id: ter_tsk_e-5.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_ter_tsk_e_5:
+  pre_condition:
+    TASK1:
+      type    : TASK
+      tskstat : running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SEM1
+      actcnt : 0
+      lefttmo: ANY_ELAPSED_TIME
+
+    SEM1:
+      type    : SEMAPHORE
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ter_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: dormant
+
+    SEM1:
+      semcnt  : 0
+      wtsklist:
+
+    

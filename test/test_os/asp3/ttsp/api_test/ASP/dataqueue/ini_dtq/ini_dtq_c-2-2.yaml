@@ -1,0 +1,64 @@
+version: "$Id: ini_dtq_c-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_ini_dtq_c_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : DTQ1
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : DTQ1
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : DTQ1
+
+    DTQ1:
+      type  : DATAQUEUE
+      dtqatr: TA_NULL
+      dtqcnt: 3
+      stsklist:
+        - TASK2:
+            data: DATA_A
+        - TASK3:
+            data: DATA_B
+        - TASK4:
+            data: DATA_C
+      datalist:
+        - data: DATA_D
+        - data: DATA_E
+        - data: DATA_F
+
+  do:
+    id     : TASK1
+    syscall: ini_dtq(DTQ1)
+
+  post_condition:
+    TASK1:
+      tskstat: ready
+      porder: 1
+
+    TASK2:
+      tskstat: ready
+      porder: 2
+
+    TASK3:
+      tskstat: ready
+
+    TASK4:
+      tskstat: running
+
+    DTQ1:
+      stsklist:
+      datalist:

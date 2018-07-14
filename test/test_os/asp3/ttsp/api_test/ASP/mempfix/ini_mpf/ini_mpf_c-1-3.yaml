@@ -1,0 +1,31 @@
+version: "$Id: ini_mpf_c-1-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mempfix_ini_mpf_c_1_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MPF1
+
+    MPF1:
+      type: MEMORYPOOL
+      blkcnt: ANY_INI_BLKCNT
+      fblkcnt: 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ini_mpf(MPF1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    MPF1:
+      fblkcnt: ANY_INI_BLKCNT
+      wtsklist:

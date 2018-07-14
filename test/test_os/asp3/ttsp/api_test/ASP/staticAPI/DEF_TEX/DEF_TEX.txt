@@ -1,0 +1,257 @@
+
+	DEF_TEX テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: DEF_TEX.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+DEF_TEX		タスク例外処理ルーチンの定義〔S〕
+def_tex		タスク例外処理ルーチンの定義〔TD〕
+
+【静的API】
+	DEF_TEX(ID tskid, { ATR texatr, TEXRTN texrtn })
+
+【C言語API】
+	ER ercd = def_tex(ID tskid, const T_DTEX *pk_dtex)
+
+【パラメータ】
+	ID			tskid		対象タスクのID番号
+	T_DTEX *	pk_dtex		タスク例外処理ルーチンの定義情報を入れたパ
+							ケットへのポインタ（静的APIを除く）
+
+　＊タスク例外処理ルーチンの定義情報（パケットの内容）
+	ATR			texatr		タスク例外処理ルーチン属性
+	TEXRTN		texrtn		タスク例外処理ルーチンの先頭番地
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX〔s〕		コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（tskidが不正）
+	E_RSATR			予約属性（texatrが不正または使用できない，属する保
+					護ドメインかクラスが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象タスクが未登録）
+	E_OACV〔sP〕	オブジェクトアクセス違反（対象タスクに対する管理操
+					作が許可されていない）
+	E_MACV〔sP〕	メモリアクセス違反（pk_dtexが指すメモリ領域への読出
+					しアクセスが許可されていない）
+	E_PAR			パラメータエラー（texrtnが不正）
+	E_OBJ			オブジェクト状態エラー（タスク例外処理ルーチンを定
+					義済みのタスクに対する定義，タスク例外処理ルーチン
+					を未定義のタスクに対する解除，対象タスクは静的APIで
+					生成された：def_texの場合）
+
+【機能】
+
+tskidで指定したタスク（対象タスク）に対して，各パラメータで指定したタス
+ク例外処理ルーチン定義情報に従って，タスク例外処理ルーチンを定義する．
+
+ただし，def_texにおいてpk_dtexをNULLにした場合には，対象タスクに対する
+タスク例外処理ルーチンの定義を解除する．また，対象タスクのタスク例外処
+理禁止フラグをセットし，保留例外要因を0に初期化する．
+
+静的APIにおいては，tskidはオブジェクト識別名，texatrは整数定数式パラメー
+タ，texrtnは一般定数式パラメータである．
+
+静的APIによって生成したタスクに対しては，タスク例外処理ルーチンの登録は
+DEF_TEXによって行わねばならず，def_texによってタスク例外処理ルーチンを
+登録／登録解除することはできない．def_texにおいて，対象タスクが静的API
+で生成したタスクである場合には，E_OBJエラーとなる．
+
+タスク例外処理ルーチンを定義する場合（DEF_TEXの場合およびdef_texにおい
+てpk_dtexをNULL以外にした場合）で，対象タスクに対してすでにタスク例外処
+理ルーチンが定義されている場合には，E_OBJエラーとなる．
+
+保護機能対応カーネルにおいて，DEF_TEXは，対象タスクが属する保護ドメイン
+の囲みの中に記述しなければならない．そうでない場合には，E_RSATRエラーと
+なる．また，def_texでタスク例外処理ルーチンを定義する場合には，タスク例
+外処理ルーチンの属する保護ドメインを設定する必要はなく，タスク例外処理
+ルーチン属性にTA_DOM(domid)を指定した場合にはE_RSATRエラーとなる．ただ
+し，TA_DOM(TDOM_SELF)を指定した場合には，指定が無視され，E_RSATRエラー
+は検出されない．
+
+タスク例外処理ルーチンの定義を解除する場合（def_texにおいてpk_dtexを
+NULLにした場合）で，対象タスクに対してタスク例外処理ルーチンが定義され
+ていない場合には，E_OBJエラーとなる．
+
+def_texにおいてtskidにTSK_SELF（＝0）を指定すると，自タスクが対象タスク
+となる．
+
+【TOPPERS/ASPカーネルにおける規定】
+
+ASPカーネルでは，DEF_TEXのみをサポートする．ただし，動的生成機能拡張パッ
+ケージでは，def_texもサポートする．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，DEF_TEXのみをサポートする．
+
+【TOPPERS/HRP2カーネルにおける規定】
+
+HRP2カーネルでは，DEF_TEXのみをサポートする．
+
+【μITRON4.0仕様との関係】
+
+texrtnのデータ型をTEXRTNに変更した．
+
+def_texによって，定義済みのタスク例外処理ルーチンを再定義しようとした場
+合に，E_OBJエラーとすることにした．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) texatrが不正の時にE_RSATRが返ること．
+
+(b) texrtnが不正の時にE_PARが返ること．
+
+(c) tskidに指定したタスクが既にタスク例外処理ルーチンを定義済みのとき，
+    E_OBJが返ること．
+
+【備考】
+・E_IDは返らないため，テストは必要ない．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(d) 生成したタスク例外処理ルーチンが，タスク例外要求時に起動すること．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ エラーチェック
+01 : $FOREACH tskid TSK.ID_LIST$
+02 : $	// tskatrが（［TA_ACT］）でない場合（E_RSATR）
+03 : 	$IF (TSK.TSKATR[tskid] & ~(TA_ACT|TARGET_TSKATR)) != 0$
+04 : 		$ERROR TSK.TEXT_LINE[tskid]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "tskatr", TSK.TSKATR[tskid], tskid, "CRE_TSK")$$END$
+05 : 	$END$
+06 : 
+07 : $	// (TMIN_TPRI <= itskpri && itskpri <= TMAX_TPRI)でない場合（E_PAR）
+08 : 	$IF !(TMIN_TPRI <= TSK.ITSKPRI[tskid] && TSK.ITSKPRI[tskid] <= TMAX_TPRI)$
+09 : 		$ERROR TSK.TEXT_LINE[tskid]$E_PAR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "itskpri", TSK.ITSKPRI[tskid], tskid, "CRE_TSK")$$END$
+10 : 	$END$
+11 : 
+12 : $ 	// texatrが（TA_NULL）でない場合（E_RSATR）
+13 : 	$IF LENGTH(TSK.TEXATR[tskid]) && TSK.TEXATR[tskid] != 0$
+14 : 		$ERROR DEF_TEX.TEXT_LINE[tskid]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "texatr", TSK.TEXATR[tskid], tskid, "DEF_TEX")$$END$
+15 : 	$END$
+16 : $END$
+
+[B] kernel_check.tf
+
+00 : $	// タスクとタスク例外処理ルーチンの先頭番地のチェック
+01 : 	$tinib = SYMBOL("_kernel_tinib_table")$
+02 : 	$FOREACH tskid TSK.ID_LIST$
+03 : 		$task = PEEK(tinib + offsetof_TINIB_task, sizeof_FP)$
+04 : 		$IF LENGTH(CHECK_FUNC_ALIGN) && (task & (CHECK_FUNC_ALIGN - 1))$
+05 : 			$ERROR TSK.TEXT_LINE[tskid]$E_PAR: 
+06 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is not aligned"),
+07 : 				"task", TSK.TASK[tskid], tskid, "CRE_TSK")$$END$
+08 : 		$END$
+09 : 		$IF LENGTH(CHECK_FUNC_NONNULL) && (task == 0)$
+10 : 			$ERROR TSK.TEXT_LINE[tskid]$E_PAR: 
+11 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is null"),
+12 : 				"task", TSK.TASK[tskid], tskid, "CRE_TSK")$$END$
+13 : 		$END$
+14 : 		$texrtn = PEEK(tinib + offsetof_TINIB_texrtn, sizeof_FP)$
+15 : 		$IF LENGTH(CHECK_FUNC_ALIGN) && (texrtn & (CHECK_FUNC_ALIGN - 1))$
+16 : 			$ERROR DEF_TEX.TEXT_LINE[tskid]$E_PAR: 
+17 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is not aligned"),
+18 : 				"texrtn", TSK.TEXRTN[tskid], tskid, "DEF_TEX")$$END$
+19 : 		$END$
+20 : 		$tinib = tinib + sizeof_TINIB$
+21 : 	$END$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 13 : LENGTH(TSK.TEXATR[tskid])
+(A2) 13 : TSK.TEXATR[tskid] != 0
+
+(B1) 15 : (texrtn & (CHECK_FUNC_ALIGN - 1))
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+     (A1) (A2) (B1)
+(a)   T    T    D
+(b)   T    F    F
+(c)   T    F    T
+(d)   T    F    T
+-------------------
+網羅  X    O    O
+
+・[A]の03行，07行はタスクに関する条件式なので，ここでは対象外とする．
+・(A1)はCRE_TSKの網羅表における条件(A5)でfalseとなることを評価している
+  ため，ここでは網羅しない．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

@@ -1,0 +1,59 @@
+version: "$Id: ini_sem_c-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_ini_sem_c_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : SEM1
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : SEM1
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : SEM1
+
+    SEM1:
+      type   : SEMAPHORE
+      sematr : TA_NULL
+      maxsem : ANY_MAX_SEMCNT
+      isemcnt: ANY_INI_SEMCNT
+      semcnt : 0
+      wtsklist:
+        - TASK4:
+        - TASK3:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ini_sem(SEM1)
+
+  post_condition:
+    TASK1:
+      tskstat    : ready
+      porder: 1
+
+    TASK2:
+      tskstat: running
+
+    TASK3:
+      tskstat: ready
+
+    TASK4:
+      tskstat    : ready
+      porder: 2
+
+    SEM1:
+      semcnt : ANY_INI_SEMCNT
+      wtsklist:

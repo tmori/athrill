@@ -1,0 +1,49 @@
+version: "$Id: imrot_rdq_F-d-2-1-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_imrot_rdq_F_d_2_1_3:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+      porder : 1
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: ready
+      tskpri : TSK_PRI_MID
+      porder : 2
+      prcid  : PRC_SELF
+
+    TASK3:
+      type   : TASK
+      tskstat: ready
+      tskpri : TSK_PRI_MID
+      porder : 3
+      prcid  : PRC_SELF
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      chg_ipm: INT_PRI_TIMER
+      prcid  : PRC_SELF
+
+  do:
+    id     : ALM1
+    syscall: imrot_rdq(TSK_PRI_MID, PRC_SELF)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      porder : 3
+
+    TASK2:
+      porder : 1
+
+    TASK3:
+      porder : 2

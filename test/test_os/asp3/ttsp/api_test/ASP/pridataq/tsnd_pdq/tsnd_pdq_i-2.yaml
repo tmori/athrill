@@ -1,0 +1,29 @@
+version: "$Id: tsnd_pdq_i-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_tsnd_pdq_i_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 0
+      stsklist :
+
+  do:
+    id     : TASK1
+    syscall: tsnd_pdq(PDQ1, DATA_A, DATA_PRI_HIGH, TMO_FEVR)
+
+  post_condition:
+    0:
+      TASK1:
+        tskstat: waiting
+        wobjid : PDQ1
+
+      PDQ1:
+        stsklist :
+          - TASK1:
+              data   : DATA_A
+              datapri: DATA_PRI_HIGH
+
+    FOREVER_TIME:

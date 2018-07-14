@@ -1,0 +1,30 @@
+version: "$Id: sig_sem_e-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_sig_sem_e_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : SEM1
+
+    SEM1:
+      type   : SEMAPHORE
+      maxsem : ANY_MAX_SEMCNT
+      semcnt : 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: sig_sem(SEM1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended
+
+    SEM1:
+      wtsklist:

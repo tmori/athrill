@@ -1,0 +1,17 @@
+version: "$Id: iunl_cpu_a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_sys_manage_iunl_cpu_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do:
+    id     : TASK1
+    syscall: iunl_cpu()
+    ercd   : E_CTX
+
+  post_condition:

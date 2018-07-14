@@ -1,0 +1,79 @@
+version: "$Id: ras_tex_g-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_except_ras_tex_g_4:
+  note: TESRY_011
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SEM1
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK2
+      texstat: TTEX_ENA
+      hdlstat: STP
+      pndptn : TEXPTN_0A
+
+    SEM1:
+      type    : SEMAPHORE
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+
+  do_0:
+    id     : TASK1
+    syscall: ras_tex(TASK2, TEXPTN_A)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_0:
+    TEX1:
+      pndptn : TEXPTN_0A|TEXPTN_A
+
+  do_1:
+    id     : TASK1
+    syscall: sig_sem(SEM1)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_1:
+    TASK2:
+      tskstat: ready
+
+    SEM1:
+      wtsklist:
+
+  do_2:
+    id     : TASK1
+    syscall: slp_tsk()
+    gcov   : true
+
+  post_condition_2:
+    TASK1:
+      tskstat: waiting
+      wobjid : SLEEP
+
+    TASK2:
+      tskstat: running
+
+    TEX1:
+      texstat: TTEX_DIS
+      hdlstat: ACTIVATE
+      texptn : TEXPTN_0A|TEXPTN_A
+      pndptn : 0
+
+  do_3:
+    id     : TEX1
+    code   : return
+    gcov   : true
+
+  post_condition_3:
+    TEX1:
+      texstat: TTEX_ENA
+      hdlstat: STP
+      texptn : 0

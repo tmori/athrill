@@ -1,0 +1,359 @@
+
+	snd_dtq テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: snd_dtq.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+snd_dtq		データキューへの送信〔T〕
+psnd_dtq	データキューへの送信（ポーリング）〔T〕
+ipsnd_dtq	データキューへの送信（ポーリング）〔I〕
+tsnd_dtq	データキューへの送信（タイムアウト付き）〔T〕
+
+【C言語API】
+	ER ercd = snd_dtq(ID dtqid, intptr_t data)
+	ER ercd = psnd_dtq(ID dtqid, intptr_t data)
+	ER ercd = ipsnd_dtq(ID dtqid, intptr_t data)
+	ER ercd = tsnd_dtq(ID dtqid, intptr_t data, TMO tmout)
+
+【パラメータ】
+	ID			dtqid		対象データキューのID番号
+	intptr_t	data		送信データ
+	TMO			tmout		タイムアウト時間（tsnd_dtqの場合）
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：ipsnd_dtqを除く，タスクコンテキストからの呼出し：
+					ipsnd_dtqの場合，CPUロック状態からの呼出し，ディス
+					パッチ保留状態からの呼出し：snd_dtqとtsnd_dtqの場合）
+	E_NOSPT			未サポート機能（制約タスクからの呼出し：snd_dtqと
+					tsnd_dtqの場合）
+	E_ID			不正ID番号（dtqidが不正）
+	E_PAR			パラメータエラー（tmoutが不正：tsnd_dtqの場合）
+	E_NOEXS〔D〕	オブジェクト未登録（対象データキューが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象データキューに対する
+					通常操作1が許可されていない：ipsnd_dtqを除く）
+	E_TMOUT			ポーリング失敗またはタイムアウト（snd_dtqを除く）
+	E_RLWAI			待ち禁止状態または待ち状態の強制解除（snd_dtqと
+					tsnd_dtqの場合）
+	E_DLT			待ちオブジェクトの削除または再初期化（snd_dtqと
+					tsnd_dtqの場合）
+
+【機能】
+
+dtqidで指定したデータキュー（対象データキュー）に，dataで指定したデータ
+を送信する．具体的な振舞いは以下の通り．
+
+対象データキューの受信待ち行列にタスクが存在する場合には，受信待ち行列
+の先頭のタスクが，dataで指定したデータを受信し，待ち解除される．待ち解
+除されたタスクには，待ち状態となったサービスコールからE_OKが返る．
+
+対象データキューの受信待ち行列にタスクが存在せず，データキュー管理領域
+にデータを格納するスペースがある場合には，dataで指定したデータが，FIFO
+順でデータキュー管理領域に格納される．
+
+対象データキューの受信待ち行列にタスクが存在せず，データキュー管理領域
+にデータを格納するスペースがない場合には，自タスクはデータキューへの送
+信待ち状態となり，対象データキューの送信待ち行列につながれる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+１．仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+snd_dtq(ID dtqid, intptr_t data)
+{
+	DTQCB	*p_dtqcb;
+	bool_t	dspreq = false;
+	ER		ercd;
+	TCB		*p_tcb;
+	PCB		*my_p_pcb;
+	PCB		*p_pcb;
+	TCB		*p_runtsk;
+
+	LOG_SND_DTQ_ENTER(dtqid, data);
+	CHECK_TSKCTX_UNL();
+	CHECK_DTQID(dtqid);
+	p_dtqcb = get_dtqcb(dtqid);
+
+	t_lock_cpu();
+	my_p_pcb = get_my_p_pcb();
+	T_CHECK_DISPATCH(my_p_pcb);
+
+  retry:
+	t_acquire_obj_lock(&GET_OBJLOCK(p_dtqcb));
+	/* この間は繰り返し実行されるため，非破壊コードでなければならない．*/
+	if (!queue_empty(&(p_dtqcb->rwait_queue))) {
+		p_tcb = (TCB *)(p_dtqcb->rwait_queue.p_next);
+		if ((p_pcb = t_acquire_nested_tsk_lock(p_tcb, &GET_OBJLOCK(p_dtqcb))) == NULL){
+			goto retry;
+		}
+		queue_delete((QUEUE *) p_tcb);
+		p_tcb->winfo_obj.dtq.data = data;
+		if (wait_complete(p_tcb)) {
+			dspreq = dispatch_request(p_pcb);
+		}
+		release_nested_tsk_lock(p_pcb);
+		release_obj_lock(&GET_OBJLOCK(p_dtqcb));
+		if (dspreq) {
+			dispatch();
+		}
+		ercd = E_OK;
+	}
+	else if (p_dtqcb->count < p_dtqcb->p_dtqinib->dtqcnt) {
+		enqueue_data(p_dtqcb, data);
+		release_obj_lock(&GET_OBJLOCK(p_dtqcb));
+		ercd = E_OK;
+	}
+	else {
+		if ((my_p_pcb = t_acquire_nested_tsk_lock_self(&GET_OBJLOCK(p_dtqcb))) == NULL) {
+			goto retry;
+		}
+		p_runtsk = my_p_pcb->p_runtsk;
+		p_runtsk->winfo_obj.dtq.data = data;
+		p_runtsk->tstat = (TS_WAITING | TS_WAIT_SDTQ);
+		wobj_make_wait((WOBJCB *) p_dtqcb, p_runtsk);
+		release_nested_tsk_lock(my_p_pcb);
+		release_obj_lock(&GET_OBJLOCK(p_dtqcb));
+		dispatch();
+		ercd = p_runtsk->wercd;
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_SND_DTQ_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] snd_dtq
+
+00 : ER
+01 : snd_dtq(ID dtqid, intptr_t data)
+02 : {
+03 : 	DTQCB	*p_dtqcb;
+04 : 	bool_t	dspreq = false;
+05 : 	ER		ercd;
+06 : 	TCB		*p_tcb;
+07 : 	PCB		*my_p_pcb;
+08 : 	PCB		*p_pcb;
+09 : 	TCB		*p_runtsk;
+10 : 
+11 : 	if (!sense_tskctx_unl()) {
+12 : 		ercd = E_CTX;
+13 : 		goto error_exit;
+14 : 	}
+15 :	if (!(TMIN_DTQID <= (dtqid) && (dtqid) <= tmax_dtqid)) {
+16 :	ercd = E_ID;
+17 :	goto error_exit;
+18 :	}
+19 : 	p_dtqcb = (p_dtqcb_table[(uint_t)((dtqid) - TMIN_DTQID)];
+20 : 
+21 : 	t_lock_cpu();
+22 : 	my_p_pcb = get_my_p_pcb();
+23 : 
+24 :    if (!(my_p_pcb->dspflg)) {
+25 :        ercd = E_CTX;
+26 :        t_unlock_cpu();
+27 :        goto error_exit;
+28 :    }
+29 : 
+30 :   retry:
+31 : 	t_acquire_obj_lock(&GET_OBJLOCK(p_dtqcb));
+32 : 	if (!queue_empty(&(p_dtqcb->rwait_queue))) {
+33 : 		p_tcb = (TCB *)(p_dtqcb->rwait_queue.p_next);
+34 : 		if ((p_pcb = t_acquire_nested_tsk_lock(p_tcb, &GET_OBJLOCK(p_dtqcb))) == NULL){
+35 : 			goto retry;
+36 : 		}
+37 : 		queue_delete((QUEUE *) p_tcb);
+38 : 		p_tcb->winfo_obj.dtq.data = data;
+39 : 		if (wait_complete(p_tcb)) {
+40 : 			dspreq = dispatch_request(p_pcb);
+41 : 		}
+42 : 		release_nested_tsk_lock(p_pcb);
+43 : 		release_obj_lock(&GET_OBJLOCK(p_dtqcb));
+44 : 		if (dspreq) {
+45 : 			dispatch();
+46 : 		}
+47 : 		ercd = E_OK;
+48 : 	}
+49 : 	else if (p_dtqcb->count < p_dtqcb->p_dtqinib->dtqcnt) {
+50 : 		enqueue_data(p_dtqcb, data);
+51 : 		release_obj_lock(&GET_OBJLOCK(p_dtqcb));
+52 : 		ercd = E_OK;
+53 : 	}
+54 : 	else {
+55 : 		if ((my_p_pcb = t_acquire_nested_tsk_lock_self(&GET_OBJLOCK(p_dtqcb))) == NULL) {
+56 : 			goto retry;
+57 : 		}
+58 : 		p_runtsk = my_p_pcb->p_runtsk;
+59 : 		p_runtsk->winfo_obj.dtq.data = data;
+60 : 		p_runtsk->tstat = (TS_WAITING | TS_WAIT_SDTQ);
+61 : 		wobj_make_wait((WOBJCB *) p_dtqcb, p_runtsk);
+62 : 		release_nested_tsk_lock(my_p_pcb);
+63 : 		release_obj_lock(&GET_OBJLOCK(p_dtqcb));
+64 : 		dispatch();
+65 : 		ercd = p_runtsk->wercd;
+66 : 	}
+67 : 	t_unlock_cpu();
+68 : 
+69 :   error_exit:
+70 : 	return(ercd);
+71 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 11 : !sense_tskctx_unl()
+(A2) 15 : TMIN_DTQID <= (dtqid)
+(A3) 15 : (dtqid) <= tmax_dtqid
+(A4) 24 : !(my_p_pcb->dspflg)
+(A5) 32 : !queue_empty(&(p_dtqcb->rwait_queue))
+(A6) 39 : wait_complete(p_tcb)
+(A7) 44 : dspreq
+(A8) 49 : p_dtqcb->count < p_dtqcb->p_dtqinib->dtqcnt
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+             (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8)
+(a-1)         T    D    D    D    D    D    D    D
+(a-2)         T    D    D    D    D    D    D    D
+(a-3)         F    T    T    T    D    D    D    D
+(a-4)         F    T    T    T    D    D    D    D
+(b-1)         F    F   D/T   D    D    D    D    D
+(b-2)         F    T    F    D    D    D    D    D
+(c)           F    T    T    F    F    D    D    F
+(d)           F    T    T    F    F    D    D    F
+(e)           F    T    T    F    F    D    D    F
+(f-1-1)       F    T    T    F    T    T    T    D
+(f-1-2)       F    T    T    F    T    F    F    D
+(f-1-3)       F    T    T    F    T    F    F    D
+(f-1-4)       F    T    T    F    T    F    F    D
+(f-2-1)       F    T    T    F    T    T    T    D
+(f-2-2)       F    T    T    F    T    F    F    D
+(f-2-3)       F    T    T    F    T    F    F    D
+(f-2-4)       F    T    T    F    T    F    F    D
+(g-1-1-1)     F    T    T    F    F    D    D    F
+(g-1-1-2)     F    T    T    F    F    D    D    F
+(g-1-1-3)     F    T    T    F    F    D    D    F
+(g-1-1-4)     F    T    T    F    F    D    D    F
+(g-1-2-1)     F    T    T    F    F    D    D    F
+(g-1-2-2)     F    T    T    F    F    D    D    F
+(g-1-2-3)     F    T    T    F    F    D    D    F
+(g-1-2-4)     F    T    T    F    F    D    D    F
+(g-2-1)       F    T    T    F    F    D    D    T
+(g-2-2)       F    T    T    F    F    D    D    T
+(F-a)         T    D    D    D    D    D    D    D
+(F-b)         F    T    T    F    F    D    D    F
+(F-c)         F    T    T    F    F    D    D    F
+(F-d)         F    T    T    F    F    D    D    F
+(F-e-1-1-1)   F    T    T    F    T    T    F    D
+(F-e-1-1-2)   F    T    T    F    T    F    F    D
+(F-e-1-1-3)   F    T    T    F    T    F    F    D
+(F-e-1-1-4)   F    T    T    F    T    T    F    D
+(F-e-1-1-5)   F    T    T    F    T    T    F    D
+(F-e-1-1-6)   F    T    T    F    T    T    F    D
+(F-e-1-2)     F    T    T    F    T    F    F    D
+(F-e-1-3)     F    T    T    F    T    F    F    D
+(F-e-1-4)     F    T    T    F    T    F    F    D
+(F-e-1-5-1)   F    T    T    F    T    T    F    D
+(F-e-1-5-2)   F    T    T    F    T    T    F    D
+(F-e-1-5-3)   F    T    T    F    T    F    F    D
+(F-e-2-1-1)   F    T    T    F    T    T    F    D
+(F-e-2-1-2)   F    T    T    F    T    F    F    D
+(F-e-2-1-3)   F    T    T    F    T    F    F    D
+(F-e-2-1-4)   F    T    T    F    T    T    F    D
+(F-e-2-1-5)   F    T    T    F    T    T    F    D
+(F-e-2-1-6)   F    T    T    F    T    T    F    D
+(F-e-2-2)     F    T    T    F    T    F    F    D
+(F-e-2-3)     F    T    T    F    T    F    F    D
+(F-e-2-4)     F    T    T    F    T    F    F    D
+(F-e-2-5-1)   F    T    T    F    T    T    F    D
+(F-e-2-5-2)   F    T    T    F    T    T    F    D
+(F-e-2-5-3)   F    T    T    F    T    F    F    D
+(F-f-1-1)     F    T    T    F    F    D    D    F
+(F-f-1-2)     F    T    T    F    F    D    D    F
+(F-f-1-3)     F    T    T    F    F    D    D    F
+(F-f-2-1)     F    T    T    F    F    D    D    F
+(F-f-2-2)     F    T    T    F    F    D    D    F
+(F-f-2-3)     F    T    T    F    F    D    D    F
+----------------------------------------------------
+網羅          O    O    O    O    O    O    O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+以上．

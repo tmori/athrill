@@ -1,0 +1,47 @@
+version: "$Id: ext_tsk_b-1-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_ext_tsk_b_1_3:
+  pre_condition:
+    TASK1:
+      type    : TASK
+      tskstat : running
+      itskpri : TSK_PRI_LOW
+      tskpri  : TSK_PRI_MID
+      actcnt  : 1
+      wupcnt  : 1
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK1
+      texstat: TTEX_DIS
+      hdlstat: STP
+      pndptn : TEXPTN_A
+
+    TASK2:
+      type    : TASK
+      tskstat : ready
+      tskpri  : TSK_PRI_MID
+
+    CPU_STATE:
+      type   : CPU_STATE
+      chg_ipm: ANY_IPM
+
+  do:
+    id     : TASK1
+    syscall: ext_tsk()
+
+  post_condition:
+    TASK1:
+      tskstat : ready
+      tskpri  : TSK_PRI_LOW
+      actcnt  : 0
+      wupcnt  : 0
+      bootcnt : 1
+
+    TEX1:
+      pndptn : 0
+
+    TASK2:
+      tskstat : running
+
+    CPU_STATE:
+      chg_ipm: TIPM_ENAALL

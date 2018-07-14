@@ -1,0 +1,29 @@
+version: "$Id: wai_flg_i-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_wai_flg_i_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        flgptn:
+          type: FLGPTN
+
+    FLG1:
+      type  : EVENTFLAG
+      flgatr: TA_WMUL
+      flgptn: BIT_PATTERN_0A
+
+  do:
+    id     : TASK1
+    syscall: wai_flg(FLG1, BIT_PATTERN_A, WAIT_FLG_MODE_A, &flgptn)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : FLG1
+
+    FLG1:
+      wtsklist:
+        - TASK1:
+            waiptn: BIT_PATTERN_A
+            wfmode: WAIT_FLG_MODE_A

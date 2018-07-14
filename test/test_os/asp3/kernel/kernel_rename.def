@@ -1,0 +1,148 @@
+# startup.c
+kerflg
+exit_kernel
+
+# task.c
+p_runtsk
+p_schedtsk
+enadsp
+dspflg
+ready_queue
+ready_primap
+initialize_task
+search_schedtsk
+make_runnable
+make_non_runnable
+make_dormant
+make_active
+change_priority
+rotate_ready_queue
+task_terminate
+
+# taskhook.c
+mtxhook_check_ceilpri
+mtxhook_scan_ceilmtx
+mtxhook_release_all
+
+# wait.c
+make_wait_tmout
+wait_complete
+wait_tmout
+wait_tmout_ok
+wobj_make_wait
+wobj_make_wait_tmout
+init_wait_queue
+
+# time_event.c
+boundary_evttim
+current_evttim
+current_hrtcnt
+monotonic_evttim
+systim_offset
+in_signal_time
+initialize_tmevt
+tmevt_up
+tmevt_down
+update_current_evttim
+set_hrt_event
+tmevtb_register
+tmevtb_enqueue
+tmevtb_dequeue
+check_adjtim
+tmevt_lefttim
+signal_time
+
+# semaphore.c
+initialize_semaphore
+
+# eventflag.c
+initialize_eventflag
+check_flg_cond
+
+# dataqueue.c
+initialize_dataqueue
+enqueue_data
+force_enqueue_data
+dequeue_data
+send_data
+force_send_data
+receive_data
+
+# pridataq.c
+initialize_pridataq
+enqueue_pridata
+dequeue_pridata
+send_pridata
+receive_pridata
+
+# mutex.c
+initialize_mutex
+mutex_check_ceilpri
+mutex_scan_ceilmtx
+mutex_drop_priority
+mutex_acquire
+mutex_release
+mutex_release_all
+
+# mempfix.c
+initialize_mempfix
+get_mpf_block
+
+# cyclic.c
+initialize_cyclic
+call_cyclic
+
+# alarm.c
+initialize_alarm
+call_alarm
+
+# interrupt.c
+initialize_interrupt
+
+# exception.c
+initialize_exception
+
+# kernel_cfg.c
+initialize_object
+call_inirtn
+call_terrtn
+tmax_tskid
+tinib_table
+torder_table
+tcb_table
+tmax_semid
+seminib_table
+semcb_table
+tmax_flgid
+flginib_table
+flgcb_table
+tmax_dtqid
+dtqinib_table
+dtqcb_table
+tmax_pdqid
+pdqinib_table
+pdqcb_table
+tmax_mtxid
+mtxinib_table
+mtxcb_table
+tmax_mpfid
+mpfinib_table
+mpfcb_table
+tmax_cycid
+cycinib_table
+cyccb_table
+tmax_almid
+alminib_table
+almcb_table
+tnum_def_inhno
+inhinib_table
+tnum_cfg_intno
+intinib_table
+tnum_def_excno
+excinib_table
+tmevt_heap
+istksz
+istk
+istkpt
+
+INCLUDE "target"

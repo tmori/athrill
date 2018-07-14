@@ -1,0 +1,30 @@
+version: "$Id: wup_tsk_F-a-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_wup_tsk_F_a_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SLEEP
+      prcid  : PRC_SELF
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: wup_tsk(TASK2)
+    eruint : E_CTX
+
+  post_condition:

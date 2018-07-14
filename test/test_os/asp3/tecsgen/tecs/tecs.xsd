@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+    xmlns="http://www.toppers.jp/tecs.html"
+    targetNamespace="http://www.toppers.jp/tecs.html"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
+
+  <!-- 1st element -->
+  <xsd:element name="GUI_Tool">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element minOccurs="0" maxOccurs="unbounded" ref="import" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" ref="namespace" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" ref="signature" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" ref="celltype"  />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" ref="cell" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" ref="region" />
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+    * All elements MUST BE TOP LEVEL to assign global name.
+	* In XML file, all names are treated as global name.
+    * Note: inner elements have local name.
+	 -->
+
+  <!-- elements of statement -->
+  <xsd:element name="import"    type="importType" />
+  <xsd:element name="signature" type="signatureType" />
+  <xsd:element name="celltype"  type="celltypeType" />
+  <xsd:element name="cell"      type="cellType" />
+  <xsd:element name="namespace" type="namespaceType" />
+  <xsd:element name="region"    type="regionType" />
+
+  <!-- elements of name, type, expression(rhs, initializer, subscript)  -->
+  <xsd:element name="name"      type="xsd:string" />
+  <xsd:element name="signame"   type="xsd:string" />
+  <xsd:element name="rettype"   type="xsd:string" />
+  <xsd:element name="type"      type="xsd:string" />
+  <xsd:element name="subscript" type="xsd:string" />
+  <xsd:element name="rhs"       type="xsd:string" />
+  <xsd:element name="initializer" type="xsd:string" />
+  <xsd:element name="choiceElement" type="xsd:string" />
+  <xsd:element name="composite" />                       <!-- treat composite as celltype with 'composite' specifier -->
+  <xsd:element name="singleton" />
+  <xsd:element name="active" />
+
+  <!-- elements for signature -->
+  <xsd:element name="param">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="name"/>
+        <xsd:element ref="type"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="func">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="name"/>
+        <xsd:element ref="rettype" />
+        <xsd:element minOccurs="0" maxOccurs="unbounded" ref="param" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- elements for celltype -->
+  <xsd:element name="attr">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="name"/>
+        <xsd:element ref="type" />
+        <xsd:element minOccurs="0" ref="initializer" />
+        <xsd:element minOccurs="0" maxOccurs="1" ref="choice" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="choice">
+    <xsd:complexType>
+      <xsd:sequence>
+      <xsd:element minOccurs="1" maxOccurs="unbounded" ref="choiceElement"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="call">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="name"/>
+        <xsd:element ref="signame" />
+        <xsd:element minOccurs="0" ref="subscript" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="entry">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="name"/>
+        <xsd:element ref="signame" />
+        <xsd:element minOccurs="0" ref="subscript" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- elements for cell -->
+  <xsd:element name="attr_join">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="name"/>
+        <xsd:element ref="rhs" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="call_join">
+    <xsd:complexType>
+     <xsd:sequence>
+        <xsd:element ref="name"/>
+        <xsd:element minOccurs="0" ref="subscript" />
+        <xsd:element ref="rhs" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- ***** complex types ***** -->
+  <xsd:complexType name="signatureType">
+    <xsd:sequence>
+      <xsd:element ref="name"/>
+      <xsd:element minOccurs="1" maxOccurs="unbounded" ref="func" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="celltypeType">
+    <xsd:sequence>
+      <xsd:choice maxOccurs="unbounded">
+        <xsd:element ref="name"/>
+        <xsd:element maxOccurs="1" ref="composite" />
+        <xsd:element maxOccurs="1" ref="singleton" />
+        <xsd:element maxOccurs="1" ref="active" />
+        <xsd:element maxOccurs="unbounded" ref="attr" />
+        <xsd:element maxOccurs="unbounded" ref="call" />
+        <xsd:element maxOccurs="unbounded" ref="entry" />
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="cellType">
+    <xsd:sequence>
+      <xsd:choice maxOccurs="unbounded">
+        <xsd:element ref="name"/>
+        <xsd:element maxOccurs="unbounded" ref="attr_join" />
+        <xsd:element maxOccurs="unbounded" ref="call_join" />
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="namespaceType">
+    <xsd:sequence maxOccurs="unbounded" >
+      <xsd:element ref="name"/>
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="signature" />
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="celltype" />
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="namespace" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="regionType">
+    <xsd:sequence maxOccurs="unbounded" >
+      <xsd:element ref="name"/>
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="cell" />
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="import" />  <!-- inner: cell, region only -->
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="region" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="importType">
+  	<xsd:sequence>
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="import" />
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="signature" />
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="celltype"  />
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="cell" />
+      <xsd:element minOccurs="0" maxOccurs="unbounded" ref="region" />
+    </xsd:sequence>
+    <xsd:attribute name="path" type="xsd:string" use="required" />
+  </xsd:complexType>
+
+</xsd:schema>

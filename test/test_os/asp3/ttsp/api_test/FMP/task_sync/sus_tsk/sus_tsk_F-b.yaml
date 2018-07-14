@@ -1,0 +1,19 @@
+version: "$Id: sus_tsk_F-b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_sus_tsk_F_b:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: dormant
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: sus_tsk(TASK2)
+    ercd   : E_OBJ
+
+  post_condition:

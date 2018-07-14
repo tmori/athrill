@@ -1,0 +1,329 @@
+version: "$Id: dly_tsk_W_c.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_dly_tsk_W_c:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      porder : 1
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 2
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 3
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 4
+
+    TASK5:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 5
+
+    TASK6:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 6
+
+    TASK7:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 7
+
+    TASK8:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 8
+
+    TASK9:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 9
+
+    TASK10:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: ready
+
+  do_0:
+    0:
+      id     : TASK1
+      syscall: tslp_tsk(2)
+      gcov   : false
+
+  post_condition_0:
+    0:
+      TASK1:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 2
+
+      TASK2:
+        tskstat: running
+        porder : 1
+
+      TASK3:
+        porder : 2
+
+      TASK4:
+        porder : 3
+
+      TASK5:
+        porder : 4
+
+      TASK6:
+        porder : 5
+
+      TASK7:
+        porder : 6
+
+      TASK8:
+        porder : 7
+
+      TASK9:
+        porder : 8
+
+  do_1:
+    0:
+      id     : TASK2
+      syscall: tslp_tsk(3)
+      gcov   : false
+
+  post_condition_1:
+    0:
+      TASK2:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 3
+
+      TASK3:
+        tskstat: running
+        porder : 1
+
+      TASK4:
+        porder : 2
+
+      TASK5:
+        porder : 3
+
+      TASK6:
+        porder : 4
+
+      TASK7:
+        porder : 5
+
+      TASK8:
+        porder : 6
+
+      TASK9:
+        porder : 7
+
+  do_2:
+    0:
+      id     : TASK3
+      syscall: tslp_tsk(4)
+      gcov   : false
+
+  post_condition_2:
+    0:
+      TASK3:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 4
+
+      TASK4:
+        tskstat: running
+        porder : 1
+
+      TASK5:
+        porder : 2
+
+      TASK6:
+        porder : 3
+
+      TASK7:
+        porder : 4
+
+      TASK8:
+        porder : 5
+
+      TASK9:
+        porder : 6
+
+  do_3:
+    0:
+      id     : TASK4
+      syscall: tslp_tsk(5)
+      gcov   : false
+
+  post_condition_3:
+    0:
+      TASK4:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 5
+
+      TASK5:
+        tskstat: running
+        porder : 1
+
+      TASK6:
+        porder : 2
+
+      TASK7:
+        porder : 3
+
+      TASK8:
+        porder : 4
+
+      TASK9:
+        porder : 5
+
+  do_4:
+    0:
+      id     : TASK5
+      syscall: tslp_tsk(6)
+      gcov   : false
+
+  post_condition_4:
+    0:
+      TASK5:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 6
+
+      TASK6:
+        tskstat: running
+        porder : 1
+
+      TASK7:
+        porder : 2
+
+      TASK8:
+        porder : 3
+
+      TASK9:
+        porder : 4
+
+  do_5:
+    0:
+      id     : TASK6
+      syscall: tslp_tsk(7)
+      gcov   : false
+
+  post_condition_5:
+    0:
+      TASK6:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 7
+
+      TASK7:
+        tskstat: running
+        porder : 1
+
+      TASK8:
+        porder : 2
+
+      TASK9:
+        porder : 3
+
+  do_6:
+    0:
+      id     : TASK7
+      syscall: tslp_tsk(8)
+      gcov   : false
+
+  post_condition_6:
+    0:
+      TASK7:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 8
+
+      TASK8:
+        tskstat: running
+        porder : 1
+
+      TASK9:
+        porder : 2
+
+  do_7:
+    0:
+      id     : TASK8
+      syscall: tslp_tsk(9)
+      gcov   : false
+
+  post_condition_7:
+    0:
+      TASK8:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 9
+
+      TASK9:
+        tskstat: running
+        porder : 1
+
+  do_8:
+    0:
+      id     : TASK9
+      syscall: dly_tsk(1)
+      ercd   : E_OK
+      gcov   : true
+
+  post_condition_8:
+    0:
+      TASK9:
+        tskstat: waiting
+        wobjid : DELAY
+        lefttmo: 1
+
+      TASK10:
+        tskstat: running
+
+    2:
+      TASK1:
+        lefttmo: 0
+
+      TASK2:
+        lefttmo: 1
+
+      TASK3:
+        lefttmo: 2
+
+      TASK4:
+        lefttmo: 3
+
+      TASK5:
+        lefttmo: 4
+
+      TASK6:
+        lefttmo: 5
+
+      TASK7:
+        lefttmo: 6
+
+      TASK8:
+        lefttmo: 7
+
+      TASK9:
+        tskstat: running
+
+      TASK10:
+        tskstat: ready

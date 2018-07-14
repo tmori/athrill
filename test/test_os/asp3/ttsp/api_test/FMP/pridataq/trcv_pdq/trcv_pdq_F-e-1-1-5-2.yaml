@@ -1,0 +1,66 @@
+version: "$Id: trcv_pdq_F-e-1-1-5-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_trcv_pdq_F_e_1_1_5_2:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_OTHER
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 3
+      maxdpri : DATA_PRI_MAX
+      stsklist : 
+        - TASK2:
+              data:     DATA_A
+              datapri:  DATA_PRI_HIGH
+      datalist : 
+        - data:     DATA_B
+          datapri:  DATA_PRI_MID
+        - data:     DATA_C
+          datapri:  DATA_PRI_MID
+        - data:     DATA_D
+          datapri:  DATA_PRI_LOW
+
+  do:
+    id     : TASK1
+    syscall: trcv_pdq(PDQ1, &data, &datapri, ANY_ELAPSED_TIME)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var    : 
+        data:
+          value: DATA_B
+        datapri:
+          value: DATA_PRI_MID
+
+    TASK2:
+      tskstat: ready
+
+    PDQ1:
+      stsklist : 
+      datalist : 
+        - data:     DATA_A
+          datapri:  DATA_PRI_HIGH
+        - data:     DATA_C
+          datapri:  DATA_PRI_MID
+        - data:     DATA_D
+          datapri:  DATA_PRI_LOW

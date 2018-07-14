@@ -1,0 +1,32 @@
+version: "$Id: ref_mbx_F-b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mailbox_ref_mbx_F_b:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        pk_rmbx:
+          type: T_RMBX
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MBX1
+      prcid  : PRC_OTHER
+
+    MBX1:
+      type    : MAILBOX
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ref_mbx(MBX1, &pk_rmbx)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        pk_rmbx:
+          wtskid: TASK2

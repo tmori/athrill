@@ -1,0 +1,36 @@
+version: "$Id: prcv_pdq_d-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_prcv_pdq_d_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 3
+      maxdpri : DATA_PRI_MAX
+      stsklist : 
+      datalist : 
+        - data:     DATA_A
+          datapri:  DATA_PRI_HIGH
+
+  do:
+    id     : TASK1
+    syscall: prcv_pdq(PDQ1, &data, &datapri)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var    : 
+        data:
+          value: DATA_A
+        datapri:
+          value: DATA_PRI_HIGH
+
+    PDQ1:
+      datalist : 

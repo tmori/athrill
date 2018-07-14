@@ -1,0 +1,31 @@
+version: "$Id: dis_dsp_F-b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_dis_dsp_F_b:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: false
+      prcid  : PRC_SELF
+
+    CPU_STATE2:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: dis_dsp()
+    ercd   : E_OK
+
+  post_condition:
+    CPU_STATE1:
+      dis_dsp: true

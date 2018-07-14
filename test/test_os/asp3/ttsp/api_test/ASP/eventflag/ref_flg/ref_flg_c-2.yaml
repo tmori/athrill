@@ -1,0 +1,34 @@
+version: "$Id: ref_flg_c-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_ref_flg_c_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rflg:
+          type: T_RFLG
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+
+    FLG1:
+      type  : EVENTFLAG
+      flgptn: BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_B
+            wfmode: WAIT_FLG_MODE_A
+
+  do:
+    id     : TASK1
+    syscall: ref_flg(FLG1, &rflg)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rflg:
+          wtskid: TASK2
+          flgptn: BIT_PATTERN_0A

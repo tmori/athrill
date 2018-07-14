@@ -1,0 +1,60 @@
+version: "$Id: dly_tsk_W_a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_dly_tsk_W_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: ready
+
+  do_0:
+    0:
+      id     : TASK1
+      syscall: tslp_tsk(3)
+      gcov   : false
+
+  post_condition_0:
+    0:
+      TASK1:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 3
+
+      TASK2:
+        tskstat: running
+
+  do_1:
+    0:
+      id     : TASK2
+      syscall: dly_tsk(2)
+      ercd   : E_OK
+      gcov   : true
+
+  post_condition_1:
+    0:
+      TASK2:
+        tskstat: waiting
+        wobjid : DELAY
+        lefttmo: 2
+
+      TASK3:
+        tskstat: running
+
+    3:
+      TASK1:
+        lefttmo: 0
+
+      TASK2:
+        tskstat: running
+
+      TASK3:
+        tskstat: ready

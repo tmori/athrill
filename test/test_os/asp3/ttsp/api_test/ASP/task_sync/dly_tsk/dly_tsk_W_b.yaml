@@ -1,0 +1,124 @@
+version: "$Id: dly_tsk_W_b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_dly_tsk_W_b:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      porder : 1
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 2
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 3
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 4
+
+    TASK5:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: ready
+
+  do_0:
+    0:
+      id     : TASK1
+      syscall: tslp_tsk(2)
+      gcov   : false
+
+  post_condition_0:
+    0:
+      TASK1:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 2
+
+      TASK2:
+        tskstat: running
+        porder : 1
+
+      TASK3:
+        porder : 2
+
+      TASK4:
+        porder : 3
+
+  do_1:
+    0:
+      id     : TASK2
+      syscall: tslp_tsk(3)
+      gcov   : false
+
+  post_condition_1:
+    0:
+      TASK2:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 3
+
+      TASK3:
+        tskstat: running
+        porder : 1
+
+      TASK4:
+        porder : 2
+
+  do_2:
+    0:
+      id     : TASK3
+      syscall: tslp_tsk(4)
+      gcov   : false
+
+  post_condition_2:
+    0:
+      TASK3:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: 4
+
+      TASK4:
+        tskstat: running
+        porder : 1
+
+  do_3:
+    0:
+      id     : TASK4
+      syscall: dly_tsk(1)
+      ercd   : E_OK
+      gcov   : true
+
+  post_condition_3:
+    0:
+      TASK4:
+        tskstat: waiting
+        wobjid : DELAY
+        lefttmo: 1
+
+      TASK5:
+        tskstat: running
+
+    2:
+      TASK1:
+        lefttmo: 0
+
+      TASK2:
+        lefttmo: 1
+
+      TASK3:
+        lefttmo: 2
+
+      TASK4:
+        tskstat: running
+
+      TASK5:
+        tskstat: ready

@@ -1,0 +1,273 @@
+
+	CRE_SPN テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: CRE_SPN.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+CRE_SPN		スピンロックの生成〔SM〕
+acre_spn	スピンロックの生成〔TMD〕
+
+【静的API】
+	CRE_SPN(ID spnid, { ATR spnatr })
+
+【C言語API】
+	ER_ID spnid = acre_spn(const T_CSPN *pk_cspn)
+
+【パラメータ】
+	ID			spnid		生成するスピンロックのID番号（CRE_SPNの場合）
+	T_CSPN *	pk_cspn		スピンロックの生成情報を入れたパケットへの
+							ポインタ（静的APIを除く）
+
+　＊スピンロックの生成情報（パケットの内容）
+	ATR			spnatr		スピンロック属性
+
+【リターンパラメータ】
+	ER_ID		spnid		生成されたスピンロックのID番号（正の値）ま
+							たはエラーコード
+
+【エラーコード】
+	E_CTX〔s〕		コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_RSATR			予約属性（spnatrが不正または使用できない，属する保
+					護ドメインかクラスが不正）
+	E_OACV〔sP〕	オブジェクトアクセス違反（システム状態に対する管理
+					操作が許可されていない）
+	E_MACV〔sP〕	メモリアクセス違反（pk_cspnが指すメモリ領域への読出
+					しアクセスが許可されていない）
+	E_NOID〔sD〕	ID番号不足（割り付けられるスピンロックIDがない）
+	E_NORES			資源不足（スピンロックを実現するためのハードウェア
+					資源がない：CRE_SPNの場合）
+	E_OBJ			オブジェクト状態エラー（spnidで指定したスピンロック
+					が登録済み：CRE_SPNの場合）
+
+【機能】
+
+各パラメータで指定したスピンロック生成情報に従って，スピンロックを生成
+する．生成されたスピンロックのロック状態は，取得されていない状態に初期
+化される．
+
+静的APIにおいては，spnidはオブジェクト識別名である．
+
+スピンロックをハードウェアによって実現している場合には，ターゲット定義
+で，生成できるスピンロックの数に上限がある．この上限を超えてスピンロッ
+クを生成しようとした場合には，E_NORESエラーとなる．
+
+【補足説明】
+
+スピンロックを動的に生成する場合に，生成できるスピンロックの数の上限は
+AID_SPNによってチェックされるため，acre_spnでE_NORESエラーが返ることは
+ない．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，CRE_SPNのみをサポートする．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) 対象スピンロックを属させるクラスの囲みの外に記述した場合，
+      E_RSATRエラーが返ること．
+
+(F-b) spnatrが不正の時にE_RSATRとなること．
+
+(F-c) spnidで指定したスピンロックが登録済みの時にE_OBJが返ること．
+
+【備考】
+・生成できるスピンロックの数はターゲット依存のため，E_NORESのテストは実
+  施しない．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-d) 各パラメータで指定したスピンロック生成情報に従ってスピンロックを
+      生成され，生成されたスピンロックのロック状態は取得されていない状
+      態に初期化されること．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 
+01 : $  スピンロック
+02 : $ 
+03 : /*$NL$
+04 : $SPC$*  Spin Lock Functions$NL$
+05 : $SPC$*/$NL$
+06 : $NL$
+07 : 
+08 : $ //クラスの囲みに入れられているかのチェック
+09 : $FOREACH spnid SPN.ID_LIST$
+10 : 	$IF !LENGTH(SPN.CLASS[spnid])$
+11 : 		$ERROR SPN.TEXT_LINE[spnid]$E_RSATR: $FORMAT(_("illegal class id of `%1%\' in %2%"), spnid, "CRE_SPN")$$END$
+12 : 	$END$
+13 :$END$
+14 :
+15 : $ //スピンロック属性にTA_NULL以外が指定された場合（E_RSATR）
+16 : $FOREACH spnid SPN.ID_LIST$
+17 : 	$IF SPN.SPNATR[spnid] != 0$
+18 : 		$ERROR SPN.TEXT_LINE[spnid]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "spnatr", SPN.SPNATR[spnid], spnid, "CRE_SPN")$$END$
+19 : 	$END$
+20 : $END$
+21 : $ スピンロックID番号の最大値
+22 : const ID _kernel_tmax_spnid = (TMIN_SPNID + TNUM_SPNID - 1);$NL$
+23 : $NL$
+24 : 
+25 : 
+26 : $IF LENGTH(SPN.ID_LIST)$
+27 : 
+28 : $       //ネイティブロック方式の場合のチェック
+29 : 	$IF EQ(+TTYPE_SPN, +NATIVE_SPN)$
+30 : 		#if TTYPE_SPN != NATIVE_SPN$NL$
+31 : 		#error USE_NATIVE_SPIN_LOCK is not defined.$NL$
+32 : 		#endif /* TTYPE_SPN != NATIVE_SPN */$NL$
+33 : 		$NL$
+34 : 		$IF (LENGTH(SPN.ID_LIST) > TMAX_NATIVE_SPN)$
+35 : 			$ERROR SPN.TEXT_LINE[TMAX_NATIVE_SPN + 1]$E_NORES: $FORMAT(_("maximum number of spin lock is %1%."), TMAX_NATIVE_SPN)$$END$
+36 : 		$END$
+37 : 	$END$
+38 : 
+39 : $   // スピンロック初期化ブロック
+40 : 	const SPNINIB _kernel_spninib_table[TNUM_SPNID] = {$NL$
+41 : 	$IF EQ(+TTYPE_SPN, +NATIVE_SPN)$
+42 : 		$JOINEACH spnid SPN.ID_LIST ",\n"$
+43 : 			$TAB${($SPN.SPNATR[spnid]$)}
+44 : 		$END$$NL$
+45 : 	$ELSE$
+46 : 		$IF EQ(+TTYPE_KLOCK, +P_KLOCK)$
+47 : 			$JOINEACH spnid SPN.ID_LIST ",\n"$
+48 : 				$TAB${($SPN.SPNATR[spnid]$), (&(_kernel_prc$CLASS_OBJ_LOCK[SPN.CLASS[spnid]]$_pcb.obj_lock))}
+49 : 			$END$$NL$
+50 : 		$ELSE$
+51 : 			$JOINEACH spnid SPN.ID_LIST ",\n"$
+52 : 				$TAB${($SPN.SPNATR[spnid]$)}
+53 : 			$END$$NL$
+54 : 		$END$
+55 : 	$END$
+56 : 	};$NL$
+57 : 	$NL$
+58 : 
+59 : $   // スピンロックコントロールブロック
+60 : 	$FOREACH spnid SPN.ID_LIST$
+61 : 		$IF ISFUNCTION("GENERATE_SPNCB")$
+62 : 			$GENERATE_SPNCB(spnid)$
+63 : 		$ELSE$
+64 : 			SPNCB _kernel_spncb_$spnid$;$NL$
+65 : 		$END$
+66 : 	$END$
+67 : 	$NL$
+68 : 
+69 : $	// スピンロックコントロールブロックアクセステーブル
+70 : 	SPNCB* const _kernel_p_spncb_table[TNUM_SPNID] = {$NL$
+71 : 	$JOINEACH spnid SPN.ID_LIST ",\n"$
+72 : 		$TAB$&_kernel_spncb_$spnid$
+73 : 	$END$
+74 : 	$NL$
+75 : 	};$NL$
+76 : $ELSE$
+77 : 	TOPPERS_EMPTY_LABEL(const SPNINIB, _kernel_spninib_table);$NL$
+78 : 	TOPPERS_EMPTY_LABEL(SPNCB* const, _kernel_p_spncb_table);$NL$
+73 : $END$
+74 : $NL$
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 10 : !LENGTH(SPN.CLASS[spnid])
+(A2) 17 : SPN.SPNATR[spnid] != 0
+(A3) 29 : EQ(+TTYPE_SPN, +NATIVE_SPN)
+(A4) 34 : (LENGTH(SPN.ID_LIST) > TMAX_NATIVE_SPN)
+(A5) 41 : EQ(+TTYPE_SPN, +NATIVE_SPN)
+(A6) 46 : EQ(+TTYPE_KLOCK, +P_KLOCK)
+(A7) 61 : ISFUNCTION("GENERATE_SPNCB")
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5) (A6) (A7)
+[NATIVE_SPN]
+(F-a)   T    D    D    D    D    D    D
+(F-b)   F    T    D    D    D    D    D
+(F-c)   F    F    T    ?    T    D    ?
+(F-d)   F    F    T    ?    T    D    ?
+[EMULATE_SPN]
+(F-a)   T    D    D    D    D    D    D
+(F-b)   F    T    D    D    D    D    D
+(F-c)   F    F    F    D    F   T|F   ?
+(F-d)   F    F    F    D    F   T|F   ?
+-----------------------------------------
+網羅    O    O    O    X    O    O    X
+
+【備考】
+・(A4)(A7)はターゲット依存のためホワイトボックステストを実施しない．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

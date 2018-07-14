@@ -1,0 +1,23 @@
+version: "$Id: psnd_pdq_f-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_psnd_pdq_f_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt  : 2
+      maxdpri : DATA_PRI_MAX
+      rtsklist :
+
+  do:
+    id     : TASK1
+    syscall: psnd_pdq(PDQ1, DATA_A, DATA_PRI_HIGH)
+    ercd   : E_OK
+
+  post_condition:
+    PDQ1:
+      datalist:
+        - data:     DATA_A
+          datapri:  DATA_PRI_HIGH

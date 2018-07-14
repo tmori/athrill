@@ -1,0 +1,16 @@
+version: "$Id: ini_dtq_b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_ini_dtq_b_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    DTQ1:
+      type  : DATAQUEUE
+
+  do:
+    id     : TASK1
+    syscall: ini_dtq(0)
+    ercd   : E_ID
+
+  post_condition:

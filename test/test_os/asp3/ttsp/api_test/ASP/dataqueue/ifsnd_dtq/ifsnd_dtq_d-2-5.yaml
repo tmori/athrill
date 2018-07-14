@@ -1,0 +1,92 @@
+version: "$Id: ifsnd_dtq_d-2-5.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_ifsnd_dtq_d_2_5:
+  note: TESRY_003
+
+  variation:
+    gain_time: true
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+
+    TASK1:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DTQ1
+      var    :
+        data:
+          type: intptr_t
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DTQ1
+
+    TASK3:
+      type   : TASK
+      tskstat: running
+
+    DTQ1:
+      type    : DATAQUEUE
+      dtqcnt  : 3
+      rtsklist:
+        - TASK1:
+            var: data
+        - TASK2:
+      datalist:
+
+  do_0:
+    id     : TASK3
+    syscall: sta_alm(ALM1, ACTIVATE_ALARM_TIME)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    ALM1:
+      almstat: TALM_STA
+
+  do_1:
+    id     : TASK3
+    syscall: slp_tsk()
+    gcov   : false
+
+  post_condition_1:
+    TASK3:
+      tskstat: waiting
+      wobjid : SLEEP
+
+    ALM1:
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+  do_2:
+    id     : ALM1
+    syscall: ifsnd_dtq(DTQ1, DATA_A)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_2:
+    TASK1:
+      tskstat: ready
+
+    DTQ1:
+      rtsklist:
+        - TASK2:
+
+  do_3:
+    id  : ALM1
+    code: return
+    gcov: false
+
+  post_condition_3:
+    ALM1:
+      almstat: TALM_STP
+      hdlstat: STP
+
+    TASK1:
+      tskstat: running
+      var    :
+        data:
+          value: DATA_A

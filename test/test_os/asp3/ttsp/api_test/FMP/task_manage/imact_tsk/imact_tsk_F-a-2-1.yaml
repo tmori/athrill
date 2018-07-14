@@ -1,0 +1,19 @@
+version: "$Id: imact_tsk_F-a-2-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_imact_tsk_F_a_2_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: dormant
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: imact_tsk(TASK2, PRC_SELF)
+    ercd   : E_CTX
+
+  post_condition:

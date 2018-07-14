@@ -1,0 +1,42 @@
+version: "$Id: set_flg_F-c-5.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_eventflag_set_flg_F_c_5:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+      var    : 
+        flgptn:
+          type: FLGPTN
+      prcid  : PRC_OTHER
+
+    FLG1:
+      type    : EVENTFLAG
+      flgatr  : TA_NULL
+      flgptn  : BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_A
+            wfmode: WAIT_FLG_MODE_A
+            var   : flgptn
+
+  do:
+    id     : TASK1
+    syscall: set_flg(FLG1, BIT_PATTERN_A)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: running
+      var    : 
+        flgptn:
+          value: BIT_PATTERN_0A|BIT_PATTERN_A
+
+    FLG1:
+      flgptn  : BIT_PATTERN_0A|BIT_PATTERN_A
+      wtsklist:

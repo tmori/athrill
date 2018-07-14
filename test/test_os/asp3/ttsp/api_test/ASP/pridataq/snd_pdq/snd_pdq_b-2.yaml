@@ -1,0 +1,16 @@
+version: "$Id: snd_pdq_b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_snd_pdq_b_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    PDQ1:
+      type: P_DATAQUEUE
+
+  do:
+    id     : TASK1
+    syscall: snd_pdq(TNUM_PDQID+1, DATA_A, DATA_PRI_HIGH)
+    ercd   : E_ID
+
+  post_condition:

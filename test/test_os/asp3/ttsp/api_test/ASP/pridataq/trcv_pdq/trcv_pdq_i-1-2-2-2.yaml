@@ -1,0 +1,84 @@
+version: "$Id: trcv_pdq_i-1-2-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_trcv_pdq_i_1_2_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : PDQ1
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : PDQ1
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqatr : TA_NULL
+      pdqcnt : 3
+      maxdpri : DATA_PRI_MAX
+      stsklist : 
+        - TASK2:
+              data:     DATA_A
+              datapri:  DATA_PRI_HIGH
+        - TASK3:
+              data:     DATA_B
+              datapri:  DATA_PRI_MID
+      datalist : 
+        - data:     DATA_C
+          datapri:  DATA_PRI_MID
+        - data:     DATA_D
+          datapri:  DATA_PRI_MID
+        - data:     DATA_E
+          datapri:  DATA_PRI_LOW
+
+  do:
+    id     : TASK1
+    syscall: trcv_pdq(PDQ1, &data, &datapri, ANY_ELAPSED_TIME)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var    : 
+        data:
+          value: DATA_C
+        datapri:
+          value: DATA_PRI_MID
+
+    TASK2:
+      tskstat: ready
+      wobjid : 
+      porder : 2
+
+    TASK4:
+      tskstat: ready
+      porder : 1
+
+    PDQ1:
+      stsklist : 
+        - TASK3:
+              data:     DATA_B
+              datapri:  DATA_PRI_MID
+      datalist : 
+        - data:     DATA_A
+          datapri:  DATA_PRI_HIGH
+        - data:     DATA_D
+          datapri:  DATA_PRI_MID
+        - data:     DATA_E
+          datapri:  DATA_PRI_LOW

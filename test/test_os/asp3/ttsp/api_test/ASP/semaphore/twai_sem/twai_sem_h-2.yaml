@@ -1,0 +1,17 @@
+version: "$Id: twai_sem_h-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_twai_sem_h_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    SEM1:
+      type   : SEMAPHORE
+      semcnt : 0
+
+  do:
+    id     : TASK1
+    syscall: twai_sem(SEM1, TMO_POL)
+    ercd   : E_TMOUT
+
+  post_condition:

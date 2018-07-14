@@ -1,0 +1,18 @@
+version: "$Id: iwup_tsk_a-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_iwup_tsk_a_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SLEEP
+
+  do:
+    id     : TASK1
+    syscall: iwup_tsk(TASK2)
+    ercd   : E_CTX
+
+  post_condition:

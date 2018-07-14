@@ -1,0 +1,21 @@
+version: "$Id: ini_mbx_a-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mailbox_ini_mbx_a_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    MBX1:
+      type   : MAILBOX
+
+  do:
+    id     : ALM1
+    syscall: ini_mbx(MBX1)
+    ercd   : E_CTX
+
+  post_condition:

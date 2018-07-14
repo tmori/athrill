@@ -1,0 +1,45 @@
+version: "$Id: xsns_xpn_d.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_exception_xsns_xpn_d:
+  note: TESRY_004
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK1
+      texstat: TTEX_DIS
+      hdlstat: STP
+      pndptn : TEXPTN_0A
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+    EXC1:
+      type   : EXCEPTION
+      excno  : EXCNO_SELF_A
+      hdlstat: STP
+
+  do_0:
+    id     : ALM1
+    code   : ttsp_cpuexc_raise(EXCNO_SELF_A)
+    gcov   : false
+
+  post_condition_0:
+    ALM1:
+      hdlstat: STP
+
+    EXC1:
+      hdlstat: ACTIVATE
+
+  do_1:
+    id     : EXC1
+    syscall: xsns_xpn(p_excinf)
+    bool   : true
+    gcov   : true
+
+  post_condition_1:

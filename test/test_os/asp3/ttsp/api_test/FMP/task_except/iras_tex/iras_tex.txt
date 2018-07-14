@@ -1,0 +1,272 @@
+
+	iras_tex テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: iras_tex.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+ras_tex		タスク例外処理の要求〔T〕
+iras_tex	タスク例外処理の要求〔I〕
+
+【C言語API】
+	ER ercd = ras_tex(ID tskid, TEXPTN rasptn)
+	ER ercd = iras_tex(ID tskid, TEXPTN rasptn)
+
+【パラメータ】
+	ID			tskid		対象タスクのID番号
+	TEXPTN		rasptn		要求するタスク例外処理のタスク例外要因
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：ras_texの場合，タスクコンテキストからの呼出し：
+					iras_texの場合，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（tskidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象タスクが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象タスクに対する通常操
+					作2が許可されていない：ras_texの場合）
+	E_PAR			パラメータエラー（rasptnが不正）
+	E_OBJ			オブジェクト状態エラー（対象タスクが休止状態，対象
+					タスクに対してタスク例外処理ルーチンが定義されてい
+					ない）
+
+【機能】
+
+tskidで指定したタスク（対象タスク）に対して，rasptnで指定したタスク例外
+要因のタスク例外処理を要求する．対象タスクの保留例外要因が，それまでの
+値とrasptnで指定した値のビット毎論理和（C言語の"|"）に更新される．
+
+対象タスクが休止状態である場合と，対象タスクに対してタスク例外処理ルー
+チンが定義されていない場合には，E_OBJエラーとなる．
+
+ras_texにおいてtskidにTSK_SELF（＝0）を指定すると，自タスクが対象タスク
+となる．
+
+rasptnが0の場合には，E_PARエラーとなる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+iras_tex(ID tskid, TEXPTN rasptn)
+{
+	TCB		*p_tcb;
+	ER		ercd;
+	PCB		*p_pcb;
+
+	LOG_IRAS_TEX_ENTER(tskid, rasptn);
+	CHECK_INTCTX_UNL();
+	CHECK_TSKID(tskid);
+	CHECK_PAR(rasptn != 0U);
+	p_tcb = get_tcb(tskid);
+
+	i_lock_cpu();
+	p_pcb = i_acquire_tsk_lock(p_tcb);
+	if (TSTAT_DORMANT(p_tcb->tstat) || p_tcb->p_tinib->texrtn == NULL) {
+		ercd = E_OBJ;
+	}
+	else {
+		p_tcb->texptn |= rasptn;
+		/* 実行状態によらず、プロセッサ間割込みを入れる */
+		if (dispatch_request(p_pcb)) {
+			if (p_tcb == p_pcb->p_runtsk && p_tcb->enatex && p_pcb->ipmflg) {
+				p_pcb->reqflg = true;
+			}
+		}
+		ercd = E_OK;
+	}
+	release_tsk_lock(p_pcb);
+	i_unlock_cpu();
+
+  error_exit:
+	LOG_IRAS_TEX_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] iras_tex
+
+00 : ER
+01 : iras_tex(ID tskid, TEXPTN rasptn)
+02 : {
+03 : 	TCB		*p_tcb;
+04 : 	ER		ercd;
+05 : 	PCB		*p_pcb;
+06 : 
+07 : 	if (!sense_intctx_unl()) {
+08 : 		ercd = E_CTX;
+09 : 		goto error_exit;
+10 : 	}
+11 : 	if (!(TMIN_TSKID <= (tskid) && (tskid) <= tmax_tskid)) {
+12 : 		ercd = E_ID;
+13 : 		goto error_exit;
+14 : 	}
+15 : 	if (!(rasptn != 0U)) {
+16 : 		ercd = E_PAR;
+17 : 		goto error_exit;
+18 : 	}
+19 : 	p_tcb = (p_tcb_table[((uint_t)((tskid) - TMIN_TSKID))]);
+20 : 
+21 : 	i_lock_cpu();
+22 : 	p_pcb = i_acquire_tsk_lock(p_tcb);
+23 : 	if (((p_tcb->tstat) == TS_DORMANT) || p_tcb->p_tinib->texrtn == NULL) {
+24 : 		ercd = E_OBJ;
+25 : 	}
+26 : 	else {
+27 : 		p_tcb->texptn |= rasptn;
+28 : 		/* 実行状態によらず、プロセッサ間割込みを入れる */
+29 : 		if (dispatch_request(p_pcb)) {
+30 : 			if (p_tcb == p_pcb->p_runtsk && p_tcb->enatex && p_pcb->ipmflg) {
+31 : 				p_pcb->reqflg = true;
+32 : 			}
+33 : 		}
+34 : 		ercd = E_OK;
+35 : 	}
+36 : 	release_tsk_lock(p_pcb);
+37 : 	i_unlock_cpu();
+38 : 
+39 :   error_exit:
+40 : 	return(ercd);
+41 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  07 : !sense_intctx_unl()
+(A2)  11 : TMIN_TSKID <= (tskid)
+(A3)  11 : (tskid) <= tmax_tskid
+(A4)  15 : !(rasptn != 0U)
+(A5)  23 : (p_tcb->tstat) == TS_DORMANT
+(A6)  23 : p_tcb->p_tinib->texrtn == NULL
+(A7)  29 : dispatch_request(p_pcb)
+(A8)  30 : p_tcb == p_pcb->p_runtsk
+(A9)  30 : p_tcb->enatex
+(A10) 30 : p_pcb->ipmflg
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10)
+(a-1)        T    D    D    D    D    D    D    D    D    D
+(a-2)        T    D    D    D    D    D    D    D    D    D
+(b-1)        F    F   D/T   D    D    D    D    D    D    D
+(b-2)        F    T    F    D    D    D    D    D    D    D
+(c)          F    T    T    F    T   D/F   D    D    D    D
+(d)          F    T    T    F    F    T    D    D    D    D
+(e)          F    T    T    T    D    D    D    D    D    D
+(f-1)        F    T    T    F    F    F    T    F   D/T  D/T
+(f-2)        F    T    T    F    F    F    T    F   D/T  D/T
+(f-3)        F    T    T    F    F    F    T    F   D/T  D/T
+(f-4)        F    T    T    F    F    F    T    F   D/T  D/T
+(f-5)        F    T    T    F    F    F    T    F   D/T  D/T
+(f-6)        F    T    T    F    F    F    T    F   D/T  D/T
+(f-7)        F    T    T    F    F    F    T    F   D/T  D/T
+(f-8)        F    T    T    F    F    F    T    F   D/T  D/T
+(f-9)        F    T    T    F    F    F    T    T    T    T
+(g)          F    T    T    F    F    F    T    F   D/T  D/T
+(h)          F    T    T    F    F    F    T    T    F   D/T
+(W_a)        F    T    T    F    F    F    T    T    T    F
+(F-a-1)      T    D    D    D    D    D    D    D    D    D
+(F-a-2)      T    D    D    D    D    D    D    D    D    D
+(F-a-3)      T    D    D    D    D    D    D    D    D    D
+(F-a-4)      T    D    D    D    D    D    D    D    D    D
+(F-b)        F    T    T    F    T   D/F   D    D    D    D
+(F-c)        F    T    T    F    F    T    D    D    D    D
+(F-d)        F    T    T    T    D    D    D    D    D    D
+(F-e-1)      F    T    T    F    F    F    T    T    T    T
+(F-e-2)      F    T    T    F    F    F    T    T    T    F
+(F-f-1)      F    T    T    F    F    F    F    D    D    D
+(F-f-2)      F    T    T    F    F    F    F    D    D    D
+(F-f-3)      F    T    T    F    F    F    F    D    D    D
+(F-f-4)      F    T    T    F    F    F    F    D    D    D
+(F-f-5)      F    T    T    F    F    F    F    D    D    D
+(F-f-6)      F    T    T    F    F    F    F    D    D    D
+(F-f-7)      F    T    T    F    F    F    F    D    D    D
+(F-f-8)      F    T    T    F    F    F    F    D    D    D
+(F-f-9)      F    T    T    F    F    F    F    D    D    D
+(F-f-10-1)   F    T    T    F    F    F    F    D    D    D
+(F-f-10-2)   F    T    T    F    F    F    F    D    D    D
+(F-f-10-3)   F    T    T    F    F    F    F    D    D    D
+(F-f-10-4)   F    T    T    F    F    F    F    D    D    D
+(F-f-10-5)   F    T    T    F    F    F    F    D    D    D
+(F-g)        F    T    T    F    F    F    F    D    D    D
+(F-h)        F    T    T    F    F    F    F    D    D    D
+--------------------------------------------------------------
+網羅         O    O    O    O    O    O    O    O    O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+以上．

@@ -1,0 +1,62 @@
+version: "$Id: iset_flg_F-d-6.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_eventflag_iset_flg_F_d_6:
+  variation:
+    timer_arch: local
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    ALM2:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_OTHER
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    FLG1:
+      type    : EVENTFLAG
+      flgatr  : TA_WMUL
+      flgptn  : BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_A
+            wfmode: WAIT_FLG_MODE_A
+        - TASK3:
+            waiptn: BIT_PATTERN_B
+            wfmode: WAIT_FLG_MODE_B
+
+  do:
+    id     : ALM1
+    syscall: iset_flg(FLG1, BIT_PATTERN_A)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    FLG1:
+      flgptn  : BIT_PATTERN_0A|BIT_PATTERN_A
+      wtsklist:
+        - TASK3:
+            waiptn: BIT_PATTERN_B
+            wfmode: WAIT_FLG_MODE_B

@@ -1,0 +1,48 @@
+version: "$Id: ref_tsk_F-c-3-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_refer_ref_tsk_F_c_3_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rtsk:
+          type: T_RTSK
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+      var    :
+        flgptn:
+          type: FLGPTN
+      prcid  : PRC_SELF
+
+    FLG1:
+      type    : EVENTFLAG
+      flgptn  : BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_B
+            wfmode: WAIT_FLG_MODE_A
+            var   : flgptn
+
+  do:
+    id     : TASK1
+    syscall: ref_tsk(TASK2,&rtsk)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rtsk:
+          tskstat: TTS_WAI
+          tskwait: TTW_FLG
+          wobjid : FLG1
+          lefttmo: TMO_FEVR
+          tskpri : TSK_PRI_MID
+          tskbpri: TSK_PRI_MID
+          actcnt : 0
+          wupcnt : 0
+          prcid  : PRC_SELF
+          actprc : TPRC_NONE

@@ -1,0 +1,46 @@
+version: "$Id: sig_sem_F-b-1-6.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_semaphore_sig_sem_F_b_1_6:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_OTHER
+
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : SEM1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    SEM1:
+      type    : SEMAPHORE
+      maxsem  : ANY_MAX_SEMCNT
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: sig_sem(SEM1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    SEM1:
+      wtsklist:

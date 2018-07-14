@@ -1,0 +1,26 @@
+version: "$Id: slp_tsk_e-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_slp_tsk_e_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      wupcnt : 0
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+  do:
+    id     : TASK1
+    syscall: slp_tsk()
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : SLEEP
+      wupcnt : 0
+
+    TASK2:
+      tskstat: running

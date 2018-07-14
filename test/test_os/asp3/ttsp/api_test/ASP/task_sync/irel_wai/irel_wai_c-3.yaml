@@ -1,0 +1,18 @@
+version: "$Id: irel_wai_c-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_irel_wai_c_3:
+  pre_condition:
+    ALM1:
+      type    : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskstat: dormant
+
+  do:
+    id     : ALM1
+    syscall: irel_wai(TASK1)
+    ercd   : E_OBJ
+
+  post_condition:

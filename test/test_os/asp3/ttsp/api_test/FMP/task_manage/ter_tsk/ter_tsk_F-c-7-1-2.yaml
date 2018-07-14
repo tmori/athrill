@@ -1,0 +1,42 @@
+version: "$Id: ter_tsk_F-c-7-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_ter_tsk_F_c_7_1_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      itskpri: TSK_PRI_HIGH
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting-suspended
+      wobjid : SLEEP
+      actcnt : 1
+      actprc : PRC_OTHER
+      prcid  : PRC_SELF
+
+    TASK3:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: ter_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+      actcnt : 0
+      bootcnt: 1
+      actprc : TPRC_NONE
+      prcid  : PRC_OTHER

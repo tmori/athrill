@@ -1,0 +1,51 @@
+version: "$Id: rcv_pdq_F-g-2-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_rcv_pdq_F_g_2_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqatr  : TA_TPRI
+      pdqcnt : 3
+      rtsklist:
+        - TASK2:
+        - TASK3:
+      datalist :
+
+  do:
+    id     : TASK1
+    syscall: rcv_pdq(PDQ1, &data, &datapri)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : PDQ1
+
+    PDQ1:
+      rtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK1:

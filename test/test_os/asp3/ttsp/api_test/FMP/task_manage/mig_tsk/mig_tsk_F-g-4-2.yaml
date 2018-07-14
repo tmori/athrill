@@ -1,0 +1,27 @@
+version: "$Id: mig_tsk_F-g-4-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_mig_tsk_F_g_4_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: suspended
+      actcnt : 0
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: mig_tsk(TASK3, PRC_OTHER)
+    ercd   : E_OK
+
+  post_condition:
+    TASK3:
+      prcid  : PRC_OTHER

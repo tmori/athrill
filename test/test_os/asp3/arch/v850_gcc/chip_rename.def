@@ -1,0 +1,6 @@
+# chip_timer.c
+target_hrt_initialize
+target_hrt_terminate
+target_hrt_set_event
+target_hrt_raise_event
+target_hrt_handler

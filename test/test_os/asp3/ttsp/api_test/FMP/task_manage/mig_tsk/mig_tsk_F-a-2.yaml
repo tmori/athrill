@@ -1,0 +1,19 @@
+version: "$Id: mig_tsk_F-a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_mig_tsk_F_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: mig_tsk(TSK_SELF, PRC_SELF)
+    ercd   : E_CTX
+
+  post_condition:

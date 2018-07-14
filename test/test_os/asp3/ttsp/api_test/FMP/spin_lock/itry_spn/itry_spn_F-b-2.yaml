@@ -1,0 +1,24 @@
+version: "$Id: itry_spn_F-b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_spin_lock_itry_spn_F_b_2:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_UNL
+
+  do:
+    id     : ALM1
+    syscall: itry_spn(TNUM_SPNID+1)
+    ercd   : E_ID
+
+  post_condition:

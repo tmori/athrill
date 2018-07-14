@@ -1,0 +1,36 @@
+version: "$Id: sus_tsk_F-d-5.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_sus_tsk_F_d_5:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: ready
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK3
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: sus_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended

@@ -1,0 +1,31 @@
+version: "$Id: get_tid_F-b-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_get_tid_F_b_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running-suspended
+      var    :
+          p_tskid :
+            type : ID
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      chg_ipm: ANY_IPM
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: get_tid(&p_tskid)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var :
+          p_tskid :
+            value : TASK1

@@ -1,0 +1,21 @@
+version: "$Id: rsm_tsk_e-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_rsm_tsk_e_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : DELAY
+      lefttmo: RELATIVE_TIME_A
+
+  do:
+    id     : TASK1
+    syscall: rsm_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: waiting

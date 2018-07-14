@@ -1,0 +1,29 @@
+version: "$Id: rcv_pdq_g-1-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_rcv_pdq_g_1_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 0
+      rtsklist:
+
+  do:
+    id     : TASK1
+    syscall: rcv_pdq(PDQ1, &data, &datapri)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : PDQ1
+
+    PDQ1:
+      rtsklist:
+        - TASK1:

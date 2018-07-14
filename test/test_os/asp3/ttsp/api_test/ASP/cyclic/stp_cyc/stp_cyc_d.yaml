@@ -1,0 +1,24 @@
+version: "$Id: stp_cyc_d.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_cyclic_stp_cyc_d:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    CYC1:
+      type    : CYCLE
+      cycatr  : TA_NULL
+      cycstat : TCYC_STA
+      hdlstat : STP
+      cycphs  : RELATIVE_TIME_A
+      cyctim  : RELATIVE_TIME_B
+
+  do:
+    id     : TASK1
+    syscall: stp_cyc(CYC1)
+    ercd   : E_OK
+
+  post_condition:
+    CYC1:
+      cycstat : TCYC_STP
+      hdlstat : STP

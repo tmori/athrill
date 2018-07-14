@@ -1,0 +1,36 @@
+version: "$Id: iact_tsk_F-c-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_iact_tsk_F_c_1_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    TASK2:
+      type   : TASK
+      itskpri: TSK_PRI_HIGH
+      tskstat: dormant
+      prcid  : PRC_OTHER
+
+  do:
+    id     : ALM1
+    syscall: iact_tsk(TASK2)
+
+  post_condition:
+    ALM1:
+      almstat: TALM_STP
+      hdlstat: STP
+
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskpri : TSK_PRI_HIGH
+      tskstat: running

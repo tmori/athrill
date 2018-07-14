@@ -1,0 +1,58 @@
+version: "$Id: snd_pdq_g-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_snd_pdq_g_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : PDQ1
+      var    : 
+        ttg_data:
+          type: intptr_t
+        ttg_pri:
+          type: PRI
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : PDQ1
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt  : 3
+      rtsklist : 
+        - TASK2 :
+            vardata: ttg_data
+            varpri: ttg_pri
+        - TASK3 :
+      datalist : 
+
+  do:
+    id     : TASK1
+    syscall: snd_pdq(PDQ1, DATA_A, DATA_PRI_HIGH)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+      wobjid : 
+      porder : 2
+
+    TASK4:
+      tskstat: ready
+      porder : 1
+
+    PDQ1:
+      rtsklist : 
+        - TASK3 :

@@ -1,0 +1,51 @@
+version: "$Id: snd_dtq_g-1-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_snd_dtq_g_1_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : DTQ1
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : DTQ1
+
+    DTQ1:
+      type: DATAQUEUE
+      dtqatr : TA_TPRI
+      dtqcnt : 3
+      stsklist:
+        - TASK2:
+            data: DATA_A
+        - TASK3:
+            data: DATA_B
+      datalist:
+        - data: DATA_C
+        - data: DATA_D
+        - data: DATA_E
+
+  do:
+    id     : TASK1
+    syscall: snd_dtq(DTQ1, DATA_F)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : DTQ1
+
+    DTQ1:
+      stsklist:
+        - TASK1:
+            data: DATA_F
+        - TASK2:
+            data: DATA_A
+        - TASK3:
+            data: DATA_B

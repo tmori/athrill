@@ -1,0 +1,25 @@
+version: "$Id: ref_flg_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_ref_flg_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rflg:
+          type: T_RFLG
+          wtskid: ANY_OBJECT_ID
+          flgptn: BIT_PATTERN_A
+
+    FLG1:
+      type  : EVENTFLAG
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do:
+    id     : TASK1
+    syscall: ref_flg(FLG1, &rflg)
+    ercd   : E_CTX
+
+  post_condition:

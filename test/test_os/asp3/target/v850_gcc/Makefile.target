@@ -1,0 +1,47 @@
+#
+#		Makefile のターゲット依存部（V850ES/FK3用）
+#
+#  $Id:  $
+# 
+#
+#  カーネルに関する定義
+#
+KERNEL_DIRS := $(KERNEL_DIRS) $(TARGETDIR)
+KERNEL_COBJS := $(KERNEL_COBJS) target_config.o
+#KERNEL_ASMOBJS := $(KERNEL_ASMOBJS) 
+
+#
+#  コンパイルオプションとリンカスクリプトの定義
+#
+COPTS := $(COPTS) -mv850e -mdisable-callt
+CDEFS := $(CDEFS) -DLABEL_ASM
+LDSCRIPT = $(TARGETDIR)/v850es_fk3.ld
+
+LDFLAGS := -nostartfiles -lgcc -lc $(LDFLAGS)
+CFG1_OUT_LDFLAGS := -nostdlib
+
+#
+#  コンパイルオプション
+#
+INCLUDES := $(INCLUDES) -I$(TARGETDIR)
+
+#
+#  v850開発環境のターゲットアーキテクチャの定義
+#
+SYS = v850esfk3
+TOOL := gcc
+GCC_TARGET := v850-elf
+CORE = v850
+TOOL = gcc
+
+
+#
+#  コンフィギュレータ関係の変数の定義
+#
+CFG_TABS := $(CFG_TABS) --symval-table $(TARGETDIR)/target_sym.def
+
+
+#
+#  チップ依存部のインクルード
+#
+include $(SRCDIR)/arch/v850_gcc/Makefile.chip

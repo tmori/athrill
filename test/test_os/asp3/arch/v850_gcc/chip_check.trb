@@ -1,0 +1,12 @@
+# -*- coding: utf-8 -*-
+# 
+#		パス3の生成スクリプトのコア依存部（ARM用）
+# 
+#  $Id:  $
+#
+
+#
+#  ターゲット非依存部のインクルード
+#
+IncludeTrb("kernel/kernel_check.trb")
+

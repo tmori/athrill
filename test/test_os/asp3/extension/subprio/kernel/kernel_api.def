@@ -1,0 +1,17 @@
+CRE_TSK #tskid* { .tskatr &exinf &task +itskpri .stksz &stk? }
+CRE_SEM #semid* { .sematr .isemcnt .maxsem }
+CRE_FLG #flgid* { .flgatr .iflgptn }
+CRE_DTQ #dtqid* { .dtqatr .dtqcnt &dtqmb? }
+CRE_PDQ #pdqid* { .pdqatr .pdqcnt +maxdpri &pdqmb? }
+CRE_MTX #mtxid* { .mtxatr +ceilpri? }
+CRE_MPF #mpfid* { .mpfatr .blkcnt .blksz &mpf? &mpfmb? }
+CRE_CYC #cycid* { .cycatr { .nfymode &par1 &par2? &par3? &par4? } .cyctim .cycphs }
+CRE_ALM #almid* { .almatr { .nfymode &par1 &par2? &par3? &par4? } }
+ENA_SPR .tskpri
+CFG_INT .intno* { .intatr +intpri }
+CRE_ISR #isrid* { .isratr &exinf .intno &isr +isrpri }
+DEF_INH .inhno* { .inhatr &inthdr }
+DEF_EXC .excno* { .excatr &exchdr }
+DEF_ICS { .istksz &istk? }
+ATT_INI { .iniatr &exinf &inirtn }
+ATT_TER { .teratr &exinf &terrtn }

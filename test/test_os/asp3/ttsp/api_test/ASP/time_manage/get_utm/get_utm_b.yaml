@@ -1,0 +1,24 @@
+version: "$Id: get_utm_b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_time_manage_get_utm_b:
+  variation:
+    api_support_get_utm: true
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      var:
+        sysutm:
+          type: SYSUTM
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do:
+    id     : ALM1
+    syscall: get_utm(&sysutm)
+    ercd   : E_OK
+
+  post_condition:

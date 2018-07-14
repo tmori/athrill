@@ -1,0 +1,340 @@
+
+	ATT_ISR テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: ATT_ISR.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+CRE_ISR		割込みサービスルーチンの生成〔S〕
+ATT_ISR		割込みサービスルーチンの追加〔S〕
+acre_isr	割込みサービスルーチンの生成〔TD〕
+
+【静的API】
+	CRE_ISR(ID isrid, { ATR isratr, intptr_t exinf,
+										INTNO intno, ISR isr, PRI isrpri })
+	ATT_ISR({ ATR isratr, intptr_t exinf, INTNO intno, ISR isr, PRI isrpri })
+
+【C言語API】
+	ER_ID isrid = acre_isr(const T_CISR *pk_cisr)
+
+【パラメータ】
+	ID			isrid		対象割込みサービスルーチンのID番号（CRE_ISR
+							の場合）
+	T_CISR *	pk_cisr		割込みサービスルーチンの生成情報を入れたパ
+							ケットへのポインタ（静的APIを除く）
+
+　＊割込みサービスルーチンの生成情報（パケットの内容）
+	ATR			isratr		割込みサービスルーチン属性
+	intptr_t	exinf		割込みサービスルーチンの拡張情報
+	INTNO		intno		割込みサービスルーチンを登録する割込み番号
+	ISR			isr			割込みサービスルーチンの先頭番地
+	PRI			isrpri		割込みサービスルーチン優先度
+
+【リターンパラメータ】
+	ER_ID		isrid		生成された割込みサービスルーチンのID番号（正
+							の値）またはエラーコード
+
+【エラーコード】
+	E_CTX〔s〕		コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_RSATR			予約属性（isratrが不正または使用できない，属する保
+					護ドメインかクラスが不正）
+	E_PAR			パラメータエラー（intno，isr，isrpriが不正）
+	E_OACV〔sP〕	オブジェクトアクセス違反（システム状態に対する管理
+					操作が許可されていない）
+	E_MACV〔sP〕	メモリアクセス違反（pk_cisrが指すメモリ領域への読出
+					しアクセスが許可されていない）
+	E_NOID〔sD〕	ID番号不足（割り付けられる割込みサービスルーチンID
+					がない）
+	E_OBJ			オブジェクト状態エラー（isridで指定した割込みサービ
+					スルーチンが登録済み：CRE_ISRの場合，その他の条件に
+					ついては機能の項を参照すること）
+
+【機能】
+
+各パラメータで指定した割込みサービスルーチン生成情報に従って，割込みサー
+ビスルーチンを生成する．
+
+ATT_ISRによって生成された割込みサービスルーチンは，ID番号を持たない．
+
+intnoで指定した割込み要求ラインの属性が設定されていない場合には，E_OBJ
+エラーとなる．また，intnoで指定した割込み番号に対応する割込みハンドラ番
+号に対して，割込みハンドラを定義する機能（DEF_INH，def_inh）によって割
+込みハンドラが定義されている場合にも，E_OBJエラーとなる．さらに，intno
+でカーネル管理外の割込みを指定した場合にも，E_OBJエラーとなる．
+
+静的APIにおいては，isridはオブジェクト識別名，isratr，intno，isrpriは整
+数定数式パラメータ，exinfとisrは一般定数式パラメータである．
+
+保護機能対応カーネルにおいて，CRE_ISRおよびATT_ISRは，カーネルドメイン
+の囲みの中に記述しなければならない．そうでない場合には，E_RSATRエラーと
+なる．また，acre_isrで，生成する割込みサービスルーチンが属する保護ドメ
+インとしてカーネルドメイン以外を指定した場合には，E_RSATRエラーとなる．
+
+マルチプロセッサ対応カーネルで，生成する割込みサービスルーチンの属する
+クラスの割付け可能プロセッサが，intnoで指定した割込み要求ラインが接続さ
+れたプロセッサの集合に含まれていない場合には，E_RSATRエラーとなる．また，
+intnoで指定した割込み要求ラインに対して登録済みの割込みサービスルーチン
+がある場合に，生成する割込みサービスルーチンがそれと異なるクラスに属す
+る場合にも，E_RSATRエラーとなる．さらに，ターゲット定義で，割込みサービ
+スルーチンが属することができるクラスに制限がある場合がある．生成する割
+込みサービスルーチンの属するクラスが，ターゲット定義の制限に合致しない
+場合にも，E_RSATRエラーとなる．
+
+isrpriは，TMIN_ISRPRI以上，TMAX_ISRPRI以下でなければならない．
+
+静的APIにおいて，isrが不正である場合にE_PARエラーが検出されるか否かは，
+ターゲット定義である．
+
+【TOPPERS/ASPカーネルにおける規定】
+
+ASPカーネルでは，ATT_ISRのみをサポートする．ただし，動的生成機能拡張パッ
+ケージでは，acre_isrもサポートする．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，ATT_ISRのみをサポートする．
+
+【TOPPERS/HRP2カーネルにおける規定】
+
+HRP2カーネルでは，ATT_ISRのみをサポートする．
+
+【μITRON4.0仕様との関係】
+
+割込みサービスルーチンの生成情報に，isrpri（割込みサービスルーチンの割
+込み優先度）を追加した．CRE_ISRは，μITRON4.0仕様に定義されていない静的
+APIである．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) isratrが不正の時にE_RSATRとなること．
+
+(b) パラメータエラーのとき，E_PARが返ること．
+
+    (b-1) intnoが不正の時にE_PARが返ること．
+
+    (b-2) isrpriが不正の時にE_PARが返ること．
+
+          (b-2-1) isrpriが許容される最小値-1(TMIN_ISRPRI-1)のとき．
+
+          (b-2-2) isrpriが許容される最大値+1(TMAX_ISRPRI+1)のとき．
+
+(c) オブジェクト状態エラーのときE_OBJエラーとなること．
+
+    (c-1) intnoで指定した割込み要求ラインの属性が設定されていない場合．
+
+    (c-2) intnoに対してDEF_INHによって割込みハンドラが定義されている場
+          合．
+
+    (c-3) intnoでカーネル管理外の割込みを指定した場合．
+
+【備考】
+・isrの不正は必要に応じてターゲット依存部で検出するものなので，不正な
+  isrが指定されたの場合のE_PARのテストは行わない．
+  http://dev.toppers.jp/trac/asp/ticket/124
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(d) 各パラメータの内容に従って割込みサービスルーチンが生成され，該当す
+    る割込みを受け付けたらサービスルーチンが動作すること．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 割込みサービスルーチン（ISR）に関するエラーチェックと割込みハンドラの生成
+01 : $FOREACH order ISR.ORDER_LIST$
+02 : $	// isratrが（TA_NULL）でない場合（E_RSATR）
+03 : 	$IF (ISR.ISRATR[order] & ~TARGET_ISRATR) != 0$
+04 : 		$ERROR ISR.TEXT_LINE[order]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' in %3%"), "isratr", ISR.ISRATR[order], "ATT_ISR")$$END$
+05 : 	$END$
+06 : 
+07 : $	// intnoがATT_ISRに対する割込み番号として正しくない場合（E_PAR）
+08 : 	$IF !LENGTH(FIND(INTNO_ATTISR_VALID, ISR.INTNO[order]))$
+09 : 		$ERROR ISR.TEXT_LINE[order]$E_PAR: $FORMAT(_("illegal %1% `%2%\' in %3%"), "intno", ISR.INTNO[order], "ATT_ISR")$$END$
+10 : 	$END$
+11 : 
+12 : $	// (TMIN_ISRPRI <= isrpri && isrpri <= TMAX_ISRPRI)でない場合（E_PAR）
+13 : 	$IF !(TMIN_ISRPRI <= ISR.ISRPRI[order] && ISR.ISRPRI[order] <= TMAX_ISRPRI)$
+14 : 		$ERROR ISR.TEXT_LINE[order]$E_PAR: $FORMAT(_("illegal %1% `%2%\' in %3%"), "isrpri", ISR.ISRPRI[order], "ATT_ISR")$$END$
+15 : 	$END$
+16 : $END$
+17 : 
+18 : $FOREACH intno INTNO_ATTISR_VALID$
+19 : 	$inhno = INHNO[intno]$
+20 : 
+21 : $	// 割込み番号intnoに対して登録されたISRのリストの作成
+22 : 	$isr_order_list = {}$
+23 : 	$FOREACH order ISR.ORDER_LIST$
+24 : 		$IF ISR.INTNO[order] == intno$
+25 : 			$isr_order_list = APPEND(isr_order_list, order)$
+26 : 			$order_for_error = order$
+27 : 		$END$
+28 : 	$END$
+29 : 
+30 : $	// 割込み番号intnoに対して登録されたISRが存在する場合
+31 : 	$IF LENGTH(isr_order_list) > 0$
+32 : $		// intnoに対応するinhnoに対してDEF_INHがある場合（E_OBJ）
+33 : 		$IF LENGTH(INH.INHNO[inhno])$
+34 : 			$ERROR ISR.TEXT_LINE[order_for_error]$E_OBJ: $FORMAT(_("%1% `%2%\' in %3% is duplicated with %4% `%5%\'"), "intno", ISR.INTNO[order_for_error], "ATT_ISR", "inhno", INH.INHNO[inhno])$$END$
+35 : 		$END$
+36 : 
+37 : $		// intnoに対するCFG_INTがない場合（E_OBJ）
+38 : 		$IF !LENGTH(INT.INTNO[intno])$
+39 : 			$ERROR ISR.TEXT_LINE[order_for_error]$E_OBJ: $FORMAT(_("%1% `%2%\' is not configured with %3%"), "intno", ISR.INTNO[order_for_error], "CFG_INT")$$END$
+40 : 		$ELSE$
+41 : $			// intnoに対してCFG_INTで設定された割込み優先度がTMIN_INTPRI
+42 : $			// よりも小さい場合（E_OBJ）
+43 : 			$IF INT.INTPRI[intno] < TMIN_INTPRI$
+44 : 				$ERROR INT.TEXT_LINE[intno]$E_OBJ: $FORMAT(_("%1% `%2%\' configured for %3% `%4%\' is higher than %5%"), "intpri", INT.INTPRI[intno], "intno", ISR.INTNO[order_for_error], "TMIN_INTPRI")$$END$
+45 : 			$END$
+46 : 		$END$
+47 : 
+48 : $		// DEF_INH(inhno, { TA_NULL, _kernel_inthdr_<intno> } );
+49 : 		$INH.INHNO[inhno] = inhno$
+50 : 		$INH.INHATR[inhno] = VALUE("TA_NULL", 0)$
+51 : 		$INH.INTHDR[inhno] = CONCAT("_kernel_inthdr_", intno)$
+52 : 		$INH.ORDER_LIST = APPEND(INH.ORDER_LIST, inhno)$
+53 : 
+54 : $		// ISR用の割込みハンドラ
+55 : 		void$NL$
+56 : 		_kernel_inthdr_$intno$(void)$NL$
+57 : 		{$NL$
+58 : 		$IF LENGTH(isr_order_list) > 1$
+59 : 			$TAB$PRI	saved_ipm;$NL$
+60 : 			$NL$
+61 : 			$TAB$i_begin_int($intno$);$NL$
+62 : 			$TAB$saved_ipm = i_get_ipm();$NL$
+63 : 		$ELSE$
+64 : 			$TAB$i_begin_int($intno$);$NL$
+65 : 		$END$
+66 : $		// ISRを優先度順に呼び出す
+67 : 		$JOINEACH order SORT(isr_order_list, "ISR.ISRPRI") "\tif (i_sense_lock()) {\n\t\ti_unlock_cpu();\n\t}\n\ti_set_ipm(saved_ipm);\n"$
+68 : 			$TAB$LOG_ISR_ENTER($intno$);$NL$
+69 : 			$TAB$((ISR)($ISR.ISR[order]$))((intptr_t)($ISR.EXINF[order]$));$NL$
+70 : 			$TAB$LOG_ISR_LEAVE($intno$);$NL$
+71 : 		$END$
+72 : 		$TAB$i_end_int($intno$);$NL$
+73 : 		}$NL$
+74 : 	$END$
+75 : $END$
+76 : $NL$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 03 : (ISR.ISRATR[order] & ~TARGET_ISRATR) != 0
+(A2) 08 : !LENGTH(FIND(INTNO_ATTISR_VALID, ISR.INTNO[order]))
+(A3) 13 : TMIN_ISRPRI <= ISR.ISRPRI[order]
+(A4) 13 : ISR.ISRPRI[order] <= TMAX_ISRPRI
+(A5) 24 : ISR.INTNO[order] == intno
+(A6) 31 : LENGTH(isr_order_list) > 0
+(A7) 33 : LENGTH(INH.INHNO[inhno])
+(A8) 38 : !LENGTH(INT.INTNO[intno])
+(A9) 43 : INT.INTPRI[intno] < TMIN_INTPRI
+(A10)58 : LENGTH(isr_order_list) > 1
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1)(A2)(A3)(A4)(A5)(A6)(A7)(A8)(A9)(A10)
+(a)     T   D   D   D   D   D   D   D   D   D
+(b-1)   F   T   D   D   D   D   D   D   D   D
+(b-2-1) F   F   F  D/T  D   D   D   D   D   D
+(b-2-2) F   F   T   F   D   D   D   D   D   D
+(c-1)   F   F   T   T   ?   ?   F   T   D   D
+(c-2)   F   F   T   T   ?   ?   T   D   D   D
+(c-3)   F   F   T   T   ?   ?   F   F   T   D
+(d)     F   F   T   T   ?   ?   F   F   F   F
+-----------------------------------------------
+網羅    O   O   O   O   X   X   O   O   O   X
+
+【備考】
+・(A5)(A6)は正常系のテストケースによってループ処理で網羅されるためホワ
+  イトボックスでは実施しない．
+・(A10)の網羅をさせるために，以下にホワイトボックステストを実施する．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1)(A2)(A3)(A4)(A5)(A6)(A7)(A8)(A9)(A10)
+(W_a)   F   F   T   T   ?   ?   F   T   F   T
+---------------------------------------------
+網羅    O   O   O   O   X   X   O   O   O   O
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.2. テストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(W_a) 以下の条件が成り立つ時．
+
+  ・2個以上のATT_ISRを定義したとき．
+
+
+以上．

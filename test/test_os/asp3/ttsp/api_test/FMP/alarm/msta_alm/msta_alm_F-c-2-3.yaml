@@ -1,0 +1,33 @@
+version: "$Id: msta_alm_F-c-2-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_alarm_msta_alm_F_c_2_3:
+  variation:
+    timer_arch: local
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+      prcid  : PRC_OTHER
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: msta_alm(ALM1, RELATIVE_TIME_A, PRC_SELF)
+    ercd   : E_CTX
+
+  post_condition:

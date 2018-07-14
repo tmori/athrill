@@ -1,0 +1,47 @@
+version: "$Id: trcv_pdq_h-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_trcv_pdq_h_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : PDQ1
+
+    PDQ1:
+      type   : P_DATAQUEUE
+      pdqcnt : 0
+      maxdpri : DATA_PRI_MAX
+      stsklist :
+        - TASK2:
+              data:    DATA_A
+              datapri: DATA_PRI_MID
+
+  do:
+    id     : TASK1
+    syscall: trcv_pdq(PDQ1, &data, &datapri, TMO_FEVR)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var    : 
+        data:
+          value: DATA_A
+        datapri:
+          value: DATA_PRI_MID
+
+    TASK2:
+      tskstat: ready
+      wobjid : 
+
+    PDQ1:
+      stsklist :

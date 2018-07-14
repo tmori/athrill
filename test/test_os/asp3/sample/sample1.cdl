@@ -1,0 +1,122 @@
+/*
+ *		サンプルプログラム(1)のコンポーネント記述ファイル
+ *
+ *  $Id: sample1.cdl 550 2016-01-17 04:16:26Z ertl-hiro $
+ */
+/*
+ *  カーネルオブジェクトの定義
+ */
+import(<kernel.cdl>);
+
+/*
+ *  ターゲット非依存のセルタイプの定義
+ */
+import("syssvc/tSerialPort.cdl");
+import("syssvc/tSerialAdapter.cdl");
+import("syssvc/tSysLog.cdl");
+import("syssvc/tSysLogAdapter.cdl");
+import("syssvc/tLogTask.cdl");
+import("syssvc/tBanner.cdl");
+
+/*
+ *  ターゲット依存部の取り込み
+ */
+import("target.cdl");
+
+/*
+ *  「セルの組上げ記述」とは，"cell"で始まる行から，それに対応する"};"
+ *  の行までのことを言う．
+ */
+
+/*
+ *  システムログ機能の組上げ記述
+ *
+ *  システムログ機能を外す場合には，以下のセルの組上げ記述を削除し，コ
+ *  ンパイルオプションに-DTOPPERS_OMIT_SYSLOGを追加すればよい．ただし，
+ *  システムログタスクはシステムログ機能を使用するため，それも外すこと
+ *  が必要である．また，システムログ機能のアダプタも外さなければならな
+ *  い．tecsgenが警告メッセージを出すが，無視してよい．
+ */
+cell tSysLog SysLog {
+	logBufferSize = 32;					/* ログバッファのサイズ */
+	initLogMask = C_EXP("LOG_UPTO(LOG_NOTICE)");
+										/* ログバッファに記録すべき重要度 */
+	initLowMask = C_EXP("LOG_UPTO(LOG_EMERG)");
+									   	/* 低レベル出力すべき重要度 */
+	/* 低レベル出力との結合 */
+	cPutLog = PutLogTarget.ePutLog;
+};
+
+/*
+ *  C言語で記述されたアプリケーションから，TECSベースのシステムログ機能
+ *  を呼び出すためのアダプタの組上げ記述
+ *
+ *  システムログ機能のサービスコール（syslog関数とsyslog_0関数〜syslog_5
+ *  関数以外のもの）ルをC言語で記述されたアプリケーションから呼び出さな
+ *  い場合には，以下のセルの組上げ記述を削除すればよい．
+ */
+cell tSysLogAdapter SysLogAdapter {
+	cSysLog = SysLog.eSysLog;
+};
+
+/*
+ *  シリアルインタフェースドライバの組上げ記述
+ *
+ *  シリアルインタフェースドライバを外す場合には，以下のセルの組上げ記
+ *  述を削除すればよい．ただし，システムログタスクはシリアルインタフェー
+ *  スドライバを使用するため，それも外すことが必要である．また，シリア
+ *  ルインタフェースドライバのアダプタも外さなければならない．
+ */
+cell tSerialPort SerialPort1 {
+	receiveBufferSize = 256;			/* 受信バッファのサイズ */
+	sendBufferSize    = 256;			/* 送信バッファのサイズ */
+
+	/* ターゲット依存部との結合 */
+	cSIOPort = SIOPortTarget1.eSIOPort;
+	eiSIOCBR <= SIOPortTarget1.ciSIOCBR;	/* コールバック */
+};
+
+/*
+ *  C言語で記述されたアプリケーションから，TECSベースのシリアルインタ
+ *  フェースドライバを呼び出すためのアダプタの組上げ記述
+ *
+ *  シリアルインタフェースドライバのサービスコールをC言語で記述されたア
+ *  プリケーションから呼び出さない場合には，以下のセルの組上げ記述を削
+ *  除すればよい．
+ */
+cell tSerialAdapter SerialAdapter {
+	cSerialPort[0] = SerialPort1.eSerialPort;
+};
+
+/*
+ *  システムログタスクの組上げ記述
+ *
+ *  システムログタスクを外す場合には，以下のセルの組上げ記述を削除すれ
+ *  ばよい．
+ */
+cell tLogTask LogTask {
+	priority  = 3;					/* システムログタスクの優先度 */
+	stackSize = LogTaskStackSize;	/* システムログタスクのスタックサイズ */
+
+	/* シリアルインタフェースドライバとの結合 */
+	cSerialPort        = SerialPort1.eSerialPort;
+	cnSerialPortManage = SerialPort1.enSerialPortManage;
+
+	/* システムログ機能との結合 */
+	cSysLog = SysLog.eSysLog;
+
+	/* 低レベル出力との結合 */
+	cPutLog = PutLogTarget.ePutLog;
+};
+
+/*
+ *  カーネル起動メッセージ出力の組上げ記述
+ *
+ *  カーネル起動メッセージの出力を外す場合には，以下のセルの組上げ記述
+ *  を削除すればよい．
+ */
+cell tBanner Banner {
+	/* 属性の設定 */
+	targetName      = BannerTargetName;
+	copyrightNotice = BannerCopyrightNotice;
+};

@@ -1,0 +1,31 @@
+version: "$Id: tget_mpf_j-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mempfix_tget_mpf_j_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        blk:
+          type: void*
+
+    MPF1:
+      type: MEMORYPOOL
+      mpfatr: TA_NULL
+      blkcnt: ANY_INI_BLKCNT
+      fblkcnt: 0
+      wtsklist:
+
+  do:
+    id     : TASK1
+    syscall: tget_mpf(MPF1,&blk,ANY_ELAPSED_TIME)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid: MPF1
+      lefttmo: ANY_ELAPSED_TIME
+
+    MPF1:
+      fblkcnt: 0
+      wtsklist:
+        - TASK1:

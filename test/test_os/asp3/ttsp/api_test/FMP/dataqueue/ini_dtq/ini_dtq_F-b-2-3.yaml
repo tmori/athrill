@@ -1,0 +1,62 @@
+version: "$Id: ini_dtq_F-b-2-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_dataqueue_ini_dtq_F_b_2_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    TASK4:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    DTQ1:
+      type  : DATAQUEUE
+      dtqcnt: 3
+      stsklist:
+        - TASK2:
+            data: DATA_A
+        - TASK3:
+            data: DATA_B
+        - TASK4:
+            data: DATA_C
+      datalist:
+        - data: DATA_D
+        - data: DATA_E
+        - data: DATA_F
+
+  do:
+    id     : TASK1
+    syscall: ini_dtq(DTQ1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: running
+      porder: 1
+
+    TASK3:
+      tskstat: ready
+      porder: 2
+
+    TASK4:
+      tskstat: ready
+      porder: 3
+
+    DTQ1:
+      stsklist:
+      datalist:

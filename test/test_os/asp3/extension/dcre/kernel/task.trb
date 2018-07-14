@@ -1,0 +1,119 @@
+# -*- coding: utf-8 -*-
+#
+#   TOPPERS/ASP Kernel
+#       Toyohashi Open Platform for Embedded Real-Time Systems/
+#       Advanced Standard Profile Kernel
+# 
+#   Copyright (C) 2015 by FUJI SOFT INCORPORATED, JAPAN
+#   Copyright (C) 2015,2016 by Embedded and Real-Time Systems Laboratory
+#               Graduate School of Information Science, Nagoya Univ., JAPAN
+# 
+#   上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#   ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+#   変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+#   (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+#       権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+#       スコード中に含まれていること．
+#   (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+#       用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+#       者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+#       の無保証規定を掲載すること．
+#   (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+#       用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+#       と．
+#     (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+#         作権表示，この利用条件および下記の無保証規定を掲載すること．
+#     (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+#         報告すること．
+#   (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+#       害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+#       また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+#       由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+#       免責すること．
+# 
+#   本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+#   よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+#   に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+#   アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+#   の責任を負わない．
+# 
+#   $Id: task.trb 668 2016-03-03 13:57:53Z ertl-hiro $
+# 
+
+#
+#		タスク管理モジュールの生成スクリプト
+#
+
+class TaskObject < KernelObject
+  def initialize()
+    super("tsk", "task", "t")
+  end
+
+  def prepare(key, params)
+    # パラメータが省略された時のデフォルト値の設定
+    params[:stk] ||= "NULL"
+
+    # tskatrが無効の場合（E_RSATR）［NGKI1028］
+    #（TA_ACT，TA_NOACTQUE，TARGET_TSKATR以外のビットがセットされている場合）
+    if (params[:tskatr] & ~($TA_ACT|$TA_NOACTQUE|$TARGET_TSKATR)) != 0
+      error_illegal_id("E_RSATR", params, :tskatr, :tskid)
+    end
+
+    # (TMIN_TPRI <= itskpri && itskpri <= TMAX_TPRI)でない場合［NGKI1034］
+    if !($TMIN_TPRI <= params[:itskpri] && params[:itskpri] <= $TMAX_TPRI)
+      error_illegal_id("E_PAR", params, :itskpri, :tskid)
+    end
+
+    # stkszがターゲット定義の最小値（TARGET_MIN_STKSZ，未定義の場合は1）
+    # よりも小さい場合［NGKI1042］
+    if params[:stksz] < $TARGET_MIN_STKSZ
+      error_wrong_id("E_PAR", params, :stksz, :tskid, "too small")
+    end
+
+    # スタック領域の設定［NGKI1041］
+    if params[:stk] == "NULL"
+      # スタック領域の生成［NGKI1049］
+      stkName = "_kernel_stack_#{params[:tskid]}"
+      params[:tinib_stksz] = AllocStack(stkName, params[:stksz])
+      params[:tinib_stk] = stkName
+    else
+      # stkszがスタック領域のサイズとして正しくない場合［NGKI1056］
+      if (params[:stksz] & ($CHECK_STKSZ_ALIGN - 1)) != 0
+        error_wrong_id("E_PAR", params, :stksz, :tskid, "not aligned")
+      end
+
+      params[:tinib_stksz] = params[:stksz]
+      params[:tinib_stk] = "(void *)(#{params[:stk]})"
+    end
+  end
+
+  def generateInib(key, params)
+    if $USE_TSKINICTXB
+      tskinictxb = GenerateTskinictxb(key, params)
+    else
+      tskinictxb = "#{params[:tinib_stksz]}, #{params[:tinib_stk]}"
+    end
+    return("(#{params[:tskatr]}), (intptr_t)(#{params[:exinf]}), " \
+			"(TASK)(#{params[:task]}), INT_PRIORITY(#{params[:itskpri]}), " \
+			+ tskinictxb)
+  end
+end
+
+#
+#  タスク管理に関する情報の生成
+#
+$kernelCfgC.comment_header("Task Management Functions")
+if $cfgData[:CRE_TSK].size() == 0
+  error("no task is registered")
+end
+TaskObject.new.generate()
+
+# タスク生成順序テーブルの生成
+$kernelCfgC.add("const ID _kernel_torder_table[TNUM_STSKID] = { ")
+$kernelCfgC.append("\t")
+$cfgData[:CRE_TSK].each_with_index do |(key, params), index|
+  $kernelCfgC.append(", ") if index > 0
+  $kernelCfgC.append("#{params[:tskid]}")
+end
+$kernelCfgC.add
+$kernelCfgC.add2("};")

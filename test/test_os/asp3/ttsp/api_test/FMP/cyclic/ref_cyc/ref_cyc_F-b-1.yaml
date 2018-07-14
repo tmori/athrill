@@ -1,0 +1,29 @@
+version: "$Id: ref_cyc_F-b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_cyclic_ref_cyc_F_b_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rcyc:
+          type: T_RCYC
+          cycstat: ANY_CYCLIC_STAT
+          lefttim: RELATIVE_TIME_A
+          prcid  : ANY_OBJECT_ID
+      prcid  : PRC_SELF
+
+    CYC1:
+      type   : CYCLE
+      cycatr : TA_NULL
+      cycstat: TCYC_STP
+      hdlstat: STP
+      cycphs : RELATIVE_TIME_B
+      cyctim : RELATIVE_TIME_C
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: ref_cyc(0, &rcyc)
+    ercd   : E_ID
+
+  post_condition:

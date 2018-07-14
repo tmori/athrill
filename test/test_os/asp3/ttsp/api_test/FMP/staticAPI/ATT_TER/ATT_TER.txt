@@ -1,0 +1,213 @@
+
+	ATT_TER テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: ATT_TER.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+ATT_TER		終了処理ルーチンの追加〔S〕
+
+【静的API】
+	ATT_TER({ ATR teratr, intptr_t exinf, TERRTN terrtn })
+
+【パラメータ】
+　＊終了処理ルーチンの追加情報
+	ATR			teratr		終了処理ルーチン属性
+	intptr_t	exinf		終了処理ルーチンの拡張情報
+	TERRTN		terrtn		終了処理ルーチンの先頭番地
+
+【エラーコード】
+	E_RSATR			予約属性（teratrが不正または使用できない，属する保
+					護ドメインが不正）
+	E_PAR			パラメータエラー（terrtnが不正）
+
+【機能】
+
+各パラメータで指定した終了処理ルーチン追加情報に従って，終了処理ルーチ
+ンを追加する．
+
+teratrは整数定数式パラメータ，exinfとterrtnは一般定数式パラメータである．
+
+保護機能対応カーネルにおいて，ATT_TERは，カーネルドメインの囲みの中に記
+述しなければならない．そうでない場合には，E_RSATRエラーとなる．
+
+terrtnが不正である場合にE_PARエラーが検出されるか否かは，ターゲット定義
+である．
+
+【補足説明】
+
+マルチプロセッサ対応カーネルでは，クラスに属さないグローバル終了処理ルー
+チンはマスタプロセッサで実行され，クラスに属するローカル終了処理ルーチ
+ンはそのクラスの初期割付けプロセッサにより実行される．
+
+【μITRON4.0仕様との関係】
+
+μITRON4.0仕様に定義されていない静的APIである．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) クラスに属さないグローバル終了ルーチンの場合，iniatrが不正または
+      使用できない時にE_RSATRとなること．(ASP:a，EX_NEW_STATE)
+
+【備考】
+・terrtnの不正は必要に応じてターゲット依存部で検出するものなのでE_PARの
+  テストは行わない．
+  http://dev.toppers.jp/trac/asp/ticket/124
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-b) 各パラメータで指定した終了ルーチン追加情報に従って，終了ルーチン
+      が追加されること．
+
+      (F-b-1) クラスに属さないグローバル終了ルーチンはマスタプロセッサ
+              で実行される．(ASP:b，EX_NEW_STATE)
+
+      (F-b-2) クラスに属するローカル終了ルーチンはそのクラスの初期割付
+              けプロセッサがスレーブプロセッサの場合，スレーブプロセッ
+              サにより実行される．(ASP:b，EX_NEW_STATE)
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 
+01 : $  終了処理ルーチンの実行関数
+02 : $ 
+03 : /*$NL$
+04 : $SPC$*  Termination Routine$NL$
+05 : $SPC$*/$NL$
+06 : $NL$
+07 : 
+08 : void$NL$
+09 : _kernel_call_global_terrtn(void)$NL$
+10 : {$NL$
+11 : $FOREACH rorder TER.RORDER_LIST$
+12 : $ 	// teratrが（TA_NULL）でない場合（E_RSATR）
+13 : 	$IF !LENGTH(TER.CLASS[rorder])$
+14 : 		$IF TER.TERATR[rorder] != 0$
+15 : 			$ERROR TER.TEXT_LINE[rorder]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of %3% `%4%\' in %5%"), "teratr", TER.TERATR[rorder], "terrtn", TER.TERRTN[rorder], "ATT_TER")$$END$
+16 : 		$END$
+17 : 		$TAB$((TERRTN)($TER.TERRTN[rorder]$))((intptr_t)($TER.EXINF[rorder]$));$NL$ 
+18 : 	$END$
+19 : $END$
+20 : }$NL$
+21 : $NL$
+
+
+[B] kernel.tf
+
+00 : void$NL$
+01 : _kernel_call_local_terrtn(void)$NL$
+02 : {
+03 : $FOREACH prcid RANGE(1, TNUM_PRCID)$
+04 : $NL$
+05 : $TAB$if (x_prc_index() == INDEX_PRC($prcid$)) {$NL$
+06 : 	$FOREACH rorder TER.RORDER_LIST$
+07 : 		$IF LENGTH(TER.CLASS[rorder])$
+08 : $ 	// teratrが（TA_NULL）でない場合（E_RSATR）
+09 : 			$IF (CLASS_AFFINITY_INI[TER.CLASS[rorder]] == prcid) $
+10 : 				$IF TER.TERATR[rorder] != 0$
+11 : 					$ERROR TER.TEXT_LINE[rorder]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of %3% `%4%\' in %5%"), "teratr", TER.TERATR[rorder], "terrtn", TER.TERRTN[rorder], "ATT_TER")$$END$
+12 : 				$END$
+13 : 				$TAB$$TAB$((TERRTN)($TER.TERRTN[rorder]$))((intptr_t)($TER.EXINF[rorder]$));$NL$
+14 : 			$END$
+15 : 		$END$
+16 : 	$END$
+17 : $TAB$}$NL$
+18 : $END$
+19 : }$NL$
+20 : $NL$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 13 : !LENGTH(TER.CLASS[rorder])
+(A2) 14 : TER.TERATR[rorder] != 0
+
+(B1) 07 : LENGTH(TER.CLASS[rorder]
+(B2) 09 : (CLASS_AFFINITY_INI[TER.CLASS[rorder]] == prcid)
+(B3) 10 : TER.TERATR[rorder] != 0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+         (A1) (A2) (B1) (B2) (B3)
+(a)       F    D    TT   T    T
+(b)       F    D    TT   TF   FD
+(F-a)     T    T    D    D    D
+(F-b-1)   FT   DF   TTFF TFDD FDDD
+(F-b-2)   F    D    TT   FT   DF
+---------------------------------
+網羅      O    O    O    O    O 
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

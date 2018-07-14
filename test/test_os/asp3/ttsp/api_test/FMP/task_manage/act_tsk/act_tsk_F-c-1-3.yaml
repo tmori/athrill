@@ -1,0 +1,34 @@
+version: "$Id: act_tsk_F-c-1-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_act_tsk_F_c_1_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      itskpri: TSK_PRI_HIGH
+      tskstat: dormant
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      chg_ipm: ANY_IPM
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: act_tsk(TASK3)
+    ercd   : E_OK
+
+  post_condition:
+    TASK3:
+      tskstat: ready
+      tskpri : TSK_PRI_HIGH

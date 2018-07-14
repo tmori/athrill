@@ -1,0 +1,31 @@
+version: "$Id: ATT_TER_b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_staticAPI_ATT_TER_b:
+  pre_condition:
+    TER1:
+      type : TERRTN
+      exinf: EXINF_A
+      do   :
+        syscall: sns_ker()
+        bool   : true
+
+    TER2:
+      type : TERRTN
+      exinf: EXINF_B
+      do   :
+        syscall: sns_ker()
+        bool   : true
+
+    TER3:
+      type : TERRTN
+      exinf: EXINF_C
+      do   :
+        syscall: sns_ker()
+        bool   : true
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do:
+
+  post_condition:

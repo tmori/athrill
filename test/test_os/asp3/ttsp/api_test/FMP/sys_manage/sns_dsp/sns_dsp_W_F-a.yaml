@@ -1,0 +1,31 @@
+version: "$Id: sns_dsp_W_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_sns_dsp_W_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: true
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+    CPU_STATE2:
+      type   : CPU_STATE
+      dis_dsp: false
+      loc_cpu: false
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: sns_dsp()
+    bool   : true
+
+  post_condition:

@@ -1,0 +1,33 @@
+version: "$Id: ini_pdq_F-b-1-5-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_ini_pdq_F_b_1_5_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 0
+      stsklist:
+        - TASK2:
+            data:     DATA_A
+            datapri:  DATA_PRI_HIGH
+
+  do:
+    id     : TASK1
+    syscall: ini_pdq(PDQ1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: running
+
+    PDQ1:
+      stsklist:

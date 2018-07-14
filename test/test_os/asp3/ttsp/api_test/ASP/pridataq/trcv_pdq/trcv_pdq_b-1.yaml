@@ -1,0 +1,23 @@
+version: "$Id: trcv_pdq_b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_trcv_pdq_b_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+          value: DATA_A
+        datapri:
+          type: PRI
+          value: DATA_PRI_MID
+
+    PDQ1:
+      type: P_DATAQUEUE
+
+  do:
+    id     : TASK1
+    syscall: trcv_pdq(0, &data, &datapri, ANY_ELAPSED_TIME)
+    ercd   : E_ID
+
+  post_condition:

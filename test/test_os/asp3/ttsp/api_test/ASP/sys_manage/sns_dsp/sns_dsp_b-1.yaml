@@ -1,0 +1,17 @@
+version: "$Id: sns_dsp_b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_sys_manage_sns_dsp_b_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+
+  do:
+    id     : TASK1
+    syscall: sns_dsp()
+    bool   : true
+
+  post_condition:

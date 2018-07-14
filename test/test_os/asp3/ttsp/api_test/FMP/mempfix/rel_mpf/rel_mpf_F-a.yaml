@@ -1,0 +1,31 @@
+version: "$Id: rel_mpf_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mempfix_rel_mpf_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        blk:
+          type : void*
+          value: (void*)ANY_ADDRESS
+
+    MPF1:
+      type: MEMORYPOOL
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: rel_mpf(MPF1, blk)
+    ercd   : E_CTX
+
+  post_condition:

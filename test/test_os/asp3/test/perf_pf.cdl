@@ -1,0 +1,47 @@
+/*
+ *		性能評価用プラットフォームのコンポーネント記述ファイル
+ *
+ *  $Id: perf_pf.cdl 509 2016-01-12 06:06:14Z ertl-hiro $
+ */
+
+/*
+ *  テスト用プラットフォーム
+ */
+import("test_pf.cdl");
+
+/*
+ *  実行時間分布集計サービスのセルタイプの定義
+ */
+import("syssvc/tHistogram.cdl");
+import("syssvc/tHistogramAdapter.cdl");
+
+/*
+ *  実行時間分布集計サービスの組上げ記述
+ */
+cell tHistogram Histogram1 {};
+cell tHistogram Histogram2 {};
+cell tHistogram Histogram3 {};
+cell tHistogram Histogram4 {};
+cell tHistogram Histogram5 {};
+cell tHistogram Histogram6 {};
+cell tHistogram Histogram7 {};
+cell tHistogram Histogram8 {};
+cell tHistogram Histogram9 {};
+cell tHistogram Histogram10 {};
+
+/*
+ *  C言語で記述されたアプリケーションから，TECSベースの実行時間分布集計
+ *  サービスを呼び出すためのアダプタの組上げ記述
+ */
+cell tHistogramAdapter HistogramAdapter {
+	cHistogram[0] = Histogram1.eHistogram;
+	cHistogram[1] = Histogram2.eHistogram;
+	cHistogram[2] = Histogram3.eHistogram;
+	cHistogram[3] = Histogram4.eHistogram;
+	cHistogram[4] = Histogram5.eHistogram;
+	cHistogram[5] = Histogram6.eHistogram;
+	cHistogram[6] = Histogram7.eHistogram;
+	cHistogram[7] = Histogram8.eHistogram;
+	cHistogram[8] = Histogram9.eHistogram;
+	cHistogram[9] = Histogram10.eHistogram;
+};

@@ -1,0 +1,342 @@
+
+	CRE_CYC テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: CRE_CYC.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+CRE_CYC		周期ハンドラの生成〔S〕
+acre_cyc	周期ハンドラの生成〔TD〕
+
+【静的API】
+	CRE_CYC(ID cycid, { ATR cycatr, intptr_t exinf, CYCHDR cychdr,
+										RELTIM cyctim, RELTIM cycphs })
+
+【C言語API】
+	ER_ID cycid = acre_cyc(const T_CCYC *pk_ccyc)
+
+【パラメータ】
+	ID			cycid		生成する周期ハンドラのID番号（CRE_CYCの場合）
+	T_CCYC *	pk_ccyc		周期ハンドラの生成情報を入れたパケットへの
+							ポインタ（静的APIを除く）
+
+　＊周期ハンドラの生成情報（パケットの内容）
+	ATR			cycatr		周期ハンドラ属性
+	intptr_t	exinf		周期ハンドラの拡張情報
+	CYCHDR		cychdr		周期ハンドラの先頭番地
+	RELTIM		cyctim		周期ハンドラの起動周期
+	RELTIM		cycphs		周期ハンドラの起動位相
+
+【リターンパラメータ】
+	ER_ID		cycid		生成された周期ハンドラのID番号（正の値）また
+							はエラーコード
+
+【エラーコード】
+	E_CTX〔s〕		コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_RSATR			予約属性（cycatrが不正または使用できない，属する保
+					護ドメインかクラスが不正）
+	E_PAR			パラメータエラー（cychdr，cyctim，cycphsが不正）
+	E_OACV〔sP〕	オブジェクトアクセス違反（システム状態に対する管理
+					操作が許可されていない）
+	E_MACV〔sP〕	メモリアクセス違反（pk_ccycが指すメモリ領域への読出
+					しアクセスが許可されていない）
+	E_NOID〔sD〕	ID番号不足（割り付けられる周期ハンドラIDがない）
+	E_OBJ			オブジェクト状態エラー（cycidで指定した周期ハンドラ
+					が登録済み：CRE_CYCの場合）
+
+【機能】
+
+各パラメータで指定した周期ハンドラ生成情報に従って，周期ハンドラを生成
+する．具体的な振舞いは以下の通り．
+
+cycatrにTA_STAを指定した場合，対象周期ハンドラは動作している状態となる．
+次に周期ハンドラを起動する時刻は，サービスコールを呼び出した時刻（静的
+APIの場合はカーネルの起動時刻）から，cycphsで指定した相対時間後に設定さ
+れる．
+
+cycatrにTA_STAを指定しない場合，対象周期ハンドラは動作していない状態に
+初期化される．
+
+静的APIにおいては，cycidはオブジェクト識別名，cycatr，cyctim，cycphsは
+整数定数式パラメータ，exinfとcychdrは一般定数式パラメータである．
+
+保護機能対応カーネルにおいて，CRE_CYCは，カーネルドメインの囲みの中に記
+述しなければならない．そうでない場合には，E_RSATRエラーとなる．また，
+acre_cycで，生成する周期ハンドラが属する保護ドメインとしてカーネルドメ
+イン以外を指定した場合には，E_RSATRエラーとなる．
+
+cyctimは，0より大きく，TMAX_RELTIM以下の値でなければならない．また，
+cycphsは，TMAX_RELTIM以下でなければならない．cycphsにcyctimより大きい値
+を指定してもよい．
+
+マルチプロセッサ対応カーネルでグローバルタイマ方式を用いている場合で，
+生成する周期ハンドラの属するクラスの割付け可能プロセッサが，システム時
+刻管理プロセッサのみでない場合には，E_RSATRエラーとなる．
+
+【補足説明】
+
+静的APIにおいて，cycatrにTA_STAを，cycphsに0を指定した場合，周期ハンド
+ラが最初に呼び出されるのは，カーネル起動後最初のタイムティックになる．
+cycphsに1を指定した場合も同じ振舞いとなるため，静的APIでcycatrにTA_STA
+が指定されている場合には，cycphsに0を指定することは推奨されず，コンフィ
+ギュレータが警告メッセージを出力する．
+
+【TOPPERS/ASPカーネルにおける規定】
+
+ASPカーネルでは，CRE_CYCのみをサポートする．ただし，TA_PHS属性の周期ハ
+ンドラはサポートしない．動的生成機能拡張パッケージでは，acre_cycもサポー
+トする．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，CRE_CYCのみをサポートする．ただし，TA_PHS属性の周期ハ
+ンドラはサポートしない．
+
+【TOPPERS/HRP2カーネルにおける規定】
+
+HRP2カーネルでは，CRE_CYCのみをサポートする．ただし，TA_PHS属性の周期ハ
+ンドラはサポートしない．
+
+【μITRON4.0仕様との関係】
+
+cychdrのデータ型をCYCHDRに変更した．また，cycphsにcyctimより大きい値を
+指定した場合の振舞いと，静的APIでcycphsに0を指定した場合の振舞いを規定
+した．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) cycatrが不正の時にE_RSATRが返ること．
+
+(b) cychdrが不正の時にE_PARが返ること．
+
+(c) cyctimが不正の時にE_PARが返ること．
+
+    (c-1) cyctimが許容される最小値-1(0)の時にE_PARが返ること．
+
+    (c-2) cyctimが許容される最大値+1(TMAX_RELTIM+1)の時に
+          E_PARが返ること．
+
+(d) cycphsが不正の時にE_PARが返ること．
+
+    (d-1) cycphsが許容される最小値-1(-1)の時にE_PARが返ること．
+
+    (d-2) cycphsが許容される最大値+1(TMAX_RELTIM+1)の時に
+          E_PARが返ること．
+
+(e) cycidで指定した周期ハンドラが登録済みのときにE_OBJが返ること．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(f) cycatrにTA_STAを指定し，cycphsに0を指定すると警告メッセージが
+    出力されること．
+
+(g) cycphsにcyctimより大きい値を指定しても正常に処理されること．
+
+(h) 各パラメータで指定した周期ハンドラ生成情報に従って，周期ハンドラが
+    生成されること．
+
+    (h-1) cycatrにTA_NULLを指定した場合，対象周期ハンドラは，動作してい
+          ない状態に初期化されること．
+
+    (h-2) cycatrにTA_STAを指定した場合，対象周期ハンドラは，動作してい
+          る状態に初期化されること．
+
+【備考】
+・属性にTA_STAを指定すると，時刻を止める関数を呼び出す前に周期ハンドラ
+  が起動してしまうため，「cycphsに0，1を指定した場合，カーネル起動後最
+  初のタイムティックで起動する」という確認はできない．
+・(f)は，警告メッセージを確認するため，スクラッチプログラムとする．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] kernel.tf
+
+00 : $ 
+01 : $  周期ハンドラ
+02 : $ 
+03 : /*$NL$
+04 : $SPC$*  Cyclic Handler Functions$NL$
+05 : $SPC$*/$NL$
+06 : $NL$
+07 : 
+08 : $ 周期ハンドラID番号の最大値
+09 : const ID _kernel_tmax_cycid = (TMIN_CYCID + TNUM_CYCID - 1);$NL$
+10 : $NL$
+11 : 
+12 : $ 周期ハンドラ初期化テーブルの生成
+13 : $IF LENGTH(CYC.ID_LIST)$
+14 : 	const CYCINIB _kernel_cycinib_table[TNUM_CYCID] = {$NL$
+15 : 	$JOINEACH cycid CYC.ID_LIST ",\n"$
+16 : $		// cycatrが（［TA_STA］）でない場合（E_RSATR）
+17 : 		$IF (CYC.CYCATR[cycid] & ~TA_STA) != 0$
+18 : 			$ERROR CYC.TEXT_LINE[cycid]$E_RSATR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "cycatr", CYC.CYCATR[cycid], cycid, "CRE_CYC")$$END$
+19 : 		$END$
+20 : 
+21 : $		// (0 < cyctim && cyctim <= TMAX_RELTIM)でない場合（E_PAR）
+22 : 		$IF !(0 < CYC.CYCTIM[cycid] && CYC.CYCTIM[cycid] <= TMAX_RELTIM)$
+23 : 			$ERROR CYC.TEXT_LINE[cycid]$E_PAR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "cyctim", CYC.CYCTIM[cycid], cycid, "CRE_CYC")$$END$
+24 : 		$END$
+25 : 
+26 : $		// (0 <= cycphs && cycphs <= TMAX_RELTIM)でない場合（E_PAR）
+27 : 		$IF !(0 <= CYC.CYCPHS[cycid] && CYC.CYCPHS[cycid] <= TMAX_RELTIM)$
+28 : 			$ERROR CYC.TEXT_LINE[cycid]$E_PAR: $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "cycphs", CYC.CYCPHS[cycid], cycid, "CRE_CYC")$$END$
+29 : 		$END$
+30 : 
+31 : $		// 警告：cycatrにTA_STAが設定されていて，(cycphs == 0)の場合
+32 : 		$IF (CYC.CYCATR[cycid] & TA_STA) != 0 && CYC.CYCPHS[cycid] == 0$
+33 : 			$WARNING CYC.TEXT_LINE[cycid]$$FORMAT(_("%1% is not recommended when %2% is set to %3% in %4%"), "cycphs==0", "TA_STA", "cycatr", "CRE_CYC")$$END$
+34 : 		$END$
+35 : 
+36 : $		// 周期ハンドラ初期化ブロック
+37 : 		$TAB${ ($CYC.CYCATR[cycid]$), (intptr_t)($CYC.EXINF[cycid]$), ($CYC.CYCHDR[cycid]$), ($CYC.CYCTIM[cycid]$), ($CYC.CYCPHS[cycid]$) }
+38 : 	$END$$NL$
+39 : 	};$NL$
+40 : 	$NL$
+41 : 
+42 : $	// 周期ハンドラ管理ブロック
+43 : 	CYCCB _kernel_cyccb_table[TNUM_CYCID];$NL$
+44 : $ELSE$
+45 : 	TOPPERS_EMPTY_LABEL(const CYCINIB, _kernel_cycinib_table);$NL$
+46 : 	TOPPERS_EMPTY_LABEL(CYCCB, _kernel_cyccb_table);$NL$
+47 : $END$$NL$
+
+[B] kernel_check.tf
+
+00 : $	// 周期ハンドラの先頭番地のチェック
+01 : 	$cycinib = SYMBOL("_kernel_cycinib_table")$
+02 : 	$FOREACH cycid CYC.ID_LIST$
+03 : 		$cychdr = PEEK(cycinib + offsetof_CYCINIB_cychdr, 4)$
+04 : 		$IF CHECK_FUNC_ALIGN && (cychdr & (CHECK_FUNC_ALIGN - 1)) != 0$
+05 : 			$ERROR CYC.TEXT_LINE[cycid]$E_PAR: 
+06 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is not aligned"),
+07 : 				"cychdr", CYC.CYCHDR[cycid], cycid, "CRE_CYC")$$END$
+08 : 		$END$
+09 : 		$IF CHECK_FUNC_NONNULL && cychdr == 0$
+10 : 			$ERROR CYC.TEXT_LINE[cycid]$E_PAR: 
+11 : 				$FORMAT(_("%1% `%2%\' of `%3%\' in %4% is null"),
+12 : 				"cychdr", CYC.CYCHDR[cycid], cycid, "CRE_CYC")$$END$
+13 : 		$END$
+14 : 		$cycinib = cycinib + sizeof_CYCINIB$
+15 : 	$END$
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+必要なし．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 17 : (CYC.CYCATR[cycid] & ~TA_STA) != 0
+(A2) 22 : 0 < CYC.CYCTIM[cycid]
+(A3) 22 : CYC.CYCTIM[cycid] <= TMAX_RELTIM
+(A4) 27 : 0 <= CYC.CYCPHS[cycid]
+(A5) 27 : CYC.CYCPHS[cycid] <= TMAX_RELTIM
+(A6) 32 : (CYC.CYCATR[cycid] & TA_STA) != 0
+(A7) 32 : CYC.CYCPHS[cycid] == 0
+
+(B1) 04 : (cychdr & (CHECK_FUNC_ALIGN - 1)) != 0
+(B2) 09 : cychdr == 0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+       (A1) (A2) (A3) (A4) (A5) (A6) (A7) (B1) (B2)
+(a)     T    D    D    D    D    D    D    D    D
+(b)     F    T    T    T    T    F   D/F   T    D
+(c-1)   F    F   D/T   D    D    D    D    D    D
+(c-2)   F    T    F    D    D    D    D    D    D
+(d-1)   F    T    T    F   D/T   D    D    D    D
+(d-2)   F    T    T    T    F    D    D    D    D
+(e)     F    T    T    T    T    F    F    F    F
+(f)     F    T    T    T    T    T    T    D    D
+(g)     F    T    T    T    T    F    F    F    F
+(h-1)   F    T    T    T    T    F    F    F    F
+(h-2)   F    T    T    T    T    F    F    F    F
+---------------------------------------------------
+網羅    O    O    O    O    O    O    O    O    X
+
+
+【備考】
+・(B2)の網羅をさせるために，以下にホワイトボックステストを実施する．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       (A1) (A2) (A3) (A4) (A5) (A6) (A7) (B1) (B2)
+(W_a)   F    F    F    F    F    F    F    F    T
+---------------------------------------------------
+網羅    O    O    O    O    O    O    O    O    O
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.2. テストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(W_a) 以下の条件が成り立つ時．
+
+  ・cychdrが0のとき．
+
+
+
+以上．

@@ -1,0 +1,61 @@
+version: "$Id: rcv_dtq_F-e-1-1-6.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_dataqueue_rcv_dtq_F_e_1_1_6:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_OTHER
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 3
+      stsklist:
+       - TASK2:
+           data : DATA_A
+      datalist:
+        - data : DATA_B
+        - data : DATA_C
+        - data : DATA_D
+
+  do:
+    id     : TASK1
+    syscall: rcv_dtq(DTQ1, &data)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        data:
+          value: DATA_B
+
+    TASK2:
+      tskstat: ready
+
+    DTQ1:
+      stsklist:
+      datalist:
+        - data : DATA_C
+        - data : DATA_D
+        - data : DATA_A

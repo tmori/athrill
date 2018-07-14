@@ -1,0 +1,38 @@
+version: "$Id: CFG_INT_F-d-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_staticAPI_CFG_INT_F_d_1:
+  variation:
+    api_support_ena_int: true
+    irc_arch: local
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+      class  : CLS_OTHER_ALL
+
+    INH1:
+      type   : INTHDR
+      intatr : TA_NULL
+      intno  : INTNO_OTHER_INH_A
+      intpri : INT_PRI_MID
+      inhno  : INHNO_OTHER_A
+      intstat: TA_DISINT
+      hdlstat: STP
+      prcid  : PRC_OTHER
+      class  : CLS_OTHER_ONLY_OTHER
+
+  do_0:
+    id  : TASK1
+    code: ttsp_int_raise(INTNO_OTHER_INH_A)
+
+  post_condition_0:
+
+  do_1:
+    id     : TASK1
+    syscall: ena_int(INTNO_OTHER_INH_A)
+
+  post_condition_1:
+    INH1:
+      intstat: TA_ENAINT
+      hdlstat: ACTIVATE

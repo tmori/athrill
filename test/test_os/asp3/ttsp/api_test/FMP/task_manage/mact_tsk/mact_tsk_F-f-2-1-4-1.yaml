@@ -1,0 +1,26 @@
+version: "$Id: mact_tsk_F-f-2-1-4-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_mact_tsk_F_f_2_1_4_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : SLEEP
+      tskpri : TSK_PRI_MID
+      actcnt : 0
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: mact_tsk(TASK2, PRC_SELF)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      actcnt : 1
+      actprc : PRC_SELF

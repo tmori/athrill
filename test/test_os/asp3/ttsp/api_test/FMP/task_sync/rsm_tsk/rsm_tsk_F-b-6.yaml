@@ -1,0 +1,24 @@
+version: "$Id: rsm_tsk_F-b-6.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_rsm_tsk_F_b_6:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: dormant
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: rsm_tsk(TASK2)
+    ercd   : E_OBJ
+
+  post_condition:

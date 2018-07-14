@@ -1,0 +1,32 @@
+version: "$Id: msta_cyc_F-c-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_cyclic_msta_cyc_F_c_1_1:
+  variation:
+    timer_arch: local
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    CYC1:
+      type   : CYCLE
+      cycatr : TA_NULL
+      cycstat: TCYC_STP
+      hdlstat: STP
+      cycphs : RELATIVE_TIME_A
+      cyctim : RELATIVE_TIME_B
+      prcid  : PRC_SELF
+
+  do:
+    id     : ALM1
+    syscall: msta_cyc(CYC1, PRC_SELF)
+    ercd   : E_CTX
+
+  post_condition:

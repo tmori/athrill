@@ -1,0 +1,24 @@
+version: "$Id: istp_alm_b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_alarm_istp_alm_b_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+    ALM2:
+      type   : ALARM
+      almstat: TALM_STA
+      hdlstat: STP
+      lefttim: RELATIVE_TIME_A
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do:
+    id     : ALM1
+    syscall: istp_alm(0)
+    ercd   : E_ID
+
+  post_condition:

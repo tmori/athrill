@@ -1,0 +1,25 @@
+version: "$Id: iunl_cpu_b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_sys_manage_iunl_cpu_b:
+  pre_condition:
+    ALM1:
+      type    : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+      chg_ipm: INT_PRI_TIMER
+
+  do:
+    id     : ALM1
+    syscall: iunl_cpu()
+    ercd   : E_OK
+
+  post_condition:
+    CPU_STATE:
+      loc_cpu: false

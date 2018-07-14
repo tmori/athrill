@@ -1,0 +1,309 @@
+
+	sta_cyc テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: sta_cyc.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+sta_cyc		周期ハンドラの動作開始〔T〕
+
+【C言語API】
+	ER ercd = sta_cyc(ID cycid)
+
+【パラメータ】
+	ID			cycid		対象周期ハンドラのID番号
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（cycidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象周期ハンドラが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象周期ハンドラに対する
+					通常操作1が許可されていない）
+
+【機能】
+
+cycidで指定した周期ハンドラ（対象周期ハンドラ）を動作開始する．具体的な
+振舞いは以下の通り．
+
+対象周期ハンドラが動作していない状態であれば，対象周期ハンドラは動作し
+ている状態となる．次に周期ハンドラを起動する時刻は，sta_cycを呼び出して
+以降の最初の起動時刻に設定される．
+
+対象周期ハンドラが動作している状態であれば，次に周期ハンドラを起動する
+時刻の再設定のみが行われる．
+
+【補足説明】
+
+TA_PHS属性でない周期ハンドラの場合，次に周期ハンドラを起動する時刻は，
+sta_cycを呼び出してから，対象周期ハンドラの起動位相で指定した相対時間後
+に設定される．
+
+対象周期ハンドラがTA_PHS属性で，動作している状態であれば，次に周期ハン
+ドラを起動する時刻は変化しない．
+
+【μITRON4.0仕様との関係】
+
+TA_PHS属性でない周期ハンドラにおいて，sta_cycを呼び出した後，最初に周期
+ハンドラが起動される時刻を変更した．μITRON4.0仕様では，sta_cycを呼び出
+してから周期ハンドラの起動周期で指定した相対時間後となっているが，この
+仕様では，起動位相で指定した相対時間後とした．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) 他プロセッサがディスパッチ保留状態ではないとき，対象周期ハンドラ
+      を自プロセッサがディスパッチ保留状態で呼出す場合．
+
+      (F-a-1) 対象周期ハンドラが他プロセッサに割り付けられているとき，
+
+              (F-a-1-1) 非タスクコンテキストから呼び出して，
+                        E_CTXエラーが返ること．(ASP:a-1，EX_OTHER_PRC)
+
+              (F-a-1-2) CPUロック状態で呼び出して，
+                        E_CTXエラーが返ること．(ASP:a-2，EX_OTHER_PRC)
+
+              (F-a-1-3) スピンロック取得中に呼び出して，
+                        E_CTXエラーが返ること．(ASP:a，EX_NEW_STATE)
+
+      (F-a-2) 対象周期ハンドラが自プロセッサに割り付けられているとき，
+              スピンロック取得中に呼び出して，E_CTXエラーが返ること．
+              (ASP:a，EX_NEW_STATE)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-b) 他プロセッサに割り付けられている対象周期ハンドラが動作していない
+      状態で呼び出すと，周期ハンドラが正しく動作すること．
+      (ASP:c，EX_OTHER_PRC)
+
+(F-c) 他プロセッサに割り付けられている対象周期ハンドラが動作している状
+      態で呼び出すと，次回起動時刻が再設定され，正しく動作すること．
+      (ASP:d，EX_OTHER_PRC)
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+sta_cyc(ID cycid)
+{
+	CYCCB	*p_cyccb;
+	ER		ercd;
+	PCB		*p_pcb;
+
+	LOG_STA_CYC_ENTER(cycid);
+	CHECK_TSKCTX_UNL();
+	CHECK_CYCID(cycid);
+	p_cyccb = get_cyccb(cycid);
+
+	t_lock_cpu();
+	p_pcb = t_acquire_tsk_lock_cyc(p_cyccb);
+	if (p_cyccb->cycsta) {
+		tmevtb_dequeue(p_cyccb->p_pcb->p_tevtcb, &(p_cyccb->tmevtb));
+	}
+	else {
+		p_cyccb->cycsta = true;
+	}
+	tmevtb_enqueue_cyc(p_cyccb, base_time(p_cyccb->p_pcb->p_tevtcb) + p_cyccb->p_cycinib->cycphs);
+	ercd = E_OK;
+	release_tsk_lock(p_pcb);
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_STA_CYC_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] sta_cyc
+
+00 : ER
+01 : sta_cyc(ID cycid)
+02 : {
+03 : 	CYCCB	*p_cyccb;
+04 : 	ER		ercd;
+05 : 	PCB		*p_pcb;
+06 : 
+07 : 	if (!sense_tskctx_unl()) {
+08 : 		ercd = E_CTX;
+09 : 		goto error_exit;
+10 : 	}
+11 : 	if (!(TMIN_CYCID <= (cycid) && (cycid) <= tmax_cycid)) {
+12 : 		ercd = E_ID;
+13 : 		goto error_exit;
+14 : 	}
+15 : 	p_cyccb = p_cyccb_table[(uint_t)((cycid) - TMIN_CYCID)];
+16 : 
+17 : 	t_lock_cpu();
+18 : 	p_pcb = t_acquire_tsk_lock_cyc(p_cyccb);
+19 : 	if (p_cyccb->cycsta) {
+20 : 		tmevtb_dequeue(p_cyccb->p_pcb->p_tevtcb, &(p_cyccb->tmevtb));
+21 : 	}
+22 : 	else {
+23 : 		p_cyccb->cycsta = true;
+24 : 	}
+25 : 	tmevtb_enqueue_cyc(p_cyccb, base_time(p_cyccb->p_pcb->p_tevtcb) + p_cyccb->p_cycinib->cycphs);
+26 : 	ercd = E_OK;
+27 : 	release_tsk_lock(p_pcb);
+28 : 	t_unlock_cpu();
+29 : 
+20 :   error_exit:
+31 : 	return(ercd);
+32 : }
+
+
+[B] tmevtb_enqueue_cyc
+
+00 : Inline void
+01 : tmevtb_enqueue_cyc(CYCCB *p_cyccb, EVTTIM evttim)
+02 : {
+03 : 	tmevtb_enqueue_evttim(p_cyccb->p_pcb->p_tevtcb, &(p_cyccb->tmevtb), evttim,
+04 : 								(CBACK) call_cychdr, (void *) p_cyccb);
+05 : 	p_cyccb->evttim = evttim;
+06 : }
+
+
+[C] tmevtb_enqueue_evttim
+
+00 : Inline void
+01 : tmevtb_enqueue_evttim(TEVTCB *p_tevtcb, TMEVTB *p_tmevtb, EVTTIM time, CBACK callback, void *arg)
+02 : {
+03 : 	p_tmevtb->callback = callback;
+04 : 	p_tmevtb->arg = arg;
+05 : 	tmevtb_insert(p_tevtcb, p_tmevtb, time);
+06 : }
+
+
+[D] call_cychdr
+
+00 : void
+01 : call_cychdr(CYCCB *p_cyccb)
+02 : {
+03 : 	PRI		saved_ipm;
+04 : 	PCB		*my_p_pcb;
+05 : 
+06 : 	/*
+07 : 	 *  次回の起動のためのタイムイベントブロックを登録する．
+08 : 	 *
+09 : 	 *  同じタイムティックで周期ハンドラを再度起動すべき場合には，この
+10 : 	 *  関数からsignal_timeに戻った後に，再度この関数が呼ばれることにな
+11 : 	 *  る．
+12 : 	 */
+13 : 	tmevtb_enqueue_cyc(p_cyccb, p_cyccb->evttim + p_cyccb->p_cycinib->cyctim);
+14 : 
+15 : 	/*
+16 : 	 *  周期ハンドラを，CPUロック解除状態で呼び出す．
+17 : 	 */
+18 : 	saved_ipm = i_get_ipm();
+19 : 	release_tsk_lock(p_cyccb->p_pcb);
+20 : 	i_unlock_cpu();
+21 : 
+22 : 	(*((CYCHDR)(p_cyccb->p_cycinib->cychdr)))(p_cyccb->p_cycinib->exinf);
+23 : 
+24 : 	if (!i_sense_lock()) {
+25 : 		i_lock_cpu();
+26 : 	}
+27 : 
+28 : 	my_p_pcb = i_acquire_tsk_lock_self();
+29 : 
+30 : 	i_set_ipm(saved_ipm);
+31 : 	force_unlock_spin(my_p_pcb);
+32 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 07 : !sense_tskctx_unl()
+(A2) 11 : TMIN_CYCID <= (cycid)
+(A3) 11 : (cycid) <= tmax_cycid
+(A4) 19 : p_cyccb->cycsta
+
+(D1) 24 : !i_sense_lock()
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+          (A1) (A2) (A3) (A4) (D1)
+(a-1)      T    D    D    D    D
+(a-2)      T    D    D    D    D
+(b-1)      F    F    D/T  D    D
+(b-2)      F    T    F    D    D
+(c)        F    T    T    F    T
+(d)        F    T    T    T    T
+(W_a)      F    T    T    F    F
+(F-a-1-1)  T    D    D    D    D
+(F-a-1-2)  T    D    D    D    D
+(F-a-1-3)  T    D    D    D    D
+(F-a-2)    T    D    D    D    D
+(F-b)      F    T    T    F    T
+(F-c)      F    T    T    T    T
+----------------------------------
+網羅       O    O    O    O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし
+
+
+以上．

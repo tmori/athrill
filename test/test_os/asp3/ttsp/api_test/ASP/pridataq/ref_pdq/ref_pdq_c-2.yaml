@@ -1,0 +1,34 @@
+version: "$Id: ref_pdq_c-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_ref_pdq_c_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rpdq:
+          type: T_RPDQ
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : PDQ1
+
+    PDQ1:
+      type   : P_DATAQUEUE
+      pdqcnt : 0
+      rtsklist:
+        - TASK2:
+      datalist:
+
+  do:
+    id     : TASK1
+    syscall: ref_pdq(PDQ1,&rpdq)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rpdq:
+          stskid: TSK_NONE
+          rtskid: TASK2
+          spdqcnt: 0

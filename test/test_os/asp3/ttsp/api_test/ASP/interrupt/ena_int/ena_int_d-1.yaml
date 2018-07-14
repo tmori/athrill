@@ -1,0 +1,43 @@
+version: "$Id: ena_int_d-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_interrupt_ena_int_d_1:
+  note: TESRY_006
+
+  variation:
+    api_support_ena_int: true
+
+  pre_condition:
+    INH1:
+      type   : INTHDR
+      intno  : INTNO_SELF_INH_A
+      intpri : INT_PRI_MID
+      inhno  : INHNO_SELF_A
+      intstat: TA_DISINT
+      hdlstat: STP
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: false
+
+  do_0:
+    id     : TASK1
+    code   : ttsp_int_raise(INTNO_SELF_INH_A)
+    gcov   : false
+
+  post_condition_0:
+
+  do_1:
+    id     : TASK1
+    syscall: ena_int(INTNO_SELF_INH_A)
+    gcov   : true
+
+  post_condition_1:
+    INH1:
+      intstat: TA_ENAINT
+      hdlstat: ACTIVATE
+
+    CPU_STATE:
+      chg_ipm: INT_PRI_MID
