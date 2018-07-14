@@ -6,9 +6,11 @@
 #include <string.h>
 #include <sys/file.h>
 #include "assert.h"
+#include "std_device_ops.h"
 
 
 static uint32 athrill_device_func_call_addr = 0x0;
+static uint32 athrill_device_raise_interrupt_addr = 0x0;
 
 typedef struct {
 	bool isLocked;
@@ -30,10 +32,16 @@ void device_init_athrill_device(void)
 
     err = symbol_get_gl("athrill_device_func_call", 
         strlen("athrill_device_func_call"), &addr, &size);
-    if (err < 0) {
-        return;
+    if (err >= 0) {
+		printf("athrill_device_func_call=0x%x\n", addr);
+	    athrill_device_func_call_addr = addr;
     }
-    athrill_device_func_call_addr = addr;
+    err = symbol_get_gl("athrill_device_raise_interrupt", 
+        strlen("athrill_device_raise_interrupt"), &addr, &size);
+    if (err >= 0) {
+		printf("athrill_device_raise_interrupt=0x%x\n", addr);
+	    athrill_device_raise_interrupt_addr = addr;
+    }
 
     return;
 }
@@ -62,7 +70,7 @@ static inline AthrillDeviceMmapInfoTableEntryType *getMmapInfo(void *addr)
 	return NULL;
 }
 
-void device_supply_clock_athrill_device(void)
+static void do_athrill_device_func_call(void)
 {
     Std_ReturnType err;
     uint32 data;
@@ -101,7 +109,34 @@ void device_supply_clock_athrill_device(void)
     }
 
     (void)mpu_put_data32(0U, athrill_device_func_call_addr, 0U);
+	return;
+}
+static void do_athrill_device_external_raise_interrupt(void)
+{
+    Std_ReturnType err;
+    uint32 data;
 
+    if (athrill_device_raise_interrupt_addr == 0x0) {
+        return;
+    }
+
+    err = mpu_get_data32(0U, athrill_device_raise_interrupt_addr, &data);
+    if (err != 0) {
+        return;
+    }
+    if (data == 0U) {
+        return;
+    }
+    (void)mpu_put_data32(0U, athrill_device_raise_interrupt_addr, 0U);
+	(void)intc_raise_intr(data);
+	return;
+}
+
+void device_supply_clock_athrill_device(void)
+{
+
+	do_athrill_device_func_call();
+	do_athrill_device_external_raise_interrupt();
     return;
 }
 
