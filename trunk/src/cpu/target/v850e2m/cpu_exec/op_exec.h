@@ -44,7 +44,7 @@ extern OpExecType op_exec_table[OP_EXEC_TABLE_NUM];
 #define op_exec_ei_10 op_exec_diei
 #define op_exec_eiret_10 op_exec_eiret_10
 #define op_exec_feret_10 op_exec_feret_10
-#define op_exec_fetrap_1 NULL /* TODO */
+#define op_exec_fetrap_1 op_exec_fetrap_1
 #define op_exec_halt_10 op_exec_halt
 #define op_exec_hsh_12 op_exec_hsh_12
 #define op_exec_hsw_12 op_exec_hsw_12

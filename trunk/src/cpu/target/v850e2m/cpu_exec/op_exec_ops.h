@@ -169,6 +169,7 @@ extern int op_exec_nop(TargetCoreType *cpu);
 extern int op_exec_reti(TargetCoreType *cpu);
 extern int op_exec_halt(TargetCoreType *cpu);
 extern int op_exec_trap(TargetCoreType *cpu);
+extern int op_exec_fetrap_1(TargetCoreType *cpu);
 extern int op_exec_switch(TargetCoreType *cpu);
 extern int op_exec_prepare(TargetCoreType *cpu);
 extern int op_exec_dispose(TargetCoreType *cpu);

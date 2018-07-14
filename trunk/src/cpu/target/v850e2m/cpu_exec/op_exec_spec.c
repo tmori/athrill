@@ -338,21 +338,28 @@ int op_exec_trap(TargetCoreType *cpu)
 	if (vector <= 0x0F) {
 		ret = 0;
 		pc = 0x40;
-		eicc = 0x40;
+		eicc = 0x40 + vector;
 	}
 	else if (vector <= 0x1F) {
 		ret = 0;
 		pc = 0x50;
-		eicc = 0x50;
+		eicc = 0x50 + (0x0F & vector);
 	}
 
 	if (ret == 0) {
-		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: TRAP:0x%x\n", cpu->reg.pc, pc));
+		if (CPU_ISSET_MPM_AUE(&cpu->reg.sys)) {
+			CPU_CLR_IMP(&cpu->reg);
+			CPU_CLR_DMP(&cpu->reg);
+			CPU_CLR_NPV(&cpu->reg);
+			CPU_CLR_PP(&cpu->reg);
+		}
+
+		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: TRAP vector(0x%x):0x%x\n", cpu->reg.pc, vector, pc));
 		sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPC] = cpu->reg.pc + 4;
 		sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPSW] = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_PSW];
 
 		ecr = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_ECR];
-		ecr = ecr & 0x00FF;
+		ecr = ecr & 0x0000FFFF;
 		ecr |= (eicc << 16);
 		sys_get_cpu_base(&cpu->reg)->r[SYS_REG_ECR] = ecr;
 		CPU_SET_EP(&cpu->reg);
@@ -360,6 +367,43 @@ int op_exec_trap(TargetCoreType *cpu)
 		cpu->reg.pc = pc;
 	}
 
+	return 0;
+}
+
+int op_exec_fetrap_1(TargetCoreType *cpu)
+{
+	uint32 pc = 0x00000030;
+	uint32 fepc;
+	uint32 fecc;
+	uint32 vector = cpu->decoded_code->type1.reg2;
+	uint32 psw = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_PSW];
+	uint32 ecr = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_ECR];
+
+	fepc = cpu->reg.pc + 2U;
+	fecc = 0x30 + vector;
+
+	ecr = ecr & 0x0000FFFF;
+	ecr |= (fecc << 16);
+
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_FEPC] = fepc;
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_FEIC] = fecc;
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_FEPSW] = psw;
+	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_ECR] = ecr;
+
+	CPU_SET_EP(&cpu->reg);
+	CPU_SET_ID(&cpu->reg);
+	CPU_SET_NP(&cpu->reg);
+
+	if (CPU_ISSET_MPM_AUE(&cpu->reg.sys)) {
+		CPU_CLR_IMP(&cpu->reg);
+		CPU_CLR_DMP(&cpu->reg);
+		CPU_CLR_NPV(&cpu->reg);
+		CPU_CLR_PP(&cpu->reg);
+	}
+
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: FETRAP vector(0x%x):0x%x\n", cpu->reg.pc, vector, pc));
+
+	cpu->reg.pc = pc;
 	return 0;
 }
 
@@ -383,8 +427,8 @@ int op_exec_syscall_10(TargetCoreType *cpu)
 	eipc = cpu->reg.pc + 4U;
 	eiic = 0x8000 + vector8;
 	ecr = sys_get_cpu_base(&cpu->reg)->r[SYS_REG_ECR];
-	ecr = ecr & 0x00FF;
-	ecr |= (eiic << 16);
+	ecr = ecr & 0xFFFF0000;
+	ecr |= eiic;
 
 	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIPC] = eipc;
 	sys_get_cpu_base(&cpu->reg)->r[SYS_REG_EIIC] = eiic;
@@ -394,7 +438,7 @@ int op_exec_syscall_10(TargetCoreType *cpu)
 	CPU_SET_EP(&cpu->reg);
 	CPU_SET_ID(&cpu->reg);
 
-	if (CPU_ISSET_MPE(&cpu->reg.sys)) {
+	if (CPU_ISSET_MPM_AUE(&cpu->reg.sys)) {
 		CPU_CLR_IMP(&cpu->reg);
 		CPU_CLR_DMP(&cpu->reg);
 		CPU_CLR_NPV(&cpu->reg);
