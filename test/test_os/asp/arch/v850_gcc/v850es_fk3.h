@@ -40,6 +40,13 @@
 #define DEFAULT_STK_TOP		((STK_T *const)0xFFFF0000)
 //#define STACKTOP			0x03FFEFFF
 
+/*
+ *  型キャストを行うマクロの定義
+ */
+#ifndef CAST
+#define CAST(type, val)		((type)(val))
+#endif /* CAST */
+
 /* I/Oアドレス(必要なもののみ) */
 
 /* ポート */
@@ -89,11 +96,15 @@
 #define INTF9H		(0xFFFFFC13)
 #define INTR9H		(0xFFFFFC33)
 
-#define IMR_SIZE	(4)
+#define IMR_SIZE	(8)
 #define IMR0		(0xFFFFF100)
 #define IMR1		(0xFFFFF102)
 #define IMR2		(0xFFFFF104)
 #define IMR3		(0xFFFFF106)
+#define IMR4		(0xFFFFF108)
+#define IMR5		(0xFFFFF10A)
+#define IMR6		(0xFFFFF10C)
+#define IMR7		(0xFFFFF10E)
 
 
 /*
@@ -104,7 +115,7 @@
  */
 
 #define INTREG_BASE				(0xFFFFF110)
-#define INTREG_ADDRESS(intno)	(INTREG_BASE + (((intno) - 8) * 2))
+#define INTREG_ADDRESS(intno)	(INTREG_BASE + ((intno) * 2U))
 
 /*
  *	外部割込み極性設定レジスタテーブル
@@ -128,4 +139,47 @@
 	{ INTF9H , INTR9H , 7 } , 	/* INT6 */							\
 	{ INTF3 , INTR3 , 1 } 		/* INT7 */
 
+#define SCIF2_BASE			0xe8008000
+
+
+#define INTNO_SCIF0_BRI		10		/* SCIF0 ブレーク割込み */
+#define INTNO_SCIF0_ERI		11		/* SCIF0 エラー割込み */
+#define INTNO_SCIF0_RXI		12		/* SCIF0 受信割込み */
+#define INTNO_SCIF0_TXI		13		/* SCIF0 送信割込み */
+#define INTNO_SCIF1_BRI		14		/* SCIF1 ブレーク割込み */
+#define INTNO_SCIF1_ERI		15		/* SCIF1 エラー割込み */
+#define INTNO_SCIF1_RXI		16		/* SCIF1 受信割込み */
+#define INTNO_SCIF1_TXI		17		/* SCIF1 送信割込み */
+#define INTNO_SCIF2_BRI		18		/* SCIF2 ブレーク割込み */
+#define INTNO_SCIF2_ERI		19		/* SCIF2 エラー割込み */
+#define INTNO_SCIF2_RXI		20		/* SCIF2 受信割込み */
+#define INTNO_SCIF2_TXI		21		/* SCIF2 送信割込み */
+#define INTNO_SCIF3_BRI		22		/* SCIF3 ブレーク割込み */
+#define INTNO_SCIF3_ERI		23		/* SCIF3 エラー割込み */
+#define INTNO_SCIF3_RXI		24		/* SCIF3 受信割込み */
+#define INTNO_SCIF3_TXI		25		/* SCIF3 送信割込み */
+#define INTNO_SCIF4_BRI		26		/* SCIF4 ブレーク割込み */
+#define INTNO_SCIF4_ERI		27		/* SCIF4 エラー割込み */
+#define INTNO_SCIF4_RXI		28		/* SCIF4 受信割込み */
+#define INTNO_SCIF4_TXI		29		/* SCIF4 送信割込み */
+
+
+#define TNUM_INT			117U
+#define TMIN_INTNO			0U
+#define TMAX_INTNO			116U
+#define TNUM_INTNO			TNUM_INT
+
+/*************************************************
+ * 16ビットタイマ／イベントカウンタAA(TAA)
+ *************************************************/
+
+#define TAAnChannelNum			UINT_C(8)
+#define TAAnCH0					UINT_C(0)
+#define TAAnCH1					UINT_C(1)
+#define TAAnCH2					UINT_C(2)
+#define TAAnCH3					UINT_C(3)
+#define TAAnCH4					UINT_C(4)
+#define TAAnCH5					UINT_C(5)
+#define TAAnCH6					UINT_C(6)
+#define TAAnCH7					UINT_C(7)
 #endif	/* TOPPERS_V850JG2_H */

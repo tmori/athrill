@@ -6,7 +6,7 @@ $       Advanced Standard Profile Kernel
 $ 
 $   Copyright (C) 2010-2011 by Meika Sugimoto
 $  
-$   上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+$   上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 $   ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 $   変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 $   (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -78,7 +78,7 @@ $ 割込みマスクレベル毎のIMRレジスタ値を生成する．
 $ 
 
 $INTLVL_RANGE = {0,1, ... , 7}$
-$IMR_RANGE = {0,1,2,3}$
+$IMR_RANGE = {0,1,2,3,4,5,6,7}$
 
 const uint16_t imr_table[][IMR_SIZE] = $NL$
 {$NL$
@@ -87,11 +87,11 @@ $JOINEACH intlvl INTLVL_RANGE " , \n"$
 		$IMRn[imrno] = 0xFFFF$
 	$END$
 	
-	$FOREACH intno { 8 , 9 , ... , 63}$
+	$FOREACH intno { 0 , 1 , ... , 115}$
 		$IF LENGTH(INT.INTPRI[intno])
 		  && (-INT.INTPRI[intno] > intlvl)$
-			$OFFSET = (INT.INTNO[intno] - 8) / 16$
-			$BITPOS = (INT.INTNO[intno] - 8) % 16$
+			$OFFSET = (INT.INTNO[intno]) / 16$
+			$BITPOS = (INT.INTNO[intno]) % 16$
 			$IMRn[OFFSET] = IMRn[OFFSET] & ~(1 << BITPOS)$
 		$END$
 	$END$
@@ -147,21 +147,7 @@ $TAB$nop$NL$
 $TAB$nop$NL$
 $TAB$nop$NL$
 $TAB$nop$NL$
-_int_handler_1:$NL$
-$IF LENGTH(INH.INTHDR[1]) != 0$
-	$IF (INH.INHATR[1] & TA_NONKERNEL) == 0$
-		$TAB$jr	__kernel_$INH.INTHDR[1]$_$+INH.INHNO[1]$$NL$
-	$ELSE$
-		$TAB$.globl	_$INH.INTHDR[1]$$NL$
-		$TAB$jr		_$INH.INTHDR[1]$$NL$
-	$END$
-	$TAB$nop$NL$
-	$TAB$nop$NL$
-	$TAB$nop$NL$
-	$TAB$nop$NL$
-	$TAB$nop$NL$
-	$TAB$nop$NL$
-$ELSE$
+_nmi_handler_1:$NL$
 	$TAB$jr	_goto_default_int_handler$NL$
 	$TAB$nop$NL$
 	$TAB$nop$NL$
@@ -169,16 +155,7 @@ $ELSE$
 	$TAB$nop$NL$
 	$TAB$nop$NL$
 	$TAB$nop$NL$
-$END$
-_int_handler_2:$NL$
-$IF LENGTH(INH.INTHDR[2]) != 0$
-	$IF (INH.INHATR[2] & TA_NONKERNEL) == 0$
-		$TAB$jr	__kernel_$INH.INTHDR[2]$_$+INH.INHNO[intno]$$NL$
-	$ELSE$
-		$TAB$.globl	_$INH.INTHDR[2]$$NL$
-		$TAB$jr		_$INH.INTHDR[2]$$NL$
-	$END$
-$ELSE$
+_nmi_handler_2:$NL$
 $TAB$jr	_goto_default_int_handler$NL$
 $TAB$nop$NL$
 $TAB$nop$NL$
@@ -186,7 +163,6 @@ $TAB$nop$NL$
 $TAB$nop$NL$
 $TAB$nop$NL$
 $TAB$nop$NL$
-$END$
 
 $NL$
 $NL$
@@ -222,7 +198,7 @@ $TAB$.long	0xFFFFFFFF$NL$
 
 $NL$
 
-$FOREACH intno INTNO_RANGE$
+	$FOREACH intno { 0 , 1 , ... , 115}$
 	_int_handler_$intno$:$NL$
 	$IF LENGTH(INH.INTHDR[intno]) != 0$
 		$IF (INH.INHATR[intno] & TA_NONKERNEL) == 0$

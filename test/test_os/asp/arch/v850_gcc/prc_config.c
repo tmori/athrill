@@ -10,7 +10,7 @@
  *
  *  Copyright (C) 2010 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の (1)〜(4) の条件か，Free Software Foundation 
+ *  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation 
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -95,14 +95,14 @@ extern const uint16_t imr_table[][IMR_SIZE];
 void
 set_intpri(uint8_t intpri)
 {
-	uint_least8_t i;
-	
-	/* ISPRに書き込み */
-	for(i = 0 ; i < IMR_SIZE ; i++)
-	{
-		sil_wrh_mem((void *)(IMR0 + (i * 2)) , 
-			imr_table[intpri][i] | disint_table[i]);
-	}
+	sil_wrh_mem((void *)(IMR0) , imr_table[intpri][0] | disint_table[0]);
+	sil_wrh_mem((void *)(IMR1) , imr_table[intpri][1] | disint_table[1]);
+	sil_wrh_mem((void *)(IMR2) , imr_table[intpri][2] | disint_table[2]);
+	sil_wrh_mem((void *)(IMR3) , imr_table[intpri][3] | disint_table[3]);
+	sil_wrh_mem((void *)(IMR4) , imr_table[intpri][4] | disint_table[4]);
+	sil_wrh_mem((void *)(IMR5) , imr_table[intpri][5] | disint_table[5]);
+	sil_wrh_mem((void *)(IMR6) , imr_table[intpri][6] | disint_table[6]);
+	sil_wrb_mem((void *)(IMR7) , (uint8_t)( imr_table[intpri][7] | disint_table[7] ) );
 }
 
 
@@ -139,41 +139,6 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	 */
 	(void)x_disable_int(intno);
 	
-	if(((7u <= (intno)) && ((intno) <= 15u)) || (intno == 1u))
-	{	
-		/* INT端子の場合は割込み検知方法を設定する */
-		if((intatr & TA_POSEDGE) != 0U)
-		{
-			/* 立上がりエッジ , pol_setting0を0に，pol_setting1を1に */
-			sil_wrb_mem((void *)int_pol_table[intno].pol_setting0 , 
-					((sil_reb_mem((void *)int_pol_table[intno].pol_setting0))
-						& ~(1U << int_pol_table[intno].bitpos)));
-			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
-					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
-						| (1U << int_pol_table[intno].bitpos)));
-		}
-		else if((intatr & TA_NEGEDGE) != 0U)
-		{
-			/* 立下がりエッジ , pol_setting0を1に，pol_setting1を0に */
-			sil_wrb_mem((void *)int_pol_table[intno].pol_setting0 , 
-					((sil_reb_mem((void *)int_pol_table[intno].pol_setting0))
-						| (1U << int_pol_table[intno].bitpos)));
-			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
-					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
-						& ~(1U << int_pol_table[intno].bitpos)));
-		}
-		else if((intatr & TA_BOTHEDGE) != 0U)
-		{
-			/* 両エッジ , pol_setting0を1に，pol_setting1を1に */
-			sil_wrb_mem((void *)int_pol_table[intno].pol_setting0 , 
-					((sil_reb_mem((void *)int_pol_table[intno].pol_setting0))
-						| (1U << int_pol_table[intno].bitpos)));
-			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
-					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
-						| (1U << int_pol_table[intno].bitpos)));
-		}
-	}
-	
 	/*
 	 *  割込み優先度の設定
 	 */
@@ -184,9 +149,7 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	/*
 	 *  割込みのマスク解除
  	 */
-	if ((intatr & TA_ENAINT) != 0U) {
-		(void)x_enable_int(intno);
-	}
+	(void)x_enable_int(intno);
 }
 
 /*
