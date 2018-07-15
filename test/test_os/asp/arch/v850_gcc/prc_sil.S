@@ -5,7 +5,7 @@
  * 
  *  Copyright (C) 2010 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の (1)〜(4) の条件か，Free Software Foundation 
+ *  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation 
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -48,14 +48,15 @@
 #include "target_sil.h"
 
 	.section .text , "ax"
-	
 	.globl	_sil_dly_nse
+	.type   _sil_dly_nse, @function
 _sil_dly_nse:
-	addi	SIL_DLY_TIM1 , r6 , r6
-	bl		sil_dly_nse_return
-	addi	 SIL_DLY_TIM2 , r6 , r6
-	bnl		sil_dly_nse_return
+	addi	-SIL_DLY_TIM1 , r6 , r6
+	ble		sil_dly_nse_return
+_sil_dly_nse_loop:
+	addi	-SIL_DLY_TIM2 , r6 , r6
+	bgt		_sil_dly_nse_loop
 sil_dly_nse_return:
 	jmp	lp
-	
+
 	.end

@@ -1,7 +1,0 @@
-E_PACKAGE asp_cq_v850_gcc
-VERSION %date
-
-INCLUDE ../../MANIFEST
-INCLUDE ../../arch/v850_gcc/MANIFEST
-#INCLUDE ../../arch/gcc/MANIFEST
-INCLUDE ../../cfg/MANIFEST

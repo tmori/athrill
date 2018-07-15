@@ -48,7 +48,7 @@ all:
 #
 #  ターゲット略称の定義
 #
-TARGET = v850es_fk3_emu_env_gcc
+TARGET = v850_gcc
 
 #
 #  プログラミング言語の定義
