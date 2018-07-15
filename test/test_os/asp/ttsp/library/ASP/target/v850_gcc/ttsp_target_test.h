@@ -8,7 +8,7 @@
  *  Copyright (C) 2010-2011 by NEC Communication Systems, Ltd.
  *  Copyright (C) 2010-2012 by FUJISOFT INCORPORATED
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -46,15 +46,6 @@
 
 #ifndef TTSP_TARGET_TEST_H
 #define TTSP_TARGET_TEST_H
-
-/*
- *  CPU例外を発生させる命令
- */
-#if defined(TOPPERS_ENABLE_GCOV_PART) || defined(TOPPERS_ENABLE_GCOV_FULL)
-#define RAISE_CPU_EXCEPTION Asm(".long 0x16000010");
-#else
-#define RAISE_CPU_EXCEPTION Asm(".long 0x06000010");
-#endif /* defined(TOPPERS_ENABLE_GCOV_PART) || defined(TOPPERS_ENABLE_GCOV_FULL) */
 
 
 /*

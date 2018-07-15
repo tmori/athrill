@@ -8,7 +8,7 @@
 #  Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
 #  Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
 # 
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -96,7 +96,7 @@ CONFIG_OPT=
 #
 # ターゲット依存部でKERNEL_COBJSへ追加するオブジェクトファイル
 #
-KERNEL_COBJS_TARGET="core_config.o target_config.o target_timer.o ttsp_target_test.o"
+KERNEL_COBJS_TARGET="prc_config.o target_config.o target_timer.o target_serial.o ttsp_target_test.o"
 
 #
 # make depend / make の追加オプション(必要な場合のみ)

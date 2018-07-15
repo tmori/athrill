@@ -8,7 +8,7 @@
  *  Copyright (C) 2010-2011 by NEC Communication Systems, Ltd.
  *  Copyright (C) 2010-2011 by FUJISOFT INCORPORATED
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -44,7 +44,6 @@
 #include <sil.h>
 #include "ttsp_target_test.h"
 
-#define AIC_ISET (0xfffff12C)
 
 /*
  *  ティック更新の停止
@@ -52,7 +51,7 @@
 void
 ttsp_target_stop_tick(void)
 {
-	sil_wrw_mem((void *)TIMER_1_CCR, 0x0000000);
+	//TODO
 }
 
 /*
@@ -61,7 +60,7 @@ ttsp_target_stop_tick(void)
 void
 ttsp_target_start_tick(void)
 {
-	sil_wrw_mem((void *)TIMER_1_CCR, 0x0000001);
+	//TODO
 }
 
 /*
@@ -70,7 +69,7 @@ ttsp_target_start_tick(void)
 void
 ttsp_target_gain_tick(void)
 {
-	sil_wrw_mem((void *)AIC_ISET, (1 << IRQ_TC1));
+	//TODO
 }
 
 /*
@@ -79,7 +78,7 @@ ttsp_target_gain_tick(void)
 void
 ttsp_int_raise(INTNO intno)
 {
-	sil_wrw_mem((void *)AIC_ISET, (1 << intno));
+	//TODO
 }
 
 /*
@@ -88,9 +87,7 @@ ttsp_int_raise(INTNO intno)
 void
 ttsp_cpuexc_raise(EXCNO excno)
 {
-	if (excno == TTSP_EXCNO_A) {
-		RAISE_CPU_EXCEPTION;
-	}
+	//TODO
 }
 
 /*
@@ -99,7 +96,7 @@ ttsp_cpuexc_raise(EXCNO excno)
 void
 ttsp_cpuexc_hook(EXCNO excno, void* p_excinf)
 {
-
+	//TODO
 }
 
 /*
@@ -108,6 +105,6 @@ ttsp_cpuexc_hook(EXCNO excno, void* p_excinf)
 void
 ttsp_clear_int_req(INTNO intno)
 {
-
+	//TODO
 }
 
