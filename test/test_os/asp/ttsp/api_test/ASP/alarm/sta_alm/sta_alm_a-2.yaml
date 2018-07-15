@@ -1,0 +1,22 @@
+version: "$Id: sta_alm_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_alarm_sta_alm_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do:
+    id     : TASK1
+    syscall: sta_alm(ALM1, RELATIVE_TIME_A)
+    ercd   : E_CTX
+
+  post_condition:

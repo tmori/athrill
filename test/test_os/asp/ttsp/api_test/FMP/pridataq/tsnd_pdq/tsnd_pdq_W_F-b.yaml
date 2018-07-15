@@ -1,0 +1,29 @@
+version: "$Id: tsnd_pdq_W_F-b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_tsnd_pdq_W_F_b:
+  variation:
+    timer_arch: global
+    gain_time: true
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 0
+      stsklist :
+
+  do:
+    id     : TASK2
+    syscall: tsnd_pdq(PDQ1, DATA_A, DATA_PRI_HIGH, ANY_ELAPSED_TIME)
+    gcov   : true
+    ercd   : E_TMOUT
+
+  post_condition:

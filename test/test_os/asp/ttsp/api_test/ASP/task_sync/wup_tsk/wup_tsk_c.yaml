@@ -1,0 +1,17 @@
+version: "$Id: wup_tsk_c.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_wup_tsk_c:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: dormant
+
+  do:
+    id     : TASK1
+    syscall: wup_tsk(TASK2)
+    ercd   : E_OBJ
+
+  post_condition:

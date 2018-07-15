@@ -1,0 +1,38 @@
+version: "$Id: dly_tsk_f-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_dly_tsk_f_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+  do:
+    id     : TASK1
+    syscall: dly_tsk(RELATIVE_TIME_A)
+    ercd   : E_OK
+
+  post_condition:
+    0:
+      TASK1:
+        tskstat: waiting
+        wobjid : DELAY
+        lefttmo: RELATIVE_TIME_A
+
+      TASK2:
+        tskstat: running
+
+    RELATIVE_TIME_A:
+      TASK1:
+        lefttmo: 0
+
+    RELATIVE_TIME_A+1:
+      TASK1:
+        tskstat: running
+
+      TASK2:
+        tskstat: ready

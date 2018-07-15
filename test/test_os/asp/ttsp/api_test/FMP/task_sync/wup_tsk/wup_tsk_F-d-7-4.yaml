@@ -1,0 +1,28 @@
+version: "$Id: wup_tsk_F-d-7-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_wup_tsk_F_d_7_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      wupcnt : 0
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running-suspended
+      wupcnt : 0
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: wup_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      wupcnt : 1

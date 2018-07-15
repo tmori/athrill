@@ -1,0 +1,59 @@
+version: "$Id: snd_pdq_W_a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_snd_pdq_W_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 2
+      maxdpri : DATA_PRI_MAX
+      datalist:
+        - data:     DATA_A
+          datapri:  DATA_PRI_MID
+
+  do_0:
+    id     : TASK1
+    syscall: snd_pdq(PDQ1, DATA_B, DATA_PRI_HIGH)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    PDQ1:
+      datalist:
+        - data:     DATA_B
+          datapri:  DATA_PRI_HIGH
+        - data:     DATA_A
+          datapri:  DATA_PRI_MID
+
+  do_1:
+    id     : TASK1
+    syscall: rcv_pdq(PDQ1, &data, &datapri)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_1:
+    PDQ1:
+      datalist:
+        - data:     DATA_A
+          datapri:  DATA_PRI_MID
+
+  do_2:
+    id     : TASK1
+    syscall: snd_pdq(PDQ1, DATA_C, DATA_PRI_HIGH)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_2:
+    PDQ1:
+      datalist:
+        - data:     DATA_C
+          datapri:  DATA_PRI_HIGH
+        - data:     DATA_A
+          datapri:  DATA_PRI_MID

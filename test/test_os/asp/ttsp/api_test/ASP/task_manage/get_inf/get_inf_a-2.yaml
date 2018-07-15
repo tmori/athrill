@@ -1,0 +1,21 @@
+version: "$Id: get_inf_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_get_inf_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        exinf:
+          type: intptr_t
+          value: EXINF_A
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do:
+    id     : TASK1
+    syscall: get_inf(&exinf)
+    ercd   : E_CTX
+
+  post_condition:

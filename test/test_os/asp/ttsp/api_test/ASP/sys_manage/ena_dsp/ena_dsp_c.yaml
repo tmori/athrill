@@ -1,0 +1,17 @@
+version: "$Id: ena_dsp_c.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_sys_manage_ena_dsp_c:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: false
+
+  do:
+    id     : TASK1
+    syscall: ena_dsp()
+    ercd   : E_OK
+
+  post_condition:

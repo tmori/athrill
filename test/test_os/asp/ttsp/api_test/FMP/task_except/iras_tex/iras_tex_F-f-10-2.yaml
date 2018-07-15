@@ -1,0 +1,84 @@
+version: "$Id: iras_tex_F-f-10-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_except_iras_tex_F_f_10_2:
+  pre_condition:
+    ALM1:
+      type    : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+      prcid   : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running-suspended
+      prcid  : PRC_OTHER
+
+    TASK2:
+      type   : TASK
+      tskstat: ready
+      prcid  : PRC_OTHER
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK1
+      texstat: TTEX_ENA
+      hdlstat: STP
+      pndptn : 0
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_OTHER
+
+  do_0:
+    id     : ALM1
+    syscall: iras_tex(TASK1, TEXPTN_A)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_0:
+    TEX1:
+      pndptn : TEXPTN_A
+
+  do_1:
+    id     : TASK1
+    syscall: unl_cpu()
+    gcov   : false
+
+  post_condition_1:
+    TASK1:
+      tskstat: suspended
+
+    TASK2:
+      tskstat: running
+
+    CPU_STATE1:
+      loc_cpu: false
+
+  do_2:
+    id     : TASK2
+    syscall: rsm_tsk(TASK1)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_2:
+    TASK1:
+      tskstat: ready
+
+  do_3:
+    id     : TASK2
+    syscall: slp_tsk()
+    gcov   : false
+
+  post_condition_3:
+    TASK1:
+      tskstat: running
+
+    TASK2:
+      tskstat: waiting
+      wobjid : SLEEP
+
+    TEX1:
+      texstat: TTEX_DIS
+      hdlstat: ACTIVATE
+      texptn : TEXPTN_A
+      pndptn : 0

@@ -1,0 +1,347 @@
+
+	msta_alm テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: msta_alm.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+msta_alm	割付けプロセッサ指定でのアラームハンドラの動作開始〔TM〕
+imsta_alm	割付けプロセッサ指定でのアラームハンドラの動作開始〔IM〕
+
+【C言語API】
+	ER ercd = msta_alm(ID almid, RELTIM almtim, ID prcid)
+	ER ercd = imsta_alm(ID almid, RELTIM almtim, ID prcid)
+
+【パラメータ】
+	ID			almid		対象アラームハンドラのID番号
+	RELTIM		almtim		アラームハンドラの起動時刻（相対時間）
+	ID			prcid		アラームハンドラの割付け対象のプロセッサの
+							ID番号
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：msta_almの場合，タスクコンテキストからの呼出し
+					：imsta_almの場合，CPUロック状態からの呼出し）
+	E_NOSPT			未サポート機能（グローバルタイマ方式を用いている場
+					合）
+	E_ID			不正ID番号（almid，prcidが不正）
+	E_PAR			パラメータエラー（almtimが不正，対象アラームハンド
+					ラはprcidで指定したプロセッサに割り付けられない）
+	E_NOEXS〔D〕	オブジェクト未登録（対象アラームハンドラが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象アラームハンドラに対
+					する通常操作1が許可されていない：msta_almの場合）
+
+【機能】
+
+prcidで指定したプロセッサを割付けプロセッサとして，almidで指定したアラー
+ムハンドラ（対象アラームハンドラ）を動作開始する．具体的な振舞いは以下
+の通り．
+
+対象アラームハンドラが動作していない状態であれば，対象アラームハンドラ
+の割付けプロセッサがprcidで指定したプロセッサに変更された後，対象アラー
+ムハンドラは動作している状態となる．アラームハンドラを起動する時刻は，
+msta_almを呼び出してから，almtimで指定した相対時間後に設定される．
+
+対象アラームハンドラが動作している状態であれば，対象アラームハンドラの
+割付けプロセッサがprcidで指定したプロセッサに変更された後，アラームハン
+ドラを起動する時刻の再設定が行われる．
+
+対象アラームハンドラが実行中である場合には，割付けプロセッサを変更して
+も，実行中のアラームハンドラを実行するプロセッサは変更されない．対象ア
+ラームハンドラが変更後の割付けプロセッサで実行されるのは，次に起動され
+る時からである．
+
+対象アラームハンドラの属するクラスの割付け可能プロセッサが，prcidで指定
+したプロセッサを含んでいない場合には，E_PARエラーとなる．
+
+prcidにTPRC_INI（＝0）を指定すると，対象アラームハンドラの割付けプロセッ
+サを，それが属するクラスの初期割付けプロセッサとする．
+
+almtimは，TMAX_RELTIM以下でなければならない．
+
+グローバルタイマ方式を用いている場合，msta_alm／imsta_almはE_NOSPTを返
+す．
+
+【使用上の注意】
+
+msta_alm／imsta_almで実行中のアラームハンドラの割付けプロセッサを変更し
+た場合，同じアラームハンドラが異なるプロセッサで同時に実行される可能性
+がある．特に，almtimに0を指定する場合に，注意が必要である．
+
+【μITRON4.0仕様との関係】
+
+μITRON4.0仕様に定義されていないサービスコールである．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[TOPPERS_SYSTIM_LOCAL]
+
+ER
+msta_alm(ID almid, RELTIM almtim, ID prcid)
+{
+	ALMCB	*p_almcb;
+	ER		ercd;
+	PCB		*t_p_pcb;
+	PCB		*f_p_pcb;
+
+	LOG_MSTA_ALM_ENTER(almid, almtim, prcid);
+	CHECK_TSKCTX_UNL();
+	CHECK_ALMID(almid);
+	CHECK_PAR(almtim <= TMAX_RELTIM);
+	CHECK_PRCID_INI(prcid);
+	p_almcb = get_almcb(almid);
+	prcid = (prcid == TPRC_INI)? p_almcb->p_alminib->iaffinity : prcid;
+	CHECK_MIG(p_almcb->p_alminib->affinity_mask, prcid);
+
+	t_lock_cpu();
+	t_acquire_dual_tsk_lock_alm(p_almcb, prcid, &f_p_pcb, &t_p_pcb);
+	if (p_almcb->almsta) {
+		tmevtb_dequeue(p_almcb->p_pcb->p_tevtcb, &(p_almcb->tmevtb));
+	}
+	else {
+		p_almcb->almsta = true;
+	}
+	LOG_ALMMIG(p_almcb, f_p_pcb->prcid, prcid);
+	/* 移動先の pcb を登録 */
+	p_almcb->p_pcb = t_p_pcb;
+	tmevtb_enqueue(p_almcb->p_pcb->p_tevtcb, &(p_almcb->tmevtb), almtim,
+								(CBACK) call_almhdr, (void *) p_almcb);
+	ercd = E_OK;
+	release_dual_tsk_lock(f_p_pcb, t_p_pcb);
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_MSTA_ALM_LEAVE(ercd);
+	return(ercd);
+}
+
+
+[TOPPERS_SYSTIM_GLOBAL]
+
+ER
+msta_alm(ID almid, RELTIM almtim, ID prcid)
+{
+	ER		ercd = E_NOSPT;
+
+	LOG_MSTA_ALM_ENTER(almid, almtim, prcid);
+	LOG_MSTA_ALM_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] msta_alm(TOPPERS_SYSTIM_LOCAL)
+
+00 : ER
+01 : msta_alm(ID almid, RELTIM almtim, ID prcid)
+02 : {
+03 : 	ALMCB	*p_almcb;
+04 : 	ER		ercd;
+05 : 	PCB		*t_p_pcb;
+06 : 	PCB		*f_p_pcb;
+07 : 
+08 : 	if (!sense_tskctx_unl()) {
+09 : 		ercd = E_CTX;
+10 : 		goto error_exit;
+11 : 	}
+12 : 	if (!(TMIN_ALMID <= (almid) && (almid) <= tmax_almid)) {
+13 : 		ercd = E_ID;
+14 : 		goto error_exit;
+15 : 	}
+16 : 	if (!(almtim <= TMAX_RELTIM)) {
+17 : 		ercd = E_PAR;
+18 : 		goto error_exit;
+19 : 	}
+20 : 	if (!((TMIN_PRCID <= (prcid) && (prcid) <= TNUM_PRCID)
+21 :                                        || (prcid) == TPRC_INI)) {
+22 : 		ercd = E_ID;
+23 : 		goto error_exit;
+24 : 	}
+25 : 	p_almcb = p_almcb_table[(uint_t)((almid) - TMIN_ALMID)];
+26 : 	prcid = (prcid == TPRC_INI)? p_almcb->p_alminib->iaffinity : prcid;
+27 : 	if (!((p_almcb->p_alminib->affinity_mask & (1 << (prcid - 1))) != 0)) {
+28 : 		ercd = E_PAR;
+29 : 		goto error_exit;
+30 : 	}
+31 : 
+32 : 	t_lock_cpu();
+33 : 	t_acquire_dual_tsk_lock_alm(p_almcb, prcid, &f_p_pcb, &t_p_pcb);
+34 : 	if (p_almcb->almsta) {
+35 : 		tmevtb_dequeue(p_almcb->p_pcb->p_tevtcb, &(p_almcb->tmevtb));
+36 : 	}
+37 : 	else {
+38 : 		p_almcb->almsta = true;
+39 : 	}
+40 : 	/* 移動先の pcb を登録 */
+41 : 	p_almcb->p_pcb = t_p_pcb;
+42 : 	tmevtb_enqueue(p_almcb->p_pcb->p_tevtcb, &(p_almcb->tmevtb), almtim,
+43 : 								(CBACK) call_almhdr, (void *) p_almcb);
+44 : 	ercd = E_OK;
+45 : 	release_dual_tsk_lock(f_p_pcb, t_p_pcb);
+46 : 	t_unlock_cpu();
+47 : 
+48 :   error_exit:
+49 : 	return(ercd);
+50 : }
+
+
+[B] msta_alm(TOPPERS_SYSTIM_GLOBAL)
+
+00 : ER
+01 : msta_alm(ID almid, RELTIM almtim, ID prcid)
+02 : {
+03 : 	ER		ercd = E_NOSPT;
+04 : 
+05 : 	return(ercd);
+06 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  08 : !sense_tskctx_unl()
+(A2)  12 : TMIN_ALMID <= (almid)
+(A3)  12 : (almid) <= tmax_almid)
+(A4)  16 : !(almtim <= TMAX_RELTIM)
+(A5)  20 : TMIN_PRCID <= (prcid)
+(A6)  20 : (prcid) <= TNUM_PRCID
+(A7)  21 : (prcid) == TPRC_INI
+(A8)  26 : (prcid == TPRC_INI)
+(A9)  27 : !((p_almcb->p_alminib->affinity_mask & (1 << (prcid - 1))) != 0)
+(A10) 34 : p_almcb->almsta
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[TOPPERS_SYSTIM_LOCAL]
+          (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10)
+(F-c-1-1)  T    D    D    D    D    D    D    D    D     D
+(F-c-1-2)  T    D    D    D    D    D    D    D    D     D
+(F-c-1-3)  T    D    D    D    D    D    D    D    D     D
+(F-c-2-1)  T    D    D    D    D    D    D    D    D     D
+(F-c-2-2)  T    D    D    D    D    D    D    D    D     D
+(F-c-2-3)  T    D    D    D    D    D    D    D    D     D
+(F-d-1-1)  F    F   D/T   D    D    D    D    D    D     D
+(F-d-1-2)  F    F   D/T   D    D    D    D    D    D     D
+(F-d-2-1)  F    T    F    D    D    D    D    D    D     D
+(F-d-2-2)  F    T    F    D    D    D    D    D    D     D
+(F-e-1-1)  F    T    T    T    D    D    D    D    D     D
+(F-e-1-2)  F    T    T    T    D    D    D    D    D     D
+(F-e-2-1)  F    T    T    T    D    D    D    D    D     D
+(F-e-2-2)  F    T    T    T    D    D    D    D    D     D
+(F-f-1-1)  F    T    T    F    F   D/T   F    D    D     D
+(F-f-1-2)  F    T    T    F    F   D/T   F    D    D     D
+(F-f-2-1)  F    T    T    F    T    F    F    D    D     D
+(F-f-2-2)  F    T    T    F    T    F    F    D    D     D
+(F-g-1)    F    T    T    F    T    T   D/F   F    T     D
+(F-g-2)    F    T    T    F    T    T   D/F   F    T     D
+(F-h-1-1)  F    T    T    F    T    T   D/F   F    F     F
+(F-h-1-2)  F    T    T    F    T    T   D/F   F    F     T
+(F-h-1-3)  F    T    T    F    T    T   D/F   F    F     F
+(F-h-1-4)  F    T    T    F    T    T   D/F   F    F     F
+(F-h-2-1)  F    T    T    F    T    T   D/F   F    F     F
+(F-h-2-2)  F    T    T    F    T    T   D/F   F    F     T
+(F-h-2-3)  F    T    T    F    T    T   D/F   F    F     F
+(F-h-2-4)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-1-1)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-1-2)  F    T    T    F    T    T   D/F   F    F     T
+(F-i-1-3)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-1-4)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-1-5)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-2-1)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-2-2)  F    T    T    F    T    T   D/F   F    F     T
+(F-i-2-3)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-2-4)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-2-5)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-3-1)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-3-2)  F    T    T    F    T    T   D/F   F    F     T
+(F-i-3-3)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-3-4)  F    T    T    F    T    T   D/F   F    F     F
+(F-i-3-5)  F    T    T    F    T    T   D/F   F    F     F
+(F-j-1)    F    T    T    F    F   D/T   T    T    F     F
+(F-j-2)    F    T    T    F    F   D/T   T    T    F     F
+(F-k-1)    F    T    T    F    F   D/T   T    T    F     F
+(F-k-2)    F    T    T    F    F   D/T   T    T    F     F
+------------------------------------------------------------
+網羅       O    O    O    O    O    O    O    O    O     O
+
+【備考】
+・グローバルタイマ方式(TOPPERS_SYSTIM_GLOBAL)を用いている場合，
+  条件分岐がないので条件網羅表は作成しない．
+・対象のテストケースは(F-a-1)，(F-a-2)，(F-b)である．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

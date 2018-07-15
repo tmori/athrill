@@ -1,0 +1,21 @@
+version: "$Id: rel_mpf_c.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mempfix_rel_mpf_c:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        blk:
+          type : void*
+          value: (void*)TTSP_INVALID_MPF_ADDRESS
+
+    MPF1:
+      type : MEMORYPOOL
+      blkcnt: ANY_INI_BLKCNT
+
+  do:
+    id     : TASK1
+    syscall: rel_mpf(MPF1, blk)
+    ercd   : E_PAR
+
+  post_condition:

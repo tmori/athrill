@@ -1,0 +1,27 @@
+version: "$Id: wai_sem_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_semaphore_wai_sem_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    SEM1:
+      type: SEMAPHORE
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: wai_sem(SEM1)
+    ercd   : E_CTX
+
+  post_condition:

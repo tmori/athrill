@@ -1,0 +1,36 @@
+version: "$Id: sns_dsp_F-a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_sns_dsp_F_a_2:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: false
+      prcid  : PRC_SELF
+      chg_ipm: INT_PRI_TIMER
+
+    CPU_STATE2:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : ALM1
+    syscall: sns_dsp()
+    bool   : false
+
+  post_condition:

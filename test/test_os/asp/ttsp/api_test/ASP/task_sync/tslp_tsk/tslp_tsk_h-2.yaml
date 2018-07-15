@@ -1,0 +1,40 @@
+version: "$Id: tslp_tsk_h-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_tslp_tsk_h_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      wupcnt : 0
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      wupcnt : 0
+
+  do:
+    id     : TASK1
+    syscall: tslp_tsk(ANY_ELAPSED_TIME)
+    ercd   : E_TMOUT
+
+  post_condition:
+    0:
+      TASK1:
+        tskstat: waiting
+        wobjid : SLEEP
+        lefttmo: ANY_ELAPSED_TIME
+
+      TASK2:
+        tskstat: running
+
+    ANY_ELAPSED_TIME:
+      TASK1:
+        lefttmo: 0
+
+    ANY_ELAPSED_TIME+1:
+      TASK1:
+        tskstat: running
+
+      TASK2:
+        tskstat: ready

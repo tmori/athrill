@@ -1,0 +1,27 @@
+version: "$Id: snd_pdq_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_snd_pdq_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    PDQ1:
+      type   : P_DATAQUEUE
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: snd_pdq(PDQ1, DATA_A, DATA_PRI_HIGH)
+    ercd   : E_CTX
+
+  post_condition:

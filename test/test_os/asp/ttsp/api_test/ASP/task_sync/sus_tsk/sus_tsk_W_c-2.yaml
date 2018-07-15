@@ -1,0 +1,23 @@
+version: "$Id: sus_tsk_W_c-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_sus_tsk_W_c_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_LE_GE_13
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_GE_13
+      tskstat: ready
+
+  do:
+    id     : TASK1
+    syscall: sus_tsk(TSK_SELF)
+
+  post_condition:
+    TASK1:
+      tskstat: suspended
+
+    TASK2:
+      tskstat: running

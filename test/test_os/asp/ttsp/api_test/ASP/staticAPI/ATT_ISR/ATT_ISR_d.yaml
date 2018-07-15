@@ -1,0 +1,23 @@
+version: "$Id: ATT_ISR_d.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_staticAPI_ATT_ISR_d:
+  pre_condition:
+    ISR1:
+      type   : ISR
+      exinf  : EXINF_A
+      intno  : INTNO_SELF_ISR_A
+      intpri : INT_PRI_MID
+      intstat: TA_ENAINT
+      hdlstat: STP
+      isrpri : ISR_PRI_MID
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do:
+    id  : TASK1
+    code: ttsp_int_raise(INTNO_SELF_ISR_A)
+
+  post_condition:
+    ISR1:
+      hdlstat: ACTIVATE

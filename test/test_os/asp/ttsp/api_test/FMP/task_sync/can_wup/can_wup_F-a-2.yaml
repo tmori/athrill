@@ -1,0 +1,25 @@
+version: "$Id: can_wup_F-a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_can_wup_F_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SLEEP
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: can_wup(TASK2)
+    eruint : E_CTX
+
+  post_condition:

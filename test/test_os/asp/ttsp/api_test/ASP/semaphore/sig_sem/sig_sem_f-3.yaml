@@ -1,0 +1,37 @@
+version: "$Id: sig_sem_f-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_sig_sem_f_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SEM1
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SEM1
+
+    SEM1:
+      type   : SEMAPHORE
+      maxsem : ANY_MAX_SEMCNT
+      semcnt : 0
+      wtsklist:
+        - TASK2:
+        - TASK3:
+
+  do:
+    id     : TASK1
+    syscall: sig_sem(SEM1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    SEM1:
+      wtsklist:
+        - TASK3:

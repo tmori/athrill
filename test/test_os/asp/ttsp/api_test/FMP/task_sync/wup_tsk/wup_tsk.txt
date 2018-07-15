@@ -1,0 +1,291 @@
+
+	wup_tsk テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: wup_tsk.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+wup_tsk		タスクの起床〔T〕
+iwup_tsk	タスクの起床〔I〕
+
+【C言語API】
+	ER ercd = wup_tsk(ID tskid)
+	ER ercd = iwup_tsk(ID tskid)
+
+【パラメータ】
+	ID			tskid		対象タスクのID番号
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：wup_tskの場合，タスクコンテキストからの呼出し：
+					iwup_tskの場合，CPUロック状態からの呼出し）
+	E_NOSPT			未サポート機能（対象タスクが制約タスク）
+	E_ID			不正ID番号（tskidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象タスクが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象タスクに対する通常操
+					作1が許可されていない：wup_tskの場合）
+	E_OBJ			オブジェクト状態エラー（対象タスクが休止状態）
+	E_QOVR			キューイングオーバフロー（起床要求キューイング数が
+					TMAX_WUPCNTに一致）
+
+【機能】
+
+tskidで指定したタスク（対象タスク）を起床する．具体的な振舞いは以下の通
+り．
+
+対象タスクが起床待ち状態である場合には，対象タスクが待ち解除される．待
+ち解除されたタスクには，待ち状態となったサービスコールからE_OKが返る．
+
+対象タスクが起床待ち状態でなく，休止状態でもない場合には，対象タスクの
+起床要求キューイング数に1が加えられる．起床要求キューイング数に1を加え
+るとTMAX_WUPCNTを超える場合には，E_QOVRエラーとなる．
+
+対象タスクが休止状態である場合には，E_OBJエラーとなる．
+
+wup_tskにおいてtskidにTSK_SELF（＝0）を指定すると，自タスクが対象タスク
+となる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+wup_tsk(ID tskid)
+{
+	TCB		*p_tcb;
+	ER		ercd;
+	bool_t	dspreq = false;
+	PCB		*p_pcb;
+
+	LOG_WUP_TSK_ENTER(tskid);
+	CHECK_TSKCTX_UNL();
+	CHECK_TSKID_SELF(tskid);
+
+	t_lock_cpu();
+	p_tcb = get_tcb_self(tskid, get_my_p_pcb());
+	p_pcb = t_acquire_tsk_lock(p_tcb);
+	if (TSTAT_DORMANT(p_tcb->tstat)) {
+		ercd = E_OBJ;
+	}
+	else if (TSTAT_WAIT_SLP(p_tcb->tstat)) {
+		if (wait_complete(p_tcb)) {
+			dspreq = dispatch_request(p_pcb);
+		}
+		ercd = E_OK;
+	}
+	else if (!(p_tcb->wupque)) {
+		p_tcb->wupque = true;
+		ercd = E_OK;
+	}
+	else {
+		ercd = E_QOVR;
+	}
+	release_tsk_lock(p_pcb);
+	if (dspreq) {
+		dispatch();
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_WUP_TSK_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] wup_tsk
+
+00 : ER
+01 : wup_tsk(ID tskid)
+02 : {
+03 : 	TCB		*p_tcb;
+04 : 	ER		ercd;
+05 : 	bool_t	dspreq = false;
+06 : 	PCB		*p_pcb;
+07 : 
+08 : 	if (!sense_tskctx_unl()) {
+09 : 		ercd = E_CTX;
+10 : 		goto error_exit;
+11 : 	}
+12 : 	if (!((TMIN_TSKID <= (tskid) && (tskid) <= tmax_tskid) || (tskid) == TSK_SELF)) {
+13 : 		ercd = E_ID;
+14 : 		goto error_exit;
+15 : 	}
+16 : 
+17 : 	t_lock_cpu();
+18 : 	p_tcb = ((tskid) == TSK_SELF ? (get_my_p_pcb())->p_runtsk : (p_tcb_table[((uint_t)((tskid) - TMIN_TSKID))]));
+19 : 	p_pcb = t_acquire_tsk_lock(p_tcb);
+20 : 	if ((p_tcb->tstat) == TS_DORMANT) {
+21 : 		ercd = E_OBJ;
+22 : 	}
+23 : 	else if (((p_tcb->tstat) & TS_WAIT_MASK) == TS_WAIT_SLP) {
+24 : 		if (wait_complete(p_tcb)) {
+25 : 			dspreq = dispatch_request(p_pcb);
+26 : 		}
+27 : 		ercd = E_OK;
+28 : 	}
+29 : 	else if (!(p_tcb->wupque)) {
+30 : 		p_tcb->wupque = true;
+31 : 		ercd = E_OK;
+32 : 	}
+33 : 	else {
+34 : 		ercd = E_QOVR;
+35 : 	}
+36 : 	release_tsk_lock(p_pcb);
+37 : 	if (dspreq) {
+38 : 		dispatch();
+39 : 	}
+40 : 	t_unlock_cpu();
+41 : 
+42 :   error_exit:
+43 : 	return(ercd);
+44 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  08 : !sense_tskctx_unl()
+(A2)  11 : TMIN_TSKID <= (tskid)
+(A3)  11 : (tskid) <= tmax_tskid
+(A4)  11 : (tskid) == TSK_SELF
+(A5)  18 : (tskid) == TSK_SELF
+(A6)  20 : (p_tcb->tstat) == TS_DORMANT
+(A7)  23 : ((p_tcb->tstat) & TS_WAIT_MASK) == TS_WAIT_SLP)
+(A8)  24 : wait_complete(p_tcb)
+(A9)  29 : !(p_tcb->wupque)
+(A10) 37 : dspreq
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+               (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10)
+(a-1)           T    D    D    D    D    D    D    D    D     D
+(a-2)           T    D    D    D    D    D    D    D    D     D
+(b-1)           F    F   D/T   F    D    D    D    D    D     D
+(b-2)           F    T    F    F    D    D    D    D    D     D
+(c)             F    T    T   D/F   F    T    D    D    D     F
+(d-1)           F    F   D/T   T    T    F    F    D    F     F
+(d-2)           F    T    T   D/F   F    F    F    D    F     F
+(e)             F    F   D/T   T    T    F    F    D    T     F
+(f-1-1-1)       F    T    T   D/F   F    F    T    T    D     T
+(f-1-1-2)       F    T    T   D/F   F    F    T    F    D     F
+(f-1-1-3)       F    T    T   D/F   F    F    T    F    D     F
+(f-1-2)         F    T    T   D/F   F    F    T    F    D     F
+(f-1-3)         F    T    T   D/F   F    F    T    F    D     F
+(f-2)           F    T    T   D/F   F    F    T    F    D     F
+(f-3)           F    T    T   D/F   F    F    F    D    T     F
+(f-4)           F    T    T   D/F   F    F    F    D    T     F
+(f-5)           F    T    T   D/F   F    F    F    D    T     F
+(f-6)           F    T    T   D/F   F    F    F    D    T     F
+(f-7)           F    T    T   D/F   F    F    F    D    T     F
+(f-8)           F    T    T   D/F   F    F    F    D    T     F
+(F-a-1)         T    D    D    D    D    D    D    D    D     D
+(F-a-2)         T    D    D    D    D    D    D    D    D     D
+(F-a-3)         T    D    D    D    D    D    D    D    D     D
+(F-a-4)         T    D    D    D    D    D    D    D    D     D
+(F-b)           F    T    T   D/F   F    T    D    D    D     F
+(F-c)           F    T    T   D/F   F    F    F    D    F     F
+(F-d-1-1-1-1)   F    T    T   D/F   F    F    T    T    D     F
+(F-d-1-1-1-2)   F    T    T   D/F   F    F    T    F    D     F
+(F-d-1-1-1-3)   F    T    T   D/F   F    F    T    F    D     F
+(F-d-1-1-1-4)   F    T    T   D/F   F    F    T    T    D     F
+(F-d-1-1-1-5)   F    T    T   D/F   F    F    T    T    D     F
+(F-d-1-1-1-6)   F    T    T   D/F   F    F    T    T    D     F
+(F-d-1-2)       F    T    T   D/F   F    F    T    F    D     F
+(F-d-1-3)       F    T    T   D/F   F    F    T    F    D     F
+(F-d-1-4)       F    T    T   D/F   F    F    T    T    D     F
+(F-d-1-5)       F    T    T   D/F   F    F    T    T    D     F
+(F-d-2-1)       F    T    T   D/F   F    F    T    F    D     F
+(F-d-2-2)       F    T    T   D/F   F    F    F    D    T     F
+(F-d-3)         F    T    T   D/F   F    F    F    D    T     F
+(F-d-4)         F    T    T   D/F   F    F    F    D    T     F
+(F-d-5-1)       F    T    T   D/F   F    F    F    D    T     F
+(F-d-5-2)       F    T    T   D/F   F    F    F    D    T     F
+(F-d-5-3)       F    T    T   D/F   F    F    F    D    T     F
+(F-d-6)         F    T    T   D/F   F    F    F    D    T     F
+(F-d-7-1)       F    T    T   D/F   F    F    F    D    T     F
+(F-d-7-2)       F    T    T   D/F   F    F    F    D    T     F
+(F-d-7-3)       F    T    T   D/F   F    F    F    D    T     F
+(F-d-7-4)       F    T    T   D/F   F    F    F    D    T     F
+(F-d-7-5)       F    T    T   D/F   F    F    F    D    T     F
+(F-e-1)         F    F   D/T   T    T    F    F    D    T     F
+(F-e-2)         F    F   D/T   T    T    F    F    D    T     F
+-----------------------------------------------------------------
+網羅            O    O    O    O    O    O    O    O    O     O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

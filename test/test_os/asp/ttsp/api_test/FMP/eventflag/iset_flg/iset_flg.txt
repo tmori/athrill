@@ -1,0 +1,316 @@
+
+	iset_flg テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: iset_flg.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+set_flg		イベントフラグのセット〔T〕
+iset_flg	イベントフラグのセット〔I〕
+
+【C言語API】
+	ER ercd = set_flg(ID flgid, FLGPTN setptn)
+	ER ercd = iset_flg(ID flgid, FLGPTN setptn)
+
+【パラメータ】
+	ID			flgid		対象イベントフラグのID番号
+	FLGPTN		setptn		セットするビットパターン
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：set_flgの場合，タスクコンテキストからの呼出し：
+					iset_flgの場合，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（flgidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象イベントフラグが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象イベントフラグに対す
+					る通常操作1が許可されていない：set_flgの場合）
+
+【機能】
+
+flgidで指定したイベントフラグ（対象イベントフラグ）のsetptnで指定したビッ
+トをセットする．具体的な振舞いは以下の通り．
+
+対象イベントフラグのビットパターンは，それまでの値とsetptnで指定した値
+のビット毎論理和（C言語の"|"）に更新される．対象イベントフラグの待ち行
+列にタスクが存在する場合には，待ち解除の条件を満たしたタスクが，待ち行
+列の前方につながれたものから順に待ち解除される．待ち解除されたタスクに
+は，待ち状態となったサービスコールからE_OKが返る．
+
+ただし，対象イベントフラグがTA_CLR属性である場合には，待ち解除の条件を
+満たしたタスクを1つ待ち解除した時点で，対象イベントフラグのビットパター
+ンが0にクリアされるため，他のタスクが待ち解除されることはない．
+
+【使用上の注意】
+
+対象イベントフラグが，TA_WMUL属性であり，TA_CLR属性でない場合，set_flg
+またはiset_flgにより複数のタスクが待ち解除される場合がある．この場合，
+サービスコールの処理時間およびカーネル内での割込み禁止時間が，待ち解除
+されるタスクの数に比例して長くなる．特に，多くのタスクが待ち解除される
+場合，カーネル内での割込み禁止時間が長くなるため，注意が必要である．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+iset_flg(ID flgid, FLGPTN setptn)
+{
+	FLGCB	*p_flgcb;
+	QUEUE	*p_queue;
+	TCB		*p_tcb;
+	WINFO_FLG *p_winfo_flg;
+	ER		ercd;
+	PCB		*p_pcb;
+
+	LOG_ISET_FLG_ENTER(flgid, setptn);
+	CHECK_INTCTX_UNL();
+	CHECK_FLGID(flgid);
+	p_flgcb = get_flgcb(flgid);
+
+	i_lock_cpu();
+	i_acquire_obj_lock(&GET_OBJLOCK(p_flgcb));
+	p_flgcb->flgptn |= setptn;
+	p_queue = p_flgcb->wait_queue.p_next;
+	while (p_queue != &(p_flgcb->wait_queue)) {
+		p_tcb = (TCB *) p_queue;
+		/* フラグのセットを非破壊コードにできないため，リトライしない */
+		p_pcb = acquire_nested_tsk_lock_without_preemption(p_tcb);
+		p_queue = p_queue->p_next;
+		p_winfo_flg = (WINFO_FLG *)(&(p_tcb->winfo_obj));
+		if (check_flg_cond(p_flgcb, p_winfo_flg->waiptn,
+							p_winfo_flg->wfmode, &(p_winfo_flg->flgptn))) {
+			queue_delete(&(p_tcb->task_queue));
+			if (wait_complete(p_tcb)) {
+				if (dispatch_request(p_pcb)){
+					(get_my_p_pcb())->reqflg = true;
+				}
+			}
+			if ((p_flgcb->p_flginib->flgatr & TA_CLR) != 0U) {
+				release_nested_tsk_lock(p_pcb);
+				break;
+			}
+		}
+		release_nested_tsk_lock(p_pcb);
+	}
+	ercd = E_OK;
+	release_obj_lock(&GET_OBJLOCK(p_flgcb));
+	i_unlock_cpu();
+
+  error_exit:
+	LOG_ISET_FLG_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] iset_flg
+
+00 : ER
+01 : iset_flg(ID flgid, FLGPTN setptn)
+02 : {
+03 : 	FLGCB	*p_flgcb;
+04 : 	QUEUE	*p_queue;
+05 : 	TCB		*p_tcb;
+06 : 	WINFO_FLG *p_winfo_flg;
+07 : 	ER		ercd;
+08 : 	PCB		*p_pcb;
+09 : 
+10 : 	if (!sense_intctx_unl()) {
+11 : 		ercd = E_CTX;
+12 : 		goto error_exit;
+13 : 	}
+14 : 	if (!(TMIN_FLGID <= (flgid) && (flgid) <= tmax_flgid)) {
+15 : 		ercd = E_ID;
+16 : 		goto error_exit;
+17 : 	}
+18 : 	p_flgcb = (p_flgcb_table[((uint_t)((flgid) - TMIN_FLGID))]);
+19 : 
+20 : 	i_lock_cpu();
+21 : 	i_acquire_obj_lock(&GET_OBJLOCK(p_flgcb));
+22 : 	p_flgcb->flgptn |= setptn;
+23 : 	p_queue = p_flgcb->wait_queue.p_next;
+24 : 	while (p_queue != &(p_flgcb->wait_queue)) {
+25 : 		p_tcb = (TCB *) p_queue;
+26 : 		/* フラグのセットを非破壊コードにできないため，リトライしない */
+27 : 		p_pcb = acquire_nested_tsk_lock_without_preemption(p_tcb);
+28 : 		p_queue = p_queue->p_next;
+29 : 		p_winfo_flg = (WINFO_FLG *)(&(p_tcb->winfo_obj));
+30 : 		if (check_flg_cond(p_flgcb, p_winfo_flg->waiptn,
+31 : 							p_winfo_flg->wfmode, &(p_winfo_flg->flgptn))) {
+32 : 			queue_delete(&(p_tcb->task_queue));
+33 : 			if (wait_complete(p_tcb)) {
+34 : 				if (dispatch_request(p_pcb)){
+35 : 					(get_my_p_pcb())->reqflg = true;
+36 : 				}
+37 : 			}
+38 : 			if ((p_flgcb->p_flginib->flgatr & TA_CLR) != 0U) {
+39 : 				release_nested_tsk_lock(p_pcb);
+40 : 				break;
+41 : 			}
+42 : 		}
+43 : 		release_nested_tsk_lock(p_pcb);
+44 : 	}
+45 : 	ercd = E_OK;
+46 : 	release_obj_lock(&GET_OBJLOCK(p_flgcb));
+47 : 	i_unlock_cpu();
+48 : 
+49 :   error_exit:
+50 : 	return(ercd);
+51 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 10 : !sense_intctx_unl()
+(A2) 14 : TMIN_FLGID <= (flgid)
+(A3) 14 : (flgid) <= tmax_flgid
+(A4) 24 : p_queue != &(p_flgcb->wait_queue)
+(A5) 30 : check_flg_cond(p_flgcb, p_winfo_flg->waiptn,
+						p_winfo_flg->wfmode, &(p_winfo_flg->flgptn))
+(A6) 33 : wait_complete(p_tcb)
+(A7) 34 : dispatch_request(p_pcb)
+(A8) 38 : (p_flgcb->p_flginib->flgatr & TA_CLR) != 0U
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+           (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8)
+(a-1)       T    D    D    D    D    D    D    D
+(a-2)       T    D    D    D    D    D    D    D
+(b-1)       F    F   D/T   D    D    D    D    D
+(b-2)       F    T    F    D    D    D    D    D
+(c)         F    T    T    F    D    D    D    D
+(d)         F    T    T    TF   F    D    D    D
+(e-1-1)     F    T    T    TF   T    T    T    F
+(e-1-2)     F    T    T    TF   T    F    D    F
+(e-1-3)     F    T    T    TF   T    F    D    F
+(e-2)       F    T    T    TF   T    F    D    F
+(e-3)       F    T    T    TF   T    F    D    F
+(e-4)       F    T    T    TF   T    F    D    F
+(e-5)       F    T    T    TF   T    T    T    F
+(f-1-1)     F    T    T    TTF  TF   TD   TD   FD
+(f-1-2)     F    T    T    TTF  TF   FD   DD   FD
+(f-1-3)     F    T    T    TTF  TF   FD   DD   FD
+(f-2)       F    T    T    TTF  TF   FD   DD   FD
+(f-3)       F    T    T    TTF  TF   FD   DD   FD
+(f-4)       F    T    T    TTF  TF   FD   DD   FD
+(f-5)       F    T    T    TTF  TF   TD   TD   FD
+(g-1-1)     F    T    T    TTTF TFF  TDD  TDD  FDD
+(g-1-2)     F    T    T    TTTF FTF  DTD  DTD  DFD
+(g-1-3)     F    T    T    TTTF FFT  DDT  DDT  DDF
+(g-2-1)     F    T    T    TTTF TTF  FFD  DDD  FFD
+(g-2-2)     F    T    T    TTTF TFT  FDF  DDD  FDF
+(g-2-3)     F    T    T    TTTF FTT  DFF  DDD  DFF
+(g-3-1)     F    T    T    TTTF TTT  FFF  DDD  FFF
+(g-3-2)     F    T    T    T    T    F    D    T
+(F-a)       T    D    D    D    D    D    D    D
+(F-b)       F    T    T    TF   F    D    D    D
+(F-c-1-1)   F    T    T    TF   T    T    F    F
+(F-c-1-2)   F    T    T    TF   T    F    D    F
+(F-c-1-3)   F    T    T    TF   T    F    D    F
+(F-c-1-4)   F    T    T    TF   T    T    F    F
+(F-c-1-5)   F    T    T    TF   T    T    F    F
+(F-c-1-6)   F    T    T    TF   T    T    F    F
+(F-c-2)     F    T    T    TF   T    F    D    F
+(F-c-3)     F    T    T    TF   T    F    D    F
+(F-c-4)     F    T    T    TF   T    F    D    F
+(F-c-5)     F    T    T    TF   T    T    F    F
+(F-c-6)     F    T    T    TF   T    T    F    F
+(F-c-7)     F    T    T    TF   T    F    D    F
+(F-d-1-1)   F    T    T    TTF  TF   TD   FD   FD
+(F-d-1-2)   F    T    T    TTF  TF   FD   DD   FD
+(F-d-1-3)   F    T    T    TTF  TF   FD   DD   FD
+(F-d-1-4)   F    T    T    TTF  TF   TD   FD   FD
+(F-d-1-5)   F    T    T    TTF  TF   TD   FD   FD
+(F-d-1-6)   F    T    T    TTF  TF   TD   FD   FD
+(F-d-2)     F    T    T    TTF  TF   FD   DD   FD
+(F-d-3)     F    T    T    TTF  TF   FD   DD   FD
+(F-d-4)     F    T    T    TTF  TF   FD   DD   FD
+(F-d-5)     F    T    T    TTF  TF   TD   FD   FD
+(F-d-6)     F    T    T    TTF  TF   TD   FD   FD
+(F-d-7)     F    T    T    TTF  TF   FD   DD   FD
+(F-e-1-1)   F    T    T    TTTF TFF  TDD  FDD  FDD
+(F-e-1-2)   F    T    T    TTTF FTF  DTD  DFD  DFD
+(F-e-1-3)   F    T    T    TTTF FFT  DDT  DDF  DDF
+(F-e-2-1)   F    T    T    TTTF TTF  FFD  DDD  FFD
+(F-e-2-2)   F    T    T    TTTF TFT  FDF  DDD  FDF
+(F-e-2-3)   F    T    T    TTTF FTT  DFF  DDD  DFF
+(F-e-3-1)   F    T    T    TTTF TTT  FFF  DDD  FFF
+(F-e-3-2)   F    T    T    T    T    F    D    T
+(F-f)       F    T    T    TTF  FT   DT   DF   DF
+--------------------------------------------------
+網羅        O    O    O    O    O    O    O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

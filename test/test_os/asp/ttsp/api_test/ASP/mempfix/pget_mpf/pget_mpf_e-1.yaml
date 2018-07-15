@@ -1,0 +1,25 @@
+version: "$Id: pget_mpf_e-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mempfix_pget_mpf_e_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var    :
+        blk1:
+          type: void*
+
+    MPF1:
+      type   : MEMORYPOOL
+      blkcnt : 2
+      fblkcnt: 2
+      blksz  : ANY_BLKSZ
+
+  do:
+    id     : TASK1
+    syscall: pget_mpf(MPF1,&blk1)
+    ercd   : E_OK
+
+  post_condition:
+    MPF1:
+      fblkcnt: 1
+      mpf    : blk1

@@ -1,0 +1,59 @@
+version: "$Id: ini_sem_F-b-2-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_semaphore_ini_sem_F_b_2_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : SEM1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : SEM1
+      prcid  : PRC_OTHER
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : SEM1
+      prcid  : PRC_OTHER
+
+    SEM1:
+      type    : SEMAPHORE
+      sematr  : TA_NULL
+      maxsem  : ANY_MAX_SEMCNT
+      isemcnt : ANY_INI_SEMCNT
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK4:
+
+  do:
+    id     : TASK1
+    syscall: ini_sem(SEM1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    TASK3:
+      tskstat: ready
+
+    TASK4:
+      tskstat: running
+
+    SEM1:
+      semcnt  : ANY_INI_SEMCNT
+      wtsklist:

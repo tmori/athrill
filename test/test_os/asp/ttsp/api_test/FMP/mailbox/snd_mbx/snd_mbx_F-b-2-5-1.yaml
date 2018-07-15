@@ -1,0 +1,49 @@
+version: "$Id: snd_mbx_F-b-2-5-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mailbox_snd_mbx_F_b_2_5_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        msg:
+          type: T_MSG
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MBX1
+      prcid  : PRC_OTHER
+      var    :
+        pk_msg:
+          type: T_MSG*
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MBX1
+      prcid  : PRC_OTHER
+
+    MBX1:
+      type    : MAILBOX
+      mbxatr  : TA_NULL
+      wtsklist:
+        - TASK2:
+            var: pk_msg
+        - TASK3:
+
+  do:
+    id     : TASK1
+    syscall: snd_mbx(MBX1, &msg)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: running
+      var    :
+        pk_msg:
+          value: "&msg"
+
+    MBX1:
+      wtsklist:
+        - TASK3:

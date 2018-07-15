@@ -1,0 +1,33 @@
+version: "$Id: twai_flg_F-b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_eventflag_twai_flg_F_b_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var    :
+        flgptn:
+          type : FLGPTN
+          value: BIT_PATTERN_A
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    FLG1:
+      type    : EVENTFLAG
+      flgatr  : TA_NULL
+      flgptn  : BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_B
+            wfmode: WAIT_FLG_MODE_B
+
+  do:
+    id     : TASK1
+    syscall: twai_flg(FLG1, BIT_PATTERN_C, WAIT_FLG_MODE_A, &flgptn, ANY_ELAPSED_TIME)
+    ercd   : E_ILUSE
+
+  post_condition:

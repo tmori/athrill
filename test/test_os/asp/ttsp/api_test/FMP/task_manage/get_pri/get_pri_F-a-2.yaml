@@ -1,0 +1,28 @@
+version: "$Id: get_pri_F-a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_get_pri_F_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        tskpri:
+          type: PRI
+          value: TSK_PRI_MID
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: get_pri(TASK2, &tskpri)
+    ercd   : E_CTX
+
+  post_condition:

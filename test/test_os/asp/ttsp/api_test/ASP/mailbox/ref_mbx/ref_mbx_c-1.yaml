@@ -1,0 +1,34 @@
+version: "$Id: ref_mbx_c-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mailbox_ref_mbx_c_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rmbx:
+          type: T_RMBX
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MBX1
+      var    : 
+        msg:
+          type: "T_MSG*"
+
+    MBX1:
+      type   : MAILBOX
+      wtsklist : 
+        - TASK2:
+            var: msg
+
+  do:
+    id     : TASK1
+    syscall: ref_mbx(MBX1, &rmbx)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rmbx:
+          wtskid: TASK2

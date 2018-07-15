@@ -1,0 +1,63 @@
+version: "$Id: tsnd_pdq_F-f-2-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_tsnd_pdq_F_f_2_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqatr : TA_TPRI
+      pdqcnt : 3
+      maxdpri : DATA_PRI_MAX
+      stsklist:
+        - TASK2:
+            data:     DATA_A
+            datapri:  DATA_PRI_LOW
+        - TASK3:
+            data:     DATA_B
+            datapri:  DATA_PRI_HIGH
+      datalist:
+        - data    : DATA_C
+          datapri : DATA_PRI_HIGH
+        - data    : DATA_D
+          datapri : DATA_PRI_MID
+        - data    : DATA_E
+          datapri : DATA_PRI_MID
+
+  do:
+    id     : TASK1
+    syscall: tsnd_pdq(PDQ1, DATA_F, DATA_PRI_MID, ANY_ELAPSED_TIME)
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : PDQ1
+      lefttmo: ANY_ELAPSED_TIME
+
+    PDQ1:
+      stsklist:
+        - TASK1:
+            data:     DATA_F
+            datapri:  DATA_PRI_MID
+        - TASK2:
+            data:     DATA_A
+            datapri:  DATA_PRI_LOW
+        - TASK3:
+            data:     DATA_B
+            datapri:  DATA_PRI_HIGH

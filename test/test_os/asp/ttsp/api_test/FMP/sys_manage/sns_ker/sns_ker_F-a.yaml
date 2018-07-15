@@ -1,0 +1,25 @@
+version: "$Id: sns_ker_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_sns_ker_F_a:
+  pre_condition:
+    INI1:
+      type : INIRTN
+      exinf: EXINF_A
+      do   :
+        syscall: sns_ker()
+        bool   : true
+        gcov   : true
+      prcid: PRC_OTHER
+      class: CLS_OTHER_ONLY_OTHER
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: sns_ker()
+    bool   : false
+    gcov   : false
+
+  post_condition:

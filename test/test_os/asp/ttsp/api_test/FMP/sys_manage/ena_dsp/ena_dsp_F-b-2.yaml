@@ -1,0 +1,44 @@
+version: "$Id: ena_dsp_F-b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_ena_dsp_F_b_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: ready
+      tskpri : TSK_PRI_HIGH
+      prcid  : PRC_SELF
+
+    TASK3:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      dis_dsp: true
+      chg_ipm: TIPM_ENAALL
+      prcid  : PRC_SELF
+
+    CPU_STATE2:
+      type   : CPU_STATE
+      dis_dsp: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: ena_dsp()
+
+  post_condition:
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running
+
+    CPU_STATE1:
+      dis_dsp: false

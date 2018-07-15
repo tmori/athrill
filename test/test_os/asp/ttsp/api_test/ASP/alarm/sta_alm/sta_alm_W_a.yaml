@@ -1,0 +1,67 @@
+version: "$Id: sta_alm_W_a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_alarm_sta_alm_W_a:
+  note: TESRY_001
+
+  variation:
+    gcov_all: true
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STA
+      hdlstat: STP
+      lefttim: RELATIVE_TIME_A
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: false
+      chg_ipm: TIPM_ENAALL
+
+  do_0:
+    0:
+      id     : TASK1
+      syscall: sta_alm(ALM1, RELATIVE_TIME_B)
+      ercd   : E_OK
+
+  post_condition_0:
+    0:
+      ALM1:
+        lefttim: RELATIVE_TIME_B
+
+    RELATIVE_TIME_B+1:
+      ALM1:
+        almstat: TALM_STP
+        hdlstat: ACTIVATE
+
+      CPU_STATE:
+        chg_ipm: INT_PRI_TIMER
+
+  do_1:
+    RELATIVE_TIME_B+1:
+      id     : ALM1
+      syscall: iloc_cpu()
+      ercd   : E_OK
+
+  post_condition_1:
+    RELATIVE_TIME_B+1:
+      CPU_STATE:
+        loc_cpu: true
+
+  do_2:
+    RELATIVE_TIME_B+1:
+      id     : ALM1
+      code   : return
+
+  post_condition_2:
+    RELATIVE_TIME_B+1:
+      ALM1:
+        almstat: TALM_STP
+        hdlstat: STP
+
+      CPU_STATE:
+        loc_cpu: false
+        chg_ipm: TIPM_ENAALL

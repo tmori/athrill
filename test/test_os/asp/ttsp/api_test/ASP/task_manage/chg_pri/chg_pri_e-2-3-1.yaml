@@ -1,0 +1,43 @@
+version: "$Id: chg_pri_e-2-3-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_chg_pri_e_2_3_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : SEM1
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : SEM1
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : SEM1
+
+    SEM1:
+      type    : SEMAPHORE
+      sematr  : TA_NULL
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK4:
+
+  do:
+    id     : TASK1
+    syscall: chg_pri(TASK3, TSK_PRI_HIGH)
+    ercd   : E_OK
+
+  post_condition:
+    TASK3:
+      tskpri : TSK_PRI_HIGH

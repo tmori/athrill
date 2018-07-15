@@ -1,0 +1,36 @@
+version: "$Id: ref_flg_F-b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_eventflag_ref_flg_F_b:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var    :
+        rflg:
+          type: T_RFLG
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    FLG1:
+      type    : EVENTFLAG
+      flgptn  : BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_B
+            wfmode: WAIT_FLG_MODE_A
+
+  do:
+    id     : TASK1
+    syscall: ref_flg(FLG1, &rflg)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rflg:
+          wtskid: TASK2
+          flgptn: BIT_PATTERN_0A

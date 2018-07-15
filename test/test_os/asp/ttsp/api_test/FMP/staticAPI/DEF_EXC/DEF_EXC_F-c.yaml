@@ -1,0 +1,23 @@
+version: "$Id: DEF_EXC_F-c.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_staticAPI_DEF_EXC_F_c:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+      class  : CLS_OTHER_ALL
+
+    EXC1:
+      type   : EXCEPTION
+      excno  : EXCNO_OTHER_A
+      hdlstat: STP
+      prcid  : PRC_OTHER
+      class  : CLS_OTHER_ALL
+
+  do:
+    id   : TASK1
+    code : ttsp_cpuexc_raise(EXCNO_OTHER_A)
+
+  post_condition:
+    EXC1:
+      hdlstat: ACTIVATE

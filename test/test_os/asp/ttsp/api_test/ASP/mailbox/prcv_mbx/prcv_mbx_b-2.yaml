@@ -1,0 +1,19 @@
+version: "$Id: prcv_mbx_b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mailbox_prcv_mbx_b_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        pk_msg:
+          type: T_MSG*
+
+    MBX1:
+      type   : MAILBOX
+
+  do:
+    id     : TASK1
+    syscall: prcv_mbx(TNUM_MBXID+1, &pk_msg)
+    ercd   : E_ID
+
+  post_condition:

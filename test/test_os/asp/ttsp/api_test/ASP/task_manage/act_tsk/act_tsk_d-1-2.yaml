@@ -1,0 +1,26 @@
+version: "$Id: act_tsk_d-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_act_tsk_d_1_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      itskpri: TSK_PRI_HIGH
+      tskstat: dormant
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+
+  do:
+    id     : TASK1
+    syscall: act_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+      tskpri : TSK_PRI_HIGH

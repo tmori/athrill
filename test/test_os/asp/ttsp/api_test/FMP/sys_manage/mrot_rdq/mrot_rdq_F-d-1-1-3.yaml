@@ -1,0 +1,33 @@
+version: "$Id: mrot_rdq_F-d-1-1-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_mrot_rdq_F_d_1_1_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+      porder : 1
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: ready
+      tskpri : TSK_PRI_MID
+      porder : 2
+      prcid  : PRC_SELF
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      chg_ipm: ANY_IPM
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: mrot_rdq(TPRI_SELF, PRC_SELF)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      porder : 2
+
+    TASK2:
+      porder : 1

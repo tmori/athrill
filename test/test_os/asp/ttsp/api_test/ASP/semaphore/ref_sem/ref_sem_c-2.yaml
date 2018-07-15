@@ -1,0 +1,32 @@
+version: "$Id: ref_sem_c-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_ref_sem_c_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rsem:
+          type: T_RSEM
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SEM1
+
+    SEM1:
+      type   : SEMAPHORE
+      semcnt : 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ref_sem(SEM1, &rsem)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rsem:
+          wtskid: TASK2
+          semcnt: 0

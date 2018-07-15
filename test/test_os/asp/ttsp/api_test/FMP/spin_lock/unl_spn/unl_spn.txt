@@ -1,0 +1,396 @@
+
+	unl_spn テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: unl_spn.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+unl_spn		スピンロックの返却〔TM〕
+iunl_spn	スピンロックの返却〔IM〕
+
+【C言語API】
+	ER ercd = unl_spn(ID spnid)
+	ER ercd = iunl_spn(ID spnid)
+
+【パラメータ】
+	ID			spnid		対象スピンロックのID番号
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し：unl_spnの場合，タスクコンテキストからの呼出し：
+					iunl_spnの場合）
+	E_ID			不正ID番号（spnidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象スピンロックが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象スピンロックに対する
+					通常操作1が許可されていない：unl_spnの場合）
+	E_ILUSE			サービスコール不正使用（対象スピンロックをロックし
+					ていない）
+
+【機能】
+
+spnidで指定したスピンロック（対象スピンロック）を返却する．具体的な振舞
+いは以下の通り．
+
+対象スピンロックが，unl_spn／iunl_spnを呼び出したプロセッサによって取得
+されている状態である場合には，ロックを返却し，スピンロックを取得されて
+いない状態とする．また，CPUロックフラグをクリアし，CPUロック解除状態へ
+遷移する．
+
+対象スピンロックが，取得されていない状態である場合や，他のプロセッサに
+よって取得されている状態である場合には，E_ILUSEエラーとなる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) 非タスクコンテキストから呼び出して，E_CTXエラーが返ること．
+
+(F-b) spnidが不正の時にE_IDが返ること．
+
+      (F-b-1) spnidが許容される最小値-1(=0)の時にE_IDが返ること．
+
+      (F-b-2) spnidが許容される最大値+1(TNUM_SPNID+1)の時にE_IDが返るこ
+              と．
+
+(F-c) サービスコール不正使用で，E_ILUSEエラーが返ること．
+
+      (F-c-1) 対象スピンロックが，取得されていない状態である場合．
+
+      (F-c-2) 対象スピンロックが，他のプロセッサによって取得されている
+              状態である場合．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-d) 対象スピンロックが，unl_spnを呼び出したプロセッサによって取得され
+      ている状態である場合には，ロックを返却し，スピンロックを取得され
+      ていない状態とすること．また，CPUロックフラグをクリアし，CPUロッ
+      ク解除状態へ遷移すること．
+
+      (F-d-1) 実行状態のタスクが最も優先順位が高いタスクである場合．
+
+      (F-d-2) 実行状態のタスクより優先順位が高いタスクがある場合．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[TTYPE_SPN == NATIVE_SPN]
+
+ER
+unl_spn(ID spnid)
+{
+	ER		ercd;
+	SPNCB   *p_spncb;
+	PCB		*my_p_pcb;
+	bool_t	locked;
+
+	LOG_UNL_SPN_ENTER(spnid);
+	CHECK_TSKCTX();
+	CHECK_SPNID(spnid);
+	p_spncb = get_spncb(spnid);
+
+	locked = t_sense_lock();
+	if (!locked) {
+		t_lock_cpu();
+	}
+	my_p_pcb = get_my_p_pcb();
+	if (my_p_pcb->locspnid != spnid) {
+		if (!locked) {
+			t_unlock_cpu();
+		}
+		ercd = E_ILUSE;
+	}
+	else {
+		/*
+		 *  スピンロック取得とのレーシングを避けるため，スピンロックを
+		 *  解放する前に設定．
+		 */
+		my_p_pcb->locspnid = 0;
+		p_spncb->lock_flg = false;
+		x_unlock_spin(&(p_spncb->spn_lock));
+		t_unlock_cpu();
+		ercd = E_OK;
+	}
+
+  error_exit:
+	LOG_UNL_SPN_LEAVE(ercd);
+	return(ercd);
+}
+
+
+[TTYPE_SPN == EMULATE_SPN]
+
+ER
+unl_spn(ID spnid)
+{
+	ER		ercd;
+	SPNCB   *p_spncb;
+	PCB		*my_p_pcb;
+	bool_t	locked;
+
+	LOG_UNL_SPN_ENTER(spnid);
+	CHECK_TSKCTX();
+	CHECK_SPNID(spnid);
+	p_spncb = get_spncb(spnid);
+
+	/*
+	 *  スピンロック解放は，1変数（p_spncb->lock_flg）をfalseにするだけな
+	 *  ので，プロセッサ間排他制御は行わない． 
+	 */
+	locked = t_sense_lock();
+	if (!locked) {
+		t_lock_cpu();
+	}
+	my_p_pcb = get_my_p_pcb();
+	if (my_p_pcb->locspnid != spnid) {
+		if (!locked) {
+			t_unlock_cpu();
+		}
+		ercd = E_ILUSE;
+	}
+	else {
+		p_spncb->lock_flg = false;
+		my_p_pcb->locspnid = 0;
+		t_unlock_cpu();
+		ercd = E_OK;
+	}
+
+  error_exit:
+	LOG_UNL_SPN_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] unl_spn(TTYPE_SPN == NATIVE_SPN)
+
+00 : ER
+01 : unl_spn(ID spnid)
+02 : {
+03 : 	ER		ercd;
+04 : 	SPNCB   *p_spncb;
+05 : 	PCB		*my_p_pcb;
+06 : 	bool_t	locked;
+07 : 
+08 : 	if (sense_context()) {
+09 : 		ercd = E_CTX;
+10 : 		goto error_exit;
+11 : 	}
+12 : 	if (!(TMIN_SPNID <= (spnid) && (spnid) <= tmax_spnid)) {
+13 : 		ercd = E_ID;
+14 : 		goto error_exit;
+15 : 	}
+16 : 	p_spncb = p_spncb_table[(uint_t)((spnid) - TMIN_SPNID)];
+17 : 
+18 : 	locked = t_sense_lock();
+19 : 	if (!locked) {
+20 : 		t_lock_cpu();
+21 : 	}
+22 : 	my_p_pcb = get_my_p_pcb();
+23 : 	if (my_p_pcb->locspnid != spnid) {
+24 : 		if (!locked) {
+25 : 			t_unlock_cpu();
+26 : 		}
+27 : 		ercd = E_ILUSE;
+28 : 	}
+29 : 	else {
+30 : 		/*
+31 : 		 *  スピンロック取得とのレーシングを避けるため，スピンロックを
+32 : 		 *  解放する前に設定．
+33 : 		 */
+34 : 		my_p_pcb->locspnid = 0;
+35 : 		p_spncb->lock_flg = false;
+36 : 		x_unlock_spin(&(p_spncb->spn_lock));
+37 : 		t_unlock_cpu();
+38 : 		ercd = E_OK;
+39 : 	}
+40 : 
+41 :   error_exit:
+42 : 	return(ercd);
+43 : }
+
+
+[B] unl_spn(TTYPE_SPN == EMULATE_SPN)
+
+00 : ER
+01 : unl_spn(ID spnid)
+02 : {
+03 : 	ER		ercd;
+04 : 	SPNCB   *p_spncb;
+05 : 	PCB		*my_p_pcb;
+06 : 	bool_t	locked;
+07 : 
+08 : 	if (sense_context()) {
+09 : 		ercd = E_CTX;
+10 : 		goto error_exit;
+11 : 	}
+12 : 	if (!(TMIN_SPNID <= (spnid) && (spnid) <= tmax_spnid)) {
+13 : 		ercd = E_ID;
+14 : 		goto error_exit;
+15 : 	}
+16 : 	p_spncb = p_spncb_table[(uint_t)((spnid) - TMIN_SPNID)];
+17 : 
+18 : 	/*
+19 : 	 *  スピンロック解放は，1変数（p_spncb->lock_flg）をfalseにするだけな
+20 : 	 *  ので，プロセッサ間排他制御は行わない． 
+21 : 	 */
+22 : 	locked = t_sense_lock();
+23 : 	if (!locked) {
+24 : 		t_lock_cpu();
+25 : 	}
+26 : 	my_p_pcb = get_my_p_pcb();
+27 : 	if (my_p_pcb->locspnid != spnid) {
+28 : 		if (!locked) {
+29 : 			t_unlock_cpu();
+30 : 		}
+31 : 		ercd = E_ILUSE;
+32 : 	}
+33 : 	else {
+34 : 		p_spncb->lock_flg = false;
+35 : 		my_p_pcb->locspnid = 0;
+36 : 		t_unlock_cpu();
+37 : 		ercd = E_OK;
+38 : 	}
+39 : 
+40 :   error_exit:
+41 : 	return(ercd);
+42 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  08 : sense_context()
+(A2)  12 : TMIN_SPNID <= (spnid)
+(A3)  12 : (spnid) <= tmax_spnid
+(A4)  19 : !locked
+(A5)  23 : my_p_pcb->locspnid != spnid
+(A6)  24 : !locked
+
+(B1)  08 : sense_context()
+(B2)  12 : TMIN_SPNID <= (spnid)
+(B3)  12 : (spnid) <= tmax_spnid
+(B4)  23 : !locked
+(B5)  27 : my_p_pcb->locspnid != spnid
+(B6)  28 : !locked
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[TTYPE_SPN == NATIVE_SPN]
+
+         (A1) (A2) (A3) (A4) (A5) (A6)
+(F-a)     T    D    D    D    D    D  
+(F-b-1)   F    F   D/T   D    D    D  
+(F-b-2)   F    T    F    D    D    D  
+(F-c-1)   F    T    T    T    T    T  
+(F-c-2)   F    T    T    T    T    T  
+(F-d-1)   F    T    T    F    F    D  
+(F-d-2)   F    T    T    F    F    D  
+--------------------------------------
+網羅      O    O    O    O    O    X  
+
+
+[TTYPE_SPN == EMULATE_SPN]
+
+         (B1) (B2) (B3) (B4) (B5) (B6)
+(F-a)     T    D    D    D    D    D  
+(F-b-1)   F    F   D/T   D    D    D  
+(F-b-2)   F    T    F    D    D    D  
+(F-c-1)   F    T    T    T    T    T  
+(F-c-2)   F    T    T    T    T    T  
+(F-d-1)   F    T    T    F    F    D  
+(F-d-2)   F    T    T    F    F    D  
+--------------------------------------
+網羅      O    O    O    O    O    X  
+
+【備考】
+・(A6)(B6)の網羅をさせるために，以下にホワイトボックステストを実施する．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[TTYPE_SPN == NATIVE_SPN]
+
+         (A1) (A2) (A3) (A4) (A5) (A6)
+(W_F-a)   F    T    T    F    T    F  
+--------------------------------------
+網羅      O    O    O    O    O    O  
+
+
+[TTYPE_SPN == EMULATE_SPN]
+
+         (B1) (B2) (B3) (B4) (B5) (B6)
+(W_F-a)   F    T    T    F    T    F  
+--------------------------------------
+網羅      O    O    O    O    O    O  
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.2. テストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(W_F-a) 以下の状態の場合．
+
+  ・対象スピンロックが，取得されていない状態である場合．
+  ・unl_spnを呼び出したプロセッサがCPUロック状態の場合．
+
+
+以上．

@@ -1,0 +1,286 @@
+
+	twai_sem テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: twai_sem.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+wai_sem		セマフォの資源の獲得〔T〕
+pol_sem		セマフォの資源の獲得（ポーリング）〔T〕
+twai_sem	セマフォの資源の獲得（タイムアウト付き）〔T〕
+
+【C言語API】
+	ER ercd = wai_sem(ID semid)
+	ER ercd = pol_sem(ID semid)
+	ER ercd = twai_sem(ID semid, TMO tmout)
+
+【パラメータ】
+	ID			semid		対象セマフォのID番号
+	TMO			tmout		タイムアウト時間（twai_semの場合）
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し，ディスパッチ保留状態
+					からの呼出し：pol_semを除く）
+	E_NOSPT			未サポート機能（制約タスクからの呼出し：pol_semを除
+					く）
+	E_ID			不正ID番号（semidが不正）
+	E_PAR			パラメータエラー（tmoutが不正：twai_semの場合）
+	E_NOEXS〔D〕	オブジェクト未登録（対象セマフォが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象セマフォに対する通常
+					操作2が許可されていない）
+	E_TMOUT			ポーリング失敗またはタイムアウト（wai_semを除く）
+	E_RLWAI			待ち禁止状態または待ち状態の強制解除（pol_semを除く）
+	E_DLT			待ちオブジェクトの削除または再初期化（pol_semを除く）
+
+【機能】
+
+semidで指定したセマフォ（対象セマフォ）から資源を獲得する．具体的な振舞
+いは以下の通り．
+
+対象セマフォの資源数が1以上の場合には，資源数から1が減ぜられる．資源数
+が0の場合には，自タスクはセマフォの資源獲得待ち状態となり，対象セマフォ
+の待ち行列につながれる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+twai_sem(ID semid, TMO tmout)
+{
+	SEMCB	*p_semcb;
+	ER		ercd;
+	PCB		*my_p_pcb;
+	TCB		*p_runtsk;
+
+	LOG_TWAI_SEM_ENTER(semid, tmout);
+	CHECK_TSKCTX_UNL();
+	CHECK_SEMID(semid);
+	CHECK_TMOUT(tmout);
+	p_semcb = get_semcb(semid);
+
+	t_lock_cpu();
+	my_p_pcb = get_my_p_pcb();
+	T_CHECK_DISPATCH(my_p_pcb);
+
+  retry:
+	t_acquire_obj_lock(&GET_OBJLOCK(p_semcb));
+	if (p_semcb->semcnt >= 1) {
+		p_semcb->semcnt -= 1;
+		release_obj_lock(&GET_OBJLOCK(p_semcb));
+		ercd = E_OK;
+	}
+	else if (tmout == TMO_POL) {
+		release_obj_lock(&GET_OBJLOCK(p_semcb));
+		ercd = E_TMOUT;
+	}
+	else {
+		if ((my_p_pcb = t_acquire_nested_tsk_lock_self(&GET_OBJLOCK(p_semcb))) == NULL){
+			goto retry;
+		}
+		p_runtsk = my_p_pcb->p_runtsk;
+		p_runtsk->tstat = (TS_WAITING | TS_WAIT_SEM);
+		wobj_make_wait_tmout((WOBJCB *) p_semcb, tmout, p_runtsk);
+		release_nested_tsk_lock(my_p_pcb);
+		release_obj_lock(&GET_OBJLOCK(p_semcb));
+		dispatch();
+		ercd = p_runtsk->wercd;
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_TWAI_SEM_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] twai_sem
+
+00 : ER
+01 : twai_sem(ID semid, TMO tmout)
+02 : {
+03 : 	SEMCB	*p_semcb;
+04 : 	ER		ercd;
+05 : 	PCB		*my_p_pcb;
+06 : 	TCB		*p_runtsk;
+07 : 
+08 : 	if (!sense_tskctx_unl()) {
+09 : 		ercd = E_CTX;
+10 : 		goto error_exit;
+11 : 	}
+12 : 	if (!(TMIN_SEMID <= (semid) && (semid) <= tmax_semid)) {
+13 : 		ercd = E_ID;
+14 : 		goto error_exit;
+15 : 	}
+16 : 	if (!(TMO_FEVR <= (tmout))) {
+17 : 		ercd = E_PAR;
+18 : 		goto error_exit;
+19 : 	}
+20 : 	p_semcb = p_semcb_table[(uint_t)((semid) - TMIN_SEMID)];
+21 : 
+22 : 	t_lock_cpu();
+23 : 	my_p_pcb = get_my_p_pcb();
+24 : 	if (!(my_p_pcb->dspflg)) {
+25 : 		ercd = E_CTX;
+26 : 		t_unlock_cpu();
+27 : 		goto error_exit;
+28 : 	}
+29 : 
+30 :   retry:
+31 : 	t_acquire_obj_lock(&GET_OBJLOCK(p_semcb));
+32 : 	if (p_semcb->semcnt >= 1) {
+33 : 		p_semcb->semcnt -= 1;
+34 : 		release_obj_lock(&GET_OBJLOCK(p_semcb));
+35 : 		ercd = E_OK;
+36 : 	}
+37 : 	else if (tmout == TMO_POL) {
+38 : 		release_obj_lock(&GET_OBJLOCK(p_semcb));
+39 : 		ercd = E_TMOUT;
+40 : 	}
+41 : 	else {
+42 : 		if ((my_p_pcb = t_acquire_nested_tsk_lock_self(&GET_OBJLOCK(p_semcb))) == NULL){
+43 : 			goto retry;
+44 : 		}
+45 : 		p_runtsk = my_p_pcb->p_runtsk;
+46 : 		p_runtsk->tstat = (TS_WAITING | TS_WAIT_SEM);
+47 : 		wobj_make_wait_tmout((WOBJCB *) p_semcb, tmout, p_runtsk);
+48 : 		release_nested_tsk_lock(my_p_pcb);
+49 : 		release_obj_lock(&GET_OBJLOCK(p_semcb));
+50 : 		dispatch();
+51 : 		ercd = p_runtsk->wercd;
+52 : 	}
+53 : 	t_unlock_cpu();
+54 : 
+55 :   error_exit:
+56 : 	return(ercd);
+57 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 08 : !sense_tskctx_unl()
+(A2) 12 : TMIN_SEMID <= (semid)
+(A3) 12 : (semid) <= tmax_semid
+(A4) 16 : !(TMO_FEVR <= (tmout))
+(A5) 24 : !(my_p_pcb->dspflg)
+(A6) 32 : p_semcb->semcnt >= 1
+(A7) 37 : tmout == TMO_POL
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+           (A1) (A2) (A3) (A4) (A5) (A6) (A7)
+(a-1)       T    D    D    D    D    D    D
+(a-2)       T    D    D    D    D    D    D
+(a-3)       F    T    T    F    T    D    D
+(a-4)       F    T    T    F    T    D    D
+(b-1)       F    F   D/T   D    D    D    D
+(b-2)       F    T    F    D    D    D    D
+(c)         F    T    T    T    D    D    D
+(d)         F    T    T    F    F    F    F
+(e)         F    T    T    F    F    F    F
+(f)         F    T    T    F    F    F    F
+(g)         F    T    T    F    F    T    D
+(h-1)       F    T    T    F    F    T    D
+(h-2)       F    T    T    F    F    F    T
+(i-1)       F    T    T    F    F    T    D
+(i-2)       F    T    T    F    F    F    F
+(j-1-1)     F    T    T    F    F    F    F
+(j-1-2)     F    T    T    F    F    F    F
+(j-1-3)     F    T    T    F    F    F    F
+(j-1-4)     F    T    T    F    F    F    F
+(j-2-1)     F    T    T    F    F    F    F
+(j-2-2)     F    T    T    F    F    F    F
+(j-2-3)     F    T    T    F    F    F    F
+(j-2-4)     F    T    T    F    F    F    F
+(j-3)       F    T    T    F    F    F    F
+(F-a)       T    D    D    D    D    D    D
+(F-b)       F    T    T    F    F    F    F
+(F-c)       F    T    T    F    F    F    F
+(F-d)       F    T    T    F    F    F    F
+(F-e-1-1)   F    T    T    F    F    F    F
+(F-e-1-2)   F    T    T    F    F    F    F
+(F-e-1-3)   F    T    T    F    F    F    F
+(F-e-2-1)   F    T    T    F    F    F    F
+(F-e-2-2)   F    T    T    F    F    F    F
+(F-e-2-3)   F    T    T    F    F    F    F
+---------------------------------------------
+網羅        O    O    O    O    O    O    O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+以上．

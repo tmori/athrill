@@ -1,0 +1,27 @@
+version: "$Id: can_wup_e-4-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_can_wup_e_4_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SEM1
+      wupcnt : 1
+
+    SEM1:
+      type    : SEMAPHORE
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: can_wup(TASK2)
+    eruint : 1
+
+  post_condition:
+    TASK2:
+      wupcnt : 0

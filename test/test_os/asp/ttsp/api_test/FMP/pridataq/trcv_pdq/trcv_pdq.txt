@@ -1,0 +1,452 @@
+
+	trcv_pdq テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: trcv_pdq.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+rcv_pdq		優先度データキューからの受信〔T〕
+prcv_pdq	優先度データキューからの受信（ポーリング）〔T〕
+trcv_pdq	優先度データキューからの受信（タイムアウト付き）〔T〕
+
+【C言語API】
+	ER ercd = rcv_pdq(ID pdqid, intptr_t *p_data, PRI *p_datapri)
+	ER ercd = prcv_pdq(ID pdqid, intptr_t *p_data, PRI *p_datapri)
+	ER ercd = trcv_pdq(ID pdqid, intptr_t *p_data, PRI *p_datapri, TMO tmout)
+
+【パラメータ】
+	ID			pdqid		対象優先度データキューのID番号
+	intptr_t *	p_data		受信データを入れるメモリ領域へのポインタ
+	PRI *		p_datapri	受信データの優先度を入れるメモリ領域へのポ
+							インタ
+	TMO			tmout		タイムアウト時間（trcv_pdqの場合）
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+	intptr_t	data		受信データ
+	PRI			datapri		受信データの優先度
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し，ディスパッチ保留状態
+					からの呼出し：prcv_pdqを除く）
+	E_NOSPT			未サポート機能（制約タスクからの呼出し：prcv_pdqを除
+					く）
+	E_ID			不正ID番号（pdqidが不正）
+	E_PAR			パラメータエラー（tmoutが不正：trcv_pdqの場合）
+	E_NOEXS〔D〕	オブジェクト未登録（対象優先度データキューが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象優先度データキューに
+					対する通常操作2が許可されていない）
+	E_MACV〔P〕		メモリアクセス違反（p_dataまたはp_datapriが指すメモ
+					リ領域への書込みアクセスが許可されていない）
+	E_TMOUT			ポーリング失敗またはタイムアウト（rcv_pdqを除く）
+	E_RLWAI			待ち禁止状態または待ち状態の強制解除（prcv_pdqを除く）
+	E_DLT			待ちオブジェクトの削除または再初期化（prcv_pdqを除く）
+
+【機能】
+
+pdqidで指定した優先度データキュー（対象優先度データキュー）からデータを
+受信する．受信したデータはp_dataで指定したメモリ領域に，その優先度は
+p_datapriで指定したメモリ領域に返される．具体的な振舞いは以下の通り．
+
+対象優先度データキューの優先度データキュー管理領域にデータが格納されて
+いる場合には，優先度データキュー管理領域の先頭に格納されたデータが取り
+出され，p_dataで指定したメモリ領域に返される．また，その優先度が
+p_datapriで指定したメモリ領域に返される．さらに，送信待ち行列にタスクが
+存在する場合には，送信待ち行列の先頭のタスクの送信データが，データの優
+先度順で優先度データキュー管理領域に格納され，そのタスクは待ち解除され
+る．待ち解除されたタスクには，待ち状態となったサービスコールからE_OKが
+返る．
+
+対象優先度データキューの優先度データキュー管理領域にデータが格納されて
+おらず，送信待ち行列にタスクが存在する場合には，送信待ち行列の先頭のタ
+スクの送信データが，p_dataで指定したメモリ領域に返される．また，その優
+先度がp_datapriで指定したメモリ領域に返される．送信待ち行列の先頭のタス
+クは，待ち解除される．待ち解除されたタスクには，待ち状態となったサービ
+スコールからE_OKが返る．
+
+対象優先度データキューの優先度データキュー管理領域にデータが格納されて
+おらず，送信待ち行列にタスクが存在しない場合には，自タスクは優先度デー
+タキューからの受信待ち状態となり，対象優先度データキューの受信待ち行列
+につながれる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+trcv_pdq(ID pdqid, intptr_t *p_data, PRI *p_datapri, TMO tmout)
+{
+	PDQCB	*p_pdqcb;
+	bool_t	dspreq = false;
+	ER		ercd;
+	TCB		*p_tcb;
+	PCB		*my_p_pcb;
+	PCB		*p_pcb;
+	TCB		*p_runtsk;
+
+	LOG_TRCV_PDQ_ENTER(pdqid, p_data, p_datapri, tmout);
+	CHECK_TSKCTX_UNL();
+	CHECK_PDQID(pdqid);
+	CHECK_TMOUT(tmout);
+	p_pdqcb = get_pdqcb(pdqid);
+
+	t_lock_cpu();
+	my_p_pcb = get_my_p_pcb();
+	T_CHECK_DISPATCH(my_p_pcb);
+
+  retry:
+	t_acquire_obj_lock(&GET_OBJLOCK(p_pdqcb));
+	if (!queue_empty(&(p_pdqcb->swait_queue))) {
+		/* 送信待ちタスクあり */
+		p_tcb = (TCB *)(p_pdqcb->swait_queue.p_next);
+		if ((p_pcb = t_acquire_nested_tsk_lock(p_tcb, &GET_OBJLOCK(p_pdqcb))) == NULL) {
+			goto retry;
+		}
+		queue_delete((QUEUE *) p_tcb);
+		if (p_pdqcb->count > 0U) {
+			dequeue_pridata(p_pdqcb, p_data, p_datapri);
+			enqueue_pridata(p_pdqcb, p_tcb->winfo_obj.pdq.data, p_tcb->winfo_obj.pdq.datapri);
+		}
+		else {
+			*p_data = p_tcb->winfo_obj.pdq.data;
+			*p_datapri = p_tcb->winfo_obj.pdq.datapri;
+		}
+		if (wait_complete(p_tcb)) {
+			dspreq = dispatch_request(p_pcb);
+		}
+		release_nested_tsk_lock(p_pcb);
+		release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+		if (dspreq) {
+			dispatch();
+		}
+		ercd = E_OK;
+	}
+	else if (p_pdqcb->count > 0U) {
+		/* バッファにデータがあり，送信待ちタスクなし */
+		dequeue_pridata(p_pdqcb, p_data, p_datapri);
+		release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+		ercd = E_OK;
+	}   /* バッファが空かつ送信待ちタスクなし */
+	else if (tmout == TMO_POL) {
+		release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+		ercd = E_TMOUT;
+	}
+	else {
+		/* バッファが空かつ送信待ちタスクなし */
+		if ((my_p_pcb = t_acquire_nested_tsk_lock_self(&GET_OBJLOCK(p_pdqcb))) == NULL) {
+			goto retry;
+		}
+		p_runtsk = my_p_pcb->p_runtsk;
+		p_runtsk->tstat = (TS_WAITING | TS_WAIT_RPDQ);
+		make_wait_tmout(tmout, my_p_pcb);
+		queue_insert_prev(&(p_pdqcb->rwait_queue), &(p_runtsk->task_queue));
+		p_runtsk->p_wobjcb = (WOBJCB*)p_pdqcb;
+		LOG_TSKSTAT(p_runtsk);
+		release_nested_tsk_lock(my_p_pcb);
+		release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+		dispatch();
+		ercd = p_runtsk->wercd;
+		if (ercd == E_OK) {
+			*p_data = p_runtsk->winfo_obj.pdq.data;
+			*p_datapri = p_runtsk->winfo_obj.pdq.datapri;
+		}
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_TRCV_PDQ_LEAVE(ercd, *p_data, *p_datapri);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] trcv_pdq
+
+00 : ER
+01 : trcv_pdq(ID pdqid, intptr_t *p_data, PRI *p_datapri, TMO tmout)
+02 : {
+03 : 	PDQCB	*p_pdqcb;
+04 : 	bool_t	dspreq = false;
+05 : 	ER		ercd;
+06 : 	TCB		*p_tcb;
+07 : 	PCB		*my_p_pcb;
+08 : 	PCB		*p_pcb;
+09 : 	TCB		*p_runtsk;
+10 : 
+11 : 	if (!sense_tskctx_unl()) {
+12 : 		ercd = E_CTX;
+13 : 		goto error_exit;
+14 : 	}
+15 : 	if (!(TMIN_PDQID <= (pdqid) && (pdqid) <= tmax_pdqid)) {
+16:			ercd = E_ID;
+17 : 		goto error_exit;
+18 : 	}
+19 : 	if (!(TMO_FEVR <= (tmout))) {
+20 : 		ercd = E_PAR;
+21 : 		goto error_exit;
+22 : 	}
+23 : 	p_pdqcb = p_pdqcb_table[(uint_t)((pdqid) - TMIN_PDQID)];
+24 : 
+25 : 	t_lock_cpu();
+26 : 	my_p_pcb = get_my_p_pcb();
+27 : 	if (!(p_pcb->dspflg)) {
+28 : 		ercd = E_CTX;
+29 : 		t_unlock_cpu();
+30 : 		goto error_exit;
+31 : 	}
+32 : 
+33 :   retry:
+34 : 	t_acquire_obj_lock(&GET_OBJLOCK(p_pdqcb));
+35 : 	if (!queue_empty(&(p_pdqcb->swait_queue))) {
+36 : 		/* 送信待ちタスクあり */
+37 : 		p_tcb = (TCB *)(p_pdqcb->swait_queue.p_next);
+38 : 		if ((p_pcb = t_acquire_nested_tsk_lock(p_tcb, &GET_OBJLOCK(p_pdqcb))) == NULL) {
+39 : 			goto retry;
+40 : 		}
+41 : 		queue_delete((QUEUE *) p_tcb);
+42 : 		if (p_pdqcb->count > 0U) {
+43 : 			dequeue_pridata(p_pdqcb, p_data, p_datapri);
+44 : 			enqueue_pridata(p_pdqcb, p_tcb->winfo_obj.pdq.data, p_tcb->winfo_obj.pdq.datapri);
+45 : 		}
+46 : 		else {
+47 : 			*p_data = p_tcb->winfo_obj.pdq.data;
+48 : 			*p_datapri = p_tcb->winfo_obj.pdq.datapri;
+49 : 		}
+50 : 		if (wait_complete(p_tcb)) {
+51 : 			dspreq = dispatch_request(p_pcb);
+52 : 		}
+53 : 		release_nested_tsk_lock(p_pcb);
+54 : 		release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+55 : 		if (dspreq) {
+56 : 			dispatch();
+57 : 		}
+58 : 		ercd = E_OK;
+59 : 	}
+60 : 	else if (p_pdqcb->count > 0U) {
+61 : 		/* バッファにデータがあり，送信待ちタスクなし */
+62 : 		dequeue_pridata(p_pdqcb, p_data, p_datapri);
+63 : 		release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+64 : 		ercd = E_OK;
+65 : 	}   /* バッファが空かつ送信待ちタスクなし */
+66 : 	else if (tmout == TMO_POL) {
+67 : 		release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+68 : 		ercd = E_TMOUT;
+69 : 	}
+70 : 	else {
+71 : 		/* バッファが空かつ送信待ちタスクなし */
+72 : 		if ((my_p_pcb = t_acquire_nested_tsk_lock_self(&GET_OBJLOCK(p_pdqcb))) == NULL) {
+73 : 			goto retry;
+74 : 		}
+75 : 		p_runtsk = my_p_pcb->p_runtsk;
+76 : 		p_runtsk->tstat = (TS_WAITING | TS_WAIT_RPDQ);
+77 : 		make_wait_tmout(tmout, my_p_pcb);
+78 : 		queue_insert_prev(&(p_pdqcb->rwait_queue), &(p_runtsk->task_queue));
+79 : 		p_runtsk->p_wobjcb = (WOBJCB*)p_pdqcb;
+80 : 		release_nested_tsk_lock(my_p_pcb);
+81 : 		release_obj_lock(&GET_OBJLOCK(p_pdqcb));
+82 : 		dispatch();
+83 : 		ercd = p_runtsk->wercd;
+84 : 		if (ercd == E_OK) {
+85 : 			*p_data = p_runtsk->winfo_obj.pdq.data;
+86 : 			*p_datapri = p_runtsk->winfo_obj.pdq.datapri;
+87 : 		}
+88 : 	}
+89 : 	t_unlock_cpu();
+90 : 
+91 :   error_exit:
+92 : 	return(ercd);
+93 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  11 : !sense_tskctx_unl()
+(A2)  15 : TMIN_PDQID <= (pdqid)
+(A3)  15 : (pdqid) <= tmax_pdqid
+(A4)  19 : !(TMO_FEVR <= (tmout))
+(A5)  27 : !(p_pcb->dspflg)
+(A6)  35 : !queue_empty(&(p_pdqcb->swait_queue))
+(A7)  42 : p_pdqcb->count > 0U
+(A8)  50 : wait_complete(p_tcb)
+(A9)  55 : dspreq
+(A10) 60 : p_pdqcb->count > 0U
+(A11) 66 : tmout == TMO_POL
+(A12) 84 : ercd == E_OK
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+             (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (A11) (A12)
+(a-1)         T    D    D    D    D    D    D    D    D    D     D     D
+(a-2)         T    D    D    D    D    D    D    D    D    D     D     D
+(a-3)         F    T    T    F    T    D    D    D    D    D     D     D
+(a-4)         F    T    T    F    T    D    D    D    D    D     D     D
+(b-1)         F    F   D/T   D    D    D    D    D    D    D     D     D
+(b-2)         F    T    F    D    D    D    D    D    D    D     D     D
+(c)           F    T    T    T    D    D    D    D    D    D     D     D
+(d)           F    T    T    F    F    F    D    D    D    F     F     F
+(e)           F    T    T    F    F    F    D    D    D    F     F     F
+(f)           F    T    T    F    F    F    D    D    D    F     F     T
+(g-1)         F    T    T    F    F    T    F    F    F    D     D     D
+(g-2)         F    T    T    F    F    F    D    D    D    F     T     D
+(h-1)         F    T    T    F    F    T    F    F    F    D     D     D
+(h-2)         F    T    T    F    F    F    D    D    D    F     F     D
+(i-1-1-1)     F    T    T    F    F    F    D    D    D    T     D     D
+(i-1-1-2)     F    T    T    F    F    F    D    D    D    T     D     D
+(i-1-2-1-1)   F    T    T    F    F    T    T    T    T    D     D     D
+(i-1-2-1-2)   F    T    T    F    F    T    T    F    F    D     D     D
+(i-1-2-1-3)   F    T    T    F    F    T    T    F    F    D     D     D
+(i-1-2-1-4)   F    T    T    F    F    T    T    F    F    D     D     D
+(i-1-2-2-1)   F    T    T    F    F    T    T    T    T    D     D     D
+(i-1-2-2-2)   F    T    T    F    F    T    T    F    F    D     D     D
+(i-1-2-2-3)   F    T    T    F    F    T    T    F    F    D     D     D
+(i-1-2-2-4)   F    T    T    F    F    T    T    F    F    D     D     D
+(i-2-1-1-1)   F    T    T    F    F    F    D    D    D    F     F     D
+(i-2-1-1-2)   F    T    T    F    F    F    D    D    D    F     F     D
+(i-2-1-1-3)   F    T    T    F    F    F    D    D    D    F     F     D
+(i-2-1-1-4)   F    T    T    F    F    F    D    D    D    F     F     D
+(i-2-1-2-1)   F    T    T    F    F    F    D    D    D    F     F     D
+(i-2-1-2-2)   F    T    T    F    F    F    D    D    D    F     F     D
+(i-2-1-2-3)   F    T    T    F    F    F    D    D    D    F     F     D
+(i-2-1-2-4)   F    T    T    F    F    F    D    D    D    F     F     D
+(i-2-2-1-1)   F    T    T    F    F    T    F    T    T    D     D     D
+(i-2-2-1-2)   F    T    T    F    F    T    F    F    F    D     D     D
+(i-2-2-1-3)   F    T    T    F    F    T    F    F    F    D     D     D
+(i-2-2-1-4)   F    T    T    F    F    T    F    F    F    D     D     D
+(i-2-2-2-1)   F    T    T    F    F    T    F    T    T    D     D     D
+(i-2-2-2-2)   F    T    T    F    F    T    F    F    F    D     D     D
+(i-2-2-2-3)   F    T    T    F    F    T    F    F    F    D     D     D
+(i-2-2-2-4)   F    T    T    F    F    T    F    F    F    D     D     D
+(i-3)         F    T    T    F    F    F    D    D    D    F     F     F
+(F-a)         T    D    D    D    D    D    D    D    D    D     D     D
+(F-b)         F    T    T    F    F    F    D    D    D    F     F     F
+(F-c)         F    T    T    F    F    F    D    D    D    F     F     F
+(F-d)         F    T    T    F    F    F    D    D    D    F     F     T
+(F-e-1-1-1-1) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-1-1-2) F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-1-1-3) F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-1-1-4) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-1-1-5) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-1-1-6) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-1-2)   F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-1-3)   F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-1-4)   F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-1-5-1) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-1-5-2) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-1-5-3) F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-2-1-1) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-2-1-2) F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-2-1-3) F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-2-1-4) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-2-1-5) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-2-1-6) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-2-2)   F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-2-3)   F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-2-4)   F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-1-2-5-1) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-2-5-2) F    T    T    F    F    T    T    T    F    D     D     D
+(F-e-1-2-5-3) F    T    T    F    F    T    T    F    F    D     D     D
+(F-e-2-1-1-1) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-1-1-2) F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-1-1-3) F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-1-1-4) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-1-1-5) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-1-1-6) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-1-2)   F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-1-3)   F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-1-4)   F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-1-5-1) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-1-5-2) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-1-5-3) F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-2-1-1) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-2-1-2) F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-2-1-3) F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-2-1-4) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-2-1-5) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-2-1-6) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-2-2)   F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-2-3)   F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-2-4)   F    T    T    F    F    T    F    F    F    D     D     D
+(F-e-2-2-5-1) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-2-5-2) F    T    T    F    F    T    F    T    F    D     D     D
+(F-e-2-2-5-3) F    T    T    F    F    T    F    F    F    D     D     D
+(F-g-1-1)     F    T    T    F    F    F    D    D    D    F     F     D
+(F-g-1-2)     F    T    T    F    F    F    D    D    D    F     F     D
+(F-g-1-3)     F    T    T    F    F    F    D    D    D    F     F     D
+(F-g-2-1)     F    T    T    F    F    F    D    D    D    F     F     D
+(F-g-2-2)     F    T    T    F    F    F    D    D    D    F     F     D
+(F-g-2-3)     F    T    T    F    F    F    D    D    D    F     F     D
+---------------------------------------------------------------------------
+網羅          O    O    O    O    O    O    O    O    O    O     O     O
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+以上．

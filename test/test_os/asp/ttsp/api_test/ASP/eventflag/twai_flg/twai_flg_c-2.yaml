@@ -1,0 +1,21 @@
+version: "$Id: twai_flg_c-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_twai_flg_c_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        flgptn:
+          type: FLGPTN
+          value: BIT_PATTERN_A
+
+    FLG1:
+      type  : EVENTFLAG
+      flgptn: BIT_PATTERN_0A
+
+  do:
+    id     : TASK1
+    syscall: twai_flg(FLG1, BIT_PATTERN_B, 0, &flgptn, ANY_ELAPSED_TIME)
+    ercd   : E_PAR
+
+  post_condition:

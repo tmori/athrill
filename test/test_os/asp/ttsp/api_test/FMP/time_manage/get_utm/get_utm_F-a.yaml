@@ -1,0 +1,31 @@
+version: "$Id: get_utm_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_time_manage_get_utm_F_a:
+  variation:
+    timer_arch: local
+    api_support_get_utm: true
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        sysutm:
+          type: SYSUTM
+      prcid  : PRC_SELF
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type:    CPU_STATE
+      loc_cpu: true
+      prcid:   PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: get_utm(&sysutm)
+    ercd   : E_OK
+
+  post_condition:

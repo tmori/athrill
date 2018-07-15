@@ -1,0 +1,63 @@
+version: "$Id: tget_mpf_F-d.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mempfix_tget_mpf_F_d:
+  note: TESRY_007
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        blk:
+          type: void*
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+      var    :
+        blk:
+          type: void*
+
+    MPF1:
+      type   : MEMORYPOOL
+      fblkcnt: 1
+
+  do_0:
+    id     : TASK2
+    syscall: get_mpf(MPF1, &blk)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    MPF1:
+      fblkcnt: 0
+
+  do_1:
+    id     : TASK1
+    syscall: tget_mpf(MPF1, &blk, ANY_ELAPSED_TIME)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_1:
+    TASK1:
+      tskstat: waiting
+      wobjid : MPF1
+      lefttmo: ANY_ELAPSED_TIME
+
+    MPF1:
+      wtsklist:
+        - TASK1:
+
+  do_2:
+    id     : TASK2
+    syscall: rel_mpf(MPF1, blk)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_2:
+    TASK1:
+      tskstat: running
+
+    MPF1:
+      wtsklist:

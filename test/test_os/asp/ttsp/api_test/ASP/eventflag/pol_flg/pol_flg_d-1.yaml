@@ -1,0 +1,31 @@
+version: "$Id: pol_flg_d-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_pol_flg_d_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        flgptn:
+          type: FLGPTN
+          value: BIT_PATTERN_A
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+
+    FLG1:
+      type  : EVENTFLAG
+      flgatr: TA_NULL
+      flgptn: BIT_PATTERN_B
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_C
+            wfmode: WAIT_FLG_MODE_C
+
+  do:
+    id     : TASK1
+    syscall: pol_flg(FLG1, BIT_PATTERN_B, WAIT_FLG_MODE_B, &flgptn)
+    ercd   : E_ILUSE
+
+  post_condition:

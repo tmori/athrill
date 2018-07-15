@@ -1,0 +1,81 @@
+version: "$Id: ini_pdq_F-b-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_ini_pdq_F_b_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : PDQ1
+      prcid  : PRC_OTHER
+
+    TASK5:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqatr : TA_NULL
+      pdqcnt : 3
+      maxdpri : DATA_PRI_MAX
+      stsklist:
+        - TASK2:
+              data:     DATA_A
+              datapri:  DATA_PRI_HIGH
+        - TASK3:
+              data:     DATA_B
+              datapri:  DATA_PRI_MID
+        - TASK4:
+              data:     DATA_C
+              datapri:  DATA_PRI_LOW
+      datalist : 
+        - data:     DATA_D
+          datapri:  DATA_PRI_MID
+        - data:     DATA_E
+          datapri:  DATA_PRI_MID
+        - data:     DATA_F
+          datapri:  DATA_PRI_LOW
+
+  do:
+    id     : TASK1
+    syscall: ini_pdq(PDQ1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+      porder : 2
+
+    TASK3:
+      tskstat: ready
+
+    TASK4:
+      tskstat: running
+
+    TASK5:
+      tskstat: ready
+      porder : 1
+
+    PDQ1:
+      stsklist:
+      datalist:

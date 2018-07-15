@@ -1,0 +1,27 @@
+version: "$Id: act_tsk_F-d-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_act_tsk_F_d_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: ready
+      actcnt : 0
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: act_tsk(TASK3)
+    ercd   : E_OK
+
+  post_condition:
+    TASK3:
+      actcnt : 1

@@ -1,0 +1,38 @@
+version: "$Id: rel_wai_F-g-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_rel_wai_F_g_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : SEM1
+      lefttmo: ANY_ELAPSED_TIME
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    SEM1:
+      type    : SEMAPHORE
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: rel_wai(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended
+      wobjid : 
+
+    SEM1:
+      wtsklist:

@@ -1,0 +1,50 @@
+version: "$Id: ref_tsk_F-c-6-8.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_refer_ref_tsk_F_c_6_8:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rtsk:
+          type: T_RTSK
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : PDQ1
+      var    : 
+        ttg_data:
+          type: intptr_t
+        ttg_pri:
+          type: PRI
+      prcid  : PRC_SELF
+
+    PDQ1:
+      type    : P_DATAQUEUE
+      pdqcnt  : 0
+      maxdpri : DATA_PRI_MAX
+      rtsklist : 
+        - TASK2 :
+            vardata: ttg_data
+            varpri : ttg_pri
+
+  do:
+    id     : TASK1
+    syscall: ref_tsk(TASK2,&rtsk)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rtsk:
+          tskstat: TTS_WAS
+          tskwait: TTW_RPDQ
+          wobjid : PDQ1
+          lefttmo: TMO_FEVR
+          tskpri : TSK_PRI_MID
+          tskbpri: TSK_PRI_MID
+          actcnt : 0
+          wupcnt : 0
+          prcid  : PRC_SELF
+          actprc : TPRC_NONE

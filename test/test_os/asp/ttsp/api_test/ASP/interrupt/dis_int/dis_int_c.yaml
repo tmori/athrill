@@ -1,0 +1,16 @@
+version: "$Id: dis_int_c.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_interrupt_dis_int_c:
+  variation:
+    api_support_dis_int: true
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do:
+    id     : TASK1
+    syscall: dis_int(INTNO_NOT_SET_SELF)
+    ercd   : E_OBJ
+
+  post_condition:

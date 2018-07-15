@@ -1,0 +1,20 @@
+version: "$Id: sig_sem_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_sig_sem_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    SEM1:
+      type   : SEMAPHORE
+
+    CPU_STATE:
+      type   : CPU_STATE
+      loc_cpu: true
+
+  do:
+    id     : TASK1
+    syscall: sig_sem(SEM1)
+    ercd   : E_CTX
+
+  post_condition:

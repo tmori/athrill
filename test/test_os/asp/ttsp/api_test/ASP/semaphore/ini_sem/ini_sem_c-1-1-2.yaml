@@ -1,0 +1,38 @@
+version: "$Id: ini_sem_c-1-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_semaphore_ini_sem_c_1_1_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : SEM1
+
+    SEM1:
+      type   : SEMAPHORE
+      maxsem : ANY_MAX_SEMCNT
+      isemcnt: ANY_INI_SEMCNT
+      semcnt : 0
+      wtsklist:
+        - TASK2:
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+
+  do:
+    id     : TASK1
+    syscall: ini_sem(SEM1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    SEM1:
+      semcnt : ANY_INI_SEMCNT
+      wtsklist:

@@ -1,0 +1,54 @@
+version: "$Id: ipsnd_dtq_d-2-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_ipsnd_dtq_d_2_1_2:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : DTQ1
+      var:
+        data:
+          type: intptr_t
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : DTQ1
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+      chg_ipm: INT_PRI_TIMER
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 3
+      rtsklist : 
+        - TASK2:
+            var: data
+        - TASK3:
+      datalist:
+
+  do:
+    id     : ALM1
+    syscall: ipsnd_dtq(DTQ1, DATA_A)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    DTQ1:
+      rtsklist : 
+        - TASK3:

@@ -1,0 +1,48 @@
+version: "$Id: snd_dtq_F-e-1-1-6.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_dataqueue_snd_dtq_F_e_1_1_6:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_OTHER
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : DTQ1
+      var    : 
+        ttg_data:
+          type: intptr_t
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 0
+      rtsklist : 
+        - TASK2:
+            var: ttg_data
+
+  do:
+    id     : TASK1
+    syscall: snd_dtq(DTQ1, DATA_A)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+
+    DTQ1:
+      rtsklist : 

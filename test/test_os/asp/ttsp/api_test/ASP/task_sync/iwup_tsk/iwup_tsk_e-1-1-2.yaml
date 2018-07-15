@@ -1,0 +1,34 @@
+version: "$Id: iwup_tsk_e-1-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_iwup_tsk_e_1_1_2:
+  pre_condition:
+    ALM1:
+      type    : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      wupcnt : 0
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : SLEEP
+      wupcnt : 0
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+      chg_ipm: INT_PRI_TIMER
+
+  do:
+    id     : ALM1
+    syscall: iwup_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready

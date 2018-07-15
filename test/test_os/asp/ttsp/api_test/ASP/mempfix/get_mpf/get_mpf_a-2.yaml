@@ -1,0 +1,25 @@
+version: "$Id: get_mpf_a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mempfix_get_mpf_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        blk:
+          type: void*
+          value: (void*)ANY_ADDRESS
+
+    MPF1:
+      type  : MEMORYPOOL
+      blkcnt: ANY_INI_BLKCNT
+
+    CPU_STATE:
+      type    : CPU_STATE
+      loc_cpu : true
+
+  do:
+    id     : TASK1
+    syscall: get_mpf(MPF1,&blk)
+    ercd   : E_CTX
+
+  post_condition:

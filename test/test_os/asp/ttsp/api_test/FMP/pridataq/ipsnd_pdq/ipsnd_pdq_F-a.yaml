@@ -1,0 +1,34 @@
+version: "$Id: ipsnd_pdq_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_ipsnd_pdq_F_a:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    PDQ1:
+      type   : P_DATAQUEUE
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : ALM1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+      chg_ipm: INT_PRI_TIMER
+
+  do:
+    id     : ALM1
+    syscall: ipsnd_pdq(PDQ1, DATA_A, DATA_PRI_HIGH)
+    ercd   : E_CTX
+
+  post_condition:

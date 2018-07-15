@@ -1,0 +1,50 @@
+version: "$Id: trcv_dtq_F-f-2-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_dataqueue_trcv_dtq_F_f_2_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      var:
+        data:
+          type: intptr_t
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: waiting
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    DTQ1:
+      type    : DATAQUEUE
+      dtqatr  : TA_TPRI
+      dtqcnt  : 3
+      rtsklist:
+        - TASK2:
+        - TASK3:
+      datalist:
+
+  do:
+    id     : TASK1
+    syscall: trcv_dtq(DTQ1, &data, ANY_ELAPSED_TIME)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : DTQ1
+      lefttmo: ANY_ELAPSED_TIME
+
+    DTQ1:
+      rtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK1:

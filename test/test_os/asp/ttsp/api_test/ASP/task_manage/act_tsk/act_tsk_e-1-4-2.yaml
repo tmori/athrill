@@ -1,0 +1,22 @@
+version: "$Id: act_tsk_e-1-4-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_act_tsk_e_1_4_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : DELAY
+      lefttmo: RELATIVE_TIME_A
+      actcnt : 0
+
+  do:
+    id     : TASK1
+    syscall: act_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      actcnt : 1

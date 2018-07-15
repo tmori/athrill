@@ -1,0 +1,39 @@
+version: "$Id: rot_rdq_d-1-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_sys_manage_rot_rdq_d_1_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      tskpri : TSK_PRI_MID
+      porder: 1
+
+    TASK2:
+      type   : TASK
+      tskstat: ready
+      tskpri : TSK_PRI_MID
+      porder: 2
+
+    TASK3:
+      type   : TASK
+      tskstat: ready
+      tskpri : TSK_PRI_MID
+      porder: 3
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+
+  do:
+    id     : TASK1
+    syscall: rot_rdq(TPRI_SELF)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      porder: 3
+
+    TASK2:
+      porder: 1
+
+    TASK3:
+      porder: 2

@@ -1,0 +1,21 @@
+version: "$Id: ext_tsk_c-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_ext_tsk_c_4:
+  pre_condition:
+    TASK1:
+      type    : TASK
+      tskstat : running
+
+    CPU_STATE:
+      type   : CPU_STATE
+      dis_dsp: true
+
+  do:
+    id     : TASK1
+    syscall: ext_tsk()
+
+  post_condition:
+    TASK1:
+      tskstat : dormant
+
+    CPU_STATE:
+      dis_dsp: false

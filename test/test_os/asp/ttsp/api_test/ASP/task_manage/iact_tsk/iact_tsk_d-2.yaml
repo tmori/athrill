@@ -1,0 +1,36 @@
+version: "$Id: iact_tsk_d-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_iact_tsk_d_2:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      itskpri: TSK_PRI_MID
+      tskstat: dormant
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+
+  do:
+    id     : ALM1
+    syscall: iact_tsk(TASK2)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: ready
+      tskpri : TSK_PRI_MID
+      porder : 2
+
+    TASK3:
+      porder : 1

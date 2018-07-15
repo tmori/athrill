@@ -1,0 +1,170 @@
+version: "$Id: ini_pdq_W_h.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_ini_pdq_W_h:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 1
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 2
+
+    TASK4:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 3
+
+    TASK5:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 4
+
+    TASK6:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      porder : 5
+
+    TASK7:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: ready
+
+    PDQ1:
+      type   : P_DATAQUEUE
+      pdqcnt : 0
+
+  do_0:
+    id     : TASK1
+    syscall: tsnd_pdq(PDQ1, DATA_A, DATA_PRI_HIGH, 8)
+    ercd   : E_DLT
+    gcov   : false
+
+  post_condition_0:
+    TASK1:
+      tskstat: waiting
+      wobjid : PDQ1
+      lefttmo: 8
+
+    TASK2:
+      tskstat: running
+
+    PDQ1:
+      stsklist:
+        - TASK1:
+            data:     DATA_A
+            datapri:  DATA_PRI_HIGH
+
+  do_1:
+    id     : TASK2
+    syscall: tslp_tsk(5)
+    gcov   : false
+
+  post_condition_1:
+    TASK2:
+      tskstat: waiting
+      wobjid : SLEEP
+      lefttmo: 5
+
+    TASK3:
+      tskstat: running
+
+    TASK4:
+      porder: 2
+
+    TASK5:
+      porder: 3
+
+    TASK6:
+      porder: 4
+
+  do_2:
+    id     : TASK3
+    syscall: tslp_tsk(6)
+    gcov   : false
+
+  post_condition_2:
+    TASK3:
+      tskstat: waiting
+      wobjid : SLEEP
+      lefttmo: 6
+
+    TASK4:
+      tskstat: running
+
+    TASK5:
+      porder: 2
+
+    TASK6:
+      porder: 3
+
+  do_3:
+    id     : TASK4
+    syscall: tslp_tsk(9)
+    gcov   : false
+
+  post_condition_3:
+    TASK4:
+      tskstat: waiting
+      wobjid : SLEEP
+      lefttmo: 9
+
+    TASK5:
+      tskstat: running
+
+    TASK6:
+      porder: 2
+
+  do_4:
+    id     : TASK5
+    syscall: tslp_tsk(10)
+    gcov   : false
+
+  post_condition_4:
+    TASK5:
+      tskstat: waiting
+      wobjid : SLEEP
+      lefttmo: 10
+
+    TASK6:
+      tskstat: running
+
+  do_5:
+    id     : TASK6
+    syscall: tslp_tsk(7)
+    gcov   : false
+
+  post_condition_5:
+    TASK6:
+      tskstat: waiting
+      wobjid : SLEEP
+      lefttmo: 7
+
+    TASK7:
+      tskstat: running
+
+  do_6:
+    id     : TASK7
+    syscall: ini_pdq(PDQ1)
+    gcov   : true
+
+  post_condition_6:
+    TASK1:
+      tskstat: running
+
+    TASK7:
+      tskstat: ready
+
+    PDQ1:
+      stsklist:

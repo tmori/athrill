@@ -1,0 +1,90 @@
+version: "$Id: rel_mpf_e-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_mempfix_rel_mpf_e_4:
+  note: TESRY_007
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+      var:
+        blk:
+          type : void*
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: ready
+      var:
+        blk:
+          type : void*
+
+    MPF1:
+      type    : MEMORYPOOL
+      blkcnt  : ANY_INI_BLKCNT
+      fblkcnt : 1
+      wtsklist: 
+
+  do_0:
+    id     : TASK1
+    syscall: get_mpf(MPF1, &blk)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    MPF1:
+      fblkcnt : 0
+
+  do_1:
+    id     : TASK1
+    syscall: rot_rdq(TSK_PRI_MID)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_1:
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running
+
+  do_2:
+    id     : TASK2
+    syscall: get_mpf(MPF1, &blk)
+    gcov   : false
+
+  post_condition_2:
+    TASK1:
+      tskstat: running
+
+    TASK2:
+      tskstat: waiting
+      wobjid : MPF1
+
+    MPF1:
+        wtsklist:
+          - TASK2:
+
+  do_3:
+    id     : TASK1
+    syscall: sus_tsk(TASK2)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_3:
+    TASK2:
+      tskstat: waiting-suspended
+      wobjid : MPF1
+
+  do_4:
+    id     : TASK1
+    syscall: rel_mpf(MPF1, blk)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_4:
+    TASK2:
+      tskstat: suspended
+
+    MPF1:
+      wtsklist: 

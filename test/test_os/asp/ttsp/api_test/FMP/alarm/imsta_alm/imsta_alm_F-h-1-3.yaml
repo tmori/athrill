@@ -1,0 +1,39 @@
+version: "$Id: imsta_alm_F-h-1-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_alarm_imsta_alm_F_h_1_3:
+  variation:
+    timer_arch: local
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+  do:
+    id     : ALM1
+    syscall: imsta_alm(ALM1, RELATIVE_TIME_A, PRC_SELF)
+    ercd   : E_OK
+
+  post_condition:
+    0:
+      ALM1:
+        almstat: TALM_STA
+        hdlstat: STP
+        lefttim: RELATIVE_TIME_A
+        bootcnt: 1
+
+    RELATIVE_TIME_A:
+      ALM1:
+        lefttim: 0
+
+    RELATIVE_TIME_A+1:
+      ALM1:
+        almstat: TALM_STP
+        hdlstat: ACTIVATE
+        bootcnt: 1

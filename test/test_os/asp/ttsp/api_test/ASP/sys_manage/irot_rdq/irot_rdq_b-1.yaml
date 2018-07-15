@@ -1,0 +1,18 @@
+version: "$Id: irot_rdq_b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_sys_manage_irot_rdq_b_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do:
+    id     : ALM1
+    syscall: irot_rdq(0)
+    ercd   : E_PAR
+
+  post_condition:

@@ -1,0 +1,21 @@
+version: "$Id: mact_tsk_F-e-3-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_mact_tsk_F_e_3_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      actcnt : 1
+      actprc : PRC_SELF
+      prcid  : PRC_OTHER
+
+  do:
+    id     : TASK1
+    syscall: mact_tsk(TASK2, PRC_SELF)
+    ercd   : E_QOVR
+
+  post_condition:

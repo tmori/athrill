@@ -1,0 +1,14 @@
+version: "$Id: CRE_PDQ_W_a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_staticAPI_CRE_PDQ_W_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    PDQ1:
+      type  : P_DATAQUEUE
+      pdqcnt: 0
+
+  do:
+
+  post_condition:

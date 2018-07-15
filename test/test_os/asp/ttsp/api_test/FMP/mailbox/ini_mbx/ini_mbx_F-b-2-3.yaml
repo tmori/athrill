@@ -1,0 +1,52 @@
+version: "$Id: ini_mbx_F-b-2-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mailbox_ini_mbx_F_b_2_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MBX1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MBX1
+      prcid  : PRC_OTHER
+
+    TASK4:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MBX1
+      prcid  : PRC_OTHER
+
+    MBX1:
+      type    : MAILBOX
+      wtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK4:
+
+  do:
+    id     : TASK1
+    syscall: ini_mbx(MBX1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: running
+
+    TASK3:
+      tskstat: ready
+      porder : 2
+
+    TASK4:
+      tskstat:  ready
+      porder : 3
+
+    MBX1:
+      wtsklist:

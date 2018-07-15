@@ -1,0 +1,34 @@
+version: "$Id: prcv_pdq_F-a.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_pridataq_prcv_pdq_F_a:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t
+          value: DATA_A
+        datapri:
+          type: PRI
+          value: DATA_PRI_MID
+      prcid  : PRC_SELF
+
+    PDQ1:
+      type   : P_DATAQUEUE
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK1
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: prcv_pdq(PDQ1, &data, &datapri)
+    ercd   : E_CTX
+
+  post_condition:

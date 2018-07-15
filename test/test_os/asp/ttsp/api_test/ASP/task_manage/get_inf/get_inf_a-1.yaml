@@ -1,0 +1,22 @@
+version: "$Id: get_inf_a-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_manage_get_inf_a_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    ALM1:
+      type   : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+      var:
+        exinf:
+          type: intptr_t
+          value: EXINF_A
+
+  do:
+    id     : ALM1
+    syscall: get_inf(&exinf)
+    ercd   : E_CTX
+
+  post_condition:

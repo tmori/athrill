@@ -1,0 +1,20 @@
+version: "$Id: mact_tsk_F-a-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_manage_mact_tsk_F_a_1_1:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: dormant
+      prcid  : PRC_SELF
+
+  do:
+    id     : ALM1
+    syscall: mact_tsk(TASK1, PRC_OTHER)
+    ercd   : E_CTX
+
+  post_condition:

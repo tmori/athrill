@@ -1,0 +1,1093 @@
+
+	ter_tsk テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: ter_tsk.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+ter_tsk		タスクの強制終了〔T〕
+
+【C言語API】
+	ER ercd = ter_tsk(ID tskid)
+
+【パラメータ】
+	ID			tskid		対象タスクのID番号
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（tskidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象タスクが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象タスクに対する通常操
+					作2が許可されていない）
+	E_ILUSE			サービスコール不正使用（対象タスクが自タスク）
+	E_OBJ			オブジェクト状態エラー（対象タスクが休止状態，対象
+					タスクが自タスクと異なるプロセッサに割り付けられて
+					いる）
+
+【機能】
+
+tskidで指定したタスク（対象タスク）を終了させる．具体的な振舞いは以下の
+通り．
+
+対象タスクが休止状態でない場合には，対象タスクに対してタスク終了時に行
+うべき処理が行われ，対象タスクは休止状態になる．さらに，対象タスクの起
+動要求キューイング数が0でない場合には，対象タスクに対してタスク起動時に
+行うべき処理が行われ，対象タスクは実行できる状態になる．またこの時，起
+動要求キューイング数から1が減ぜられる．
+
+対象タスクが休止状態である場合には，E_OBJエラーとなる．また，対象タスク
+が自タスクの場合には，E_ILUSEエラーとなる．
+
+マルチプロセッサ対応カーネルでは，対象タスクは，自タスクと同じプロセッ
+サに割り付けられているタスクに限られる．対象タスクが自タスクと異なるプ
+ロセッサに割り付けられている場合には，E_OBJエラーとなる．
+
+【TOPPERS/FMPカーネルにおける使用上の注意】
+
+現時点のFMPカーネルの実装では，デッドロック回避のためのリトライ処理によ
+り，サービスコールの処理時間に上限がないため，注意が必要である（ロック
+方式にも依存する）．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#if TTYPE_KLOCK == G_KLOCK
+ER
+ter_tsk(ID tskid)
+{
+	TCB		*p_tcb;
+	ER		ercd;
+	bool_t	dspreq = false;
+	PCB		*p_pcb;
+	PCB		*my_p_pcb;
+
+	LOG_TER_TSK_ENTER(tskid);
+	CHECK_TSKCTX_UNL();
+	CHECK_TSKID(tskid);
+	p_tcb = get_tcb(tskid);
+
+	t_lock_cpu();
+	p_pcb = t_acquire_tsk_lock(p_tcb);
+	my_p_pcb = get_my_p_pcb();
+	/* 自タスクを指定するとエラー */
+	if ((p_tcb) == my_p_pcb->p_runtsk) {
+		ercd = E_ILUSE;
+	}
+	/* 異なるプロセッサに割り付けられているタスクならエラーとする */
+	else if (p_pcb != my_p_pcb) {
+		ercd = E_OBJ;
+	}
+	else if (TSTAT_DORMANT(p_tcb->tstat)) {
+		ercd = E_OBJ;
+	}
+	else {
+		if (TSTAT_RUNNABLE(p_tcb->tstat)) {
+			/*
+			 * 対象タスクが他プロセッサ上のタスクかつRUNNABLEの場合，
+			 * RUN状態の可能性があるため，ディスパッチ要求を出す必要があるが，
+			 * 本システムコールは同じプロセッサに割り付けられているタスクのみ
+			 * に発行可能であるので，ディスパッチ要求を出す必要はない． 
+			 */
+			(void)make_non_runnable(p_tcb);
+		}
+		else if (TSTAT_WAITING(p_tcb->tstat)) {
+			wait_dequeue_wobj(p_tcb);
+			wait_dequeue_tmevtb(p_tcb);
+		}
+		make_dormant(p_tcb);
+		if (p_tcb->actque) {
+			p_tcb->actque = false;
+			/*
+			 * マイグレーション要求がキューイングしている場合は，
+			 * マイグレーション処理を行う． 
+			 */
+			if ((p_tcb->actprc != TPRC_NONE) && (p_tcb->actprc != my_p_pcb->prcid)) {
+				p_tcb->p_pcb = get_mp_p_pcb(p_tcb->actprc);
+			}
+			p_tcb->actprc = TPRC_NONE;
+			if (make_active(p_tcb)) {
+				dspreq = dispatch_request(p_tcb->p_pcb);
+			}
+		}
+		ercd = E_OK;
+	}
+	release_tsk_lock(p_pcb);
+	if (dspreq) {
+		dispatch();
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_TER_TSK_LEAVE(ercd);
+	return(ercd);
+}
+
+#else /* TTYPE_KLOCK != G_KLOCK */
+
+ER
+ter_tsk(ID tskid)
+{
+	TCB		*p_tcb;
+	ER		ercd = E_OK;
+	bool_t	dspreq = false;
+	PCB		*f_p_pcb;
+	PCB		*t_p_pcb;
+	PCB		*my_p_pcb;
+	PCB		*p_pcb;
+
+	LOG_TER_TSK_ENTER(tskid);
+	CHECK_TSKCTX_UNL();
+	CHECK_TSKID(tskid);
+	p_tcb = get_tcb(tskid);
+
+	t_lock_cpu();
+  retry:
+	p_pcb = t_acquire_tsk_lock(p_tcb);
+	my_p_pcb = get_my_p_pcb();
+	/* 自タスクを指定するとエラー */
+	if ((p_tcb) == my_p_pcb->p_runtsk) {
+		ercd = E_ILUSE;
+		release_tsk_lock(p_pcb);
+	}
+	/* 異なるプロセッサに割り付けられているタスクならエラーとする */
+	else if (p_pcb != my_p_pcb) {
+		ercd = E_OBJ;
+		release_tsk_lock(p_pcb);
+	}
+	else if (TSTAT_DORMANT(p_tcb->tstat)) {
+		ercd = E_OBJ;
+		release_tsk_lock(p_pcb);
+	}
+	else {
+		if (!(TSTAT_WAITING(p_tcb->tstat) && TSTAT_WAIT_WOBJ(p_tcb->tstat))) {
+			/* オブジェクト待ち以外の状態の場合 */
+			if ((p_tcb->actprc == TPRC_NONE) || (p_tcb->actprc == p_pcb->prcid)) {
+				/* 再起動時のマイグレーションなし */
+				if (TSTAT_RUNNABLE(p_tcb->tstat)) {
+					/*
+					 * 対象タスクが他プロセッサ上のタスクかつRUNNABLEの場合，
+					 * RUN状態の可能性があるため，ディスパッチ要求を出す必要があるが，
+					 * 本システムコールは同じプロセッサに割り付けられているタスクのみ
+					 * に発行可能であるので，ディスパッチ要求を出す必要はない． 
+					 */
+					(void)make_non_runnable(p_tcb);
+				}
+				else if (TSTAT_WAITING(p_tcb->tstat)) {
+					/* オブジェクト待ち以外の待ち状態の場合 */
+					wait_dequeue_tmevtb(p_tcb);
+				}
+				make_dormant(p_tcb);
+				if (p_tcb->actque) {
+					p_tcb->actque = false;
+					p_tcb->actprc = TPRC_NONE;
+					if (make_active(p_tcb)) {
+						dspreq = dispatch_request(p_pcb);
+					}
+				}
+				release_tsk_lock(p_pcb);
+				if (dspreq) {
+					dispatch();
+				}
+			}
+			else {
+				/* 起動要求キューイングあり & 他プロセッサにマイグレーションあり */
+				/* 移動先のプロセッサのPCBを取得 */
+				t_p_pcb = get_mp_p_pcb(p_tcb->actprc);
+				/* 一旦タスクロックを離す */
+				release_tsk_lock(p_pcb);
+
+				/*
+				 * 現在割り付けられているプロセッサと移動先のプロセッサのタスク
+				 * ロックを取得
+				 */
+				t_acquire_dual_tsk_lock(p_tcb, p_tcb->actprc, &p_pcb, &t_p_pcb);
+
+				/*
+				 *  マイグレーション先のプロセッサが変更された場合はリトライ
+				 *  対象タスクと自タスクが所属するプロセッサが異なる場合も
+				 *  リトライする．
+				 */
+				if ((p_tcb->actprc != t_p_pcb->prcid) || (p_pcb != my_p_pcb)) {
+					release_dual_tsk_lock(p_pcb, t_p_pcb);
+					goto retry;
+				}
+				if (TSTAT_RUNNABLE(p_tcb->tstat)) {
+					/*
+					 * 対象タスクが他プロセッサ上のタスクかつRUNNABLEの場合，
+					 * RUN状態の可能性があるため，ディスパッチ要求を出す必要があるが，
+					 * 本システムコールは同じプロセッサに割り付けられているタスクのみ
+					 * に発行可能であるので，ディスパッチ要求を出す必要はない． 
+					 */
+					(void)make_non_runnable(p_tcb);
+				}
+				else if (TSTAT_WAITING(p_tcb->tstat)) {
+					/* オブジェクト待ち以外の待ち状態の場合 */
+					wait_dequeue_tmevtb(p_tcb);
+				}
+				make_dormant(p_tcb);
+				p_tcb->actque = false;
+				p_tcb->actprc = TPRC_NONE;
+				f_p_pcb = p_pcb;
+				p_tcb->p_pcb = t_p_pcb;
+				if (make_active(p_tcb)) {
+					/*
+					 * 現在所属するプロセッサと同じプロセッサにマイグレー
+					 * ションする場合はここに来ないため，dispatch_request()
+					 * 戻り値はチェックしない． 
+					 */ 
+					(void)dispatch_request(t_p_pcb);
+				}
+				release_dual_tsk_lock(f_p_pcb, t_p_pcb);
+			}
+		}
+		else {
+			/* オブジェクト待ち状態の場合 */
+			if ((p_tcb->actprc == TPRC_NONE) || (p_tcb->actprc == p_pcb->prcid)) {
+				/* 再起動時のマイグレーションなし */
+				/*
+				 * デッドロック回避のため，ロックを取得し直す 
+				 */
+				WOBJCB *p_wobjcb = p_tcb->p_wobjcb;
+				release_tsk_lock(p_pcb);
+				/*
+				 * あらためて
+				 *   オブジェクトロック -> タスクロック
+				 * の順でロックを取得 
+				 */
+				t_acquire_obj_lock(&GET_OBJLOCK(p_wobjcb));
+				if ((p_pcb = t_acquire_nested_tsk_lock(p_tcb, &GET_OBJLOCK(p_wobjcb))) == NULL){
+					goto retry;
+				}
+				/*
+				 * オブジェクト待ち状態以外ないし，異なるオブジェクトに対する待ち
+				 * になっていないかチェック．
+				 */
+				if ((TSTAT_WAITING(p_tcb->tstat) && !TSTAT_WAIT_WOBJ(p_tcb->tstat))
+					|| p_wobjcb != p_tcb->p_wobjcb) {
+					release_nested_tsk_lock(p_pcb);
+					release_obj_lock(&GET_OBJLOCK(p_wobjcb));
+					goto retry;
+				}
+				wait_dequeue_wobj(p_tcb);
+				wait_dequeue_tmevtb(p_tcb);
+				release_obj_lock(&GET_OBJLOCK(p_wobjcb));
+				make_dormant(p_tcb);
+				if (p_tcb->actque) {
+					p_tcb->actque = false;
+					p_tcb->actprc = TPRC_NONE;
+					if (make_active(p_tcb)) {
+						dspreq = dispatch_request(p_pcb);
+					}
+				}
+				release_tsk_lock(p_pcb);
+				if (dspreq) {
+					dispatch();
+				}
+			}
+			else {
+				/* 起動要求キューイングあり & 他プロセッサへのマイグレーション */
+				/* 移動先のプロセッサのPCBを取得 */
+				t_p_pcb = get_mp_p_pcb(p_tcb->actprc);
+				/*
+				 * デッドロック回避のため，ロックを取得し直す 
+				 */
+				WOBJCB *p_wobjcb = p_tcb->p_wobjcb;
+				release_tsk_lock(p_pcb);
+
+				/*
+				 * あらためて
+				 *   オブジェクトロック -> タスクロック
+				 * の順でロックを取得 
+				 */
+				t_acquire_obj_lock(&GET_OBJLOCK(p_wobjcb));
+				if (t_acquire_nested_dual_tsk_lock(p_tcb, p_tcb->actprc, &GET_OBJLOCK(p_wobjcb),
+												   &p_pcb, &t_p_pcb)) {
+					goto retry;
+				}
+				/*
+				 * 異なるオブジェクトに対する待ちないし，オブジェクト待ち状態以外に
+				 * になっていない，異なるプロセッサへのマイグレーション，対象タスク
+				 * がマイグレートしているならリトライ．
+				 */
+				if ((p_wobjcb != p_tcb->p_wobjcb) ||
+					(TSTAT_WAITING(p_tcb->tstat) && !TSTAT_WAIT_WOBJ(p_tcb->tstat)) ||
+					(get_mp_p_pcb(p_tcb->actprc) != t_p_pcb) ||
+					(p_pcb != my_p_pcb)) {
+					release_dual_tsk_lock(p_pcb, t_p_pcb);
+					release_obj_lock(&GET_OBJLOCK(p_wobjcb));
+					goto retry;
+				}
+				wait_dequeue_wobj(p_tcb);
+				wait_dequeue_tmevtb(p_tcb);
+				release_obj_lock(&GET_OBJLOCK(p_wobjcb));
+				make_dormant(p_tcb);
+				p_tcb->actque = false;
+				p_tcb->actprc = TPRC_NONE;
+				f_p_pcb = p_pcb;
+				p_tcb->p_pcb = t_p_pcb;
+				if (make_active(p_tcb)) {
+					/*
+					 * 現在所属するプロセッサと同じプロセッサにマイグレー
+					 * ションする場合はここに来ないため，dispatch_request()
+					 * 戻り値はチェックしない． 
+					 */
+					(void)dispatch_request(t_p_pcb);
+				}
+				release_dual_tsk_lock(f_p_pcb, t_p_pcb);
+			}
+		}
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_TER_TSK_LEAVE(ercd);
+	return(ercd);
+}
+
+#endif /* TTYPE_KLOCK != G_KLOCK */
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] ter_tsk(TTYPE_KLOCK == G_KLOCK)
+
+00 : ER
+01 : ter_tsk(ID tskid)
+02 : {
+03 : 	TCB		*p_tcb;
+04 : 	ER		ercd;
+05 : 	bool_t	dspreq = false;
+06 : 	PCB		*p_pcb;
+07 : 	PCB		*my_p_pcb;
+08 : 
+09 : 	if (!sense_tskctx_unl()) {
+10 : 		ercd = E_CTX;
+11 : 		goto error_exit;
+12 : 	}
+13 : 	if (!(TMIN_TSKID <= (tskid) && (tskid) <= tmax_tskid)) {
+14 : 		ercd = E_ID;
+15 : 		goto error_exit;
+16 : 	}
+17 : 	p_tcb = (p_tcb_table[((uint_t)((tskid) - TMIN_TSKID))]);
+18 : 
+19 : 	t_lock_cpu();
+20 : 	p_pcb = t_acquire_tsk_lock(p_tcb);
+21 : 	my_p_pcb = get_my_p_pcb();
+22 : 	/* 自タスクを指定するとエラー */
+23 : 	if ((p_tcb) == my_p_pcb->p_runtsk) {
+24 : 		ercd = E_ILUSE;
+25 : 	}
+26 : 	/* 異なるプロセッサに割り付けられているタスクならエラーとする */
+27 : 	else if (p_pcb != my_p_pcb) {
+28 : 		ercd = E_OBJ;
+29 : 	}
+30 : 	else if (((p_tcb->tstat) == TS_DORMANT)) {
+31 : 		ercd = E_OBJ;
+32 : 	}
+33 : 	else {
+34 : 		if ((((p_tcb->tstat) & TS_RUNNABLE) != 0U)) {
+35 : 			/*
+36 : 			 * 対象タスクが他プロセッサ上のタスクかつRUNNABLEの場合，
+37 : 			 * RUN状態の可能性があるため，ディスパッチ要求を出す必要があるが，
+38 : 			 * 本システムコールは同じプロセッサに割り付けられているタスクのみ
+39 : 			 * に発行可能であるので，ディスパッチ要求を出す必要はない． 
+40 : 			 */
+41 : 			(void)make_non_runnable(p_tcb);
+42 : 		}
+43 : 		else if ((((p_tcb->tstat) & TS_WAITING) != 0U)) {
+44 : 			wait_dequeue_wobj(p_tcb);
+45 : 			wait_dequeue_tmevtb(p_tcb);
+46 : 		}
+47 : 		make_dormant(p_tcb);
+48 : 		if (p_tcb->actque) {
+49 : 			p_tcb->actque = false;
+50 : 			/*
+51 : 			 * マイグレーション要求がキューイングしている場合は，
+52 : 			 * マイグレーション処理を行う． 
+53 : 			 */
+54 : 			if ((p_tcb->actprc != TPRC_NONE) && (p_tcb->actprc != my_p_pcb->prcid)) {
+55 : 				p_tcb->p_pcb = get_mp_p_pcb(p_tcb->actprc);
+56 : 			}
+57 : 			p_tcb->actprc = TPRC_NONE;
+58 : 			if (make_active(p_tcb)) {
+59 : 				dspreq = dispatch_request(p_tcb->p_pcb);
+60 : 			}
+61 : 		}
+62 : 		ercd = E_OK;
+63 : 	}
+64 : 	release_tsk_lock(p_pcb);
+65 : 	if (dspreq) {
+66 : 		dispatch();
+67 : 	}
+68 : 	t_unlock_cpu();
+69 : 
+70 :   error_exit:
+71 : 	return(ercd);
+72 : }
+
+
+[B] ter_tsk(TTYPE_KLOCK != G_KLOCK)
+
+00  : ER
+01  : ter_tsk(ID tskid)
+02  : {
+03  : 	TCB		*p_tcb;
+04  : 	ER		ercd = E_OK;
+05  : 	bool_t	dspreq = false;
+06  : 	PCB		*f_p_pcb;
+07  : 	PCB		*t_p_pcb;
+08  : 	PCB		*my_p_pcb;
+09  : 	PCB		*p_pcb;
+10  : 
+11  : 	if (!sense_tskctx_unl()) {
+12  : 		ercd = E_CTX;
+13  : 		goto error_exit;
+14  : 	}
+15  : 	if (!(TMIN_TSKID <= (tskid) && (tskid) <= tmax_tskid)) {
+16  : 		ercd = E_ID;
+17  : 		goto error_exit;
+18  : 	}
+19  : 	p_tcb = (p_tcb_table[((uint_t)((tskid) - TMIN_TSKID))]);
+20  : 
+21  : 	t_lock_cpu();
+22  :   retry:
+23  : 	p_pcb = t_acquire_tsk_lock(p_tcb);
+24  : 	my_p_pcb = get_my_p_pcb();
+25  : 	/* 自タスクを指定するとエラー */
+26  : 	if ((p_tcb) == my_p_pcb->p_runtsk) {
+27  : 		ercd = E_ILUSE;
+28  : 		release_tsk_lock(p_pcb);
+29  : 	}
+30  : 	/* 異なるプロセッサに割り付けられているタスクならエラーとする */
+31  : 	else if (p_pcb != my_p_pcb) {
+32  : 		ercd = E_OBJ;
+33  : 		release_tsk_lock(p_pcb);
+34  : 	}
+35  : 	else if (((p_tcb->tstat) == TS_DORMANT)) {
+36  : 		ercd = E_OBJ;
+37  : 		release_tsk_lock(p_pcb);
+38  : 	}
+39  : 	else {
+40  : 		if (!(((p_tcb->tstat) & TS_WAITING) != 0U && ((p_tcb->tstat) & TS_WAIT_MASK) >= TS_WAIT_RDTQ)) {
+41  : 			/* オブジェクト待ち以外の状態の場合 */
+42  : 			if ((p_tcb->actprc == TPRC_NONE) || (p_tcb->actprc == p_pcb->prcid)) {
+43  : 				/* 再起動時のマイグレーションなし */
+44  : 				if ((((p_tcb->tstat) & TS_RUNNABLE) != 0U)) {
+45  : 					/*
+46  : 					 * 対象タスクが他プロセッサ上のタスクかつRUNNABLEの場合，
+47  : 					 * RUN状態の可能性があるため，ディスパッチ要求を出す必要があるが，
+48  : 					 * 本システムコールは同じプロセッサに割り付けられているタスクのみ
+49  : 					 * に発行可能であるので，ディスパッチ要求を出す必要はない． 
+50  : 					 */
+51  : 					(void)make_non_runnable(p_tcb);
+52  : 				}
+53  : 				else if (((p_tcb->tstat) & TS_WAITING) != 0U) {
+54  : 					/* オブジェクト待ち以外の待ち状態の場合 */
+55  : 					wait_dequeue_tmevtb(p_tcb);
+56  : 				}
+57  : 				make_dormant(p_tcb);
+58  : 				if (p_tcb->actque) {
+59  : 					p_tcb->actque = false;
+60  : 					p_tcb->actprc = TPRC_NONE;
+61  : 					if (make_active(p_tcb)) {
+62  : 						dspreq = dispatch_request(p_pcb);
+63  : 					}
+64  : 				}
+65  : 				release_tsk_lock(p_pcb);
+66  : 				if (dspreq) {
+67  : 					dispatch();
+68  : 				}
+69  : 			}
+70  : 			else {
+71  : 				/* 起動要求キューイングあり & 他プロセッサにマイグレーションあり */
+72  : 				/* 移動先のプロセッサのPCBを取得 */
+73  : 				t_p_pcb = get_mp_p_pcb(p_tcb->actprc);
+74  : 				/* 一旦タスクロックを離す */
+75  : 				release_tsk_lock(p_pcb);
+76  : 
+77  : 				/*
+78  : 				 * 現在割り付けられているプロセッサと移動先のプロセッサのタスク
+79  : 				 * ロックを取得
+80  : 				 */
+81  : 				t_acquire_dual_tsk_lock(p_tcb, p_tcb->actprc, &p_pcb, &t_p_pcb);
+82  : 
+83  : 				/*
+84  : 				 *  マイグレーション先のプロセッサが変更された場合はリトライ
+85  : 				 *  対象タスクと自タスクが所属するプロセッサが異なる場合も
+86  : 				 *  リトライする．
+87  : 				 */
+88  : 				if ((p_tcb->actprc != t_p_pcb->prcid) || (p_pcb != my_p_pcb)) {
+89  : 					release_dual_tsk_lock(p_pcb, t_p_pcb);
+90  : 					goto retry;
+91  : 				}
+92  : 				if ((((p_tcb->tstat) & TS_RUNNABLE) != 0U)) {
+93  : 					/*
+94  : 					 * 対象タスクが他プロセッサ上のタスクかつRUNNABLEの場合，
+95  : 					 * RUN状態の可能性があるため，ディスパッチ要求を出す必要があるが，
+96  : 					 * 本システムコールは同じプロセッサに割り付けられているタスクのみ
+97  : 					 * に発行可能であるので，ディスパッチ要求を出す必要はない． 
+98  : 					 */
+99  : 					(void)make_non_runnable(p_tcb);
+100 : 				}
+101 : 				else if (((p_tcb->tstat) & TS_WAITING) != 0U) {
+102 : 					/* オブジェクト待ち以外の待ち状態の場合 */
+103 : 					wait_dequeue_tmevtb(p_tcb);
+104 : 				}
+105 : 				make_dormant(p_tcb);
+106 : 				p_tcb->actque = false;
+107 : 				p_tcb->actprc = TPRC_NONE;
+108 : 				f_p_pcb = p_pcb;
+109 : 				p_tcb->p_pcb = t_p_pcb;
+110 : 				if (make_active(p_tcb)) {
+111 : 					/*
+112 : 					 * 現在所属するプロセッサと同じプロセッサにマイグレー
+113 : 					 * ションする場合はここに来ないため，dispatch_request()
+114 : 					 * 戻り値はチェックしない． 
+115 : 					 */ 
+116 : 					(void)dispatch_request(t_p_pcb);
+117 : 				}
+118 : 				release_dual_tsk_lock(f_p_pcb, t_p_pcb);
+119 : 			}
+120 : 		}
+121 : 		else {
+122 : 			/* オブジェクト待ち状態の場合 */
+123 : 			if ((p_tcb->actprc == TPRC_NONE) || (p_tcb->actprc == p_pcb->prcid)) {
+124 : 				/* 再起動時のマイグレーションなし */
+125 : 				/*
+126 : 				 * デッドロック回避のため，ロックを取得し直す 
+127 : 				 */
+128 : 				WOBJCB *p_wobjcb = p_tcb->p_wobjcb;
+129 : 				release_tsk_lock(p_pcb);
+130 : 				/*
+131 : 				 * あらためて
+132 : 				 *   オブジェクトロック -> タスクロック
+133 : 				 * の順でロックを取得 
+134 : 				 */
+135 : 				t_acquire_obj_lock(&GET_OBJLOCK(p_wobjcb));
+136 : 				if ((p_pcb = t_acquire_nested_tsk_lock(p_tcb, &GET_OBJLOCK(p_wobjcb))) == NULL){
+137 : 					goto retry;
+138 : 				}
+139 : 				/*
+140 : 				 * オブジェクト待ち状態以外ないし，異なるオブジェクトに対する待ち
+141 : 				 * になっていないかチェック．
+142 : 				 */
+143 : 				if ((((p_tcb->tstat) & TS_WAITING) != 0U && !(((p_tcb->tstat) & TS_WAIT_MASK) >= TS_WAIT_RDTQ))
+144 : 					|| p_wobjcb != p_tcb->p_wobjcb) {
+145 : 					release_nested_tsk_lock(p_pcb);
+146 : 					release_obj_lock(&GET_OBJLOCK(p_wobjcb));
+147 : 					goto retry;
+148 : 				}
+149 : 				wait_dequeue_wobj(p_tcb);
+150 : 				wait_dequeue_tmevtb(p_tcb);
+151 : 				release_obj_lock(&GET_OBJLOCK(p_wobjcb));
+152 : 				make_dormant(p_tcb);
+153 : 				if (p_tcb->actque) {
+154 : 					p_tcb->actque = false;
+155 : 					p_tcb->actprc = TPRC_NONE;
+156 : 					if (make_active(p_tcb)) {
+157 : 						dspreq = dispatch_request(p_pcb);
+158 : 					}
+159 : 				}
+160 : 				release_tsk_lock(p_pcb);
+161 : 				if (dspreq) {
+162 : 					dispatch();
+163 : 				}
+164 : 			}
+165 : 			else {
+166 : 				/* 起動要求キューイングあり & 他プロセッサへのマイグレーション */
+167 : 				/* 移動先のプロセッサのPCBを取得 */
+168 : 				t_p_pcb = get_mp_p_pcb(p_tcb->actprc);
+169 : 				/*
+170 : 				 * デッドロック回避のため，ロックを取得し直す 
+171 : 				 */
+172 : 				WOBJCB *p_wobjcb = p_tcb->p_wobjcb;
+173 : 				release_tsk_lock(p_pcb);
+174 : 
+175 : 				/*
+176 : 				 * あらためて
+177 : 				 *   オブジェクトロック -> タスクロック
+178 : 				 * の順でロックを取得 
+179 : 				 */
+180 : 				t_acquire_obj_lock(&GET_OBJLOCK(p_wobjcb));
+181 : 				if (t_acquire_nested_dual_tsk_lock(p_tcb, p_tcb->actprc, &GET_OBJLOCK(p_wobjcb),
+182 : 												   &p_pcb, &t_p_pcb)) {
+183 : 					goto retry;
+184 : 				}
+185 : 				/*
+186 : 				 * 異なるオブジェクトに対する待ちないし，オブジェクト待ち状態以外に
+187 : 				 * になっていない，異なるプロセッサへのマイグレーション，対象タスク
+188 : 				 * がマイグレートしているならリトライ．
+189 : 				 */
+190 : 				if ((p_wobjcb != p_tcb->p_wobjcb) ||
+191 : 					(((p_tcb->tstat) & TS_WAITING) != 0U && !(((p_tcb->tstat) & TS_WAIT_MASK) >= TS_WAIT_RDTQ)) ||
+192 : 					(get_mp_p_pcb(p_tcb->actprc) != t_p_pcb) ||
+193 : 					(p_pcb != my_p_pcb)) {
+194 : 					release_dual_tsk_lock(p_pcb, t_p_pcb);
+195 : 					release_obj_lock(&GET_OBJLOCK(p_wobjcb));
+196 : 					goto retry;
+197 : 				}
+198 : 				wait_dequeue_wobj(p_tcb);
+199 : 				wait_dequeue_tmevtb(p_tcb);
+200 : 				release_obj_lock(&GET_OBJLOCK(p_wobjcb));
+201 : 				make_dormant(p_tcb);
+202 : 				p_tcb->actque = false;
+203 : 				p_tcb->actprc = TPRC_NONE;
+204 : 				f_p_pcb = p_pcb;
+205 : 				p_tcb->p_pcb = t_p_pcb;
+206 : 				if (make_active(p_tcb)) {
+207 : 					/*
+208 : 					 * 現在所属するプロセッサと同じプロセッサにマイグレー
+209 : 					 * ションする場合はここに来ないため，dispatch_request()
+210 : 					 * 戻り値はチェックしない． 
+211 : 					 */
+212 : 					(void)dispatch_request(t_p_pcb);
+213 : 				}
+214 : 				release_dual_tsk_lock(f_p_pcb, t_p_pcb);
+215 : 			}
+216 : 		}
+217 : 	}
+218 : 	t_unlock_cpu();
+219 : 
+220 :   error_exit:
+221 : 	LOG_TER_TSK_LEAVE(ercd);
+222 : 	return(ercd);
+223 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  09 : !sense_tskctx_unl()
+(A2)  13 : TMIN_TSKID <= (tskid)
+(A3)  13 : (tskid) <= tmax_tskid
+(A4)  23 : (p_tcb) == my_p_pcb->p_runtsk
+(A5)  27 : p_pcb != my_p_pcb
+(A6)  30 : (p_tcb->tstat) == TS_DORMANT
+(A7)  34 : ((p_tcb->tstat) & TS_RUNNABLE) != 0U
+(A8)  43 : ((p_tcb->tstat) & TS_WAITING) != 0U
+(A9)  48 : p_tcb->actque
+(A10) 54 : p_tcb->actprc != TPRC_NONE
+(A11) 54 : p_tcb->actprc != my_p_pcb->prcid
+(A12) 58 : make_active(p_tcb)
+(A13) 65 : dspreq
+
+(B1)  11  : !sense_tskctx_unl()
+(B2)  15  : TMIN_TSKID <= (tskid)
+(B3)  15  : (tskid) <= tmax_tskid
+(B4)  26  : (p_tcb) == my_p_pcb->p_runtsk
+(B5)  31  : p_pcb != my_p_pcb
+(B6)  35  : (p_tcb->tstat) == TS_DORMANT
+(B7)  40  : ((p_tcb->tstat) & TS_WAITING) != 0U
+(B8)  40  : ((p_tcb->tstat) & TS_WAIT_MASK) >= TS_WAIT_RDTQ
+(B9)  42  : p_tcb->actprc == TPRC_NONE
+(B10) 42  : p_tcb->actprc == p_pcb->prcid
+(B11) 44  : ((p_tcb->tstat) & TS_RUNNABLE) != 0U
+(B12) 53  : ((p_tcb->tstat) & TS_WAITING) != 0U
+(B13) 58  : p_tcb->actque
+(B14) 61  : make_active(p_tcb)
+(B15) 66  : dspreq
+(B16) 88  : p_tcb->actprc != t_p_pcb->prcid
+(B17) 88  : p_pcb != my_p_pcb
+(B18) 92  : (((p_tcb->tstat) & TS_RUNNABLE) != 0U
+(B19) 101 : ((p_tcb->tstat) & TS_WAITING) != 0U
+(B20) 110 : make_active(p_tcb)
+(B21) 123 : p_tcb->actprc == TPRC_NONE
+(B22) 123 : p_tcb->actprc == p_pcb->prcid
+(B23) 143 : ((p_tcb->tstat) & TS_WAITING) != 0U
+(B24) 143 : !(((p_tcb->tstat) & TS_WAIT_MASK) >= TS_WAIT_RDTQ)
+(B25) 144 : p_wobjcb != p_tcb->p_wobjcb
+(B26) 153 : p_tcb->actque
+(B27) 156 : make_active(p_tcb)
+(B28) 161 : dspreq
+(B29) 190 : p_wobjcb != p_tcb->p_wobjcb
+(B30) 191 : ((p_tcb->tstat) & TS_WAITING) != 0U
+(B31) 191 : !(((p_tcb->tstat) & TS_WAIT_MASK) >= TS_WAIT_RDTQ)
+(B32) 192 : get_mp_p_pcb(p_tcb->actprc) != t_p_pcb
+(B33) 193 : p_pcb != my_p_pcb
+(B34) 206 : make_active(p_tcb)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅の確認
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[TTYPE_KLOCK == G_KLOCK]
+
+             (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (A11) (A12) (A13)
+(a-1)         T    D    D    D    D    D    D    D    D     D     D     D     D
+(a-2)         T    D    D    D    D    D    D    D    D     D     D     D     D
+(b-1)         F    F   D/T   D    D    D    D    D    D     D     D     D     D
+(b-2)         F    T    F    D    D    D    D    D    D     D     D     D     D
+(c)           F    T    T    T    D    D    D    D    D     D     D     D     F
+(d)           F    T    T    F    F    T    D    D    D     D     D     D     F
+(e-1)         F    T    T    F    F    F    T    D    F     D     D     D     F
+(e-2)         F    T    T    F    F    F    F    T    F     D     D     D     F
+(e-3)         F    T    T    F    F    F    F    T    F     D     D     D     F
+(e-4)         F    T    T    F    F    F    F    T    F     D     D     D     F
+(e-5)         F    T    T    F    F    F    F    T    F     D     D     D     F
+(e-6)         F    T    T    F    F    F    F    F    F     D     D     D     F
+(e-7)         F    T    T    F    F    F    F    T    F     D     D     D     F
+(e-8)         F    T    T    F    F    F    F    T    F     D     D     D     F
+(f-1)         F    T    T    F    F    F    T    D    T     F    D/T    F     F
+(f-2-1-1)     F    T    T    F    F    F    F    T    T     F    D/T    T     T
+(f-2-1-2)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-2-1-3)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-2-2)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-2-3)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-3-1-1)     F    T    T    F    F    F    F    T    T     F    D/T    T     T
+(f-3-1-2)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-3-1-3)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-3-2)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-3-3)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-4-1-1)     F    T    T    F    F    F    F    T    T     F    D/T    T     T
+(f-4-1-2)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-4-1-3)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-4-2)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-4-3)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-5-1-1)     F    T    T    F    F    F    F    T    T     F    D/T    T     T
+(f-5-1-2)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-5-1-3)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-5-2)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-5-3)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-6-1-1)     F    T    T    F    F    F    F    F    T     F    D/T    T     T
+(f-6-1-2)     F    T    T    F    F    F    F    F    T     F    D/T    F     F
+(f-6-1-3)     F    T    T    F    F    F    F    F    T     F    D/T    F     F
+(f-6-2)       F    T    T    F    F    F    F    F    T     F    D/T    F     F
+(f-6-3)       F    T    T    F    F    F    F    F    T     F    D/T    F     F
+(f-7-1-1)     F    T    T    F    F    F    F    T    T     F    D/T    T     T
+(f-7-1-2)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-7-1-3)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-7-2)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-7-3)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-8-1-1)     F    T    T    F    F    F    F    T    T     F    D/T    T     T
+(f-8-1-2)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-8-1-3)     F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-8-2)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(f-8-3)       F    T    T    F    F    F    F    T    T     F    D/T    F     F
+(F-a)         T    D    D    D    D    D    D    D    D     D     D     D     D
+(F-b)         F    T    T    F    T    D    D    D    D     D     D     D     F
+(F-c-1-1-1)   F    T    T    F    F    F    T    D    T     T     T     T     F
+(F-c-1-1-2)   F    T    T    F    F    F    T    D    T     T     T     F     F
+(F-c-1-1-3)   F    T    T    F    F    F    T    D    T     T     T     F     F
+(F-c-1-1-4)   F    T    T    F    F    F    T    D    T     T     T     T     F
+(F-c-1-1-5)   F    T    T    F    F    F    T    D    T     T     T     T     F
+(F-c-1-1-6)   F    T    T    F    F    F    T    D    T     T     T     T     F
+(F-c-1-2)     F    T    T    F    F    F    T    D    T     T     T     F     F
+(F-c-1-3)     F    T    T    F    F    F    T    D    T     T     T     F     F
+(F-c-1-4)     F    T    T    F    F    F    T    D    T     T     T     T     F
+(F-c-1-5)     F    T    T    F    F    F    T    D    T     T     T     F     F
+(F-c-2-1-1)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-2-1-2)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-2-1-3)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-2-1-4)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-2-1-5)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-2-1-6)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-2-2)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-2-3)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-2-4)     F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-2-5)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-3-1-1)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-3-1-2)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-3-1-3)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-3-1-4)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-3-1-5)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-3-1-6)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-3-2)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-3-3)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-3-4)     F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-3-5)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-4-1-1)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-4-1-2)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-4-1-3)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-4-1-4)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-4-1-5)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-4-1-6)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-4-2)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-4-3)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-4-4)     F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-4-5)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-5-1-1)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-5-1-2)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-5-1-3)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-5-1-4)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-5-1-5)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-5-1-6)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-5-2)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-5-3)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-5-4)     F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-5-5)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-6-1-1)   F    T    T    F    F    F    F    F    T     T     T     T     F
+(F-c-6-1-2)   F    T    T    F    F    F    F    F    T     T     T     F     F
+(F-c-6-1-3)   F    T    T    F    F    F    F    F    T     T     T     F     F
+(F-c-6-1-4)   F    T    T    F    F    F    F    F    T     T     T     T     F
+(F-c-6-1-5)   F    T    T    F    F    F    F    F    T     T     T     T     F
+(F-c-6-1-6)   F    T    T    F    F    F    F    F    T     T     T     T     F
+(F-c-6-2)     F    T    T    F    F    F    F    F    T     T     T     F     F
+(F-c-6-3)     F    T    T    F    F    F    F    F    T     T     T     F     F
+(F-c-6-4)     F    T    T    F    F    F    F    F    T     T     T     T     F
+(F-c-6-5)     F    T    T    F    F    F    F    F    T     T     T     F     F
+(F-c-7-1-1)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-7-1-2)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-7-1-3)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-7-1-4)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-7-1-5)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-7-1-6)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-7-2)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-7-3)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-7-4)     F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-7-5)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-8-1-1)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-8-1-2)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-8-1-3)   F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-8-1-4)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-8-1-5)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-8-1-6)   F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-8-2)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-8-3)     F    T    T    F    F    F    F    T    T     T     T     F     F
+(F-c-8-4)     F    T    T    F    F    F    F    T    T     T     T     T     F
+(F-c-8-5)     F    T    T    F    F    F    F    T    T     T     T     F     F
+---------------------------------------------------------------------------------
+網羅          O    O    O    O    O    O    O    O    O     O     X     O     O
+
+
+[TTYPE_KLOCK != G_KLOCK]
+
+             (B1) (B2) (B3) (B4) (B5) (B6) (B7) (B8) (B9) (B10) (B11) (B12) (B13) (B14) (B15) (B16) (B17) (B18) (B19) (B20) (B21) (B22) (B23) (B24) (B25) (B26) (B27) (B28) (B29) (B30) (B31) (B32) (B33) (B34)
+(a-1)         T    D    D    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(a-2)         T    D    D    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(b-1)         F    F   D/T   D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(b-2)         F    T    F    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(c)           F    T    T    T    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(d)           F    T    T    F    F    T    D    D    D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(e-1)         F    T    T    F    F    F    F   D/F   T    D/F    T     D     F     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(e-2)         F    T    T    F    F    F    T    F    T    D/F    F     T     F     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(e-3)         F    T    T    F    F    F    T    F    T    D/F    F     T     F     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(e-4)         F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     F     D     F     D     D     D     D     D     D
+(e-5)         F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     F     D     F     D     D     D     D     D     D
+(e-6)         F    T    T    F    F    F    F   D/F   T    D/F    F     F     F     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(e-7)         F    T    T    F    F    F    T    F    T    D/F    F     T     F     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(e-8)         F    T    T    F    F    F    T    F    T    D/F    F     T     F     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-1)         F    T    T    F    F    F    F   D/F   T    D/F    T     D     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-2-1-1)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-2-1-2)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-2-1-3)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-2-2)       F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-2-3)       F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-3-1-1)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-3-1-2)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-3-1-3)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-3-2)       F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-3-3)       F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-4-1-1)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     T     T     D     D     D     D     D     D
+(f-4-1-2)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     F     F     D     D     D     D     D     D
+(f-4-1-3)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     F     F     D     D     D     D     D     D
+(f-4-2)       F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     F     F     D     D     D     D     D     D
+(f-4-3)       F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     F     F     D     D     D     D     D     D
+(f-5-1-1)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     T     T     D     D     D     D     D     D
+(f-5-1-2)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     F     F     D     D     D     D     D     D
+(f-5-1-3)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     F     F     D     D     D     D     D     D
+(f-5-2)       F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     F     F     D     D     D     D     D     D
+(f-5-3)       F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     T    D/F    T     F     F     T     F     F     D     D     D     D     D     D
+(f-6-1-1)     F    T    T    F    F    F    F   D/F   T    D/F    F     F     T     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-6-1-2)     F    T    T    F    F    F    F   D/F   T    D/F    F     F     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-6-1-3)     F    T    T    F    F    F    F   D/F   T    D/F    F     F     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-6-2)       F    T    T    F    F    F    F   D/F   T    D/F    F     F     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-6-3)       F    T    T    F    F    F    F   D/F   T    D/F    F     F     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-7-1-1)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-7-1-2)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-7-1-3)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-7-2)       F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-7-3)       F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-8-1-1)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-8-1-2)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-8-1-3)     F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-8-2)       F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(f-8-3)       F    T    T    F    F    F    T    F    T    D/F    F     T     T     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-a)         T    D    D    D    D    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-b)         F    T    T    F    T    D    D    D    D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-1-1)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-1-2)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-1-3)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-1-4)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-1-5)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-1-6)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-2)     F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-3)     F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-4)     F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-1-5)     F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     T     D     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-1-1)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-1-2)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-1-3)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-1-4)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-1-5)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-1-6)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-2)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-3)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-4)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-2-5)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-1-1)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-1-2)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-1-3)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-1-4)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-1-5)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-1-6)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-2)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-3)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-4)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-3-5)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-4-1-1)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-4-1-2)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     F
+(F-c-4-1-3)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     F
+(F-c-4-1-4)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-4-1-5)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-4-1-6)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-4-2)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     F
+(F-c-4-3)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     F
+(F-c-4-4)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-4-5)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-5-1-1)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-5-1-2)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     F
+(F-c-5-1-3)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     F
+(F-c-5-1-4)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-5-1-5)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-5-1-6)   F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-5-2)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     F
+(F-c-5-3)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     F
+(F-c-5-4)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-5-5)     F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     F     D     D     D     D     D     D     F     T     F     F     F     T
+(F-c-6-1-1)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-6-1-2)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-6-1-3)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-6-1-4)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-6-1-5)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-6-1-6)   F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-6-2)     F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-6-3)     F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-6-4)     F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-6-5)     F    T    T    F    F    F    F   D/F   F     F     D     D     D     D     D     F     F     F     F     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-1-1)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-1-2)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-1-3)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-1-4)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-1-5)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-1-6)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-2)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-3)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-4)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-7-5)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-1-1)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-1-2)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-1-3)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-1-4)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-1-5)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-1-6)   F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-2)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-3)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     F     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-4)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(F-c-8-5)     F    T    T    F    F    F    T    F    F     F     D     D     D     D     D     F     F     F     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+網羅          O    O    O    O    O    O    O    O    O     X     O     O     O     O     O     X     X     O     O     O     O     X     X     X     X     O     O     O     X     X     X     X     X     O
+
+【備考】
+・(A11)(B10)(B23)の網羅をさせるために，以下にホワイトボックス
+を実施する．
+・t_acquire_nested_dual_tsk_lockの内部関数はタイミング依存のため、テス
+トは実施しない．
+・(B15)(B16)(B24)(B25)(B26)(B30)(B31)(B32)(B33)(B34)はタイミング
+依存のため、ホワイトボックステストは実施しない．
+
+	
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[TTYPE_KLOCK == G_KLOCK]
+
+             (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (A11) (A12) (A13)
+(W_F-a)       F    T    T    F    F    F    F    T    T     T     F     T     T
+(W_F-b)       F    T    T    F    F    F    F    T    T     T     F     T     T
+---------------------------------------------------------------------------------
+網羅          O    O    O    O    O    O    O    O    O     O     O     O     O
+
+
+[TTYPE_KLOCK != G_KLOCK]
+
+             (B1) (B2) (B3) (B4) (B5) (B6) (B7) (B8) (B9) (B10) (B11) (B12) (B13) (B14) (B15) (B16) (B17) (B18) (B19) (B20) (B21) (B22) (B23) (B24) (B25) (B26) (B27) (B28) (B29) (B30) (B31) (B32) (B33) (B34)
+(W_F-a)       F    T    T    F    F    F    T    F    F     T     F     T     T     T     T     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D     D
+(W_F-b)       F    T    T    F    F    F    T    T    D     D     D     D     D     D     D     D     D     D     D     D     F     T     T     F     F     T     T     T     D     D     D     D     D     D
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+網羅          O    O    O    O    O    O    O    O    O     O     O     O     O     O     O     X     X     O     O     O     O     O     X     X     X     O     O     O     X     X     X     X     X     O
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.2. テストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+
+以上．

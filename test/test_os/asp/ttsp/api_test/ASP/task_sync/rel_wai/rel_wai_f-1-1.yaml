@@ -1,0 +1,33 @@
+version: "$Id: rel_wai_f-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_rel_wai_f_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : SEM1
+
+    SEM1:
+      type    : SEMAPHORE
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: rel_wai(TASK2)
+
+  post_condition:
+    TASK1:
+      tskstat: ready
+
+    TASK2:
+      tskstat: running
+
+    SEM1:
+      wtsklist:

@@ -1,0 +1,354 @@
+
+	tget_mpf テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: tget_mpf.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+get_mpf		固定長メモリブロックの獲得〔T〕
+pget_mpf	固定長メモリブロックの獲得（ポーリング）〔T〕
+tget_mpf	固定長メモリブロックの獲得（タイムアウト付き）〔T〕
+
+【C言語API】
+	ER ercd = get_mpf(ID mpfid, void **p_blk)
+	ER ercd = pget_mpf(ID mpfid, void **p_blk)
+	ER ercd = tget_mpf(ID mpfid, void **p_blk, TMO tmout)
+
+【パラメータ】
+	ID			mpfid		対象固定長メモリプールのID番号
+	void **		p_blk		獲得した固定長メモリブロックの先頭番地を入
+							れるメモリ領域へのポインタ
+	TMO			tmout		タイムアウト時間（twai_mpfの場合）
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+	void *		blk			獲得した固定長メモリブロックの先頭番地
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し，ディスパッチ保留状態
+					からの呼出し：pget_mpfを除く）
+	E_NOSPT			未サポート機能（制約タスクからの呼出し：pget_mpfを除
+					く）
+	E_ID			不正ID番号（mpfidが不正）
+	E_PAR			パラメータエラー（tmoutが不正：tget_mpfの場合）
+	E_NOEXS〔D〕	オブジェクト未登録（対象固定長メモリプールが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象固定長メモリプールに
+					対する通常操作2が許可されていない）
+	E_MACV〔P〕		メモリアクセス違反（p_blkが指すメモリ領域への読出し
+					アクセスが許可されていない）
+	E_TMOUT			ポーリング失敗またはタイムアウト（get_mpfを除く）
+	E_RLWAI			待ち禁止状態または待ち状態の強制解除（pget_mpfを除
+					く）
+	E_DLT			待ちオブジェクトの削除または再初期化（pget_mpfを除
+					く）
+
+【機能】
+
+mpfidで指定した固定長メモリプール（対象固定長メモリプール）から固定長メ
+モリブロックを獲得し，その先頭番地をblkに返す．具体的な振舞いは以下の通
+り．
+
+対象固定長メモリプールの固定長メモリプール領域の中に，固定長メモリブロッ
+クを割り付けることのできる未割当てのメモリ領域がある場合には，固定長メ
+モリブロックが1つ割り付けられ，その先頭番地がblkに返される．
+
+未割当てのメモリ領域がない場合には，自タスクは固定長メモリプールの獲得
+待ち状態となり，対象固定長メモリプールの待ち行列につながれる．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) ディスパッチ保留状態で呼出す場合．
+
+    (a-1) 非タスクコンテキストから呼び出して，E_CTXエラーが返ること．
+
+    (a-2) CPUロック状態で呼び出して，E_CTXエラーが返ること．
+
+    (a-3) 割込み優先度マスクが全解除でない状態呼び出して，
+          E_CTXエラーが返ること．
+
+    (a-4) ディスパッチ禁止状態から呼び出して，E_CTXエラーが返ること．
+
+(b) tskidが不正の時にE_IDが返ること．
+
+    (b-1) mpfidが許容される最小値-1(=0)の時にE_IDが返ること．
+
+    (b-2) mpfidが許容される最大値+1(TNUM_MPFID+1)の時にE_IDが返ること．
+
+(c) tmoutが不正の時(TMO_FEVR-1)にE_PARが返ること．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(d) 待ち状態が強制解除された時にE_RLWAIが返ること．
+
+(e) 待ちオブジェクトが再初期化された時にE_DLTが返ること．
+
+(f) 待ち状態が解除された時にE_OKが返ること．
+
+(g) 固定長メモリブロックを割り付けることのできる未割当てのメモリ
+    領域がある場合には，固定長メモリブロックが1つ割り付けられ，
+    その先頭番地がblkに返される．
+
+(h) tmoutにTMO_POLを指定する場合．
+
+    (h-1) 固定長メモリブロックを割り付けることのできる未割当てのメモリ
+          領域がある場合には，固定長メモリブロックが1つ割り付けられ，
+          その先頭番地がblkに返される．
+
+    (h-2) 固定長メモリブロックを割り付けることのできる未割当てのメモリ
+          領域がない場合には，ポーリングに失敗し，E_TMOUTが返ること．
+
+(i) tmoutにTMO_FEVRを指定する場合．
+
+    (i-1) 固定長メモリブロックを割り付けることのできる未割当てのメモリ
+          領域がある場合には，固定長メモリブロックが1つ割り付けられ，
+          その先頭番地がblkに返される．
+
+    (i-2) 固定長メモリブロックを割り付けることのできる未割当てのメモリ
+          領域がない場合には，永久待ちとなること．
+
+(j) tmoutに正常なタイムアウト時間をを指定し，未割当てのメモリ領域がない
+    場合には，自タスクは固定長メモリプールの獲得待ち状態となり，対象固
+    定長メモリプールの待ち行列につながれる．
+
+    (j-1) 対象固定長メモリプールの属性がFIFOの場合，自タスクは
+          待ち行列の最後につながれること．
+
+          (j-1-1) 待ちタスクがない場合．
+
+          (j-1-2) 優先度が中→低の順で待ちタスクがあり，
+                  自タスクの優先度が高の場合．
+
+          (j-1-3) 優先度が中→低の順で待ちタスクがあり，
+                  自タスクの優先度が中の場合．
+
+          (j-1-4) 優先度が高→中の順で待ちタスクがあり，
+                    自タスクの優先度が低の場合．
+
+    (j-2) 対象固定長メモリプールの属性が優先度順の場合，自タス
+          クは優先度に合わせ待ち行列の位置につながれること．
+
+          (j-2-1) 待ちタスクがない場合．
+
+          (j-2-2) 優先度が中→低の順で待ちタスクがあり，
+                  自タスクの優先度が高の場合．
+
+          (j-2-3) 優先度が中→低の順で待ちタスクがあり，
+                  自タスクの優先度が中の場合．
+
+          (j-2-4) 優先度が高→中の順で待ちタスクがあり，
+                  自タスクの優先度が低の場合．
+
+    (j-3) タイムアウトした時にE_TMOUTが返ること．
+
+(k) blkに獲得したメモリープールのアドレスが正しく入っていること．
+
+    (k-1) 一回目に獲得したアドレスがメモリプール領域の先頭アドレスであ
+          ること．
+
+    (k-2) 二回目に獲得したアドレスがメモリプール領域の先頭アドレス＋メ
+          モリプールサイズであること．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 
+ER
+tget_mpf(ID mpfid, void **p_blk, TMO tmout)
+{
+	MPFCB	*p_mpfcb;
+	WINFO_MPF winfo_mpf;
+	TMEVTB	tmevtb;
+	ER		ercd;
+
+	LOG_TGET_MPF_ENTER(mpfid, p_blk, tmout);
+	CHECK_DISPATCH();
+	CHECK_MPFID(mpfid);
+	CHECK_TMOUT(tmout);
+	p_mpfcb = get_mpfcb(mpfid);
+
+	t_lock_cpu();
+	if (p_mpfcb->fblkcnt > 0) {
+		get_mpf_block(p_mpfcb, p_blk);
+		ercd = E_OK;
+	}
+	else if (tmout == TMO_POL) {
+		ercd = E_TMOUT;
+	}
+	else {
+		p_runtsk->tstat = (TS_WAITING | TS_WAIT_MPF);
+		wobj_make_wait_tmout((WOBJCB *) p_mpfcb, (WINFO_WOBJ *) &winfo_mpf,
+														&tmevtb, tmout);
+		dispatch();
+		ercd = winfo_mpf.winfo.wercd;
+		if (ercd == E_OK) {
+			*p_blk = winfo_mpf.blk;
+		}
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_TGET_MPF_LEAVE(ercd, *p_blk);
+	return(ercd);
+}
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A]  tget_mpf
+
+00 : ER
+01 : tget_mpf(ID mpfid, void **p_blk, TMO tmout)
+02 : {
+03 :     MPFCB	*p_mpfcb;
+04 :     WINFO_MPF winfo_mpf
+05 :     TMEVTB	tmevtb;
+06 :     ER		ercd;
+07 :     if (sense_context() || t_sense_lock() || !dspflg) { 
+08 :         ercd = E_CTX;
+09 :         goto error_exit;
+10 :     }
+11 :     if (!(TMIN_MPFID <= (mpfid) && (mpfid) <= tmax_mpfid)) { 
+12 :         ercd = E_ID;
+13 :         goto error_exit;
+14 :     }
+15 :     if (!(TMO_FEVR <= (tmout))) {
+16 :         ercd = E_PAR;
+17 :         goto error_exit;
+18 :     }
+19 :     p_mpfcb = (&(mpfcb_table[((uint_t)((mpfid) - TMIN_MPFID))]))
+20 :                        
+21 :     t_lock_cpu();
+22 :     if (p_mpfcb->fblkcnt > 0) {
+23 :          get_mpf_block(p_mpfcb, p_blk);
+24 :          ercd = E_OK;
+25 :     }
+26 :     else if (tmout == TMO_POL) {
+27 :         ercd = E_TMOUT;
+28 :     }
+29 :     else {
+30 :        p_runtsk->tstat = (TS_WAITING | TS_WAIT_MPF);
+31 :        wobj_make_wait_tmout((WOBJCB *) p_mpfcb, (WINFO_WOBJ *) &winfo_mpf,
+32 :                                                              &tmevtb, tmout);
+33 :        dispatch();
+34 :        ercd = winfo_mpf.winfo.wercd;
+35 :        if (ercd == E_OK) {
+36 :            *p_blk = winfo_mpf.blk;
+37 :        }
+38 :     }
+39 :     t_unlock_cpu();
+40 :
+41 :   error_exit:
+42 :
+43 :   return(ercd);
+44 :}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━---
+(A1)  07 : sense_context()
+(A2)  07 : t_sense_lock()
+(A3)  07 : !dspflg
+(A4)  11 : TMIN_TSKID <= (mpfid)
+(A5)  11 : (mpfid) <= tmax_tskid
+(A6)  15 : !(TMO_FEVR <= (tmout))
+(A7)  22 : (p_mpfcb->fblkcnt) > 0
+(A8)  26 : tmout == TMO_POL
+(A9)  35 : ercd == E_OK
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9)
+(a-1)     T   D/F  D/F   D    D    D    D    D    D
+(a-2)     F    T   D/F   D    D    D    D    D    D
+(a-3)     F    F    T    D    D    D    D    D    D
+(a-4)     F    F    T    D    D    D    D    D    D
+(b-1)     F    F    F    F   D/T   D    D    D    D
+(b-2)     F    F    F    T    F    D    D    D    D
+(c)       F    F    F    T    T    T    D    D    D
+(d)       F    F    F    T    T    F    F    F    F
+(e)       F    F    F    T    T    F    F    F    F
+(f)       F    F    F    T    T    F    F    F    T
+(g)       F    F    F    T    T    F    T    D    D
+(h-1)     F    F    F    T    T    F    T    D    D
+(h-2)     F    F    F    T    T    F    F    T    D
+(i-1)     F    F    F    T    T    F    T    D    D
+(i-2)     F    F    F    T    T    F    F    F    D
+(j-1-1)   F    F    F    T    T    F    F    F    D
+(j-1-2)   F    F    F    T    T    F    F    F    D
+(j-1-3)   F    F    F    T    T    F    F    F    D
+(j-1-4)   F    F    F    T    T    F    F    F    D
+(j-2-1)   F    F    F    T    T    F    F    F    D
+(j-2-2)   F    F    F    T    T    F    F    F    D
+(j-2-3)   F    F    F    T    T    F    F    F    D
+(j-2-4)   F    F    F    T    T    F    F    F    D
+(j-3)     F    F    F    T    T    F    F    F    F
+(k-1)     F    F    F    T    T    F    T    D    D
+(k-2)     F    F    F    T    T    F    T    D    D
+-----------------------------------------------------
+網羅      O    O    O    O    O    O    O    O    O
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

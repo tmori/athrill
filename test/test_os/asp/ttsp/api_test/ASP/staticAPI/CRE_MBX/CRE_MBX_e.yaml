@@ -1,0 +1,17 @@
+version: "$Id: CRE_MBX_e.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_staticAPI_CRE_MBX_e:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    MBX1:
+      type    : MAILBOX
+      mbxatr  : ANY_ATT_MBX
+      maxmpri : MSG_PRI_MID
+      wtsklist:
+      msglist :
+
+  do:
+
+  post_condition:

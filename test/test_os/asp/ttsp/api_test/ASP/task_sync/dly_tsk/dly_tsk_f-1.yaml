@@ -1,0 +1,52 @@
+version: "$Id: dly_tsk_f-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_dly_tsk_f_1:
+  note: TESRY_014
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: ready
+
+  do_0:
+    0:
+      id     : TASK1
+      syscall: dly_tsk(RELATIVE_TIME_A)
+      ercd   : E_OK
+      gcov   : true
+
+  post_condition_0:
+    0:
+      TASK1:
+        tskstat: waiting
+        wobjid : DELAY
+        lefttmo: RELATIVE_TIME_A
+
+      TASK2:
+        tskstat: running
+
+    RELATIVE_TIME_A:
+      TASK1:
+        lefttmo: 0
+
+    RELATIVE_TIME_A+1:
+      TASK1:
+        tskstat: ready
+
+  do_1:
+    RELATIVE_TIME_A+1:
+      id     : TASK2
+      syscall: slp_tsk()
+      gcov   : false
+
+  post_condition_1:
+    RELATIVE_TIME_A+1:
+      TASK1:
+        tskstat: running
+
+      TASK2:
+        tskstat: waiting
+        wobjid : SLEEP

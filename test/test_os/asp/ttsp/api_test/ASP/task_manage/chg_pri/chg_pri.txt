@@ -1,0 +1,512 @@
+
+	chg_pri テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: chg_pri.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+chg_pri		タスクのベース優先度の変更〔T〕
+
+【C言語API】
+	ER ercd = chg_pri(ID tskid, PRI tskpri)
+
+【パラメータ】
+	ID			tskid		対象タスクのID番号
+	PRI			tskpri		ベース優先度
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_NOSPT			未サポート機能（対象タスクが制約タスク）
+	E_ID			不正ID番号（tskidが不正）
+	E_PAR			パラメータエラー（tskpriが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象タスクが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象タスクに対する通常操
+					作2が許可されていない）
+	E_ILUSE			サービスコール不正使用（tskpriが，対象タスクがロッ
+					クしているかロックを待っている優先度上限ミューテッ
+					クスの上限優先度よりも高い場合）
+	E_OBJ			オブジェクト状態エラー（対象タスクが休止状態）
+
+【機能】
+
+tskidで指定したタスク（対象タスク）のベース優先度を，tskpriで指定した優
+先度に変更する．具体的な振舞いは以下の通り．
+
+対象タスクが休止状態でない場合には，対象タスクのベース優先度が，tskpri
+で指定した優先度に変更される．それに伴って，対象タスクの現在優先度も変
+更される．
+
+対象タスクが，優先度上限ミューテックスをロックしていない場合には，次の
+処理が行われる．対象タスクが実行できる状態の場合には，同じ優先度のタス
+クの中で最低優先順位となる．対象タスクが待ち状態で，タスクの優先度順の
+待ち行列につながれている場合には，対象タスクの変更後の現在優先度に従っ
+て，その待ち行列中での順序が変更される．待ち行列中に同じ現在優先度のタ
+スクがある場合には，対象タスクの順序はそれらの中で最後になる．
+
+対象タスクが，優先度上限ミューテックスをロックしている場合には，対象タ
+スクの現在優先度が変更されることはなく，優先順位も変更されない．
+
+対象タスクが休止状態である場合には，E_OBJエラーとなる．
+
+tskidにTSK_SELF（＝0）を指定すると，自タスクが対象タスクとなる．また，
+tskpriにTPRI_INI（＝0）を指定すると，対象タスクのベース優先度が，起動時
+優先度に変更される．
+
+tskpriは，TPRI_INIであるか，TMIN_TPRI以上，TMAX_TPRI以下でなければなら
+ない．また，対象タスクが優先度上限ミューテックスをロックしているかロッ
+クを待っている場合，tskpriは，それらのミューテックスの上限優先度と同じ
+かそれより低くなければならない．
+
+【μITRON4.0仕様との関係】
+
+対象タスクが，同じ優先度のタスクの中で最低の優先順位となる（対象タスク
+が待ち状態で，タスクの優先度順の待ち行列につながれている場合には，同じ
+優先度のタスクの中での順序が最後になる）条件を変更した．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(a) ディスパッチ保留状態で呼出す場合．
+
+    (a-1) 非タスクコンテキストから呼び出して，E_CTXエラーが返ること．
+
+    (a-2) CPUロック状態で呼び出して，E_CTXエラーが返ること．
+
+(b) tskidが不正の時にE_IDが返ること．
+
+    (b-1) tskidが許容される最小値-1(=-1)の時にE_IDが返ること．
+
+    (b-2) tskidが許容される最大値+1(TNUM_TSKID+1)の時にE_IDが返ること．
+
+(c) tskpriが不正の時にE_PARが返ること．
+
+    (c-1) tskpriが許容される最小値-1(=-1)の時にE_PARが返ること．
+
+    (c-2) tskpriが許容される最大値+1(TMAX_TPRI+1)の時にE_PARが返ること．
+
+(d) 対象タスクが休止状態の時に呼ぶと，E_OBJが返ること．
+
+【備考】
+・E_ILUSEは未完成のため，テスト対象外．
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(e) tskidで指定したタスク(対象タスク)のベース優先度を，
+    tskpriで指定した優先度に変更されること．
+
+    (e-1) 対象タスクが実行できる状態の場合．
+
+          (e-1-1) 対象タスクが自タスク(高)の場合．
+
+                  (e-1-1-1) 他タスクの優先度が高の場合．
+
+                            (e-1-1-1-1) 自タスクの優先度を高にする場合，
+                                        他タスクは実行状態になること．
+
+                            (e-1-1-1-2) 自タスクの優先度を中にする場合，
+                                        他タスクは実行状態になること．
+
+                  (e-1-1-2) 他タスクの優先度が中の場合．
+
+                            (e-1-1-2-1) 自タスクの優先度を高にする場合，
+                                        他タスクは実行可能状態のままに
+                                        なること．
+
+                            (e-1-1-2-2) 自タスクの優先度を中にする場合，
+                                        他タスクは実行状態になること．
+
+                            (e-1-1-2-3) 自タスクの優先度を低にする場合，
+                                        他タスクは実行状態になること．
+
+                  (e-1-1-3) 他タスクの優先度が低で，自タスクの優先度
+                            を中にする場合，自タスクは実行状態のままに
+                            なること．
+
+          (e-1-2) 対象タスクが他タスクで，自タスクの優先度が中の場合．
+
+                  (e-1-2-1) 他タスクの優先度が中の場合．
+
+                            (e-1-2-1-1) 他タスクの優先度を高にする場合，
+                                        他タスクは実行状態になること．
+
+                            (e-1-2-1-2) 他タスクの優先度を中にする場合，
+                                        自タスクは実行状態のままになる
+                                        こと．
+
+                            (e-1-2-1-3) 他タスクの優先度を低にする場合，
+                                        自タスクは実行状態のままになる
+                                        こと．
+
+                  (e-1-2-2) 他タスクの優先度が低の場合．
+
+                            (e-1-2-2-1) 他タスクの優先度を高にする場合，
+                                        他タスクは実行状態になること．
+
+                            (e-1-2-2-2) 他タスクの優先度を中にする場合，
+                                        自タスクは実行状態のままになる
+                                        こと．
+
+                            (e-1-2-2-3) 他タスクの優先度を低にする場合，
+                                        自タスクは実行状態のままになる
+                                        こと．
+
+          (e-1-3) ディスパッチ禁止状態の場合，実行状態のタスクより優先
+                  度を高く変更しても，ディスパッチが発生しないこと．
+
+          (e-1-4) 割込み優先度マスクが全解除でない場合，実行状態のタス
+                  クより優先度を高く変更しても，ディスパッチが発生しな
+                  いこと．
+
+    (e-2) 対象タスクが待ち状態の場合．
+
+          (e-2-1) 起床待ちの場合．
+
+          (e-2-2) 時間経過待ちの場合．
+
+          (e-2-3) セマフォの属性がFIFO順で，
+                  セマフォの資源獲得待ち(タイムアウト無)の場合．
+
+                  (e-2-3-1) タスクA(中)→タスクB(中)→タスクC(低)
+                            のときにタスクBを高にする場合．
+
+                  (e-2-3-2) タスクA(高)→タスクB(中)→タスクC(低)
+                            のときにタスクAを中にする場合．
+
+                  (e-2-3-3) タスクA(高)→タスクB(中)→タスクC(中)
+                            のときにタスクBを低にする場合．
+
+                  (e-2-3-4) タスクA(高)→タスクB(中)→タスクC(中)→
+                            タスクD(低)のときにタスクBを中にする場合．
+
+          (e-2-4) セマフォの属性が優先度順で，
+                  セマフォの資源獲得待ち(タイムアウト有)の場合．
+
+                  (e-2-4-1) タスクA(中)→タスクB(中)→タスクC(低)
+                            のときにタスクBを高にする場合．
+
+                  (e-2-4-2) タスクA(高)→タスクB(中)→タスクC(低)
+                            のときにタスクAを中にする場合．
+
+                  (e-2-4-3) タスクA(高)→タスクB(中)→タスクC(中)
+                            のときにタスクBを低にする場合．
+
+                  (e-2-4-4) タスクA(高)→タスクB(中)→タスクC(中)→
+                            タスクD(低)のときにタスクBを中にする場合．
+
+    (e-3) 対象タスクが強制待ち状態の場合．
+
+    (e-4) 対象タスクが二重待ち状態の場合．
+
+            (e-4-1) 起床待ちの場合．
+
+            (e-4-2) 時間経過待ちの場合．
+
+(f) tskpriにTPRI_INI(=0)を指定すると，対象タスクのベース優先度が，
+    起動時優先度に変更される．
+
+(g) 自タスクしかタスクが存在しない場合，
+    自タスクは設定した優先度に変更されること．
+
+    (g-1) 優先度を上げる場合．
+
+    (g-2) 優先度を下げる場合．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+chg_pri(ID tskid, PRI tskpri)
+{
+	TCB	*p_tcb;
+	uint_t  newpri;
+	ER	ercd;
+
+	LOG_CHG_PRI_ENTER(tskid, tskpri);
+	CHECK_TSKCTX_UNL();
+	CHECK_TSKID_SELF(tskid);
+	CHECK_TPRI_INI(tskpri);
+	p_tcb = get_tcb_self(tskid);
+	newpri = (tskpri == TPRI_INI) ? p_tcb->p_tinib->ipriority
+					: INT_PRIORITY(tskpri);
+
+	t_lock_cpu();
+	if (TSTAT_DORMANT(p_tcb->tstat)) {
+		ercd = E_OBJ;
+	}
+	else {
+		if (change_priority(p_tcb, newpri)) {
+			dispatch();
+		}
+		ercd = E_OK;
+	}
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_CHG_PRI_LEAVE(ercd);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] chg_pri
+
+00 : ER
+01 : chg_pri(ID tskid, PRI tskpri)
+02 : {
+03 :     TCB     *p_tcb;
+04 :     uint_t  newpri;
+05 :     ER      ercd;
+06 : 
+07 :     if (sense_context() || t_sense_lock()) {
+08 :         ercd = E_CTX;
+09 :         goto error_exit;
+10 :     }
+11 :     if (!((TMIN_TSKID <= tskid && tskid <= tmax_tskid)
+12 :                                     || tskid == TSK_SELF)) {
+13 :         ercd = E_ID;
+14 :         goto error_exit;
+15 :     }
+16 :     if (!( (TMIN_TPRI <= (tskpri) && (tskpri) <= TMAX_TPRI)
+17 :                                     || (tskpri) == TPRI_INI)) {
+18 :         ercd = E_PAR;
+19 :         goto error_exit;
+20 :     }
+21 :     p_tcb = ((tskid) == TSK_SELF ? p_runtsk
+22 :                              : (&(tcb_table[((uint_t)((tskid) - TMIN_TSKID))])));
+23 :     newpri = (tskpri == TPRI_INI) ? p_tcb->p_tinib->ipriority
+24 :                              : ((uint_t)((tskpri) - TMIN_TPRI));
+25 :
+26 :     t_lock_cpu();
+27 :     if (p_tcb->tstat == TS_DORMANT) {
+28 :             ercd = E_OBJ;
+29 :     }
+30 :     else {
+31 :         if (change_priority(p_tcb, newpri)) {
+32 :                     dispatch();
+33 :         }
+34 :         ercd = E_OK;
+35 :     }
+36 :     t_unlock_cpu();
+37 : 
+38 :   error_exit:
+39 :     return(ercd);
+40 :}
+
+[B] change_priority
+
+00 : bool_t
+01 : change_priority(TCB *p_tcb, uint_t newpri)
+02 : {
+03 : 	uint_t	oldpri;
+04 : 
+05 : 	oldpri = p_tcb->priority;
+06 : 	p_tcb->priority = newpri;
+07 : 
+08 : 	if (((p_tcb->tstat) & TS_RUNNABLE) != 0U) {
+09 : 		/*
+10 : 		 *  タスクが実行できる状態の場合
+11 : 		 */
+12 : 		queue_delete(&(p_tcb->task_queue));
+13 : 		if (queue_empty(&(ready_queue[oldpri]))) {
+14 : 			primap_clear(oldpri);
+15 : 		}
+16 : 		queue_insert_prev(&(ready_queue[newpri]), &(p_tcb->task_queue));
+17 : 		primap_set(newpri);
+18 : 
+19 : 		if (p_schedtsk == p_tcb) {
+20 : 			if (newpri >= oldpri) {
+21 : 				p_schedtsk = search_schedtsk();
+22 : 				return(p_schedtsk != p_tcb && dspflg);
+23 : 			}
+24 : 		}
+25 : 		else {
+26 : 			if (newpri < p_schedtsk->priority) {
+27 : 				p_schedtsk = p_tcb;
+28 : 				return(dspflg);
+29 : 			}
+30 : 		}
+31 : 	}
+32 : 	else {
+33 : 		if ((p_tcb->tstat) & TS_WAIT_MASK) >= TS_WAIT_SEM) {
+34 : 			/*
+35 : 			 *  タスクが，同期・通信オブジェクトの管理ブロックの共通部
+36 : 			 *  分（WOBJCB）の待ちキューにつながれている場合
+37 : 			 */
+38 : 			wobj_change_priority(((WINFO_WOBJ *)(p_tcb->p_winfo))->p_wobjcb,
+39 : 																	p_tcb);
+40 : 		}
+41 : 	}
+42 : 	return(false);
+43 : }
+
+[C] wobj_change_priority
+
+00 : Inline void
+01 : wobj_change_priority(WOBJCB *p_wobjcb, TCB *p_tcb)
+02 : {
+03 : 	if ((p_wobjcb->p_wobjinib->wobjatr & TA_TPRI) != 0U) {
+04 : 		queue_delete(&(p_tcb->task_queue));
+05 : 		queue_insert_tpri(&(p_wobjcb->wait_queue), p_tcb);
+06 : 	}
+07 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  07 : sense_context()
+(A2)  07 : t_sense_lock()
+(A3)  11 : TMIN_TSKID <= tskid
+(A4)  11 : tskid <= tmax_tskid
+(A5)  12 : tskid == TSK_SELF
+(A6)  16 : TMIN_TPRI <= (tskpri)
+(A7)  16 : (tskpri) <= TMAX_TPRI)
+(A8)  17 : (tskpri) == TPRI_INI
+(A9)  21 : (tskid) == TSK_SELF
+(A10) 23 : tskpri == TPRI_INI
+(A11) 27 : p_tcb->tstat == TS_DORMANT
+(A12) 31 : change_priority(p_tcb, newpri)
+
+(B1)  08 : ((p_tcb->tstat) & TS_RUNNABLE) != 0U
+(B2)  13 : queue_empty(&(ready_queue[oldpri]))
+(B3)  19 : p_schedtsk == p_tcb
+(B4)  20 : newpri >= oldpri
+(B5)  22 : p_schedtsk != p_tcb
+(B6)  22 : dspflg
+(B7)  26 : newpri < p_schedtsk->priority
+(B8)  28 : dspflg
+(B9)  33 : (p_tcb->tstat) & TS_WAIT_MASK) >= TS_WAIT_SEM
+
+(C1)  03 : (p_wobjcb->p_wobjinib->wobjatr & TA_TPRI) != 0U
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (A11) (A12) (B1) (B2) (B3) (B4) (B5) (B6) (B7) (B8) (B9) (C1)
+(a-1)        T   D/F   D    D    D    D    D    D    D     D     D     D    D    D    D    D    D    D    D    D    D    D
+(a-2)        F    T    D    D    D    D    D    D    D     D     D     D    D    D    D    D    D    D    D    D    D    D
+(b-1)        F    F    F   D/T   F    D    D    D    D     D     D     D    D    D    D    D    D    D    D    D    D    D
+(b-2)        F    F    T    F    F    D    D    D    D     D     D     D    D    D    D    D    D    D    D    D    D    D
+(c-1)        F    F    T    T   D/F   F   D/T   F    D     D     D     D    D    D    D    D    D    D    D    D    D    D
+(c-2)        F    F    T    T   D/F   T    F    F    D     D     D     D    D    D    D    D    D    D    D    D    D    D
+(d)          F    F    T    T   D/F   T    T   D/F   F     F     T     D    D    D    D    D    D    D    D    D    D    D
+(e-1-1-1-1)  F    F    F   D/T   T    T    T   D/F   T     F     F     T    T    F    T    T    T    T    D    D    D    D
+(e-1-1-1-2)  F    F    F   D/T   T    T    T   D/F   T     F     F     T    T    F    T    T    T    T    D    D    D    D
+(e-1-1-2-1)  F    F    F   D/T   T    T    T   D/F   T     F     F     F    T    T    T    T    F   D/T   D    D    D    D
+(e-1-1-2-2)  F    F    F   D/T   T    T    T   D/F   T     F     F     T    T    T    T    T    T    T    D    D    D    D
+(e-1-1-2-3)  F    F    F   D/T   T    T    T   D/F   T     F     F     T    T    T    T    T    T    T    D    D    D    D
+(e-1-1-3)    F    F    F   D/T   T    T    T   D/F   T     F     F     F    T    T    T    T    F   D/T   D    D    D    D
+(e-1-2-1-1)  F    F    T    T   D/F   T    T   D/F   F     F     F     T    T    F    F    D    D    D    T    T    D    D
+(e-1-2-1-2)  F    F    T    T   D/F   T    T   D/F   F     F     F     F    T    F    F    D    D    D    F    D    D    D
+(e-1-2-1-3)  F    F    T    T   D/F   T    T   D/F   F     F     F     F    T    F    F    D    D    D    F    D    D    D
+(e-1-2-2-1)  F    F    T    T   D/F   T    T   D/F   F     F     F     T    T    T    F    D    D    D    T    T    D    D
+(e-1-2-2-2)  F    F    T    T   D/F   T    T   D/F   F     F     F     F    T    T    F    D    D    D    F    D    D    D
+(e-1-2-2-3)  F    F    T    T   D/F   T    T   D/F   F     F     F     F    T    T    F    D    D    D    F    D    D    D
+(e-1-3)      F    F    T    T   D/F   T    T   D/F   F     F     F     F    T    T    F    D    D    D    T    F    D    D
+(e-1-4)      F    F    T    T   D/F   T    T   D/F   F     F     F     F    T    T    F    D    D    D    T    F    D    D
+(e-2-1)      F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    F    D
+(e-2-2)      F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    F    D
+(e-2-3-1)    F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    T    F
+(e-2-3-2)    F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    T    F
+(e-2-3-3)    F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    T    F
+(e-2-3-4)    F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    T    F
+(e-2-4-1)    F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    T    T
+(e-2-4-2)    F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    T    T
+(e-2-4-3)    F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    T    T
+(e-2-4-4)    F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    T    T
+(e-3)        F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    F    D
+(e-4-1)      F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    F    D
+(e-4-2)      F    F    T    T   D/F   T    T   D/F   F     F     F     F    F    D    D    D    D    D    D    D    F    D
+(f)          F    F    T    T   D/F   F   D/T   T    F     T     F     F    T    T    F    D    D    D    F    D    D    D
+(g-1)        F    F    F   D/T   T    T    T   D/F   T     F     F     F    T    T    T    F    D    D    D    D    D    D
+(g-2)        F    F    F   D/T   T    T    T   D/F   T     F     F     F    T    T    T    T    F   D/T   D    D    D    D
+----------------------------------------------------------------------------------------------------------------------------
+網羅         O    O    O    O    O    O    O    O    O     O     O     O    O    O    O    O    O    X    O    O    O    O
+
+【備考】
+・(B6)の網羅をさせるために，
+  以下にホワイトボックステストを実施する．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10) (A11) (A12) (B1) (B2) (B3) (B4) (B5) (B6) (B7) (B8) (B9) (C1)
+(W_a)        F    F    F   D/T   T    T    T   D/F   T     F     F     F    T    T    T    T    T    F    D    D    D    D
+----------------------------------------------------------------------------------------------------------------------------
+網羅         O    O    O    O    O    O    O    O    O     O     O     O    O    O    O    O    O    O    O    O    O    O
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.2. テストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(W_a) 以下の条件が成り立つ時．
+
+  ・対象タスクが実行できる状態の場合．
+  ・対象タスクが自タスク(高)の場合．
+  ・対象タスクの優先度が中の場合．
+  ・自タスクの優先度を低にする場合．
+  ・ディスパッチ禁止状態の場合．
+
+
+
+以上．

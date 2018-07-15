@@ -1,0 +1,20 @@
+version: "$Id: prcv_dtq_b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_prcv_dtq_b_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        p_data:
+          type: intptr_t
+          value: DATA_A
+
+    DTQ1:
+      type: DATAQUEUE
+
+  do:
+    id     : TASK1
+    syscall: prcv_dtq(TNUM_DTQID+1, &p_data)
+    ercd   : E_ID
+
+  post_condition:

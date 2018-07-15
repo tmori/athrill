@@ -1,0 +1,29 @@
+version: "$Id: ini_dtq_d-1-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_ini_dtq_d_1_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : DTQ1
+
+    DTQ1:
+      type  : DATAQUEUE
+      dtqcnt: 0
+      rtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ini_dtq(DTQ1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended
+
+    DTQ1:
+      rtsklist:

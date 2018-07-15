@@ -1,0 +1,28 @@
+version: "$Id: iwup_tsk_e-7.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_task_sync_iwup_tsk_e_7:
+  pre_condition:
+    ALM1:
+      type    : ALARM
+      almstat : TALM_STP
+      hdlstat : ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskstat: waiting
+      wobjid : SEM1
+      wupcnt : 0
+
+    SEM1:
+      type    : SEMAPHORE
+      semcnt  : 0
+      wtsklist:
+        - TASK1:
+
+  do:
+    id     : ALM1
+    syscall: iwup_tsk(TASK1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      wupcnt : 1

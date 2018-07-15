@@ -1,0 +1,13 @@
+version: "$Id: rot_rdq_b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_sys_manage_rot_rdq_b_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+  do:
+    id     : TASK1
+    syscall: rot_rdq(-1)
+    ercd   : E_PAR
+
+  post_condition:

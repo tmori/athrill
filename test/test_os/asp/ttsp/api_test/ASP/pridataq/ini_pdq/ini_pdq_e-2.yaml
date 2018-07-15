@@ -1,0 +1,27 @@
+version: "$Id: ini_pdq_e-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_ini_pdq_e_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt : 3
+      maxdpri : DATA_PRI_MAX
+      datalist : 
+        - data:     DATA_A
+          datapri:  DATA_PRI_MID
+        - data:     DATA_B
+          datapri:  DATA_PRI_MID
+        - data:     DATA_C
+          datapri:  DATA_PRI_LOW
+
+  do:
+    id     : TASK1
+    syscall: ini_pdq(PDQ1)
+    ercd   : E_OK
+
+  post_condition:
+    PDQ1:
+      datalist : 

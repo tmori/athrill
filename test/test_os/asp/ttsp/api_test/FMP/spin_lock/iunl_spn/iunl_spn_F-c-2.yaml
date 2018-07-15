@@ -1,0 +1,35 @@
+version: "$Id: iunl_spn_F-c-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_spin_lock_iunl_spn_F_c_2:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+
+    SPN1:
+      type   : SPINLOCK
+      spnstat: TSPN_LOC
+      procid : TASK2
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_OTHER
+
+  do:
+    id     : ALM1
+    syscall: iunl_spn(SPN1)
+    ercd   : E_ILUSE
+
+  post_condition:

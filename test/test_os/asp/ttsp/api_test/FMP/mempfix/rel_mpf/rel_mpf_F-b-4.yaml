@@ -1,0 +1,79 @@
+version: "$Id: rel_mpf_F-b-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mempfix_rel_mpf_F_b_4:
+  note: TESRY_007
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        blk:
+          type: void*
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_OTHER
+      var    :
+        blk:
+          type: void*
+
+    TASK3:
+      type   : TASK
+      tskstat: ready
+      prcid  : PRC_OTHER
+
+    MPF1:
+      type   : MEMORYPOOL
+      fblkcnt: 1
+
+  do_0:
+    id     : TASK1
+    syscall: get_mpf(MPF1, &blk)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    MPF1:
+      fblkcnt: 0
+
+  do_1:
+    id     : TASK2
+    syscall: get_mpf(MPF1, &blk)
+    gcov   : false
+
+  post_condition_1:
+    TASK2:
+      tskstat: waiting
+      wobjid : MPF1
+
+    TASK3:
+      tskstat: running
+
+    MPF1:
+      wtsklist:
+        - TASK2:
+
+  do_2:
+    id     : TASK3
+    syscall: sus_tsk(TASK2)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_2:
+    TASK2:
+      tskstat: waiting-suspended
+
+  do_3:
+    id     : TASK1
+    syscall: rel_mpf(MPF1, blk)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_3:
+    TASK2:
+      tskstat: suspended
+
+    MPF1:
+      wtsklist:

@@ -1,0 +1,336 @@
+
+	ref_cyc テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: ref_cyc.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+ref_cyc		周期ハンドラの状態参照〔T〕
+
+【C言語API】
+	ER ercd = ref_cyc(ID cycid, T_RCYC *pk_rcyc)
+
+【パラメータ】
+	ID			cycid		対象周期ハンドラのID番号
+	T_RCYC *	pk_rcyc		周期ハンドラの現在状態を入れるパケットへの
+							ポインタ
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+　＊周期ハンドラの現在状態（パケットの内容）
+	STAT		cycstat		周期ハンドラの動作状態
+	RELTIM		lefttim		次に周期ハンドラを起動する時刻までの相対時間
+	ID			prcid		周期ハンドラの割付けプロセッサのID（マルチプ
+							ロセッサ対応カーネルの場合）
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（cycidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象周期ハンドラが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象周期ハンドラに対する
+					参照操作が許可されていない）
+	E_MACV〔P〕		メモリアクセス違反（pk_rcycが指すメモリ領域への書込
+					みアクセスが許可されていない）
+
+【機能】
+
+cycidで指定した周期ハンドラ（対象周期ハンドラ）の現在状態を参照する．参
+照した現在状態は，pk_rcycで指定したパケットに返される．
+
+cycstatには，対象周期ハンドラの現在の動作状態を表す次のいずれかの値が返
+される．
+
+	TCYC_STP	0x01U		周期ハンドラが動作していない状態
+	TCYC_STA	0x02U		周期ハンドラが動作している状態
+
+対象周期ハンドラが動作している状態である場合には，lefttimに，次に周期ハ
+ンドラ起動する時刻までの相対時間が返される．対象周期ハンドラが動作して
+いない状態である場合には，lefttimの値は保証されない．
+
+マルチプロセッサ対応カーネルでは，prcidに，対象周期ハンドラの割付けプロ
+セッサのID番号が返される．
+
+【使用上の注意】
+
+ref_cycはデバッグ時向けの機能であり，その他の目的に使用することは推奨し
+ない．これは，ref_cycを呼び出し，対象周期ハンドラの現在状態を参照した直
+後に割込みが発生した場合，ref_cycから戻ってきた時には対象周期ハンドラの
+状態が変化している可能性があるためである．
+
+【μITRON4.0仕様との関係】
+
+TCYC_STPとTCYC_STAを値を変更した．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-a) ディスパッチ保留状態で呼出す場合．
+
+      (F-a-1) 対象周期ハンドラが自プロセッサに割り付けられているとき，
+
+              (F-a-1-1) 非タスクコンテキストから呼び出して，
+                        E_CTXエラーが返ること．(ASP:a-1，EX_NEW_PARAM)
+
+              (F-a-1-2) CPUロック状態で呼び出して，
+                        E_CTXエラーが返ること．(ASP:a-2，EX_NEW_PARAM)
+
+              (F-a-1-3) スピンロック取得中に呼び出して，
+                        E_CTXエラーが返ること．(ASP:a，EX_NEW_STATE)
+
+      (F-a-1) 対象周期ハンドラが他プロセッサに割り付けられているとき，
+
+              (F-a-1-1) 非タスクコンテキストから呼び出して，
+                        E_CTXエラーが返ること．(ASP:a-1，EX_OTHER_PRC)
+
+              (F-a-1-2) CPUロック状態で呼び出して，
+                        E_CTXエラーが返ること．(ASP:a-2，EX_OTHER_PRC)
+
+              (F-a-1-3) スピンロック取得中に呼び出して，
+                        E_CTXエラーが返ること．(ASP:a，EX_NEW_STATE)
+
+(F-b) cycidが不正の時にE_IDが返ること．
+
+      (F-b-1) cycidが許容される最小値-1(0)の時にE_IDが返ること．
+              (ASP:b-1，EX_NEW_PARAM)
+
+      (F-b-2) cycidが許容される最大値+1(TNUM_CYCID+1)の時に
+              E_IDが返ること．(ASP:b-2，EX_NEW_PARAM)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(F-c) 自プロセッサに割り付けられている対象周期ハンドラの現在状態がpk_r
+      cycで指定したパケットに格納されE_OKが返る．
+
+      (F-c-1) 対象周期ハンドラが動作していない場合，
+              cycstatにはTCYC_STP，prcidには対象周期ハンドラの割付けプ
+              ロセッサのID番号が格納される．(ASP:c-1，EX_NEW_PARAM)
+
+      (F-c-2) 対象周期ハンドラが動作している場合，
+              cycstatにはTCYC_STA，lefttimには次に周期ハンドラ起動する
+              時刻までの相対時間，prcidには対象周期ハンドラの割付けプ
+              ロセッサのID番号が格納される．(ASP:c-2，EX_NEW_PARAM)
+
+(F-d) 他プロセッサに割り付けられている対象周期ハンドラの現在状態がpk_r
+      cycで指定したパケットに格納されE_OKが返る．
+
+      (F-d-1) 対象周期ハンドラが動作していない場合，
+              cycstatにはTCYC_STP，prcidには対象周期ハンドラの割付けプ
+              ロセッサのID番号が格納される．(ASP:c-1，EX_OTHER_PRC)
+
+      (F-d-2) 対象周期ハンドラが動作している場合，
+              cycstatにはTCYC_STA，lefttimには次に周期ハンドラ起動する
+              時刻までの相対時間，prcidには対象周期ハンドラの割付けプ
+              ロセッサのID番号が格納される．(ASP:c-2，EX_OTHER_PRC)
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+ref_cyc(ID cycid, T_RCYC *pk_rcyc)
+{
+	CYCCB	*p_cyccb;
+	ER		ercd;
+	PCB		*p_pcb;
+
+	LOG_REF_CYC_ENTER(cycid, pk_rcyc);
+	CHECK_TSKCTX_UNL();
+	CHECK_CYCID(cycid);
+	p_cyccb = get_cyccb(cycid);
+
+	t_lock_cpu();
+	p_pcb = t_acquire_tsk_lock_cyc(p_cyccb);
+	if (p_cyccb->cycsta) {
+		pk_rcyc->cycstat = TCYC_STA;
+		pk_rcyc->lefttim = tmevt_lefttim(p_cyccb->p_pcb->p_tevtcb, &(p_cyccb->tmevtb));
+	}
+	else {
+		pk_rcyc->cycstat = TCYC_STP;
+	}
+	pk_rcyc->prcid = p_cyccb->p_pcb->prcid;
+	ercd = E_OK;
+	release_tsk_lock(p_pcb);
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_REF_CYC_LEAVE(ercd, pk_rcyc);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] ref_cyc
+
+00 : ER
+01 : ref_cyc(ID cycid, T_RCYC *pk_rcyc)
+02 : {
+03 : 	CYCCB	*p_cyccb;
+04 : 	ER		ercd;
+05 : 	PCB		*p_pcb;
+06 : 
+07 : 	if (!sense_tskctx_unl()) {
+08 : 		ercd = E_CTX;
+09 : 		goto error_exit;
+10 : 	}
+11 : 	if (!(TMIN_CYCID <= (cycid) && (cycid) <= tmax_cycid)) {
+12 : 		ercd = E_ID;
+13 : 		goto error_exit;
+14 : 	}
+15 : 	p_cyccb = p_cyccb_table[(uint_t)((cycid) - TMIN_CYCID)];
+16 : 
+17 : 	t_lock_cpu();
+18 : 	p_pcb = t_acquire_tsk_lock_cyc(p_cyccb);
+19 : 	if (p_cyccb->cycsta) {
+20 : 		pk_rcyc->cycstat = TCYC_STA;
+21 : 		pk_rcyc->lefttim = tmevt_lefttim(p_cyccb->p_pcb->p_tevtcb, &(p_cyccb->tmevtb));
+22 : 	}
+23 : 	else {
+24 : 		pk_rcyc->cycstat = TCYC_STP;
+25 : 	}
+26 : 	pk_rcyc->prcid = p_cyccb->p_pcb->prcid;
+27 : 	ercd = E_OK;
+28 : 	release_tsk_lock(p_pcb);
+29 : 	t_unlock_cpu();
+30 : 
+31 :   error_exit:
+32 : 	return(ercd);
+33 : }
+
+
+[B] tmevt_lefttim
+
+00 : RELTIM
+01 : tmevt_lefttim(TEVTCB *p_tevtcb, TMEVTB *p_tmevtb)
+02 : {
+03 : 	EVTTIM	time;
+04 : 
+05 : 	time = ((p_tevtcb->p_tmevt_heap)[(p_tmevtb->index) - 1]).time;
+06 : 	if (((time) - p_tevtcb->min_time) <= ((p_tevtcb->next_time) - p_tevtcb->min_time)) {
+07 : 		/*
+08 : 		 *  次のタイムティックで処理される場合には0を返す．
+09 : 		 */
+10 : 		return(0U);
+11 : 	}
+12 : 	else {
+13 : 		return((RELTIM)(time - base_time(p_tevtcb)));
+14 : 	}
+15 : }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1) 07 : !sense_tskctx_unl()
+(A2) 11 : TMIN_CYCID <= (cycid)
+(A3) 11 : (cycid) <= tmax_cycid
+(A4) 19 : p_cyccb->cycsta
+
+(B1) 06 : ((time) - p_tevtcb->min_time) <= ((p_tevtcb->next_time) - p_tevtcb->min_time)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅の確認
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+          (A1) (A2) (A3) (A4) (B1)
+(F-a-1-1)  T    D    D    D    D
+(F-a-1-2)  T    D    D    D    D
+(F-a-1-3)  T    D    D    D    D
+(F-a-2-1)  T    D    D    D    D
+(F-a-2-2)  T    D    D    D    D
+(F-a-2-3)  T    D    D    D    D
+(F-b-1)    F    F   D/T   D    D
+(F-b-2)    F    T    F    D    D
+(F-c-1)    F    T    T    F    D
+(F-c-2)    F    T    T    T    F
+(F-d-1)    F    T    T    F    D
+(F-d-2)    F    T    T    T    F
+----------------------------------
+網羅       O    O    O    O    X
+
+【備考】
+・ASPカーネルのテストケースでは参照できないパラメータが存在するため，自
+  プロセッサに対して発行するテストケースも作成している．そのテストケー
+  スについてはASPカーネルのテストケースと分岐が重複するので，条件網羅表
+  にはFMPカーネルのテストケースのみ記載する．
+・(B1)の網羅をさせるために，以下にホワイトボックステストを実施する．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.1. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+          (A1) (A2) (A3) (A4) (B1)
+(W_F-a)    F    T    T    T    T
+----------------------------------
+網羅       O    O    O    O    O
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3.2. テストケース
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(W_F-a) 以下の条件が成り立つ時．
+
+  ・自プロセッサに割り付けられている対象周期ハンドラが動作している場合．
+  ・次のタイムティックで周期ハンドラが起動する場合．
+
+
+
+以上．

@@ -1,0 +1,27 @@
+version: "$Id: snd_dtq_g-1-1-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_snd_dtq_g_1_1_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqatr : TA_NULL
+      dtqcnt : 0
+      stsklist:
+      datalist:
+
+  do:
+    id     : TASK1
+    syscall: snd_dtq(DTQ1, DATA_A)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : DTQ1
+
+    DTQ1:
+      stsklist:
+        - TASK1:
+            data : DATA_A

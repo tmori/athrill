@@ -1,0 +1,36 @@
+version: "$Id: ref_dtq_F-b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_dataqueue_ref_dtq_F_b_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rdtq:
+          type: T_RDTQ
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DTQ1
+      prcid  : PRC_OTHER
+
+    DTQ1:
+      type  : DATAQUEUE
+      dtqcnt: 0
+      rtsklist: 
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ref_dtq(DTQ1, &rdtq)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rdtq:
+          stskid: TSK_NONE
+          rtskid: TASK2
+          sdtqcnt: 0
+

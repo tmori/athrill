@@ -1,0 +1,20 @@
+version: "$Id: imrot_rdq_F-b-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_sys_manage_imrot_rdq_F_b_2:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+      prcid  : PRC_SELF
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+  do:
+    id     : ALM1
+    syscall: imrot_rdq(TSK_PRI_MID, TNUM_PRCID+1)
+    ercd   : E_ID
+
+  post_condition:

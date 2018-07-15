@@ -1,0 +1,38 @@
+version: "$Id: iset_flg_e-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_iset_flg_e_4:
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : FLG1
+
+    FLG1:
+      type  : EVENTFLAG
+      flgatr: TA_NULL
+      flgptn: BIT_PATTERN_0A
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_A
+            wfmode: WAIT_FLG_MODE_A
+
+  do:
+    id     : ALM1
+    syscall: iset_flg(FLG1, BIT_PATTERN_A)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended
+
+    FLG1:
+      flgptn: BIT_PATTERN_0A|BIT_PATTERN_A
+      wtsklist:

@@ -1,0 +1,35 @@
+version: "$Id: ini_flg_F-b-1-7.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_eventflag_ini_flg_F_b_1_7:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : FLG1
+      prcid  : PRC_OTHER
+
+    FLG1:
+      type    : EVENTFLAG
+      iflgptn : BIT_PATTERN_0A
+      flgptn  : BIT_PATTERN_0B
+      wtsklist:
+        - TASK2:
+            waiptn: BIT_PATTERN_A
+            wfmode: WAIT_FLG_MODE_A
+
+  do:
+    id     : TASK1
+    syscall: ini_flg(FLG1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended
+
+    FLG1:
+      flgptn  : BIT_PATTERN_0A
+      wtsklist:

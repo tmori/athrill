@@ -1,0 +1,26 @@
+version: "$Id: dis_tex_F-b-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_except_dis_tex_F_b_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running-suspended
+      prcid  : PRC_SELF
+
+    TEX1:
+      type   : TASK_EXC
+      task   : TASK1
+      texstat: TTEX_DIS
+      hdlstat: STP
+      pndptn : TEXPTN_0A
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      chg_ipm: ANY_IPM
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: dis_tex()
+    ercd   : E_OK
+
+  post_condition:

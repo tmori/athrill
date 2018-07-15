@@ -1,0 +1,21 @@
+version: "$Id: ref_flg_b-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_ref_flg_b_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        rflg:
+          type: T_RFLG
+          wtskid: ANY_OBJECT_ID
+          flgptn: BIT_PATTERN_A
+
+    FLG1:
+      type  : EVENTFLAG
+
+  do:
+    id     : TASK1
+    syscall: ref_flg(0, &rflg)
+    ercd   : E_ID
+
+  post_condition:

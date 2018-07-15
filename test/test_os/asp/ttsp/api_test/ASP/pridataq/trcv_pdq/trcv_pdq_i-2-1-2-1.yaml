@@ -1,0 +1,32 @@
+version: "$Id: trcv_pdq_i-2-1-2-1.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_trcv_pdq_i_2_1_2_1:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+        datapri:
+          type: PRI
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqatr  : TA_TPRI
+      pdqcnt : 3
+      rtsklist:
+      datalist :
+
+  do:
+    id     : TASK1
+    syscall: trcv_pdq(PDQ1, &data, &datapri, ANY_ELAPSED_TIME)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : PDQ1
+      lefttmo : ANY_ELAPSED_TIME
+
+    PDQ1:
+      rtsklist:
+        - TASK1:

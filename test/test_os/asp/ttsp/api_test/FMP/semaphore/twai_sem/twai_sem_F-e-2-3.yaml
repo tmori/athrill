@@ -1,0 +1,46 @@
+version: "$Id: twai_sem_F-e-2-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_semaphore_twai_sem_F_e_2_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskpri : TSK_PRI_LOW
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskpri : TSK_PRI_HIGH
+      tskstat: waiting
+      wobjid : SEM1
+      prcid  : PRC_OTHER
+
+    TASK3:
+      type   : TASK
+      tskpri : TSK_PRI_MID
+      tskstat: waiting
+      wobjid : SEM1
+      prcid  : PRC_OTHER
+
+    SEM1:
+      type    : SEMAPHORE
+      sematr  : TA_TPRI
+      semcnt  : 0
+      wtsklist:
+        - TASK2:
+        - TASK3:
+
+  do:
+    id     : TASK1
+    syscall: twai_sem(SEM1, ANY_ELAPSED_TIME)
+
+  post_condition:
+    TASK1:
+      tskstat: waiting
+      wobjid : SEM1
+      lefttmo: ANY_ELAPSED_TIME
+
+    SEM1:
+      wtsklist:
+        - TASK2:
+        - TASK3:
+        - TASK1:

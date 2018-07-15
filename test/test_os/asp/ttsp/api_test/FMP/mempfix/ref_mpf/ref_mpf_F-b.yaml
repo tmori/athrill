@@ -1,0 +1,34 @@
+version: "$Id: ref_mpf_F-b.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mempfix_ref_mpf_F_b:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+      var    :
+        rmpf:
+          type: T_RMPF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : MPF1
+      prcid  : PRC_OTHER
+
+    MPF1:
+      type    : MEMORYPOOL
+      fblkcnt : 0
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ref_mpf(MPF1, &rmpf)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        rmpf:
+          wtskid : TASK2
+          fblkcnt: 0

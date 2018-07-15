@@ -1,0 +1,81 @@
+version: "$Id: iset_flg_e-5.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_eventflag_iset_flg_e_5:
+  note: TESRY_003
+
+  variation:
+    gain_time: true
+
+  pre_condition:
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STP
+      hdlstat: STP
+
+    TASK1:
+      type   : TASK
+      tskstat: waiting
+      wobjid : FLG1
+
+    TASK2:
+      type   : TASK
+      tskstat: running
+
+    FLG1:
+      type    : EVENTFLAG
+      flgatr  : TA_NULL
+      flgptn  : BIT_PATTERN_0A
+      wtsklist:
+        - TASK1:
+            waiptn: BIT_PATTERN_A
+            wfmode: WAIT_FLG_MODE_A
+
+  do_0:
+    id     : TASK2
+    syscall: sta_alm(ALM1, ACTIVATE_ALARM_TIME)
+    ercd   : E_OK
+    gcov   : false
+
+  post_condition_0:
+    ALM1:
+      almstat: TALM_STA
+
+  do_1:
+    id     : TASK2
+    syscall: slp_tsk()
+    gcov   : false
+
+  post_condition_1:
+    TASK2:
+      tskstat: waiting
+      wobjid : SLEEP
+
+    ALM1:
+      almstat: TALM_STP
+      hdlstat: ACTIVATE
+
+  do_2:
+    id     : ALM1
+    syscall: iset_flg(FLG1, BIT_PATTERN_A)
+    ercd   : E_OK
+    gcov   : true
+
+  post_condition_2:
+    TASK1:
+      tskstat: ready
+
+    FLG1:
+      flgptn  : BIT_PATTERN_0A|BIT_PATTERN_A
+      wtsklist:
+
+  do_3:
+    id  : ALM1
+    code: return
+    gcov: false
+
+  post_condition_3:
+    ALM1:
+      almstat: TALM_STP
+      hdlstat: STP
+
+    TASK1:
+      tskstat: running

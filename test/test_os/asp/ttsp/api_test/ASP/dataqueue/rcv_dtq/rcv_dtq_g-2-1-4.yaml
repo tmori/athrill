@@ -1,0 +1,40 @@
+version: "$Id: rcv_dtq_g-2-1-4.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_rcv_dtq_g_2_1_4:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        data:
+          type: intptr_t 
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : DTQ1
+
+    DTQ1:
+      type    : DATAQUEUE
+      dtqcnt  : 0
+      stsklist:
+       - TASK2:
+           data: DATA_A
+      datalist:
+
+  do:
+    id     : TASK1
+    syscall: rcv_dtq(DTQ1, &data)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      var:
+        data:
+          value: DATA_A
+
+    TASK2:
+      tskstat: suspended
+
+    DTQ1:
+      stsklist:
+      datalist:

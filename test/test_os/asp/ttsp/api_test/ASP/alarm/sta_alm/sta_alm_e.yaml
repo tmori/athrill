@@ -1,0 +1,36 @@
+version: "$Id: sta_alm_e.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_alarm_sta_alm_e:
+  note: TESRY_001
+
+  variation:
+    gcov_all: true
+
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    ALM1:
+      type   : ALARM
+      almstat: TALM_STA
+      hdlstat: STP
+      lefttim: RELATIVE_TIME_A
+
+  do:
+    id     : TASK1
+    syscall: sta_alm(ALM1, RELATIVE_TIME_B)
+    ercd   : E_OK
+
+  post_condition:
+    0:
+      ALM1:
+        lefttim: RELATIVE_TIME_B
+
+    RELATIVE_TIME_B:
+      ALM1:
+        lefttim: 0
+
+    RELATIVE_TIME_B+1:
+      ALM1:
+        almstat: TALM_STP
+        hdlstat: ACTIVATE

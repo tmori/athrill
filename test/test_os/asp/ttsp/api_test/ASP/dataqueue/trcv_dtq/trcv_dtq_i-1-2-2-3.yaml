@@ -1,0 +1,56 @@
+version: "$Id: trcv_dtq_i-1-2-2-3.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_dataqueue_trcv_dtq_i_1_2_2_3:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      var:
+        p_data:
+          type: intptr_t 
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DTQ1
+
+    TASK3:
+      type   : TASK
+      tskstat: waiting
+      wobjid : DTQ1
+
+    DTQ1:
+      type   : DATAQUEUE
+      dtqcnt : 3
+      stsklist:
+       - TASK2:
+           data: DATA_A
+       - TASK3:
+           data: DATA_B
+      datalist:
+       - data: DATA_C
+       - data: DATA_D
+       - data: DATA_E
+
+  do:
+    id     : TASK1
+    syscall: trcv_dtq(DTQ1, &p_data, ANY_ELAPSED_TIME)
+    ercd   : E_OK
+
+  post_condition:
+    TASK1:
+      tskstat: running
+      var:
+        p_data:
+          value: DATA_C
+
+    TASK2:
+      tskstat: ready
+
+    DTQ1:
+      stsklist:
+       - TASK3:
+           data: DATA_B
+      datalist:
+       - data: DATA_D
+       - data: DATA_E
+       - data: DATA_A

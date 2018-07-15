@@ -1,0 +1,32 @@
+version: "$Id: psnd_pdq_f-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+ASP_pridataq_psnd_pdq_f_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+
+    PDQ1:
+      type: P_DATAQUEUE
+      pdqcnt  : 3
+      maxdpri : DATA_PRI_MAX
+      rtsklist :
+      datalist:
+        - data:     DATA_A
+          datapri:  DATA_PRI_MID
+        - data:     DATA_B
+          datapri:  DATA_PRI_LOW
+
+  do:
+    id     : TASK1
+    syscall: psnd_pdq(PDQ1, DATA_C, DATA_PRI_HIGH)
+    ercd   : E_OK
+
+  post_condition:
+    PDQ1:
+      datalist:
+        - data:     DATA_C
+          datapri:  DATA_PRI_HIGH
+        - data:     DATA_A
+          datapri:  DATA_PRI_MID
+        - data:     DATA_B
+          datapri:  DATA_PRI_LOW

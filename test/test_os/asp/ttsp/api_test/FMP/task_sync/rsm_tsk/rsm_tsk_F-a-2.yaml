@@ -1,0 +1,24 @@
+version: "$Id: rsm_tsk_F-a-2.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_task_sync_rsm_tsk_F_a_2:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: suspended
+      prcid  : PRC_OTHER
+
+    CPU_STATE1:
+      type   : CPU_STATE
+      loc_cpu: true
+      prcid  : PRC_SELF
+
+  do:
+    id     : TASK1
+    syscall: rsm_tsk(TASK2)
+    eruint : E_CTX
+
+  post_condition:

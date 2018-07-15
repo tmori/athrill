@@ -1,0 +1,666 @@
+
+	ref_tsk テストシート
+
+----------------------------------------------------------------------
+ TTSP
+     TOPPERS Test Suite Package
+
+ Copyright (C) 2009-2011 by Center for Embedded Computing Systems
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+ Copyright (C) 2009-2011 by Digital Craft Inc.
+ Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
+ Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
+ Copyright (C) 2009-2010 by Mitsuhiro Matsuura
+
+ 上記著作権者は，以下の (1)〜(3) の条件を満たす場合に限り，本ドキュメ
+ ント（本ドキュメントを改変したものを含む．以下同じ）を使用・複製・改
+ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+ (1) 本ドキュメントを利用する場合には，上記の著作権表示，この利用条件
+     および下記の無保証規定が，そのままの形でドキュメント中に含まれて
+     いること．
+ (2) 本ドキュメントを改変する場合には，ドキュメントを改変した旨の記述
+     を，改変後のドキュメント中に含めること．ただし，改変後のドキュメ
+     ントが，TOPPERSプロジェクト指定の開発成果物である場合には，この限
+     りではない．
+ (3) 本ドキュメントの利用により直接的または間接的に生じるいかなる損害
+     からも，上記著作権者およびTOPPERSプロジェクトを免責すること．また，
+     本ドキュメントのユーザまたはエンドユーザからのいかなる理由に基づ
+     く請求からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+
+ 本ドキュメントは，無保証で提供されているものである．上記著作権者およ
+ びTOPPERSプロジェクトは，本ドキュメントに関して，特定の使用目的に対す
+ る適合性も含めて，いかなる保証も行わない．また，本ドキュメントの利用
+ により直接的または間接的に生じたいかなる損害に関しても，その責任を負
+ わない．
+
+ $Id: ref_tsk.txt 2 2012-05-09 02:23:52Z nces-shigihara $
+----------------------------------------------------------------------
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+0. API仕様
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+ref_tsk		タスクの状態参照〔T〕
+
+【C言語API】
+	ER ercd = ref_tsk(ID tskid, T_RTSK *pk_rtsk)
+
+【パラメータ】
+	ID			tskid		対象タスクのID番号
+	T_RTSK *	pk_rtsk		タスクの現在状態を入れるパケットへのポインタ
+
+【リターンパラメータ】
+	ER			ercd		正常終了（E_OK）またはエラーコード
+
+　＊タスクの現在状態（パケットの内容）
+	STAT		tskstat		タスク状態
+	PRI			tskpri		タスクの現在優先度
+	PRI			tskbpri		タスクのベース優先度
+	STAT		tskwait		タスクの待ち要因
+	ID			wobjid		タスクの待ち対象のオブジェクトのID
+	TMO			lefttmo		タスクがタイムアウトするまでの時間
+	uint_t		actcnt		タスクの起動要求キューイング数
+	uint_t		wupcnt		タスクの起床要求キューイング数
+	bool_t		texmsk		タスクがタスク例外処理マスク状態か否か（保
+							護機能対応カーネルの場合）
+	bool_t		waifbd		タスクが待ち禁止状態か否か（保護機能対応カー
+							ネルの場合）
+	uint_t		svclevel	タスクの拡張サービスコールのネストレベル（保
+							護機能対応カーネルの場合）
+	ID			prcid		タスクの割付けプロセッサのID（マルチプロセッ
+							サ対応カーネルの場合）
+	ID			actprc		タスクの次回起動時の割付けプロセッサのID（マ
+							ルチプロセッサ対応カーネルの場合）
+
+【エラーコード】
+	E_CTX			コンテキストエラー（非タスクコンテキストからの呼出
+					し，CPUロック状態からの呼出し）
+	E_ID			不正ID番号（tskidが不正）
+	E_NOEXS〔D〕	オブジェクト未登録（対象タスクが未登録）
+	E_OACV〔P〕		オブジェクトアクセス違反（対象タスクに対する参照操
+					作が許可されていない）
+	E_MACV〔P〕		メモリアクセス違反（pk_rtskが指すメモリ領域への書込
+					みアクセスが許可されていない）
+
+【機能】
+
+tskidで指定したタスク（対象タスク）の現在状態を参照する．参照した現在状
+態は，pk_rtskで指定したメモリ領域に返される．
+
+tskstatには，対象タスクの現在のタスク状態を表す次のいずれかの値が返され
+る．
+
+	TTS_RUN		0x01U		実行状態
+	TTS_RDY		0x02U		実行可能状態
+	TTS_WAI		0x04U		待ち状態
+	TTS_SUS		0x08U		強制待ち状態
+	TTS_WAS		0x0cU		二重待ち状態
+	TTS_DMT		0x10U		休止状態
+
+マルチプロセッサ対応カーネルでは，対象タスクが自タスクの場合にも，
+tskstatがTTS_SUSとなる場合がある．この状況は，自タスクに対してref_tskを
+発行するのと同じタイミングで，他のプロセッサで実行されているタスクから
+同じタスクに対してsus_tskが発行された場合に発生する可能性がある．
+
+対象タスクが休止状態でない場合には，tskpriには対象タスクの現在優先度が，
+tskbpriには対象タスクのベース優先度が返される．対象タスクが休止状態であ
+る場合には，tskpriとtskbpriの値は保証されない．
+
+対象タスクが待ち状態である場合には，tskwaitには，対象タスクが何を待って
+いる状態であるかを表す次のいずれかの値が返される．
+
+	TTW_SLP		0x0001U		起床待ち
+	TTW_DLY		0x0002U		時間経過待ち
+	TTW_SEM		0x0004U		セマフォの資源獲得待ち
+	TTW_FLG		0x0008U		イベントフラグ待ち
+	TTW_SDTQ	0x0010U		データキューへの送信待ち
+	TTW_RDTQ	0x0020U		データキューからの受信待ち
+	TTW_SPDQ	0x0100U		優先度データキューへの送信待ち
+	TTW_RPDQ	0x0200U		優先度データキューからの受信待ち
+	TTW_MTX		0x0080U		ミューテックスのロック待ち状態
+	TTW_MBX		0x0040U		メールボックスからの受信待ち
+	TTW_MPF		0x2000U		固定長メモリブロックの獲得待ち
+
+対象タスクが待ち状態でない場合には，tskwaitの値は保証されない．
+
+対象タスクが起床待ち状態および時間経過待ち状態以外の待ち状態である場合
+には，wobjidに，対象タスクが待っているオブジェクトのID番号が返される．
+対象タスクが待ち状態でない場合や，起床待ち状態または時間経過待ち状態で
+ある場合には，wobjidの値は保証されない．
+
+対象タスクが時間経過待ち状態以外の待ち状態である場合には，lefttmoに，タ
+スクがタイムアウトを起こすまでの相対時間が返される．タスクがタイムアウ
+トを起こさない場合には，TMO_FEVR（＝-1）が返される．
+
+対象タスクが時間経過待ち状態である場合には，lefttmoに，タスクの遅延時間
+が経過して待ち解除されるまでの相対時間が返される．ただし，返されるべき
+相対時間がTMO型に格納することができない場合がありうる．この場合には，相
+対時間（RELTIM型，uint_t型に定義される）をTMO型（int_t型に定義される）
+に型キャストした値が返される．
+
+対象タスクが待ち状態でない場合には，lefttmoの値は保証されない．
+
+actcntには，対象タスクの起動要求キューイング数が返される．
+
+対象タスクが休止状態でない場合には，wupcntに，タスクの起床要求キューイ
+ング数が返される．対象タスクが休止状態である場合には，wupcntの値は保証
+されない．
+
+保護機能対応カーネルで，対象タスクが休止状態でない場合には，texmskに，
+対象タスクがタスク例外処理マスク状態の場合にtrue，そうでない場合に
+falseが返される．waifbdには，対象タスクが待ち禁止状態の場合にtrue，そう
+でない場合にfalseが返される．またsvclevelには，対象タスクが拡張サービス
+コールを呼び出していない場合には0，呼び出している場合には，実行中の拡張
+サービスコールがネスト段数が返される．対象タスクが休止状態である場合に
+は，texmsk，waifbd，svclevelの値は保証されない．
+
+マルチプロセッサ対応カーネルでは，prcidに，対象タスクの割付けプロセッサ
+のID番号が返される．またactprcには，対象タスクの次回起動時の割付けプロ
+セッサのID番号が返される．次回起動時の割付けプロセッサが未設定の場合に
+は，actprcにTPRC_NONE（＝0）が返される．
+
+tskidにTSK_SELF（＝0）を指定すると，自タスクが対象タスクとなる．
+
+【補足説明】
+
+対象タスクが時間経過待ち状態である場合に，lefttmo（TMO型）に返される値
+をRELTIM型に型キャストすることで，タスクが待ち解除されるまでの相対時間
+を正しく得ることができる．
+
+【TOPPERS/ASPカーネルにおける規定】
+
+ASPカーネルでは，tskwaitにTTW_MTXが返ることはない．ただし，ミューテック
+ス機能拡張パッケージを用いると，tskwaitにTTW_MTXが返る場合がある．
+
+【TOPPERS/FMPカーネルにおける規定】
+
+FMPカーネルでは，tskwaitにTTW_MTXが返ることはない．
+
+【使用上の注意】
+
+ref_tskはデバッグ時向けの機能であり，その他の目的に使用することは推奨し
+ない．これは，ref_tskを呼び出し，対象タスクの現在状態を参照した直後に割
+込みが発生した場合，ref_tskから戻ってきた時には対象タスクの状態が変化し
+ている可能性があるためである．
+
+【μITRON4.0仕様との関係】
+
+対象タスクが時間経過待ち状態の時にlefttmoに返される値について規定した．
+また，参照できるタスクの状態から，強制待ち要求ネスト数（suscnt）を除外
+した．
+
+マルチプロセッサ対応カーネルで参照できる情報として，割付けプロセッサの
+ID（prcid）と次回起動時の割付けプロセッサのID（actprc）を追加した．
+
+【μITRON4.0/PX仕様との関係】
+
+保護機能対応カーネルで参照できる情報として，タスク例外処理マスク状態か
+否か（texmsk），待ち禁止状態か否か（waifbd），拡張サービスコールのネス
+トレベル（svclevel）を追加した．
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+1. 仕様ベースのブラックボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.1. エラー条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1.2. 正常条件のテストケース(FMP)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+2. ソースコードの条件網羅確認
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.1. ソースコード
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ER
+ref_tsk(ID tskid, T_RTSK *pk_rtsk)
+{
+	TCB		*p_tcb;
+	uint_t	tstat;
+	ER		ercd;
+	PCB		*p_pcb;
+
+	LOG_REF_TSK_ENTER(tskid, pk_rtsk);
+	CHECK_TSKCTX_UNL();
+	CHECK_TSKID_SELF(tskid);
+
+	t_lock_cpu();
+	p_tcb = get_tcb_self(tskid, get_my_p_pcb());
+	p_pcb = t_acquire_tsk_lock(p_tcb);
+	tstat = p_tcb->tstat;
+	if (TSTAT_DORMANT(tstat)) {
+		/*
+ 		 *  対象タスクが休止状態の場合
+		 */
+		pk_rtsk->tskstat = TTS_DMT;
+	}
+	else {
+		/*
+ 		 *  タスク状態の取出し
+		 */
+		if (TSTAT_SUSPENDED(tstat)) {
+			if (TSTAT_WAITING(tstat)) {
+				pk_rtsk->tskstat = TTS_WAS;
+			}
+			else {
+				pk_rtsk->tskstat = TTS_SUS;
+			}
+		}
+		else if (TSTAT_WAITING(tstat)) {
+			pk_rtsk->tskstat = TTS_WAI;
+		}
+		else if (p_tcb == p_pcb->p_runtsk) {
+			pk_rtsk->tskstat = TTS_RUN;
+		}
+		else {
+			pk_rtsk->tskstat = TTS_RDY;
+		}
+
+		/*
+ 		 *  現在優先度とベース優先度の取出し
+		 */
+		pk_rtsk->tskpri = EXT_TSKPRI(p_tcb->priority);
+		pk_rtsk->tskbpri = EXT_TSKPRI(p_tcb->priority);
+
+		if (TSTAT_WAITING(tstat)) {
+			/*
+	 		 *  待ち要因と待ち対象のオブジェクトのIDの取出し
+			 */
+			switch (tstat & TS_WAIT_MASK) {
+			case TS_WAIT_SLP:
+				pk_rtsk->tskwait = TTW_SLP;
+				break;
+			case TS_WAIT_DLY:
+				pk_rtsk->tskwait = TTW_DLY;
+				break;
+			case TS_WAIT_SEM:
+				pk_rtsk->tskwait = TTW_SEM;
+				pk_rtsk->wobjid = SEMID(((SEMCB*)(p_tcb->p_wobjcb)));
+				break;
+			case TS_WAIT_FLG:
+				pk_rtsk->tskwait = TTW_FLG;
+				pk_rtsk->wobjid = FLGID(((FLGCB*)(p_tcb->p_wobjcb)));
+				break;
+			case TS_WAIT_SDTQ:
+				pk_rtsk->tskwait = TTW_SDTQ;
+				pk_rtsk->wobjid = DTQID(((DTQCB*)(p_tcb->p_wobjcb)));
+				break;
+			case TS_WAIT_RDTQ:
+				pk_rtsk->tskwait = TTW_RDTQ;
+				pk_rtsk->wobjid = DTQID(((DTQCB*)(p_tcb->p_wobjcb)));
+				break;
+			case TS_WAIT_SPDQ:
+				pk_rtsk->tskwait = TTW_SPDQ;
+				pk_rtsk->wobjid = PDQID(((PDQCB*)(p_tcb->p_wobjcb)));
+				break;
+			case TS_WAIT_RPDQ:
+				pk_rtsk->tskwait = TTW_RPDQ;
+				pk_rtsk->wobjid = PDQID(((PDQCB*)(p_tcb->p_wobjcb)));
+				break;
+			case TS_WAIT_MBX:
+				pk_rtsk->tskwait = TTW_MBX;
+				pk_rtsk->wobjid = MBXID(((MBXCB*)(p_tcb->p_wobjcb)));
+				break;
+			case TS_WAIT_MPF:
+				pk_rtsk->tskwait = TTW_MPF;
+				pk_rtsk->wobjid = MPFID(((MPFCB*)(p_tcb->p_wobjcb)));
+				break;
+			}
+
+			/*
+	 		 *  タイムアウトするまでの時間の取出し
+			 */
+			if ((p_tcb->tmevtb).callback != NULL) {
+				pk_rtsk->lefttmo =
+				  (TMO) tmevt_lefttim(p_pcb->p_tevtcb,
+									  &(p_tcb->tmevtb));
+			}
+			else {
+				pk_rtsk->lefttmo = TMO_FEVR;
+			}
+		}
+
+		/*
+ 		 *  起床要求キューイング数の取出し
+		 */
+		pk_rtsk->wupcnt = p_tcb->wupque ? 1U : 0U;
+	}
+
+	/*
+	 *  起動要求キューイング数の取出し
+	 */
+	pk_rtsk->actcnt = p_tcb->actque ? 1U : 0U;
+
+	/*
+	 *  次回起動時割付けプロセッサの取出し
+	 */
+	pk_rtsk->actprc = p_tcb->actprc;
+
+	/*
+	 *  割付けプロセッサの取出し
+	 */
+	pk_rtsk->prcid = p_tcb->p_pcb->prcid;
+
+	ercd = E_OK;
+	release_tsk_lock(p_pcb);
+	t_unlock_cpu();
+
+  error_exit:
+	LOG_REF_TSK_LEAVE(ercd, pk_rtsk);
+	return(ercd);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.2. マクロを展開したAPIと呼び出す内部関数
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[A] ref_tsk
+
+00 : ER
+01 : ref_tsk(ID tskid, T_RTSK *pk_rtsk)
+02 : {
+03 : 	TCB		*p_tcb;
+04 : 	uint_t	tstat;
+05 : 	ER		ercd;
+06 : 	PCB		*p_pcb;
+07 : 
+08 : 	if (!sense_tskctx_unl()) {
+09 : 		ercd = E_CTX;
+10 : 		goto error_exit;
+11 : 	}
+12 : 	if (!((TMIN_TSKID <= (tskid) && (tskid) <= tmax_tskid)
+13 : 	                                    || (tskid) == TSK_SELF)) {
+14 : 		ercd = E_ID;
+15 : 		goto error_exit;
+16 : 	}
+17 : 
+18 : 	t_lock_cpu();
+19 : 	p_tcb = ((tskid) == TSK_SELF ? (get_my_p_pcb())->p_runtsk 
+20 : 				: (p_tcb_table[((uint_t)((tskid) - TMIN_TSKID))]));
+21 : 	p_pcb = t_acquire_tsk_lock(p_tcb);
+22 : 	tstat = p_tcb->tstat;
+23 : 	if ((tstat) == TS_DORMANT) {
+24 : 		/*
+25 :  		 *  対象タスクが休止状態の場合
+26 : 		 */
+27 : 		pk_rtsk->tskstat = TTS_DMT;
+28 : 	}
+29 : 	else {
+30 : 		/*
+31 :  		 *  タスク状態の取出し
+32 : 		 */
+33 : 		if (((tstat) & TS_SUSPENDED) != 0U) {
+34 : 			if (((tstat) & TS_WAITING) != 0U) {
+35 : 				pk_rtsk->tskstat = TTS_WAS;
+36 : 			}
+37 : 			else {
+38 : 				pk_rtsk->tskstat = TTS_SUS;
+39 : 			}
+40 : 		}
+41 : 		else if (((tstat) & TS_WAITING) != 0U) {
+42 : 			pk_rtsk->tskstat = TTS_WAI;
+43 : 		}
+44 : 		else if (p_tcb == p_pcb->p_runtsk) {
+45 : 			pk_rtsk->tskstat = TTS_RUN;
+46 : 		}
+47 : 		else {
+48 : 			pk_rtsk->tskstat = TTS_RDY;
+49 : 		}
+50 : 
+51 : 		/*
+52 :  		 *  現在優先度とベース優先度の取出し
+53 : 		 */
+54 : 		pk_rtsk->tskpri = (PRI)(p_tcb->priority) + TMIN_TPRI;
+55 : 		pk_rtsk->tskbpri = (PRI)(p_tcb->priority) + TMIN_TPRI;
+56 : 
+57 : 		if (((tstat) & TS_WAITING) != 0U) {
+58 : 			/*
+59 : 	 		 *  待ち要因と待ち対象のオブジェクトのIDの取出し
+60 : 			 */
+61 : 			switch (tstat & TS_WAIT_MASK) {
+62 : 			case TS_WAIT_SLP:
+63 : 				pk_rtsk->tskwait = TTW_SLP;
+64 : 				break;
+65 : 			case TS_WAIT_DLY:
+66 : 				pk_rtsk->tskwait = TTW_DLY;
+67 : 				break;
+68 : 			case TS_WAIT_SEM:
+69 : 				pk_rtsk->tskwait = TTW_SEM;
+70 : 				pk_rtsk->wobjid = ((ID)(((((SEMCB*)
+71 : 	(p_tcb->p_wobjcb))->p_seminib) - seminib_table) + TMIN_SEMID));
+72 : 				break;
+73 : 			case TS_WAIT_FLG:
+74 : 				pk_rtsk->tskwait = TTW_FLG;
+75 : 				pk_rtsk->wobjid = ((ID)(((((FLGCB*)
+76 : 	(p_tcb->p_wobjcb))->p_flginib) - flginib_table) + TMIN_FLGID));
+77 : 				break;
+78 : 			case TS_WAIT_SDTQ:
+79 : 				pk_rtsk->tskwait = TTW_SDTQ;
+80 : 				pk_rtsk->wobjid = ((ID)(((((DTQCB*)
+81 : 	(p_tcb->p_wobjcb))->p_dtqinib) - dtqinib_table) + TMIN_DTQID));
+82 : 				break;
+83 : 			case TS_WAIT_RDTQ:
+84 : 				pk_rtsk->tskwait = TTW_RDTQ;
+85 : 				pk_rtsk->wobjid = ((ID)(((((DTQCB*)
+86 : 	(p_tcb->p_wobjcb))->p_dtqinib) - dtqinib_table) + TMIN_DTQID));
+87 : 				break;
+88 : 			case TS_WAIT_SPDQ:
+89 : 				pk_rtsk->tskwait = TTW_SPDQ;
+90 : 				pk_rtsk->wobjid = ((ID)(((((PDQCB*)
+91 : 	(p_tcb->p_wobjcb))->p_pdqinib) - pdqinib_table) + TMIN_PDQID));
+92 : 				break;
+93 : 			case TS_WAIT_RPDQ:
+94 : 				pk_rtsk->tskwait = TTW_RPDQ;
+95 : 				pk_rtsk->wobjid = ((ID)(((((PDQCB*)
+96 : 	(p_tcb->p_wobjcb))->p_pdqinib) - pdqinib_table) + TMIN_PDQID));
+97 : 				break;
+98 : 			case TS_WAIT_MBX:
+99 : 				pk_rtsk->tskwait = TTW_MBX;
+100: 				pk_rtsk->wobjid = ((ID)(((((MBXCB*)
+101: 	(p_tcb->p_wobjcb))->p_mbxinib) - mbxinib_table) + TMIN_MBXID));
+102: 				break;
+103: 			case TS_WAIT_MPF:
+104: 				pk_rtsk->tskwait = TTW_MPF;
+105: 				pk_rtsk->wobjid = ((ID)(((((MPFCB*)
+106: 	(p_tcb->p_wobjcb))->p_mpfinib) - mpfinib_table) + TMIN_MPFID));
+107: 				break;
+108: 			}
+109: 
+110: 			/*
+111: 	 		 *  タイムアウトするまでの時間の取出し
+112: 			 */
+113: 			if ((p_tcb->tmevtb).callback != NULL) {
+114: 				pk_rtsk->lefttmo =
+115: 				  (TMO) tmevt_lefttim(p_pcb->p_tevtcb,
+116: 									  &(p_tcb->tmevtb));
+117: 			}
+118: 			else {
+119: 				pk_rtsk->lefttmo = TMO_FEVR;
+120: 			}
+121: 		}
+122: 
+123: 		/*
+124:  		 *  起床要求キューイング数の取出し
+125: 		 */
+126: 		pk_rtsk->wupcnt = p_tcb->wupque ? 1U : 0U;
+127: 	}
+128: 
+129: 	/*
+130: 	 *  起動要求キューイング数の取出し
+131: 	 */
+132: 	pk_rtsk->actcnt = p_tcb->actque ? 1U : 0U;
+133: 
+134: 	/*
+135: 	 *  次回起動時割付けプロセッサの取出し
+136: 	 */
+137: 	pk_rtsk->actprc = p_tcb->actprc;
+138: 
+139: 	/*
+140: 	 *  割付けプロセッサの取出し
+141: 	 */
+142: 	pk_rtsk->prcid = p_tcb->p_pcb->prcid;
+143: 
+144: 	ercd = E_OK;
+145: 	release_tsk_lock(p_pcb);
+146: 	t_unlock_cpu();
+147: 
+148:   error_exit:
+149: 	return(ercd);
+150: }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.3. 条件式
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+(A1)  08  : !sense_tskctx_unl()
+(A2)  12  : TMIN_TSKID <= (tskid)
+(A3)  12  : (tskid) <= tmax_tskid
+(A4)  13  : (tskid) == TSK_SELF
+(A5)  19  : (tskid) == TSK_SELF
+(A6)  23  : (tstat) == TS_DORMANT
+(A7)  33  : ((tstat) & TS_SUSPENDED) != 0U
+(A8)  34  : ((tstat) & TS_WAITING) != 0U
+(A9)  41  : ((tstat) & TS_WAITING) != 0U
+(A10) 44  : p_tcb == p_pcb->p_runtsk
+(A11) 57  : ((tstat) & TS_WAITING) != 0U
+(A12) 62  : case TS_WAIT_SLP:
+(A13) 65  : case TS_WAIT_DLY:
+(A14) 68  : case TS_WAIT_SEM:
+(A15) 73  : case TS_WAIT_FLG:
+(A16) 78  : case TS_WAIT_SDTQ:
+(A17) 83  : case TS_WAIT_RDTQ:
+(A18) 88  : case TS_WAIT_SPDQ:
+(A19) 93  : case TS_WAIT_RPDQ:
+(A20) 98  : case TS_WAIT_MBX:
+(A21) 103 : case TS_WAIT_MPF:
+(A22) 113 : (p_tcb->tmevtb).callback != NULL
+(A23) 126 : p_tcb->wupque
+(A24) 132 : p_tcb->actque
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2.4. 条件網羅表
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            (A1) (A2) (A3) (A4) (A5) (A6) (A7) (A8) (A9) (A10)(A11)(A12)(A13)(A14)(A15)(A16)(A17)(A18)(A19)(A20)(A21)(A22)(A23)(A24)
+(F-a-1)      T    D    D    D    D    D    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    D
+(F-a-2)      T    D    D    D    D    D    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    D
+(F-a-3)      T    D    D    D    D    D    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    D
+(F-a-4)      T    D    D    D    D    D    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    D
+(F-a-5)      T    D    D    D    D    D    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    D
+(F-a-6)      T    D    D    D    D    D    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    D
+(F-b-1)      F    F   D/T   F    D    D    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    D
+(F-b-2)      F    T    F    F    D    D    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    D
+(F-c-1)      F    T    T   D/F   F    F    F    D    F     T    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-c-2)      F    T    T   D/F   F    F    F    D    F     F    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-c-3-1)    F    T    T   D/F   F    F    F    D    T     D    T    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-c-3-2)    F    T    T   D/F   F    F    F    D    T     D    T    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-c-3-3)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-c-3-4)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-c-3-5)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    T   D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-c-3-6)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    T   D/F  D/F  D/F  D/F   F    F    F
+(F-c-3-7)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    T   D/F  D/F  D/F   F    F    F
+(F-c-3-8)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    T   D/F  D/F   F    F    F
+(F-c-3-9)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    F    T   D/F   F    F    F
+(F-c-3-10)   F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    F    F    T    F    F    F
+(F-c-4-1)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-c-4-2)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-c-4-3)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    T   D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-c-4-4)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    T   D/F  D/F  D/F  D/F   T    F    F
+(F-c-4-5)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    T   D/F  D/F  D/F   T    F    F
+(F-c-4-6)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    T   D/F  D/F   T    F    F
+(F-c-4-7)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    F    T   D/F   T    F    F
+(F-c-4-8)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    F    F    T    T    F    F
+(F-c-5)      F    T    T   D/F   F    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-c-6-1)    F    T    T   D/F   F    F    T    T    D     D    T    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-c-6-2)    F    T    T   D/F   F    F    T    T    D     D    T    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-c-6-3)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-c-6-4)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-c-6-5)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    T   D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-c-6-6)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    T   D/F  D/F  D/F  D/F   F    F    F
+(F-c-6-7)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    F    T   D/F  D/F  D/F   F    F    F
+(F-c-6-8)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    F    F    T   D/F  D/F   F    F    F
+(F-c-6-9)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    F    F    F    T   D/F   F    F    F
+(F-c-6-10)   F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    F    F    F    F    T    F    F    F
+(F-c-7)      F    T    T   D/F   F    T    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    F
+(F-c-8)      F    T    T   D/F   F    F    F    D    F     F    F    D    D    D    D    D    D    D    D    D    D    D    T    F
+(F-c-9)      F    T    T   D/F   F    F    F    D    F     F    F    D    D    D    D    D    D    D    D    D    D    D    F    T
+(F-c-10)     F    T    T   D/F   F    F    F    D    F     F    F    D    D    D    D    D    D    D    D    D    D    D    F    T
+(F-c-11-1)   F    T    T   D/F   F    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-c-11-2)   F    T    T   D/F   F    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-d-1)      F    F   D/T   T    T    F    F    D    F     T    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-d-2)      F    F   D/T   T    T    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-d-3)      F    F   D/T   T    T    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-e-1)      F    T    T   D/F   F    F    F    D    F     T    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-e-2)      F    T    T   D/F   F    F    F    D    F     F    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-e-3-1)    F    T    T   D/F   F    F    F    D    T     D    T    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-e-3-2)    F    T    T   D/F   F    F    F    D    T     D    T    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-e-3-3)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-e-3-4)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-e-3-5)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    T   D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-e-3-6)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    T   D/F  D/F  D/F  D/F   F    F    F
+(F-e-3-7)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    T   D/F  D/F  D/F   F    F    F
+(F-e-3-8)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    T   D/F  D/F   F    F    F
+(F-e-3-9)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    F    T   D/F   F    F    F
+(F-e-3-10)   F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    F    F    T    F    F    F
+(F-e-4-1)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-e-4-2)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-e-4-3)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    T   D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-e-4-4)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    T   D/F  D/F  D/F  D/F   T    F    F
+(F-e-4-5)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    T   D/F  D/F  D/F   T    F    F
+(F-e-4-6)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    T   D/F  D/F   T    F    F
+(F-e-4-7)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    F    T   D/F   T    F    F
+(F-e-4-8)    F    T    T   D/F   F    F    F    D    T     D    T    F    F    F    F    F    F    F    F    F    T    T    F    F
+(F-e-5)      F    T    T   D/F   F    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-e-6-1)    F    T    T   D/F   F    F    T    T    D     D    T    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-e-6-2)    F    T    T   D/F   F    F    T    T    D     D    T    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F  D/F   T    F    F
+(F-e-6-3)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-e-6-4)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    T   D/F  D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-e-6-5)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    T   D/F  D/F  D/F  D/F  D/F   F    F    F
+(F-e-6-6)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    T   D/F  D/F  D/F  D/F   F    F    F
+(F-e-6-7)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    F    T   D/F  D/F  D/F   F    F    F
+(F-e-6-8)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    F    F    T   D/F  D/F   F    F    F
+(F-e-6-9)    F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    F    F    F    T   D/F   F    F    F
+(F-e-6-10)   F    T    T   D/F   F    F    T    T    D     D    T    F    F    F    F    F    F    F    F    F    T    F    F    F
+(F-e-7)      F    T    T   D/F   F    T    D    D    D     D    D    D    D    D    D    D    D    D    D    D    D    D    D    F
+(F-e-8)      F    T    T   D/F   F    F    F    D    F     T    F    D    D    D    D    D    D    D    D    D    D    D    T    F
+(F-e-9)      F    T    T   D/F   F    F    F    D    F     T    F    D    D    D    D    D    D    D    D    D    D    D    F    T
+(F-e-10)     F    T    T   D/F   F    F    F    D    F     T    F    D    D    D    D    D    D    D    D    D    D    D    F    T
+(F-e-11-1)   F    T    T   D/F   F    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-e-11-2)   F    T    T   D/F   F    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-e-11-3)   F    T    T   D/F   F    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-e-11-4)   F    T    T   D/F   F    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+(F-e-11-5)   F    T    T   D/F   F    F    T    F    D     D    F    D    D    D    D    D    D    D    D    D    D    D    F    F
+------------------------------------------------------------------------------------------------------------------------------------
+網羅         O    O    O    O    O    O    O    O    O     O    O    O    O    O    O    O    O    O    O    O    X    O    O    O
+
+【備考】
+・ASPカーネルのテストケースでは参照できないパラメータが存在するため，自
+  プロセッサに対して発行するテストケースも作成している．そのテストケー
+  スについてはASPカーネルのテストケースと分岐が重複するので，条件網羅表
+  にはFMPカーネルのテストケースのみ記載する．
+・正常な待ち状態の場合(A21)がFとなることはないため，(A21)の条件式は網羅
+  できない．
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+
+3. ホワイトボックステスト
+
+■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+必要なし．
+
+
+
+以上．

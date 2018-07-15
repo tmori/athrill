@@ -1,0 +1,30 @@
+version: "$Id: ini_mbx_F-b-1-7.yaml 2 2012-05-09 02:23:52Z nces-shigihara $"
+FMP_mailbox_ini_mbx_F_b_1_7:
+  pre_condition:
+    TASK1:
+      type   : TASK
+      tskstat: running
+      prcid  : PRC_SELF
+
+    TASK2:
+      type   : TASK
+      tskstat: waiting-suspended
+      wobjid : MBX1
+      prcid  : PRC_OTHER
+
+    MBX1:
+      type    : MAILBOX
+      wtsklist:
+        - TASK2:
+
+  do:
+    id     : TASK1
+    syscall: ini_mbx(MBX1)
+    ercd   : E_OK
+
+  post_condition:
+    TASK2:
+      tskstat: suspended
+
+    MBX1:
+      wtsklist:
