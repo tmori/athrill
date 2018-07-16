@@ -88,9 +88,9 @@ ttsp_target_gain_tick(void)
 	SIL_PRE_LOC;
 	uint16_t count;
 
+	SIL_LOC_INT();
 	count = sil_reh_mem((void *) TAAnCNT(TIMER_DTIM_ID));
 
-	SIL_LOC_INT();
 	SetTimerStartTAA(TIMER_DTIM_ID);
 	x_enable_int(INTNO_TIMER);
 	SIL_UNL_INT();
