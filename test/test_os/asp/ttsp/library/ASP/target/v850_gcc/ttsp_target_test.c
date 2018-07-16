@@ -43,7 +43,7 @@
 #include "kernel_impl.h"
 #include <sil.h>
 #include "ttsp_target_test.h"
-
+#include "target_timer.h"
 
 /*
  *  ティック更新の停止
@@ -51,7 +51,15 @@
 void
 ttsp_target_stop_tick(void)
 {
-	//TODO
+	SIL_PRE_LOC;
+	
+	SIL_LOC_INT();
+
+	x_disable_int(INTNO_TIMER);
+	SetTimerStopTAA(INTNO_TIMER);
+	x_clear_int(INTNO_TIMER);
+	SIL_UNL_INT();
+	return;
 }
 
 /*
@@ -60,7 +68,15 @@ ttsp_target_stop_tick(void)
 void
 ttsp_target_start_tick(void)
 {
-	//TODO
+	SIL_PRE_LOC;
+	
+	SIL_LOC_INT();
+
+	SetTimerStartTAA(TIMER_DTIM_ID);
+	x_enable_int(INTNO_TIMER);
+	
+	SIL_UNL_INT();
+	return;
 }
 
 /*
@@ -69,7 +85,22 @@ ttsp_target_start_tick(void)
 void
 ttsp_target_gain_tick(void)
 {
-	//TODO
+	SIL_PRE_LOC;
+	uint16_t count;
+
+	count = sil_reh_mem((void *) TAAnCNT(TIMER_DTIM_ID));
+
+	SIL_LOC_INT();
+	SetTimerStartTAA(TIMER_DTIM_ID);
+	x_enable_int(INTNO_TIMER);
+	SIL_UNL_INT();
+
+	sil_dly_nse((1000 -count) * 1000);/* 1msec */
+
+	SIL_LOC_INT();
+	x_disable_int(INTNO_TIMER);
+	SetTimerStopTAA(INTNO_TIMER);
+	SIL_UNL_INT();
 }
 
 /*

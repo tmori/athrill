@@ -167,7 +167,6 @@
 #define TNUM_INT			117U
 #define TMIN_INTNO			0U
 #define TMAX_INTNO			116U
-#define TNUM_INTNO			TNUM_INT
 
 /*************************************************
  * 16ビットタイマ／イベントカウンタAA(TAA)
