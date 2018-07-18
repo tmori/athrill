@@ -120,7 +120,7 @@ ttsp_int_raise(INTNO intno)
 void
 ttsp_cpuexc_raise(EXCNO excno)
 {
-	//TODO
+	do_trap(0x01);
 }
 
 /*

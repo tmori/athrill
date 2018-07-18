@@ -127,8 +127,8 @@
 /*
  *  CPU例外ハンドラ番号(正常値)
  */
-#define TTSP_EXCNO_A  1		/* CPU例外発生元のコンテキストへreturn可能(未定義命令) */
-#define TTSP_EXCNO_B  2		/* 本番号でCPU例外を発生させるテストケースはない(SWI) */
+#define TTSP_EXCNO_A  4		/* CPU例外発生元のコンテキストへreturn可能(TRAP) */
+#define TTSP_EXCNO_B  3		/* 本番号でCPU例外を発生させるテストケースはない(FETRAP) */
 
 /*
  *  CPU例外ハンドラ番号(異常値)
