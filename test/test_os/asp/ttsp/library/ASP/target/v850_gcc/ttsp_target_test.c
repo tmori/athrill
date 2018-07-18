@@ -45,6 +45,8 @@
 #include "ttsp_target_test.h"
 #include "target_timer.h"
 
+static unsigned int athrill_device_raise_interrupt __attribute__ ((section(".athrill_device_section")));
+
 /*
  *  ティック更新の停止
  */
@@ -109,7 +111,7 @@ ttsp_target_gain_tick(void)
 void
 ttsp_int_raise(INTNO intno)
 {
-	//TODO
+	athrill_device_raise_interrupt = intno;
 }
 
 /*
@@ -136,6 +138,6 @@ ttsp_cpuexc_hook(EXCNO excno, void* p_excinf)
 void
 ttsp_clear_int_req(INTNO intno)
 {
-	//TODO
+	x_clear_int(intno);
 }
 

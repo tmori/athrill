@@ -47,6 +47,7 @@ MEMORY
 {
 	INTROM(raxi) : org = 0x00000000, len = 512k
 	INTRAM(wax)  : org = 0x03FF7000, len = 32k
+	ADEV(wax)    : org = 0xDEAD0000, len = 1k
 };
 
 PROVIDE(__stack = 0);
@@ -125,6 +126,13 @@ SECTIONS
 		*(.tcommon)
 	} > INTRAM
 
+	.athrill_device_section	: 
+	{
+		. = ALIGN(4);
+		*(.athrill_device_section)
+		. = ALIGN(4);
+	} > ADEV
+	
 	.comment 0 : { *(.comment) }
 	.debug			0 : { *(.debug) }
 	.line			0 : { *(.line) }

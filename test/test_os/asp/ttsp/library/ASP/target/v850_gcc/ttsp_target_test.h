@@ -99,17 +99,17 @@
 /*  
  *  割込み番号(正常値)
  */
-#define TTSP_INTNO_A    9	/* 割込み番号A */
-#define TTSP_INTNO_B   10	/* 割込み番号B */
-#define TTSP_INTNO_C   11	/* 割込み番号C */
-#define TTSP_INTNO_D   12	/* 割込み番号D */
-#define TTSP_INTNO_E   13	/* 割込み番号E */
-#define TTSP_INTNO_F   14	/* 割込み番号F */
+#define TTSP_INTNO_A   80	/* 割込み番号A */
+#define TTSP_INTNO_B   81	/* 割込み番号B */
+#define TTSP_INTNO_C   82	/* 割込み番号C */
+#define TTSP_INTNO_D   83	/* 割込み番号D */
+#define TTSP_INTNO_E   84	/* 割込み番号E */
+#define TTSP_INTNO_F   85	/* 割込み番号F */
 
 /*
  *  割込み番号(異常値)
  */
-#define TTSP_INVALID_INTNO  50	/* ターゲットでサポートしていない割込み番号 */
+#define TTSP_INVALID_INTNO  200	/* ターゲットでサポートしていない割込み番号 */
 #define TTSP_NOT_SET_INTNO   1	/* 割込み要求ラインに対して割込み属性が設定されていない割込み番号 */
 
 /*
@@ -122,7 +122,7 @@
 /*
  *  割込みハンドラ番号(異常値)
  */
-#define TTSP_INVALID_INHNO  50
+#define TTSP_INVALID_INHNO  200
 
 /*
  *  CPU例外ハンドラ番号(正常値)

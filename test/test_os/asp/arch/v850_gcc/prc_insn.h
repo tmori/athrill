@@ -5,7 +5,7 @@
  * 
  *  Copyright (C) 2010 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -65,6 +65,14 @@ Inline void enable_int(void)
 	Asm("	ei");
 }
 
+Inline void do_halt(void)
+{
+	Asm("	halt");
+}
+Inline void do_nop(void)
+{
+	Asm("	nop");
+}
 
 Inline void set_bit(uint8_t bit_offset , uint32_t addr)
 {
