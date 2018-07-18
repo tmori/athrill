@@ -124,16 +124,15 @@ ttsp_cpuexc_raise(EXCNO excno)
 }
 
 /*
- *  CPU例外発生時のフック処理(SkyEyeでは不要)
+ *  CPU例外発生時のフック処理(athrillでは不要)
  */
 void
 ttsp_cpuexc_hook(EXCNO excno, void* p_excinf)
 {
-	//TODO
 }
 
 /*
- *  割込み要求のクリア(SkyEyeでは不要)
+ *  割込み要求のクリア
  */
 void
 ttsp_clear_int_req(INTNO intno)
