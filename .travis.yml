@@ -6,5 +6,5 @@ script:
   - echo ${HOME}
   - pwd
   - ls -l
-  - sh test/do_build.sh
-  - sh test/do_test.sh
+  - bash test/do_build.sh
+  - bash test/do_test.sh
