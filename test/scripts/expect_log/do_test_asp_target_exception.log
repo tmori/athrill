@@ -1,9 +1,9 @@
 core id num=1
-ROM : START=0x0 SIZE=512
-RAM : START=0x3ff7000 SIZE=512
+ROM : START=0x0 SIZE=4096
+RAM : START=0x3ff7000 SIZE=4096
 RAM : START=0xdead0000 SIZE=1
-Elf loading was succeeded:0x0 - 0xb0b5 : 44.181 KB
-Elf loading was succeeded:0xb0b8 - 0xe900 : 0.0 KB
+Elf loading was succeeded:0x0 - 0xb0f1 : 44.241 KB
+Elf loading was succeeded:0xb0f4 - 0xe93c : 0.0 KB
 ELF SYMBOL SECTION LOADED:index=18
 ELF SYMBOL SECTION LOADED:sym_num=517
 ELF STRING TABLE SECTION LOADED:index=19
