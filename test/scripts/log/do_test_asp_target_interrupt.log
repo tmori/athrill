@@ -1,0 +1,36 @@
+core id num=1
+ROM : START=0x0 SIZE=4096
+RAM : START=0x3ff7000 SIZE=4096
+RAM : START=0xdead0000 SIZE=1
+Elf loading was succeeded:0x0 - 0xa8cd : 42.205 KB
+Elf loading was succeeded:0xa8d0 - 0xe0e0 : 0.4 KB
+ELF SYMBOL SECTION LOADED:index=19
+ELF SYMBOL SECTION LOADED:sym_num=522
+ELF STRING TABLE SECTION LOADED:index=20
+athrill_device_raise_interrupt=0xdead0000
+Check point 1 passed.
+Check point 2 passed.
+ttsp_int_raise(TTSP_INTNO_A) : OK
+Check point 3 passed.
+Check point 4 passed.
+Check point 5 passed.
+ttsp_int_raise(TTSP_INTNO_A) : OK
+Check point 6 passed.
+Check point 7 passed.
+Check point 8 passed.
+ttsp_int_raise(TTSP_INTNO_D) : OK
+Check point 9 passed.
+ttsp_int_raise(TTSP_INTNO_E) : OK
+Check point 10 passed.
+ttsp_int_raise(TTSP_INTNO_F) : OK
+Check point 11 passed.
+ttsp_int_raise(TTSP_INTNO_A) : OK
+Check point 12 passed.
+ttsp_int_raise(TTSP_INTNO_B) : OK
+Check point 13 passed.
+ttsp_int_raise(TTSP_INTNO_C) : OK
+Check point 14 passed.
+Check point 15 passed.
+Check point 16 passed.
+All check points passed.
+EXIT for timeout(2000000).

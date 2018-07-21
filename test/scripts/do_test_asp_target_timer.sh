@@ -2,16 +2,9 @@
 
 . test/env.sh
 
-TIMEOUT=20000000
-rm -f log
-athrill2 -c1 -m ${CONFIG_MEMORY} -d ${CONFIG_DEBUG} test/test_os/asp/ttsp/obj/check_library/timer/asp -t ${TIMEOUT} | tee ${TEST_LOG}/log.txt
+TEST_TIMEOUT=20000000
+TEST_BIN=test/test_os/asp/ttsp/obj/check_library/timer/asp
 
-egrep "Assert|failed|error" ${TEST_LOG}/log.txt 
-if [ $? -ne 0 ]
-then
-    echo "PASSED: $0"
-    exit 0
-else
-    echo "FAILED: $0"
-    exit 1
-fi
+util_set_cmdname $0
+util_do_test 
+util_do_log_check

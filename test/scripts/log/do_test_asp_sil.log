@@ -1,0 +1,124 @@
+core id num=1
+ROM : START=0x0 SIZE=4096
+RAM : START=0x3ff7000 SIZE=4096
+RAM : START=0xdead0000 SIZE=1
+Elf loading was succeeded:0x0 - 0xc6cc : 49.716 KB
+Elf loading was succeeded:0xc6cc - 0xff28 : 0.0 KB
+ELF SYMBOL SECTION LOADED:index=18
+ELF SYMBOL SECTION LOADED:sym_num=545
+ELF STRING TABLE SECTION LOADED:index=19
+athrill_device_raise_interrupt=0xdead0000
+=== test start from INIRTN ===
+test_of_sil_mem()        : OK
+test_of_sns_ker()        : OK
+test_of_SIL_LOC_INT() [a]: OK
+Check point 1 passed.
+=== test start from TASK ===
+test_of_sil_dly_nse()    : OK
+test_of_sil_mem()        : OK
+test_of_sns_ker()        : OK
+test_of_SIL_LOC_INT() [a]: OK
+test_of_SIL_LOC_INT() [b]: OK
+test_of_SIL_LOC_INT() [c]: OK
+test_of_SIL_LOC_INT() [d]: OK
+test_of_SIL_LOC_INT() [e]: OK
+test_of_SIL_LOC_INT() [h]: OK
+test_of_SIL_LOC_INT() [i]: OK
+test_of_SIL_LOC_INT() [j]: OK
+test_of_SIL_LOC_INT() [k]: OK
+Check point 2 passed.
+=== test start from TASK EXPECT ===
+Check point 3 passed.
+test_of_sil_dly_nse()    : OK
+test_of_sil_mem()        : OK
+test_of_sns_ker()        : OK
+test_of_SIL_LOC_INT() [a]: OK
+test_of_SIL_LOC_INT() [b]: OK
+test_of_SIL_LOC_INT() [c]: OK
+test_of_SIL_LOC_INT() [d]: OK
+test_of_SIL_LOC_INT() [e]: OK
+test_of_SIL_LOC_INT() [h]: OK
+test_of_SIL_LOC_INT() [i]: OK
+test_of_SIL_LOC_INT() [j]: OK
+test_of_SIL_LOC_INT() [k]: OK
+Check point 4 passed.
+=== test start from ALARM ===
+Check point 5 passed.
+test_of_sil_mem()        : OK
+test_of_sns_ker()        : OK
+test_of_SIL_LOC_INT() [a]: OK
+test_of_SIL_LOC_INT() [b]: OK
+test_of_SIL_LOC_INT() [c]: OK
+test_of_SIL_LOC_INT() [h]: OK
+test_of_SIL_LOC_INT() [i]: OK
+Check point 6 passed.
+Check point 7 passed.
+test_of_SIL_LOC_INT() [e]: OK
+test_of_SIL_LOC_INT() [k]: OK
+Check point 8 passed.
+=== test start from CYCLIC ===
+Check point 9 passed.
+test_of_sil_mem()        : OK
+test_of_sns_ker()        : OK
+test_of_SIL_LOC_INT() [a]: OK
+test_of_SIL_LOC_INT() [b]: OK
+test_of_SIL_LOC_INT() [c]: OK
+test_of_SIL_LOC_INT() [h]: OK
+test_of_SIL_LOC_INT() [i]: OK
+Check point 10 passed.
+Check point 11 passed.
+test_of_SIL_LOC_INT() [e]: OK
+test_of_SIL_LOC_INT() [k]: OK
+Check point 12 passed.
+=== test start from EXCEPTION ===
+Check point 13 passed.
+test_of_sil_mem()        : OK
+test_of_sns_ker()        : OK
+test_of_SIL_LOC_INT() [a]: OK
+test_of_SIL_LOC_INT() [b]: OK
+test_of_SIL_LOC_INT() [c]: OK
+test_of_SIL_LOC_INT() [h]: OK
+test_of_SIL_LOC_INT() [i]: OK
+Check point 14 passed.
+Check point 15 passed.
+test_of_SIL_LOC_INT() [d]: OK
+test_of_SIL_LOC_INT() [j]: OK
+Check point 16 passed.
+Check point 17 passed.
+test_of_SIL_LOC_INT() [e]: OK
+test_of_SIL_LOC_INT() [k]: OK
+Check point 18 passed.
+=== test start from INTHDR ===
+Check point 19 passed.
+test_of_sil_mem()        : OK
+test_of_sns_ker()        : OK
+test_of_SIL_LOC_INT() [a]: OK
+test_of_SIL_LOC_INT() [b]: OK
+test_of_SIL_LOC_INT() [c]: OK
+test_of_SIL_LOC_INT() [h]: OK
+test_of_SIL_LOC_INT() [i]: OK
+Check point 20 passed.
+Check point 21 passed.
+test_of_SIL_LOC_INT() [e]: OK
+test_of_SIL_LOC_INT() [k]: OK
+Check point 22 passed.
+=== test start from ISR ===
+Check point 23 passed.
+test_of_sil_mem()        : OK
+test_of_sns_ker()        : OK
+test_of_SIL_LOC_INT() [a]: OK
+test_of_SIL_LOC_INT() [b]: OK
+test_of_SIL_LOC_INT() [c]: OK
+test_of_SIL_LOC_INT() [h]: OK
+test_of_SIL_LOC_INT() [i]: OK
+Check point 24 passed.
+Check point 25 passed.
+test_of_SIL_LOC_INT() [e]: OK
+test_of_SIL_LOC_INT() [k]: OK
+Check point 26 passed.
+=== test start from TERRTN ===
+test_of_sil_mem()        : OK
+test_of_sns_ker()        : OK
+test_of_SIL_LOC_INT() [a]: OK
+All check points passed.
+EXIT for timeout(20000000).
