@@ -6,3 +6,4 @@ script:
   - pwd
   - ls -l
   - sh test/do_build.sh
+  - sh test/do_test.sh
