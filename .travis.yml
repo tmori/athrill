@@ -2,6 +2,7 @@ language: c
 compiler:
   - gcc
 script:
+  - ls -l /bin/sh
   - echo ${HOME}
   - pwd
   - ls -l
