@@ -228,7 +228,7 @@ $END$
 $NL$
 $NL$
 
-$TAB$.section .text , "ax"$NL$
+$TAB$.section .vectors , "ax"$NL$
 $TAB$.align 4$NL$
 
 $NL$
@@ -241,10 +241,12 @@ $FOREACH excno EXCNO_RANGE$
 		$TAB$st.w	r10 , 52[sp]$NL$
 		$TAB$st.w	r11 , 48[sp]$NL$
 		$TAB$st.w	r12 , 44[sp]$NL$
+		$TAB$st.w	r13 , 40[sp]$NL$
 		$TAB$Lea	_$EXC.EXCHDR[excno]$ , r10$NL$
 		$TAB$addi	80 , sp , r11$NL$
 		$TAB$Lea	$+EXC.EXCNO[excno]$ , r12$NL$
-		$TAB$jr		exception$NL$
+		$TAB$Lea	exception, r13$NL$
+		$TAB$jmp	r13$NL$
 		$NL$
 	$END$
 $END$
@@ -259,11 +261,13 @@ $FOREACH intno INTNO_RANGE$
 		$TAB$st.w	r10 , 52[sp]$NL$
 		$TAB$st.w	r11 , 48[sp]$NL$
 		$TAB$st.w	r12 , 44[sp]$NL$
+		$TAB$st.w	r13 , 40[sp]$NL$
 $ r10に割込みハンドラ番号，r11に割込みレベル，r12に割込み番号を置く
 		$TAB$Lea	_$INH.INTHDR[intno]$ , r10$NL$
 		$TAB$mov	$-INT.INTPRI[intno]$ , r11$NL$
 		$TAB$mov	$+INH.INHNO[intno]$ , r12$NL$
-		$TAB$jr		interrupt$NL$
+		$TAB$Lea	interrupt, r13$NL$
+		$TAB$jmp	r13$NL$
 		$NL$
 	$END$
 $END$
@@ -274,8 +278,10 @@ $NL$
 _goto_default_int_handler:$NL$
 $TAB$addi	-80 , sp , sp$NL$
 $TAB$st.w	r10 , 0[sp]$NL$
+$TAB$st.w	r13 , 40[sp]$NL$
 $TAB$Lea	_default_int_handler , r10$NL$
-$TAB$jr		interrupt$NL$
+$TAB$Lea	interrupt, r13$NL$
+$TAB$jmp	r13$NL$
 
 $NL$
 $NL$
@@ -283,8 +289,10 @@ $NL$
 _goto_default_exc_handler:$NL$
 $TAB$addi	-80 , sp , sp$NL$
 $TAB$st.w	r10 , 0[sp]$NL$
+$TAB$st.w	r13 , 40[sp]$NL$
 $TAB$Lea	_default_exc_handler , r10$NL$
-$TAB$jr		exception$NL$
+$TAB$Lea	exception, r13$NL$
+$TAB$jmp	r13$NL$
 
 
 $TAB$.end$NL$

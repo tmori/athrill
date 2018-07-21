@@ -138,6 +138,7 @@ dispatcher:
 #endif	/* LOG_DSP_LEAVE */
 	jmp		r20
 
+
 	/*
 	 * アイドルループ
 	 */
@@ -158,6 +159,19 @@ pre_idle:
 	/* reqflgのアドレスをロード */
 	Lea		_reqflg , r20
 idle_loop:	
+	/* 割り込み待ち */
+	halt
+	/*
+	 * HALT命令後には，NOP命令を5命令以上挿入する必要がある
+	 * 4.3.3 スタンバイ機能の説明：注意1を参照のこと
+	 */
+	nop
+	nop
+	nop
+	nop
+	nop
+
+
 	/* 割り込み待ち */
 	ei
 	nop
@@ -310,7 +324,6 @@ interrupt:
 	sst.w	r7 ,  64[ep]
 	sst.w	r8 ,  60[ep]
 	sst.w	r9 ,  56[ep]
-	sst.w	r13 , 40[ep]
 	sst.w	r14 , 36[ep]
 	sst.w	r15 , 32[ep]
 	sst.w	r16 , 28[ep]
@@ -581,7 +594,6 @@ exception:
 	sst.w	r7 ,  64[ep]
 	sst.w	r8 ,  60[ep]
 	sst.w	r9 ,  56[ep]
-	sst.w	r13 , 40[ep]
 	sst.w	r14 , 36[ep]
 	sst.w	r15 , 32[ep]
 	sst.w	r16 , 28[ep]

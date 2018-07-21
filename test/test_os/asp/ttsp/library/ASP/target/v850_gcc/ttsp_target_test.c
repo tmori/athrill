@@ -46,6 +46,7 @@
 #include "target_timer.h"
 
 static unsigned int athrill_device_raise_interrupt __attribute__ ((section(".athrill_device_section")));
+static unsigned int is_ttsp_target_timer_running = 1;
 
 /*
  *  ティック更新の停止
@@ -61,6 +62,8 @@ ttsp_target_stop_tick(void)
 	SetTimerStopTAA(INTNO_TIMER);
 	x_clear_int(INTNO_TIMER);
 	SIL_UNL_INT();
+
+	is_ttsp_target_timer_running = 0;
 	return;
 }
 
@@ -78,6 +81,8 @@ ttsp_target_start_tick(void)
 	x_enable_int(INTNO_TIMER);
 	
 	SIL_UNL_INT();
+
+	is_ttsp_target_timer_running = 1;
 	return;
 }
 
@@ -88,21 +93,20 @@ void
 ttsp_target_gain_tick(void)
 {
 	SIL_PRE_LOC;
-	uint16_t count;
 
 	SIL_LOC_INT();
-	count = sil_reh_mem((void *) TAAnCNT(TIMER_DTIM_ID));
-
 	SetTimerStartTAA(TIMER_DTIM_ID);
 	x_enable_int(INTNO_TIMER);
-	SIL_UNL_INT();
 
-	sil_dly_nse((1000 -count) * 1000);/* 1msec */
+	do_halt();
+
+	SIL_UNL_INT();
 
 	SIL_LOC_INT();
 	x_disable_int(INTNO_TIMER);
 	SetTimerStopTAA(INTNO_TIMER);
 	SIL_UNL_INT();
+
 }
 
 /*
