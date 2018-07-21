@@ -1,0 +1,26 @@
+core id num=1
+ROM : START=0x0 SIZE=512
+RAM : START=0x3ff7000 SIZE=512
+RAM : START=0xdead0000 SIZE=1
+Elf loading was succeeded:0x0 - 0xa211 : 40.529 KB
+Elf loading was succeeded:0xa214 - 0xd61c : 0.0 KB
+ELF SYMBOL SECTION LOADED:index=18
+ELF SYMBOL SECTION LOADED:sym_num=492
+ELF STRING TABLE SECTION LOADED:index=19
+athrill_device_raise_interrupt=0xdead0000
+
+system1 : 0
+system2 : 10
+timer_interrupt : OK
+system1 : 10
+system2 : 10
+ttsp_target_stop_tick() : OK
+system1 : 19
+system2 : 20
+ttsp_target_gain_tick() : OK
+system1 : 21
+system2 : 31
+ttsp_target_start_tick() : OK
+Check point 1 passed.
+All check points passed.
+EXIT for timeout(20000000).
