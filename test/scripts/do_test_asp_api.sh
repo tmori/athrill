@@ -19,4 +19,9 @@ TEST_TIMEOUT=80000000
 TEST_BIN=test/test_os/asp/ttsp/obj/api_test/auto_code_3/asp
 util_do_test 
 
+echo "##AUTO_CODE_4"
+TEST_TIMEOUT=80000000
+TEST_BIN=test/test_os/asp/ttsp/obj/api_test/auto_code_4/asp
+util_do_test 
+
 util_do_log_check

@@ -2,11 +2,11 @@ core id num=1
 ROM : START=0x0 SIZE=4096
 RAM : START=0x3ff7000 SIZE=4096
 RAM : START=0xdead0000 SIZE=1
-Elf loading was succeeded:0x0 - 0xc6cc : 49.716 KB
-Elf loading was succeeded:0xc6cc - 0xff28 : 0.0 KB
-ELF SYMBOL SECTION LOADED:index=18
-ELF SYMBOL SECTION LOADED:sym_num=545
-ELF STRING TABLE SECTION LOADED:index=19
+Elf loading was succeeded:0x0 - 0xc840 : 50.64 KB
+Elf loading was succeeded:0xc840 - 0x10118 : 0.4 KB
+ELF SYMBOL SECTION LOADED:index=19
+ELF SYMBOL SECTION LOADED:sym_num=555
+ELF STRING TABLE SECTION LOADED:index=20
 athrill_device_raise_interrupt=0xdead0000
 === test start from INIRTN ===
 test_of_sil_mem()        : OK

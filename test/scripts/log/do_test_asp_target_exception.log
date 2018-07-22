@@ -2,10 +2,10 @@ core id num=1
 ROM : START=0x0 SIZE=4096
 RAM : START=0x3ff7000 SIZE=4096
 RAM : START=0xdead0000 SIZE=1
-Elf loading was succeeded:0x0 - 0xb101 : 44.257 KB
-Elf loading was succeeded:0xb104 - 0xe950 : 0.4 KB
+Elf loading was succeeded:0x0 - 0xb265 : 44.613 KB
+Elf loading was succeeded:0xb268 - 0xeb2c : 0.4 KB
 ELF SYMBOL SECTION LOADED:index=19
-ELF SYMBOL SECTION LOADED:sym_num=519
+ELF SYMBOL SECTION LOADED:sym_num=527
 ELF STRING TABLE SECTION LOADED:index=20
 athrill_device_raise_interrupt=0xdead0000
 Check point 1 passed.

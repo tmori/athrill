@@ -2,10 +2,10 @@ core id num=1
 ROM : START=0x0 SIZE=4096
 RAM : START=0x3ff7000 SIZE=4096
 RAM : START=0xdead0000 SIZE=1
-Elf loading was succeeded:0x0 - 0xf63ad : 984.941 KB
-Elf loading was succeeded:0xf63b0 - 0x107020 : 0.8 KB
+Elf loading was succeeded:0x0 - 0xf6519 : 985.281 KB
+Elf loading was succeeded:0xf651c - 0x107204 : 0.8 KB
 ELF SYMBOL SECTION LOADED:index=19
-ELF SYMBOL SECTION LOADED:sym_num=2112
+ELF SYMBOL SECTION LOADED:sym_num=2120
 ELF STRING TABLE SECTION LOADED:index=20
 athrill_device_raise_interrupt=0xdead0000
 ASP_sys_manage_sns_ker_a_INI1: Start
@@ -3943,10 +3943,10 @@ core id num=1
 ROM : START=0x0 SIZE=4096
 RAM : START=0x3ff7000 SIZE=4096
 RAM : START=0xdead0000 SIZE=1
-Elf loading was succeeded:0x0 - 0xd40b5 : 848.181 KB
-Elf loading was succeeded:0xd40b8 - 0xe3138 : 0.180 KB
+Elf loading was succeeded:0x0 - 0xd4221 : 848.545 KB
+Elf loading was succeeded:0xd4224 - 0xe331c : 0.180 KB
 ELF SYMBOL SECTION LOADED:index=19
-ELF SYMBOL SECTION LOADED:sym_num=1926
+ELF SYMBOL SECTION LOADED:sym_num=1934
 ELF STRING TABLE SECTION LOADED:index=20
 athrill_device_raise_interrupt=0xdead0000
 ASP_alarm_ista_alm_a_1: Start
@@ -7806,10 +7806,10 @@ core id num=1
 ROM : START=0x0 SIZE=4096
 RAM : START=0x3ff7000 SIZE=4096
 RAM : START=0xdead0000 SIZE=1
-Elf loading was succeeded:0x0 - 0x11f57d : 1149.381 KB
-Elf loading was succeeded:0x11f580 - 0x135104 : 0.52 KB
+Elf loading was succeeded:0x0 - 0x11f6e9 : 1149.745 KB
+Elf loading was succeeded:0x11f6ec - 0x1352e8 : 0.52 KB
 ELF SYMBOL SECTION LOADED:index=19
-ELF SYMBOL SECTION LOADED:sym_num=2160
+ELF SYMBOL SECTION LOADED:sym_num=2168
 ELF STRING TABLE SECTION LOADED:index=20
 athrill_device_raise_interrupt=0xdead0000
 ASP_eventflag_ini_flg_a_1: Start
@@ -11887,5 +11887,4284 @@ Check point 3223 passed.
 Check point 3224 passed.
 ASP_time_manage_get_utm_c: OK
 Check point 3225 passed.
+All check points passed.
+EXIT for timeout(80000000).
+core id num=1
+ROM : START=0x0 SIZE=4096
+RAM : START=0x3ff7000 SIZE=4096
+RAM : START=0xdead0000 SIZE=1
+Elf loading was succeeded:0x0 - 0xe7651 : 925.593 KB
+Elf loading was succeeded:0xe7654 - 0x1059d0 : 0.144 KB
+ELF SYMBOL SECTION LOADED:index=19
+ELF SYMBOL SECTION LOADED:sym_num=2190
+ELF STRING TABLE SECTION LOADED:index=20
+athrill_device_raise_interrupt=0xdead0000
+ASP_staticAPI_ATT_INI_b_INI1: Start
+Check point 1 passed.
+ASP_staticAPI_ATT_INI_b_INI1: OK
+ASP_staticAPI_ATT_INI_b_INI2: Start
+Check point 2 passed.
+ASP_staticAPI_ATT_INI_b_INI2: OK
+ASP_staticAPI_ATT_INI_b_INI3: Start
+Check point 3 passed.
+ASP_staticAPI_ATT_INI_b_INI3: OK
+Check point 4 passed.
+Check point 5 passed.
+ASP_cyclic_ref_cyc_a_1: Start
+Check point 6 passed.
+Check point 7 passed.
+Check point 8 passed.
+Check point 9 passed.
+Check point 10 passed.
+Check point 11 passed.
+ASP_cyclic_ref_cyc_a_1: OK
+ASP_cyclic_ref_cyc_a_2: Start
+Check point 12 passed.
+Check point 13 passed.
+Check point 14 passed.
+Check point 15 passed.
+Check point 16 passed.
+ASP_cyclic_ref_cyc_a_2: OK
+ASP_cyclic_ref_cyc_b_1: Start
+Check point 17 passed.
+Check point 18 passed.
+Check point 19 passed.
+Check point 20 passed.
+ASP_cyclic_ref_cyc_b_1: OK
+ASP_cyclic_ref_cyc_b_2: Start
+Check point 21 passed.
+Check point 22 passed.
+Check point 23 passed.
+Check point 24 passed.
+ASP_cyclic_ref_cyc_b_2: OK
+ASP_cyclic_ref_cyc_c_1: Start
+Check point 25 passed.
+Check point 26 passed.
+Check point 27 passed.
+Check point 28 passed.
+ASP_cyclic_ref_cyc_c_1: OK
+ASP_cyclic_ref_cyc_c_2: Start
+Check point 29 passed.
+Check point 30 passed.
+Check point 31 passed.
+Check point 32 passed.
+Check point 33 passed.
+Check point 34 passed.
+ASP_cyclic_ref_cyc_c_2: OK
+ASP_cyclic_ref_cyc_W_a: Start
+Check point 35 passed.
+Check point 36 passed.
+Check point 37 passed.
+Check point 38 passed.
+Check point 39 passed.
+Check point 40 passed.
+Check point 41 passed.
+Check point 42 passed.
+Check point 43 passed.
+Check point 44 passed.
+ASP_cyclic_ref_cyc_W_a: OK
+ASP_cyclic_sta_cyc_a_1: Start
+Check point 45 passed.
+Check point 46 passed.
+Check point 47 passed.
+Check point 48 passed.
+Check point 49 passed.
+Check point 50 passed.
+ASP_cyclic_sta_cyc_a_1: OK
+ASP_cyclic_sta_cyc_a_2: Start
+Check point 51 passed.
+Check point 52 passed.
+Check point 53 passed.
+Check point 54 passed.
+Check point 55 passed.
+ASP_cyclic_sta_cyc_a_2: OK
+ASP_cyclic_sta_cyc_b_1: Start
+Check point 56 passed.
+Check point 57 passed.
+Check point 58 passed.
+Check point 59 passed.
+ASP_cyclic_sta_cyc_b_1: OK
+ASP_cyclic_sta_cyc_b_2: Start
+Check point 60 passed.
+Check point 61 passed.
+Check point 62 passed.
+Check point 63 passed.
+ASP_cyclic_sta_cyc_b_2: OK
+ASP_cyclic_sta_cyc_c: Start
+Check point 64 passed.
+Check point 65 passed.
+Check point 66 passed.
+Check point 67 passed.
+Check point 68 passed.
+Check point 69 passed.
+Check point 70 passed.
+Check point 71 passed.
+Check point 72 passed.
+Check point 73 passed.
+Check point 74 passed.
+Check point 75 passed.
+Check point 76 passed.
+Check point 77 passed.
+Check point 78 passed.
+Check point 79 passed.
+Check point 80 passed.
+Check point 81 passed.
+Check point 82 passed.
+Check point 83 passed.
+Check point 84 passed.
+Check point 85 passed.
+Check point 86 passed.
+Check point 87 passed.
+Check point 88 passed.
+Check point 89 passed.
+Check point 90 passed.
+Check point 91 passed.
+Check point 92 passed.
+Check point 93 passed.
+Check point 94 passed.
+Check point 95 passed.
+Check point 96 passed.
+Check point 97 passed.
+Check point 98 passed.
+Check point 99 passed.
+Check point 100 passed.
+Check point 101 passed.
+Check point 102 passed.
+Check point 103 passed.
+Check point 104 passed.
+Check point 105 passed.
+Check point 106 passed.
+ASP_cyclic_sta_cyc_c: OK
+ASP_cyclic_sta_cyc_d: Start
+Check point 107 passed.
+Check point 108 passed.
+Check point 109 passed.
+Check point 110 passed.
+Check point 111 passed.
+Check point 112 passed.
+Check point 113 passed.
+Check point 114 passed.
+Check point 115 passed.
+Check point 116 passed.
+Check point 117 passed.
+Check point 118 passed.
+Check point 119 passed.
+Check point 120 passed.
+Check point 121 passed.
+Check point 122 passed.
+Check point 123 passed.
+Check point 124 passed.
+Check point 125 passed.
+Check point 126 passed.
+Check point 127 passed.
+Check point 128 passed.
+Check point 129 passed.
+Check point 130 passed.
+Check point 131 passed.
+Check point 132 passed.
+Check point 133 passed.
+Check point 134 passed.
+Check point 135 passed.
+Check point 136 passed.
+Check point 137 passed.
+Check point 138 passed.
+Check point 139 passed.
+Check point 140 passed.
+Check point 141 passed.
+Check point 142 passed.
+Check point 143 passed.
+Check point 144 passed.
+Check point 145 passed.
+Check point 146 passed.
+Check point 147 passed.
+Check point 148 passed.
+Check point 149 passed.
+Check point 150 passed.
+ASP_cyclic_sta_cyc_d: OK
+ASP_cyclic_sta_cyc_W_a: Start
+Check point 151 passed.
+Check point 152 passed.
+Check point 153 passed.
+Check point 154 passed.
+Check point 155 passed.
+Check point 156 passed.
+Check point 157 passed.
+Check point 158 passed.
+Check point 159 passed.
+Check point 160 passed.
+Check point 161 passed.
+Check point 162 passed.
+Check point 163 passed.
+ASP_cyclic_sta_cyc_W_a: OK
+ASP_cyclic_stp_cyc_a_1: Start
+Check point 164 passed.
+Check point 165 passed.
+Check point 166 passed.
+Check point 167 passed.
+Check point 168 passed.
+Check point 169 passed.
+Check point 170 passed.
+Check point 171 passed.
+ASP_cyclic_stp_cyc_a_1: OK
+ASP_cyclic_stp_cyc_a_2: Start
+Check point 172 passed.
+Check point 173 passed.
+Check point 174 passed.
+Check point 175 passed.
+Check point 176 passed.
+Check point 177 passed.
+Check point 178 passed.
+ASP_cyclic_stp_cyc_a_2: OK
+ASP_cyclic_stp_cyc_b_1: Start
+Check point 179 passed.
+Check point 180 passed.
+Check point 181 passed.
+Check point 182 passed.
+Check point 183 passed.
+Check point 184 passed.
+ASP_cyclic_stp_cyc_b_1: OK
+ASP_cyclic_stp_cyc_b_2: Start
+Check point 185 passed.
+Check point 186 passed.
+Check point 187 passed.
+Check point 188 passed.
+Check point 189 passed.
+Check point 190 passed.
+ASP_cyclic_stp_cyc_b_2: OK
+ASP_cyclic_stp_cyc_c: Start
+Check point 191 passed.
+Check point 192 passed.
+Check point 193 passed.
+Check point 194 passed.
+ASP_cyclic_stp_cyc_c: OK
+ASP_cyclic_stp_cyc_d: Start
+Check point 195 passed.
+Check point 196 passed.
+Check point 197 passed.
+Check point 198 passed.
+Check point 199 passed.
+ASP_cyclic_stp_cyc_d: OK
+ASP_exception_xsns_dpn_a: Start
+Check point 200 passed.
+Check point 201 passed.
+Check point 202 passed.
+Check point 203 passed.
+Check point 204 passed.
+ASP_exception_xsns_dpn_a: OK
+ASP_exception_xsns_dpn_b_1: Start
+Check point 205 passed.
+Check point 206 passed.
+Check point 207 passed.
+Check point 208 passed.
+Check point 209 passed.
+Check point 210 passed.
+Check point 211 passed.
+Check point 212 passed.
+ASP_exception_xsns_dpn_b_1: OK
+ASP_exception_xsns_dpn_b_2: Start
+Check point 213 passed.
+Check point 214 passed.
+Check point 215 passed.
+Check point 216 passed.
+Check point 217 passed.
+Check point 218 passed.
+Check point 219 passed.
+Check point 220 passed.
+ASP_exception_xsns_dpn_b_2: OK
+ASP_exception_xsns_dpn_b_3: Start
+Check point 221 passed.
+Check point 222 passed.
+Check point 223 passed.
+Check point 224 passed.
+Check point 225 passed.
+ASP_exception_xsns_dpn_b_3: OK
+ASP_exception_xsns_dpn_b_4: Start
+Check point 226 passed.
+Check point 227 passed.
+Check point 228 passed.
+Check point 229 passed.
+Check point 230 passed.
+ASP_exception_xsns_dpn_b_4: OK
+ASP_exception_xsns_xpn_a: Start
+Check point 231 passed.
+Check point 232 passed.
+Check point 233 passed.
+Check point 234 passed.
+Check point 235 passed.
+ASP_exception_xsns_xpn_a: OK
+ASP_exception_xsns_xpn_b: Start
+Check point 236 passed.
+Check point 237 passed.
+Check point 238 passed.
+Check point 239 passed.
+Check point 240 passed.
+ASP_exception_xsns_xpn_b: OK
+ASP_exception_xsns_xpn_c: Start
+Check point 241 passed.
+Check point 242 passed.
+Check point 243 passed.
+Check point 244 passed.
+Check point 245 passed.
+Check point 246 passed.
+Check point 247 passed.
+Check point 248 passed.
+ASP_exception_xsns_xpn_c: OK
+ASP_exception_xsns_xpn_d: Start
+Check point 249 passed.
+Check point 250 passed.
+Check point 251 passed.
+Check point 252 passed.
+Check point 253 passed.
+Check point 254 passed.
+Check point 255 passed.
+Check point 256 passed.
+ASP_exception_xsns_xpn_d: OK
+ASP_interrupt_chg_ipm_a_1: Start
+Check point 257 passed.
+Check point 258 passed.
+Check point 259 passed.
+Check point 260 passed.
+Check point 261 passed.
+Check point 262 passed.
+ASP_interrupt_chg_ipm_a_1: OK
+ASP_interrupt_chg_ipm_a_2: Start
+Check point 263 passed.
+Check point 264 passed.
+Check point 265 passed.
+Check point 266 passed.
+Check point 267 passed.
+ASP_interrupt_chg_ipm_a_2: OK
+ASP_interrupt_chg_ipm_b_1: Start
+Check point 268 passed.
+Check point 269 passed.
+Check point 270 passed.
+Check point 271 passed.
+ASP_interrupt_chg_ipm_b_1: OK
+ASP_interrupt_chg_ipm_b_2: Start
+Check point 272 passed.
+Check point 273 passed.
+Check point 274 passed.
+Check point 275 passed.
+ASP_interrupt_chg_ipm_b_2: OK
+ASP_interrupt_chg_ipm_c_1: Start
+Check point 276 passed.
+Check point 277 passed.
+Check point 278 passed.
+Check point 279 passed.
+ASP_interrupt_chg_ipm_c_1: OK
+ASP_interrupt_chg_ipm_c_2: Start
+Check point 280 passed.
+Check point 281 passed.
+Check point 282 passed.
+Check point 283 passed.
+ASP_interrupt_chg_ipm_c_2: OK
+ASP_interrupt_chg_ipm_d: Start
+Check point 284 passed.
+Check point 285 passed.
+Check point 286 passed.
+Check point 287 passed.
+Check point 288 passed.
+Check point 289 passed.
+Check point 290 passed.
+Check point 291 passed.
+ASP_interrupt_chg_ipm_d: OK
+ASP_interrupt_chg_ipm_W_a: Start
+Check point 292 passed.
+Check point 293 passed.
+Check point 294 passed.
+Check point 295 passed.
+ASP_interrupt_chg_ipm_W_a: OK
+ASP_interrupt_chg_ipm_W_b: Start
+Check point 296 passed.
+Check point 297 passed.
+Check point 298 passed.
+Check point 299 passed.
+ASP_interrupt_chg_ipm_W_b: OK
+ASP_interrupt_chg_ipm_W_c: Start
+Check point 300 passed.
+Check point 301 passed.
+Check point 302 passed.
+Check point 303 passed.
+Check point 304 passed.
+Check point 305 passed.
+ASP_interrupt_chg_ipm_W_c: OK
+ASP_interrupt_chg_ipm_W_d: Start
+Check point 306 passed.
+Check point 307 passed.
+Check point 308 passed.
+Check point 309 passed.
+Check point 310 passed.
+ASP_interrupt_chg_ipm_W_d: OK
+ASP_interrupt_dis_int_a: Start
+Check point 311 passed.
+Check point 312 passed.
+Check point 313 passed.
+Check point 314 passed.
+Check point 315 passed.
+Check point 316 passed.
+ASP_interrupt_dis_int_a: OK
+ASP_interrupt_dis_int_b: Start
+Check point 317 passed.
+Check point 318 passed.
+Check point 319 passed.
+Check point 320 passed.
+ASP_interrupt_dis_int_b: OK
+ASP_interrupt_dis_int_c: Start
+Check point 321 passed.
+Check point 322 passed.
+Check point 323 passed.
+Check point 324 passed.
+ASP_interrupt_dis_int_c: OK
+ASP_interrupt_dis_int_d_1: Start
+Check point 325 passed.
+Check point 326 passed.
+Check point 327 passed.
+Check point 328 passed.
+Check point 329 passed.
+Check point 330 passed.
+Check point 331 passed.
+Check point 332 passed.
+Check point 333 passed.
+ASP_interrupt_dis_int_d_1: OK
+ASP_interrupt_dis_int_d_2: Start
+Check point 334 passed.
+Check point 335 passed.
+Check point 336 passed.
+Check point 337 passed.
+Check point 338 passed.
+Check point 339 passed.
+Check point 340 passed.
+Check point 341 passed.
+Check point 342 passed.
+Check point 343 passed.
+Check point 344 passed.
+ASP_interrupt_dis_int_d_2: OK
+ASP_interrupt_ena_int_a: Start
+Check point 345 passed.
+Check point 346 passed.
+Check point 347 passed.
+Check point 348 passed.
+Check point 349 passed.
+Check point 350 passed.
+ASP_interrupt_ena_int_a: OK
+ASP_interrupt_ena_int_b: Start
+Check point 351 passed.
+Check point 352 passed.
+Check point 353 passed.
+Check point 354 passed.
+ASP_interrupt_ena_int_b: OK
+ASP_interrupt_ena_int_c: Start
+Check point 355 passed.
+Check point 356 passed.
+Check point 357 passed.
+Check point 358 passed.
+ASP_interrupt_ena_int_c: OK
+ASP_interrupt_ena_int_d_1: Start
+Check point 359 passed.
+Check point 360 passed.
+Check point 361 passed.
+Check point 362 passed.
+Check point 363 passed.
+Check point 364 passed.
+Check point 365 passed.
+ASP_interrupt_ena_int_d_1: OK
+ASP_interrupt_ena_int_d_2: Start
+Check point 366 passed.
+Check point 367 passed.
+Check point 368 passed.
+Check point 369 passed.
+Check point 370 passed.
+Check point 371 passed.
+Check point 372 passed.
+Check point 373 passed.
+Check point 374 passed.
+ASP_interrupt_ena_int_d_2: OK
+ASP_interrupt_get_ipm_a_1: Start
+Check point 375 passed.
+Check point 376 passed.
+Check point 377 passed.
+Check point 378 passed.
+Check point 379 passed.
+Check point 380 passed.
+ASP_interrupt_get_ipm_a_1: OK
+ASP_interrupt_get_ipm_a_2: Start
+Check point 381 passed.
+Check point 382 passed.
+Check point 383 passed.
+Check point 384 passed.
+Check point 385 passed.
+ASP_interrupt_get_ipm_a_2: OK
+ASP_interrupt_get_ipm_b_1: Start
+Check point 386 passed.
+Check point 387 passed.
+Check point 388 passed.
+Check point 389 passed.
+ASP_interrupt_get_ipm_b_1: OK
+ASP_interrupt_get_ipm_b_2: Start
+Check point 390 passed.
+Check point 391 passed.
+Check point 392 passed.
+Check point 393 passed.
+ASP_interrupt_get_ipm_b_2: OK
+ASP_mempfix_get_mpf_a_1: Start
+Check point 394 passed.
+Check point 395 passed.
+Check point 396 passed.
+Check point 397 passed.
+Check point 398 passed.
+Check point 399 passed.
+Check point 400 passed.
+ASP_mempfix_get_mpf_a_1: OK
+ASP_mempfix_get_mpf_a_2: Start
+Check point 401 passed.
+Check point 402 passed.
+Check point 403 passed.
+Check point 404 passed.
+Check point 405 passed.
+Check point 406 passed.
+ASP_mempfix_get_mpf_a_2: OK
+ASP_mempfix_get_mpf_a_3: Start
+Check point 407 passed.
+Check point 408 passed.
+Check point 409 passed.
+Check point 410 passed.
+Check point 411 passed.
+ASP_mempfix_get_mpf_a_3: OK
+ASP_mempfix_get_mpf_a_4: Start
+Check point 412 passed.
+Check point 413 passed.
+Check point 414 passed.
+Check point 415 passed.
+Check point 416 passed.
+ASP_mempfix_get_mpf_a_4: OK
+ASP_mempfix_get_mpf_b_1: Start
+Check point 417 passed.
+Check point 418 passed.
+Check point 419 passed.
+Check point 420 passed.
+Check point 421 passed.
+ASP_mempfix_get_mpf_b_1: OK
+ASP_mempfix_get_mpf_b_2: Start
+Check point 422 passed.
+Check point 423 passed.
+Check point 424 passed.
+Check point 425 passed.
+Check point 426 passed.
+ASP_mempfix_get_mpf_b_2: OK
+ASP_mempfix_get_mpf_c: Start
+Check point 427 passed.
+Check point 428 passed.
+Check point 429 passed.
+Check point 430 passed.
+Check point 431 passed.
+Check point 432 passed.
+Check point 433 passed.
+Check point 434 passed.
+Check point 435 passed.
+ASP_mempfix_get_mpf_c: OK
+ASP_mempfix_get_mpf_d: Start
+Check point 436 passed.
+Check point 437 passed.
+Check point 438 passed.
+Check point 439 passed.
+Check point 440 passed.
+Check point 441 passed.
+Check point 442 passed.
+Check point 443 passed.
+Check point 444 passed.
+ASP_mempfix_get_mpf_d: OK
+ASP_mempfix_get_mpf_e: Start
+Check point 445 passed.
+Check point 446 passed.
+Check point 447 passed.
+Check point 448 passed.
+Check point 449 passed.
+Check point 450 passed.
+Check point 451 passed.
+Check point 452 passed.
+Check point 453 passed.
+Check point 454 passed.
+Check point 455 passed.
+Check point 456 passed.
+Check point 457 passed.
+Check point 458 passed.
+Check point 459 passed.
+ASP_mempfix_get_mpf_e: OK
+ASP_mempfix_get_mpf_f: Start
+Check point 460 passed.
+Check point 461 passed.
+Check point 462 passed.
+Check point 463 passed.
+Check point 464 passed.
+ASP_mempfix_get_mpf_f: OK
+ASP_mempfix_get_mpf_g_1_1: Start
+Check point 465 passed.
+Check point 466 passed.
+Check point 467 passed.
+Check point 468 passed.
+Check point 469 passed.
+ASP_mempfix_get_mpf_g_1_1: OK
+ASP_mempfix_get_mpf_g_1_2: Start
+Check point 470 passed.
+Check point 471 passed.
+Check point 472 passed.
+Check point 473 passed.
+Check point 474 passed.
+Check point 475 passed.
+Check point 476 passed.
+Check point 477 passed.
+ASP_mempfix_get_mpf_g_1_2: OK
+ASP_mempfix_get_mpf_g_1_3: Start
+Check point 478 passed.
+Check point 479 passed.
+Check point 480 passed.
+Check point 481 passed.
+Check point 482 passed.
+Check point 483 passed.
+Check point 484 passed.
+Check point 485 passed.
+ASP_mempfix_get_mpf_g_1_3: OK
+ASP_mempfix_get_mpf_g_1_4: Start
+Check point 486 passed.
+Check point 487 passed.
+Check point 488 passed.
+Check point 489 passed.
+Check point 490 passed.
+Check point 491 passed.
+Check point 492 passed.
+Check point 493 passed.
+ASP_mempfix_get_mpf_g_1_4: OK
+ASP_mempfix_get_mpf_g_2_1: Start
+Check point 494 passed.
+Check point 495 passed.
+Check point 496 passed.
+Check point 497 passed.
+Check point 498 passed.
+ASP_mempfix_get_mpf_g_2_1: OK
+ASP_mempfix_get_mpf_g_2_2: Start
+Check point 499 passed.
+Check point 500 passed.
+Check point 501 passed.
+Check point 502 passed.
+Check point 503 passed.
+Check point 504 passed.
+Check point 505 passed.
+Check point 506 passed.
+ASP_mempfix_get_mpf_g_2_2: OK
+ASP_mempfix_get_mpf_g_2_3: Start
+Check point 507 passed.
+Check point 508 passed.
+Check point 509 passed.
+Check point 510 passed.
+Check point 511 passed.
+Check point 512 passed.
+Check point 513 passed.
+Check point 514 passed.
+ASP_mempfix_get_mpf_g_2_3: OK
+ASP_mempfix_get_mpf_g_2_4: Start
+Check point 515 passed.
+Check point 516 passed.
+Check point 517 passed.
+Check point 518 passed.
+Check point 519 passed.
+Check point 520 passed.
+Check point 521 passed.
+Check point 522 passed.
+ASP_mempfix_get_mpf_g_2_4: OK
+ASP_mempfix_get_mpf_h_1: Start
+Check point 523 passed.
+Check point 524 passed.
+Check point 525 passed.
+Check point 526 passed.
+ASP_mempfix_get_mpf_h_1: OK
+ASP_mempfix_get_mpf_h_2: Start
+Check point 527 passed.
+Check point 528 passed.
+Check point 529 passed.
+Check point 530 passed.
+Check point 531 passed.
+ASP_mempfix_get_mpf_h_2: OK
+ASP_mempfix_get_mpf_W_a: Start
+Check point 532 passed.
+Check point 533 passed.
+Check point 534 passed.
+Check point 535 passed.
+Check point 536 passed.
+Check point 537 passed.
+Check point 538 passed.
+Check point 539 passed.
+Check point 540 passed.
+Check point 541 passed.
+Check point 542 passed.
+Check point 543 passed.
+Check point 544 passed.
+Check point 545 passed.
+Check point 546 passed.
+Check point 547 passed.
+ASP_mempfix_get_mpf_W_a: OK
+ASP_mempfix_ini_mpf_a_1: Start
+Check point 548 passed.
+Check point 549 passed.
+Check point 550 passed.
+Check point 551 passed.
+Check point 552 passed.
+Check point 553 passed.
+Check point 554 passed.
+ASP_mempfix_ini_mpf_a_1: OK
+ASP_mempfix_ini_mpf_a_2: Start
+Check point 555 passed.
+Check point 556 passed.
+Check point 557 passed.
+Check point 558 passed.
+Check point 559 passed.
+Check point 560 passed.
+ASP_mempfix_ini_mpf_a_2: OK
+ASP_mempfix_ini_mpf_b_1: Start
+Check point 561 passed.
+Check point 562 passed.
+Check point 563 passed.
+Check point 564 passed.
+Check point 565 passed.
+ASP_mempfix_ini_mpf_b_1: OK
+ASP_mempfix_ini_mpf_b_2: Start
+Check point 566 passed.
+Check point 567 passed.
+Check point 568 passed.
+Check point 569 passed.
+Check point 570 passed.
+ASP_mempfix_ini_mpf_b_2: OK
+ASP_mempfix_ini_mpf_c_1_1_1: Start
+Check point 571 passed.
+Check point 572 passed.
+Check point 573 passed.
+Check point 574 passed.
+Check point 575 passed.
+Check point 576 passed.
+Check point 577 passed.
+ASP_mempfix_ini_mpf_c_1_1_1: OK
+ASP_mempfix_ini_mpf_c_1_1_2: Start
+Check point 578 passed.
+Check point 579 passed.
+Check point 580 passed.
+Check point 581 passed.
+Check point 582 passed.
+Check point 583 passed.
+Check point 584 passed.
+ASP_mempfix_ini_mpf_c_1_1_2: OK
+ASP_mempfix_ini_mpf_c_1_1_3: Start
+Check point 585 passed.
+Check point 586 passed.
+Check point 587 passed.
+Check point 588 passed.
+Check point 589 passed.
+Check point 590 passed.
+Check point 591 passed.
+ASP_mempfix_ini_mpf_c_1_1_3: OK
+ASP_mempfix_ini_mpf_c_1_2: Start
+Check point 592 passed.
+Check point 593 passed.
+Check point 594 passed.
+Check point 595 passed.
+Check point 596 passed.
+Check point 597 passed.
+Check point 598 passed.
+Check point 599 passed.
+Check point 600 passed.
+Check point 601 passed.
+Check point 602 passed.
+ASP_mempfix_ini_mpf_c_1_2: OK
+ASP_mempfix_ini_mpf_c_1_3: Start
+Check point 603 passed.
+Check point 604 passed.
+Check point 605 passed.
+Check point 606 passed.
+Check point 607 passed.
+Check point 608 passed.
+Check point 609 passed.
+ASP_mempfix_ini_mpf_c_1_3: OK
+ASP_mempfix_ini_mpf_c_1_4: Start
+Check point 610 passed.
+Check point 611 passed.
+Check point 612 passed.
+Check point 613 passed.
+Check point 614 passed.
+Check point 615 passed.
+Check point 616 passed.
+Check point 617 passed.
+ASP_mempfix_ini_mpf_c_1_4: OK
+ASP_mempfix_ini_mpf_c_2_1: Start
+Check point 618 passed.
+Check point 619 passed.
+Check point 620 passed.
+Check point 621 passed.
+Check point 622 passed.
+Check point 623 passed.
+Check point 624 passed.
+Check point 625 passed.
+Check point 626 passed.
+ASP_mempfix_ini_mpf_c_2_1: OK
+ASP_mempfix_ini_mpf_c_2_2: Start
+Check point 627 passed.
+Check point 628 passed.
+Check point 629 passed.
+Check point 630 passed.
+Check point 631 passed.
+Check point 632 passed.
+Check point 633 passed.
+Check point 634 passed.
+Check point 635 passed.
+ASP_mempfix_ini_mpf_c_2_2: OK
+ASP_mempfix_ini_mpf_d_1: Start
+Check point 636 passed.
+Check point 637 passed.
+Check point 638 passed.
+Check point 639 passed.
+ASP_mempfix_ini_mpf_d_1: OK
+ASP_mempfix_ini_mpf_d_2: Start
+Check point 640 passed.
+Check point 641 passed.
+Check point 642 passed.
+Check point 643 passed.
+Check point 644 passed.
+ASP_mempfix_ini_mpf_d_2: OK
+ASP_mempfix_pget_mpf_a_1: Start
+Check point 645 passed.
+Check point 646 passed.
+Check point 647 passed.
+Check point 648 passed.
+Check point 649 passed.
+Check point 650 passed.
+Check point 651 passed.
+ASP_mempfix_pget_mpf_a_1: OK
+ASP_mempfix_pget_mpf_a_2: Start
+Check point 652 passed.
+Check point 653 passed.
+Check point 654 passed.
+Check point 655 passed.
+Check point 656 passed.
+Check point 657 passed.
+ASP_mempfix_pget_mpf_a_2: OK
+ASP_mempfix_pget_mpf_b_1: Start
+Check point 658 passed.
+Check point 659 passed.
+Check point 660 passed.
+Check point 661 passed.
+Check point 662 passed.
+ASP_mempfix_pget_mpf_b_1: OK
+ASP_mempfix_pget_mpf_b_2: Start
+Check point 663 passed.
+Check point 664 passed.
+Check point 665 passed.
+Check point 666 passed.
+Check point 667 passed.
+ASP_mempfix_pget_mpf_b_2: OK
+ASP_mempfix_pget_mpf_c: Start
+Check point 668 passed.
+Check point 669 passed.
+Check point 670 passed.
+Check point 671 passed.
+Check point 672 passed.
+ASP_mempfix_pget_mpf_c: OK
+ASP_mempfix_pget_mpf_d: Start
+Check point 673 passed.
+Check point 674 passed.
+Check point 675 passed.
+Check point 676 passed.
+Check point 677 passed.
+ASP_mempfix_pget_mpf_d: OK
+ASP_mempfix_pget_mpf_e_1: Start
+Check point 678 passed.
+Check point 679 passed.
+Check point 680 passed.
+Check point 681 passed.
+ASP_mempfix_pget_mpf_e_1: OK
+ASP_mempfix_pget_mpf_e_2: Start
+Check point 682 passed.
+Check point 683 passed.
+Check point 684 passed.
+Check point 685 passed.
+Check point 686 passed.
+ASP_mempfix_pget_mpf_e_2: OK
+ASP_mempfix_ref_mpf_a_1: Start
+Check point 687 passed.
+Check point 688 passed.
+Check point 689 passed.
+Check point 690 passed.
+Check point 691 passed.
+Check point 692 passed.
+Check point 693 passed.
+ASP_mempfix_ref_mpf_a_1: OK
+ASP_mempfix_ref_mpf_a_2: Start
+Check point 694 passed.
+Check point 695 passed.
+Check point 696 passed.
+Check point 697 passed.
+Check point 698 passed.
+Check point 699 passed.
+ASP_mempfix_ref_mpf_a_2: OK
+ASP_mempfix_ref_mpf_b_1: Start
+Check point 700 passed.
+Check point 701 passed.
+Check point 702 passed.
+Check point 703 passed.
+Check point 704 passed.
+ASP_mempfix_ref_mpf_b_1: OK
+ASP_mempfix_ref_mpf_b_2: Start
+Check point 705 passed.
+Check point 706 passed.
+Check point 707 passed.
+Check point 708 passed.
+Check point 709 passed.
+ASP_mempfix_ref_mpf_b_2: OK
+ASP_mempfix_ref_mpf_c_1: Start
+Check point 710 passed.
+Check point 711 passed.
+Check point 712 passed.
+Check point 713 passed.
+Check point 714 passed.
+ASP_mempfix_ref_mpf_c_1: OK
+ASP_mempfix_ref_mpf_c_2: Start
+Check point 715 passed.
+Check point 716 passed.
+Check point 717 passed.
+Check point 718 passed.
+Check point 719 passed.
+Check point 720 passed.
+Check point 721 passed.
+ASP_mempfix_ref_mpf_c_2: OK
+ASP_mempfix_rel_mpf_a_1: Start
+Check point 722 passed.
+Check point 723 passed.
+Check point 724 passed.
+Check point 725 passed.
+Check point 726 passed.
+Check point 727 passed.
+Check point 728 passed.
+ASP_mempfix_rel_mpf_a_1: OK
+ASP_mempfix_rel_mpf_a_2: Start
+Check point 729 passed.
+Check point 730 passed.
+Check point 731 passed.
+Check point 732 passed.
+Check point 733 passed.
+Check point 734 passed.
+ASP_mempfix_rel_mpf_a_2: OK
+ASP_mempfix_rel_mpf_b_1: Start
+Check point 735 passed.
+Check point 736 passed.
+Check point 737 passed.
+Check point 738 passed.
+Check point 739 passed.
+ASP_mempfix_rel_mpf_b_1: OK
+ASP_mempfix_rel_mpf_b_2: Start
+Check point 740 passed.
+Check point 741 passed.
+Check point 742 passed.
+Check point 743 passed.
+Check point 744 passed.
+ASP_mempfix_rel_mpf_b_2: OK
+ASP_mempfix_rel_mpf_c: Start
+Check point 745 passed.
+Check point 746 passed.
+Check point 747 passed.
+Check point 748 passed.
+Check point 749 passed.
+ASP_mempfix_rel_mpf_c: OK
+ASP_mempfix_rel_mpf_d: Start
+Check point 750 passed.
+Check point 751 passed.
+Check point 752 passed.
+Check point 753 passed.
+Check point 754 passed.
+Check point 755 passed.
+ASP_mempfix_rel_mpf_d: OK
+ASP_mempfix_rel_mpf_e_1_1: Start
+Check point 756 passed.
+Check point 757 passed.
+Check point 758 passed.
+Check point 759 passed.
+Check point 760 passed.
+Check point 761 passed.
+Check point 762 passed.
+Check point 763 passed.
+Check point 764 passed.
+Check point 765 passed.
+Check point 766 passed.
+ASP_mempfix_rel_mpf_e_1_1: OK
+ASP_mempfix_rel_mpf_e_1_2: Start
+Check point 767 passed.
+Check point 768 passed.
+Check point 769 passed.
+Check point 770 passed.
+Check point 771 passed.
+Check point 772 passed.
+Check point 773 passed.
+Check point 774 passed.
+Check point 775 passed.
+Check point 776 passed.
+Check point 777 passed.
+Check point 778 passed.
+ASP_mempfix_rel_mpf_e_1_2: OK
+ASP_mempfix_rel_mpf_e_1_3: Start
+Check point 779 passed.
+Check point 780 passed.
+Check point 781 passed.
+Check point 782 passed.
+Check point 783 passed.
+Check point 784 passed.
+Check point 785 passed.
+Check point 786 passed.
+Check point 787 passed.
+Check point 788 passed.
+Check point 789 passed.
+Check point 790 passed.
+ASP_mempfix_rel_mpf_e_1_3: OK
+ASP_mempfix_rel_mpf_e_2: Start
+Check point 791 passed.
+Check point 792 passed.
+Check point 793 passed.
+Check point 794 passed.
+Check point 795 passed.
+Check point 796 passed.
+Check point 797 passed.
+Check point 798 passed.
+Check point 799 passed.
+Check point 800 passed.
+Check point 801 passed.
+Check point 802 passed.
+Check point 803 passed.
+Check point 804 passed.
+Check point 805 passed.
+Check point 806 passed.
+Check point 807 passed.
+ASP_mempfix_rel_mpf_e_2: OK
+ASP_mempfix_rel_mpf_e_3: Start
+Check point 808 passed.
+Check point 809 passed.
+Check point 810 passed.
+Check point 811 passed.
+Check point 812 passed.
+Check point 813 passed.
+Check point 814 passed.
+Check point 815 passed.
+Check point 816 passed.
+Check point 817 passed.
+Check point 818 passed.
+ASP_mempfix_rel_mpf_e_3: OK
+ASP_mempfix_rel_mpf_e_4: Start
+Check point 819 passed.
+Check point 820 passed.
+Check point 821 passed.
+Check point 822 passed.
+Check point 823 passed.
+Check point 824 passed.
+Check point 825 passed.
+Check point 826 passed.
+Check point 827 passed.
+Check point 828 passed.
+Check point 829 passed.
+Check point 830 passed.
+ASP_mempfix_rel_mpf_e_4: OK
+ASP_mempfix_rel_mpf_f_1_1: Start
+Check point 831 passed.
+Check point 832 passed.
+Check point 833 passed.
+Check point 834 passed.
+Check point 835 passed.
+Check point 836 passed.
+Check point 837 passed.
+Check point 838 passed.
+Check point 839 passed.
+Check point 840 passed.
+Check point 841 passed.
+Check point 842 passed.
+Check point 843 passed.
+Check point 844 passed.
+ASP_mempfix_rel_mpf_f_1_1: OK
+ASP_mempfix_rel_mpf_f_1_2: Start
+Check point 845 passed.
+Check point 846 passed.
+Check point 847 passed.
+Check point 848 passed.
+Check point 849 passed.
+Check point 850 passed.
+Check point 851 passed.
+Check point 852 passed.
+Check point 853 passed.
+Check point 854 passed.
+Check point 855 passed.
+Check point 856 passed.
+Check point 857 passed.
+Check point 858 passed.
+Check point 859 passed.
+ASP_mempfix_rel_mpf_f_1_2: OK
+ASP_mempfix_rel_mpf_f_1_3: Start
+Check point 860 passed.
+Check point 861 passed.
+Check point 862 passed.
+Check point 863 passed.
+Check point 864 passed.
+Check point 865 passed.
+Check point 866 passed.
+Check point 867 passed.
+Check point 868 passed.
+Check point 869 passed.
+Check point 870 passed.
+Check point 871 passed.
+Check point 872 passed.
+Check point 873 passed.
+Check point 874 passed.
+ASP_mempfix_rel_mpf_f_1_3: OK
+ASP_mempfix_rel_mpf_f_2: Start
+Check point 875 passed.
+Check point 876 passed.
+Check point 877 passed.
+Check point 878 passed.
+Check point 879 passed.
+Check point 880 passed.
+Check point 881 passed.
+Check point 882 passed.
+Check point 883 passed.
+Check point 884 passed.
+Check point 885 passed.
+Check point 886 passed.
+Check point 887 passed.
+Check point 888 passed.
+Check point 889 passed.
+Check point 890 passed.
+Check point 891 passed.
+Check point 892 passed.
+Check point 893 passed.
+ASP_mempfix_rel_mpf_f_2: OK
+ASP_mempfix_rel_mpf_f_3: Start
+Check point 894 passed.
+Check point 895 passed.
+Check point 896 passed.
+Check point 897 passed.
+Check point 898 passed.
+Check point 899 passed.
+Check point 900 passed.
+Check point 901 passed.
+Check point 902 passed.
+Check point 903 passed.
+Check point 904 passed.
+Check point 905 passed.
+Check point 906 passed.
+ASP_mempfix_rel_mpf_f_3: OK
+ASP_mempfix_rel_mpf_f_4: Start
+Check point 907 passed.
+Check point 908 passed.
+Check point 909 passed.
+Check point 910 passed.
+Check point 911 passed.
+Check point 912 passed.
+Check point 913 passed.
+Check point 914 passed.
+Check point 915 passed.
+Check point 916 passed.
+Check point 917 passed.
+Check point 918 passed.
+Check point 919 passed.
+Check point 920 passed.
+ASP_mempfix_rel_mpf_f_4: OK
+ASP_mempfix_rel_mpf_W_a: Start
+Check point 921 passed.
+Check point 922 passed.
+Check point 923 passed.
+Check point 924 passed.
+Check point 925 passed.
+ASP_mempfix_rel_mpf_W_a: OK
+ASP_mempfix_rel_mpf_W_b: Start
+Check point 926 passed.
+Check point 927 passed.
+Check point 928 passed.
+Check point 929 passed.
+Check point 930 passed.
+ASP_mempfix_rel_mpf_W_b: OK
+ASP_mempfix_rel_mpf_W_c: Start
+Check point 931 passed.
+Check point 932 passed.
+Check point 933 passed.
+Check point 934 passed.
+Check point 935 passed.
+ASP_mempfix_rel_mpf_W_c: OK
+ASP_mempfix_rel_mpf_W_d: Start
+Check point 936 passed.
+Check point 937 passed.
+Check point 938 passed.
+Check point 939 passed.
+Check point 940 passed.
+Check point 941 passed.
+ASP_mempfix_rel_mpf_W_d: OK
+ASP_mempfix_tget_mpf_a_1: Start
+Check point 942 passed.
+Check point 943 passed.
+Check point 944 passed.
+Check point 945 passed.
+Check point 946 passed.
+Check point 947 passed.
+Check point 948 passed.
+ASP_mempfix_tget_mpf_a_1: OK
+ASP_mempfix_tget_mpf_a_2: Start
+Check point 949 passed.
+Check point 950 passed.
+Check point 951 passed.
+Check point 952 passed.
+Check point 953 passed.
+Check point 954 passed.
+ASP_mempfix_tget_mpf_a_2: OK
+ASP_mempfix_tget_mpf_a_3: Start
+Check point 955 passed.
+Check point 956 passed.
+Check point 957 passed.
+Check point 958 passed.
+Check point 959 passed.
+ASP_mempfix_tget_mpf_a_3: OK
+ASP_mempfix_tget_mpf_a_4: Start
+Check point 960 passed.
+Check point 961 passed.
+Check point 962 passed.
+Check point 963 passed.
+Check point 964 passed.
+ASP_mempfix_tget_mpf_a_4: OK
+ASP_mempfix_tget_mpf_b_1: Start
+Check point 965 passed.
+Check point 966 passed.
+Check point 967 passed.
+Check point 968 passed.
+Check point 969 passed.
+ASP_mempfix_tget_mpf_b_1: OK
+ASP_mempfix_tget_mpf_b_2: Start
+Check point 970 passed.
+Check point 971 passed.
+Check point 972 passed.
+Check point 973 passed.
+Check point 974 passed.
+ASP_mempfix_tget_mpf_b_2: OK
+ASP_mempfix_tget_mpf_c: Start
+Check point 975 passed.
+Check point 976 passed.
+Check point 977 passed.
+Check point 978 passed.
+Check point 979 passed.
+ASP_mempfix_tget_mpf_c: OK
+ASP_mempfix_tget_mpf_d: Start
+Check point 980 passed.
+Check point 981 passed.
+Check point 982 passed.
+Check point 983 passed.
+Check point 984 passed.
+Check point 985 passed.
+Check point 986 passed.
+Check point 987 passed.
+Check point 988 passed.
+ASP_mempfix_tget_mpf_d: OK
+ASP_mempfix_tget_mpf_e: Start
+Check point 989 passed.
+Check point 990 passed.
+Check point 991 passed.
+Check point 992 passed.
+Check point 993 passed.
+Check point 994 passed.
+Check point 995 passed.
+Check point 996 passed.
+Check point 997 passed.
+ASP_mempfix_tget_mpf_e: OK
+ASP_mempfix_tget_mpf_f: Start
+Check point 998 passed.
+Check point 999 passed.
+Check point 1000 passed.
+Check point 1001 passed.
+Check point 1002 passed.
+Check point 1003 passed.
+Check point 1004 passed.
+Check point 1005 passed.
+Check point 1006 passed.
+Check point 1007 passed.
+Check point 1008 passed.
+Check point 1009 passed.
+Check point 1010 passed.
+Check point 1011 passed.
+Check point 1012 passed.
+ASP_mempfix_tget_mpf_f: OK
+ASP_mempfix_tget_mpf_g: Start
+Check point 1013 passed.
+Check point 1014 passed.
+Check point 1015 passed.
+Check point 1016 passed.
+Check point 1017 passed.
+ASP_mempfix_tget_mpf_g: OK
+ASP_mempfix_tget_mpf_h_1: Start
+Check point 1018 passed.
+Check point 1019 passed.
+Check point 1020 passed.
+Check point 1021 passed.
+Check point 1022 passed.
+ASP_mempfix_tget_mpf_h_1: OK
+ASP_mempfix_tget_mpf_h_2: Start
+Check point 1023 passed.
+Check point 1024 passed.
+Check point 1025 passed.
+Check point 1026 passed.
+Check point 1027 passed.
+ASP_mempfix_tget_mpf_h_2: OK
+ASP_mempfix_tget_mpf_i_1: Start
+Check point 1028 passed.
+Check point 1029 passed.
+Check point 1030 passed.
+Check point 1031 passed.
+Check point 1032 passed.
+ASP_mempfix_tget_mpf_i_1: OK
+ASP_mempfix_tget_mpf_i_2: Start
+Check point 1033 passed.
+Check point 1034 passed.
+Check point 1035 passed.
+Check point 1036 passed.
+Check point 1037 passed.
+Check point 1038 passed.
+Check point 1039 passed.
+Check point 1040 passed.
+Check point 1041 passed.
+Check point 1042 passed.
+Check point 1043 passed.
+Check point 1044 passed.
+Check point 1045 passed.
+Check point 1046 passed.
+Check point 1047 passed.
+Check point 1048 passed.
+Check point 1049 passed.
+Check point 1050 passed.
+Check point 1051 passed.
+Check point 1052 passed.
+Check point 1053 passed.
+Check point 1054 passed.
+Check point 1055 passed.
+Check point 1056 passed.
+Check point 1057 passed.
+Check point 1058 passed.
+Check point 1059 passed.
+Check point 1060 passed.
+Check point 1061 passed.
+Check point 1062 passed.
+Check point 1063 passed.
+Check point 1064 passed.
+Check point 1065 passed.
+Check point 1066 passed.
+Check point 1067 passed.
+Check point 1068 passed.
+Check point 1069 passed.
+Check point 1070 passed.
+Check point 1071 passed.
+Check point 1072 passed.
+Check point 1073 passed.
+Check point 1074 passed.
+Check point 1075 passed.
+Check point 1076 passed.
+Check point 1077 passed.
+Check point 1078 passed.
+Check point 1079 passed.
+Check point 1080 passed.
+Check point 1081 passed.
+Check point 1082 passed.
+Check point 1083 passed.
+Check point 1084 passed.
+Check point 1085 passed.
+Check point 1086 passed.
+Check point 1087 passed.
+Check point 1088 passed.
+Check point 1089 passed.
+Check point 1090 passed.
+Check point 1091 passed.
+Check point 1092 passed.
+Check point 1093 passed.
+Check point 1094 passed.
+Check point 1095 passed.
+Check point 1096 passed.
+Check point 1097 passed.
+Check point 1098 passed.
+Check point 1099 passed.
+Check point 1100 passed.
+Check point 1101 passed.
+Check point 1102 passed.
+Check point 1103 passed.
+Check point 1104 passed.
+Check point 1105 passed.
+Check point 1106 passed.
+Check point 1107 passed.
+Check point 1108 passed.
+Check point 1109 passed.
+Check point 1110 passed.
+Check point 1111 passed.
+Check point 1112 passed.
+Check point 1113 passed.
+Check point 1114 passed.
+Check point 1115 passed.
+Check point 1116 passed.
+Check point 1117 passed.
+Check point 1118 passed.
+Check point 1119 passed.
+Check point 1120 passed.
+Check point 1121 passed.
+Check point 1122 passed.
+Check point 1123 passed.
+Check point 1124 passed.
+Check point 1125 passed.
+Check point 1126 passed.
+Check point 1127 passed.
+Check point 1128 passed.
+Check point 1129 passed.
+Check point 1130 passed.
+Check point 1131 passed.
+Check point 1132 passed.
+Check point 1133 passed.
+Check point 1134 passed.
+Check point 1135 passed.
+Check point 1136 passed.
+Check point 1137 passed.
+Check point 1138 passed.
+ASP_mempfix_tget_mpf_i_2: OK
+ASP_mempfix_tget_mpf_j_1_1: Start
+Check point 1139 passed.
+Check point 1140 passed.
+Check point 1141 passed.
+Check point 1142 passed.
+Check point 1143 passed.
+ASP_mempfix_tget_mpf_j_1_1: OK
+ASP_mempfix_tget_mpf_j_1_2: Start
+Check point 1144 passed.
+Check point 1145 passed.
+Check point 1146 passed.
+Check point 1147 passed.
+Check point 1148 passed.
+Check point 1149 passed.
+Check point 1150 passed.
+Check point 1151 passed.
+ASP_mempfix_tget_mpf_j_1_2: OK
+ASP_mempfix_tget_mpf_j_1_3: Start
+Check point 1152 passed.
+Check point 1153 passed.
+Check point 1154 passed.
+Check point 1155 passed.
+Check point 1156 passed.
+Check point 1157 passed.
+Check point 1158 passed.
+Check point 1159 passed.
+ASP_mempfix_tget_mpf_j_1_3: OK
+ASP_mempfix_tget_mpf_j_1_4: Start
+Check point 1160 passed.
+Check point 1161 passed.
+Check point 1162 passed.
+Check point 1163 passed.
+Check point 1164 passed.
+Check point 1165 passed.
+Check point 1166 passed.
+Check point 1167 passed.
+ASP_mempfix_tget_mpf_j_1_4: OK
+ASP_mempfix_tget_mpf_j_2_1: Start
+Check point 1168 passed.
+Check point 1169 passed.
+Check point 1170 passed.
+Check point 1171 passed.
+Check point 1172 passed.
+ASP_mempfix_tget_mpf_j_2_1: OK
+ASP_mempfix_tget_mpf_j_2_2: Start
+Check point 1173 passed.
+Check point 1174 passed.
+Check point 1175 passed.
+Check point 1176 passed.
+Check point 1177 passed.
+Check point 1178 passed.
+Check point 1179 passed.
+Check point 1180 passed.
+ASP_mempfix_tget_mpf_j_2_2: OK
+ASP_mempfix_tget_mpf_j_2_3: Start
+Check point 1181 passed.
+Check point 1182 passed.
+Check point 1183 passed.
+Check point 1184 passed.
+Check point 1185 passed.
+Check point 1186 passed.
+Check point 1187 passed.
+Check point 1188 passed.
+ASP_mempfix_tget_mpf_j_2_3: OK
+ASP_mempfix_tget_mpf_j_2_4: Start
+Check point 1189 passed.
+Check point 1190 passed.
+Check point 1191 passed.
+Check point 1192 passed.
+Check point 1193 passed.
+Check point 1194 passed.
+Check point 1195 passed.
+Check point 1196 passed.
+ASP_mempfix_tget_mpf_j_2_4: OK
+ASP_mempfix_tget_mpf_j_3: Start
+Check point 1197 passed.
+Check point 1198 passed.
+Check point 1199 passed.
+Check point 1200 passed.
+Check point 1201 passed.
+ASP_mempfix_tget_mpf_j_3: OK
+ASP_mempfix_tget_mpf_k_1: Start
+Check point 1202 passed.
+Check point 1203 passed.
+Check point 1204 passed.
+Check point 1205 passed.
+ASP_mempfix_tget_mpf_k_1: OK
+ASP_mempfix_tget_mpf_k_2: Start
+Check point 1206 passed.
+Check point 1207 passed.
+Check point 1208 passed.
+Check point 1209 passed.
+Check point 1210 passed.
+ASP_mempfix_tget_mpf_k_2: OK
+ASP_pridataq_ipsnd_pdq_b_1: Start
+Check point 1211 passed.
+Check point 1212 passed.
+Check point 1213 passed.
+Check point 1214 passed.
+Check point 1215 passed.
+Check point 1216 passed.
+ASP_pridataq_ipsnd_pdq_b_1: OK
+ASP_pridataq_ipsnd_pdq_c_2: Start
+Check point 1217 passed.
+Check point 1218 passed.
+Check point 1219 passed.
+Check point 1220 passed.
+Check point 1221 passed.
+Check point 1222 passed.
+ASP_pridataq_ipsnd_pdq_c_2: OK
+ASP_pridataq_ipsnd_pdq_e_2_1_1: Start
+Check point 1223 passed.
+Check point 1224 passed.
+Check point 1225 passed.
+Check point 1226 passed.
+Check point 1227 passed.
+Check point 1228 passed.
+Check point 1229 passed.
+Check point 1230 passed.
+Check point 1231 passed.
+Check point 1232 passed.
+ASP_pridataq_ipsnd_pdq_e_2_1_1: OK
+ASP_pridataq_ipsnd_pdq_e_2_1_3: Start
+Check point 1233 passed.
+Check point 1234 passed.
+Check point 1235 passed.
+Check point 1236 passed.
+Check point 1237 passed.
+Check point 1238 passed.
+Check point 1239 passed.
+Check point 1240 passed.
+Check point 1241 passed.
+ASP_pridataq_ipsnd_pdq_e_2_1_3: OK
+ASP_pridataq_ipsnd_pdq_e_2_2: Start
+Check point 1242 passed.
+Check point 1243 passed.
+Check point 1244 passed.
+Check point 1245 passed.
+Check point 1246 passed.
+Check point 1247 passed.
+Check point 1248 passed.
+Check point 1249 passed.
+Check point 1250 passed.
+Check point 1251 passed.
+Check point 1252 passed.
+Check point 1253 passed.
+ASP_pridataq_ipsnd_pdq_e_2_2: OK
+ASP_pridataq_ipsnd_pdq_e_2_4: Start
+Check point 1254 passed.
+Check point 1255 passed.
+Check point 1256 passed.
+Check point 1257 passed.
+Check point 1258 passed.
+Check point 1259 passed.
+Check point 1260 passed.
+Check point 1261 passed.
+Check point 1262 passed.
+Check point 1263 passed.
+ASP_pridataq_ipsnd_pdq_e_2_4: OK
+ASP_staticAPI_ATT_INI_b: Start
+Check point 1264 passed.
+Check point 1265 passed.
+Check point 1266 passed.
+Check point 1267 passed.
+ASP_staticAPI_ATT_INI_b: OK
+ASP_staticAPI_ATT_ISR_d: Start
+Check point 1268 passed.
+Check point 1269 passed.
+Check point 1270 passed.
+Check point 1271 passed.
+Check point 1272 passed.
+Check point 1273 passed.
+Check point 1274 passed.
+ASP_staticAPI_ATT_ISR_d: OK
+ASP_staticAPI_ATT_ISR_W_a: Start
+Check point 1275 passed.
+Check point 1276 passed.
+Check point 1277 passed.
+Check point 1278 passed.
+Check point 1279 passed.
+Check point 1280 passed.
+Check point 1281 passed.
+Check point 1282 passed.
+Check point 1283 passed.
+ASP_staticAPI_ATT_ISR_W_a: OK
+ASP_staticAPI_ATT_TER_b: Start
+Check point 1284 passed.
+Check point 1285 passed.
+Check point 1286 passed.
+Check point 1287 passed.
+ASP_staticAPI_ATT_TER_b: OK
+ASP_staticAPI_CFG_INT_d_1: Start
+Check point 1288 passed.
+Check point 1289 passed.
+Check point 1290 passed.
+Check point 1291 passed.
+Check point 1292 passed.
+Check point 1293 passed.
+Check point 1294 passed.
+ASP_staticAPI_CFG_INT_d_1: OK
+ASP_staticAPI_CFG_INT_d_2: Start
+Check point 1295 passed.
+Check point 1296 passed.
+Check point 1297 passed.
+Check point 1298 passed.
+Check point 1299 passed.
+Check point 1300 passed.
+Check point 1301 passed.
+ASP_staticAPI_CFG_INT_d_2: OK
+ASP_staticAPI_CRE_ALM_d: Start
+Check point 1302 passed.
+Check point 1303 passed.
+Check point 1304 passed.
+Check point 1305 passed.
+Check point 1306 passed.
+Check point 1307 passed.
+Check point 1308 passed.
+Check point 1309 passed.
+Check point 1310 passed.
+Check point 1311 passed.
+ASP_staticAPI_CRE_ALM_d: OK
+ASP_staticAPI_CRE_CYC_g: Start
+Check point 1312 passed.
+Check point 1313 passed.
+Check point 1314 passed.
+Check point 1315 passed.
+Check point 1316 passed.
+Check point 1317 passed.
+Check point 1318 passed.
+Check point 1319 passed.
+Check point 1320 passed.
+Check point 1321 passed.
+Check point 1322 passed.
+Check point 1323 passed.
+Check point 1324 passed.
+Check point 1325 passed.
+Check point 1326 passed.
+Check point 1327 passed.
+Check point 1328 passed.
+Check point 1329 passed.
+Check point 1330 passed.
+Check point 1331 passed.
+Check point 1332 passed.
+Check point 1333 passed.
+Check point 1334 passed.
+Check point 1335 passed.
+Check point 1336 passed.
+Check point 1337 passed.
+Check point 1338 passed.
+Check point 1339 passed.
+Check point 1340 passed.
+Check point 1341 passed.
+Check point 1342 passed.
+Check point 1343 passed.
+Check point 1344 passed.
+ASP_staticAPI_CRE_CYC_g: OK
+ASP_staticAPI_CRE_CYC_h_1: Start
+Check point 1345 passed.
+Check point 1346 passed.
+Check point 1347 passed.
+Check point 1348 passed.
+Check point 1349 passed.
+Check point 1350 passed.
+Check point 1351 passed.
+Check point 1352 passed.
+Check point 1353 passed.
+Check point 1354 passed.
+Check point 1355 passed.
+Check point 1356 passed.
+Check point 1357 passed.
+Check point 1358 passed.
+Check point 1359 passed.
+Check point 1360 passed.
+Check point 1361 passed.
+Check point 1362 passed.
+Check point 1363 passed.
+Check point 1364 passed.
+Check point 1365 passed.
+Check point 1366 passed.
+Check point 1367 passed.
+Check point 1368 passed.
+Check point 1369 passed.
+Check point 1370 passed.
+Check point 1371 passed.
+Check point 1372 passed.
+Check point 1373 passed.
+Check point 1374 passed.
+Check point 1375 passed.
+Check point 1376 passed.
+Check point 1377 passed.
+Check point 1378 passed.
+Check point 1379 passed.
+Check point 1380 passed.
+Check point 1381 passed.
+Check point 1382 passed.
+Check point 1383 passed.
+Check point 1384 passed.
+Check point 1385 passed.
+Check point 1386 passed.
+Check point 1387 passed.
+Check point 1388 passed.
+ASP_staticAPI_CRE_CYC_h_1: OK
+ASP_staticAPI_CRE_CYC_h_2: Start
+Check point 1389 passed.
+Check point 1390 passed.
+Check point 1391 passed.
+Check point 1392 passed.
+Check point 1393 passed.
+Check point 1394 passed.
+Check point 1395 passed.
+Check point 1396 passed.
+Check point 1397 passed.
+Check point 1398 passed.
+Check point 1399 passed.
+Check point 1400 passed.
+Check point 1401 passed.
+Check point 1402 passed.
+Check point 1403 passed.
+Check point 1404 passed.
+Check point 1405 passed.
+Check point 1406 passed.
+Check point 1407 passed.
+Check point 1408 passed.
+Check point 1409 passed.
+Check point 1410 passed.
+Check point 1411 passed.
+Check point 1412 passed.
+Check point 1413 passed.
+Check point 1414 passed.
+Check point 1415 passed.
+Check point 1416 passed.
+Check point 1417 passed.
+Check point 1418 passed.
+Check point 1419 passed.
+Check point 1420 passed.
+Check point 1421 passed.
+Check point 1422 passed.
+Check point 1423 passed.
+Check point 1424 passed.
+Check point 1425 passed.
+Check point 1426 passed.
+Check point 1427 passed.
+Check point 1428 passed.
+Check point 1429 passed.
+Check point 1430 passed.
+Check point 1431 passed.
+Check point 1432 passed.
+ASP_staticAPI_CRE_CYC_h_2: OK
+ASP_staticAPI_CRE_DTQ_d: Start
+Check point 1433 passed.
+Check point 1434 passed.
+Check point 1435 passed.
+Check point 1436 passed.
+ASP_staticAPI_CRE_DTQ_d: OK
+ASP_staticAPI_CRE_DTQ_W_a: Start
+Check point 1437 passed.
+Check point 1438 passed.
+Check point 1439 passed.
+Check point 1440 passed.
+ASP_staticAPI_CRE_DTQ_W_a: OK
+ASP_staticAPI_CRE_FLG_c: Start
+Check point 1441 passed.
+Check point 1442 passed.
+Check point 1443 passed.
+Check point 1444 passed.
+ASP_staticAPI_CRE_FLG_c: OK
+ASP_staticAPI_CRE_MBX_e: Start
+Check point 1445 passed.
+Check point 1446 passed.
+Check point 1447 passed.
+Check point 1448 passed.
+ASP_staticAPI_CRE_MBX_e: OK
+ASP_staticAPI_CRE_MPF_e: Start
+Check point 1449 passed.
+Check point 1450 passed.
+Check point 1451 passed.
+Check point 1452 passed.
+ASP_staticAPI_CRE_MPF_e: OK
+ASP_staticAPI_CRE_PDQ_e: Start
+Check point 1453 passed.
+Check point 1454 passed.
+Check point 1455 passed.
+Check point 1456 passed.
+ASP_staticAPI_CRE_PDQ_e: OK
+ASP_staticAPI_CRE_PDQ_W_a: Start
+Check point 1457 passed.
+Check point 1458 passed.
+Check point 1459 passed.
+Check point 1460 passed.
+ASP_staticAPI_CRE_PDQ_W_a: OK
+ASP_staticAPI_CRE_SEM_e: Start
+Check point 1461 passed.
+Check point 1462 passed.
+Check point 1463 passed.
+Check point 1464 passed.
+ASP_staticAPI_CRE_SEM_e: OK
+ASP_staticAPI_CRE_TSK_h_1: Start
+Check point 1465 passed.
+Check point 1466 passed.
+Check point 1467 passed.
+Check point 1468 passed.
+Check point 1469 passed.
+Check point 1470 passed.
+Check point 1471 passed.
+Check point 1472 passed.
+ASP_staticAPI_CRE_TSK_h_1: OK
+ASP_staticAPI_DEF_EXC_d: Start
+Check point 1473 passed.
+Check point 1474 passed.
+Check point 1475 passed.
+Check point 1476 passed.
+Check point 1477 passed.
+ASP_staticAPI_DEF_EXC_d: OK
+ASP_staticAPI_DEF_EXC_W_a: Start
+Check point 1478 passed.
+Check point 1479 passed.
+Check point 1480 passed.
+Check point 1481 passed.
+Check point 1482 passed.
+ASP_staticAPI_DEF_EXC_W_a: OK
+ASP_staticAPI_DEF_INH_d: Start
+Check point 1483 passed.
+Check point 1484 passed.
+Check point 1485 passed.
+Check point 1486 passed.
+Check point 1487 passed.
+Check point 1488 passed.
+Check point 1489 passed.
+ASP_staticAPI_DEF_INH_d: OK
+ASP_staticAPI_DEF_INH_W_a: Start
+Check point 1490 passed.
+Check point 1491 passed.
+Check point 1492 passed.
+Check point 1493 passed.
+Check point 1494 passed.
+Check point 1495 passed.
+Check point 1496 passed.
+ASP_staticAPI_DEF_INH_W_a: OK
+ASP_staticAPI_DEF_TEX_d: Start
+Check point 1497 passed.
+Check point 1498 passed.
+Check point 1499 passed.
+Check point 1500 passed.
+Check point 1501 passed.
+ASP_staticAPI_DEF_TEX_d: OK
+ASP_task_refer_ref_tsk_a_1: Start
+Check point 1502 passed.
+Check point 1503 passed.
+Check point 1504 passed.
+Check point 1505 passed.
+Check point 1506 passed.
+Check point 1507 passed.
+ASP_task_refer_ref_tsk_a_1: OK
+ASP_task_refer_ref_tsk_a_2: Start
+Check point 1508 passed.
+Check point 1509 passed.
+Check point 1510 passed.
+Check point 1511 passed.
+Check point 1512 passed.
+Check point 1513 passed.
+Check point 1514 passed.
+Check point 1515 passed.
+ASP_task_refer_ref_tsk_a_2: OK
+ASP_task_refer_ref_tsk_b_1: Start
+Check point 1516 passed.
+Check point 1517 passed.
+Check point 1518 passed.
+Check point 1519 passed.
+ASP_task_refer_ref_tsk_b_1: OK
+ASP_task_refer_ref_tsk_b_2: Start
+Check point 1520 passed.
+Check point 1521 passed.
+Check point 1522 passed.
+Check point 1523 passed.
+ASP_task_refer_ref_tsk_b_2: OK
+ASP_task_refer_ref_tsk_c_1: Start
+Check point 1524 passed.
+Check point 1525 passed.
+Check point 1526 passed.
+Check point 1527 passed.
+ASP_task_refer_ref_tsk_c_1: OK
+ASP_task_refer_ref_tsk_c_2: Start
+Check point 1528 passed.
+Check point 1529 passed.
+Check point 1530 passed.
+Check point 1531 passed.
+Check point 1532 passed.
+Check point 1533 passed.
+Check point 1534 passed.
+ASP_task_refer_ref_tsk_c_2: OK
+ASP_task_refer_ref_tsk_c_3_1: Start
+Check point 1535 passed.
+Check point 1536 passed.
+Check point 1537 passed.
+Check point 1538 passed.
+Check point 1539 passed.
+Check point 1540 passed.
+ASP_task_refer_ref_tsk_c_3_1: OK
+ASP_task_refer_ref_tsk_c_3_10: Start
+Check point 1541 passed.
+Check point 1542 passed.
+Check point 1543 passed.
+Check point 1544 passed.
+Check point 1545 passed.
+Check point 1546 passed.
+Check point 1547 passed.
+ASP_task_refer_ref_tsk_c_3_10: OK
+ASP_task_refer_ref_tsk_c_3_2: Start
+Check point 1548 passed.
+Check point 1549 passed.
+Check point 1550 passed.
+Check point 1551 passed.
+Check point 1552 passed.
+Check point 1553 passed.
+ASP_task_refer_ref_tsk_c_3_2: OK
+ASP_task_refer_ref_tsk_c_3_3: Start
+Check point 1554 passed.
+Check point 1555 passed.
+Check point 1556 passed.
+Check point 1557 passed.
+Check point 1558 passed.
+Check point 1559 passed.
+Check point 1560 passed.
+ASP_task_refer_ref_tsk_c_3_3: OK
+ASP_task_refer_ref_tsk_c_3_4: Start
+Check point 1561 passed.
+Check point 1562 passed.
+Check point 1563 passed.
+Check point 1564 passed.
+Check point 1565 passed.
+Check point 1566 passed.
+ASP_task_refer_ref_tsk_c_3_4: OK
+ASP_task_refer_ref_tsk_c_3_5: Start
+Check point 1567 passed.
+Check point 1568 passed.
+Check point 1569 passed.
+Check point 1570 passed.
+Check point 1571 passed.
+Check point 1572 passed.
+ASP_task_refer_ref_tsk_c_3_5: OK
+ASP_task_refer_ref_tsk_c_3_6: Start
+Check point 1573 passed.
+Check point 1574 passed.
+Check point 1575 passed.
+Check point 1576 passed.
+Check point 1577 passed.
+Check point 1578 passed.
+ASP_task_refer_ref_tsk_c_3_6: OK
+ASP_task_refer_ref_tsk_c_3_7: Start
+Check point 1579 passed.
+Check point 1580 passed.
+Check point 1581 passed.
+Check point 1582 passed.
+Check point 1583 passed.
+Check point 1584 passed.
+ASP_task_refer_ref_tsk_c_3_7: OK
+ASP_task_refer_ref_tsk_c_3_8: Start
+Check point 1585 passed.
+Check point 1586 passed.
+Check point 1587 passed.
+Check point 1588 passed.
+Check point 1589 passed.
+Check point 1590 passed.
+ASP_task_refer_ref_tsk_c_3_8: OK
+ASP_task_refer_ref_tsk_c_3_9: Start
+Check point 1591 passed.
+Check point 1592 passed.
+Check point 1593 passed.
+Check point 1594 passed.
+Check point 1595 passed.
+Check point 1596 passed.
+ASP_task_refer_ref_tsk_c_3_9: OK
+ASP_task_refer_ref_tsk_c_4_1: Start
+Check point 1597 passed.
+Check point 1598 passed.
+Check point 1599 passed.
+Check point 1600 passed.
+Check point 1601 passed.
+Check point 1602 passed.
+Check point 1603 passed.
+ASP_task_refer_ref_tsk_c_4_1: OK
+ASP_task_refer_ref_tsk_c_4_2: Start
+Check point 1604 passed.
+Check point 1605 passed.
+Check point 1606 passed.
+Check point 1607 passed.
+Check point 1608 passed.
+Check point 1609 passed.
+ASP_task_refer_ref_tsk_c_4_2: OK
+ASP_task_refer_ref_tsk_c_4_3: Start
+Check point 1610 passed.
+Check point 1611 passed.
+Check point 1612 passed.
+Check point 1613 passed.
+Check point 1614 passed.
+Check point 1615 passed.
+ASP_task_refer_ref_tsk_c_4_3: OK
+ASP_task_refer_ref_tsk_c_4_4: Start
+Check point 1616 passed.
+Check point 1617 passed.
+Check point 1618 passed.
+Check point 1619 passed.
+Check point 1620 passed.
+Check point 1621 passed.
+ASP_task_refer_ref_tsk_c_4_4: OK
+ASP_task_refer_ref_tsk_c_4_5: Start
+Check point 1622 passed.
+Check point 1623 passed.
+Check point 1624 passed.
+Check point 1625 passed.
+Check point 1626 passed.
+Check point 1627 passed.
+ASP_task_refer_ref_tsk_c_4_5: OK
+ASP_task_refer_ref_tsk_c_4_6: Start
+Check point 1628 passed.
+Check point 1629 passed.
+Check point 1630 passed.
+Check point 1631 passed.
+Check point 1632 passed.
+Check point 1633 passed.
+ASP_task_refer_ref_tsk_c_4_6: OK
+ASP_task_refer_ref_tsk_c_4_7: Start
+Check point 1634 passed.
+Check point 1635 passed.
+Check point 1636 passed.
+Check point 1637 passed.
+Check point 1638 passed.
+Check point 1639 passed.
+ASP_task_refer_ref_tsk_c_4_7: OK
+ASP_task_refer_ref_tsk_c_4_8: Start
+Check point 1640 passed.
+Check point 1641 passed.
+Check point 1642 passed.
+Check point 1643 passed.
+Check point 1644 passed.
+Check point 1645 passed.
+Check point 1646 passed.
+ASP_task_refer_ref_tsk_c_4_8: OK
+ASP_task_refer_ref_tsk_c_5: Start
+Check point 1647 passed.
+Check point 1648 passed.
+Check point 1649 passed.
+Check point 1650 passed.
+Check point 1651 passed.
+Check point 1652 passed.
+ASP_task_refer_ref_tsk_c_5: OK
+ASP_task_refer_ref_tsk_c_6_1: Start
+Check point 1653 passed.
+Check point 1654 passed.
+Check point 1655 passed.
+Check point 1656 passed.
+Check point 1657 passed.
+Check point 1658 passed.
+Check point 1659 passed.
+ASP_task_refer_ref_tsk_c_6_1: OK
+ASP_task_refer_ref_tsk_c_6_10: Start
+Check point 1660 passed.
+Check point 1661 passed.
+Check point 1662 passed.
+Check point 1663 passed.
+Check point 1664 passed.
+Check point 1665 passed.
+Check point 1666 passed.
+Check point 1667 passed.
+ASP_task_refer_ref_tsk_c_6_10: OK
+ASP_task_refer_ref_tsk_c_6_2: Start
+Check point 1668 passed.
+Check point 1669 passed.
+Check point 1670 passed.
+Check point 1671 passed.
+Check point 1672 passed.
+Check point 1673 passed.
+Check point 1674 passed.
+ASP_task_refer_ref_tsk_c_6_2: OK
+ASP_task_refer_ref_tsk_c_6_3: Start
+Check point 1675 passed.
+Check point 1676 passed.
+Check point 1677 passed.
+Check point 1678 passed.
+Check point 1679 passed.
+Check point 1680 passed.
+Check point 1681 passed.
+Check point 1682 passed.
+ASP_task_refer_ref_tsk_c_6_3: OK
+ASP_task_refer_ref_tsk_c_6_4: Start
+Check point 1683 passed.
+Check point 1684 passed.
+Check point 1685 passed.
+Check point 1686 passed.
+Check point 1687 passed.
+Check point 1688 passed.
+Check point 1689 passed.
+ASP_task_refer_ref_tsk_c_6_4: OK
+ASP_task_refer_ref_tsk_c_6_5: Start
+Check point 1690 passed.
+Check point 1691 passed.
+Check point 1692 passed.
+Check point 1693 passed.
+Check point 1694 passed.
+Check point 1695 passed.
+Check point 1696 passed.
+ASP_task_refer_ref_tsk_c_6_5: OK
+ASP_task_refer_ref_tsk_c_6_6: Start
+Check point 1697 passed.
+Check point 1698 passed.
+Check point 1699 passed.
+Check point 1700 passed.
+Check point 1701 passed.
+Check point 1702 passed.
+Check point 1703 passed.
+ASP_task_refer_ref_tsk_c_6_6: OK
+ASP_task_refer_ref_tsk_c_6_7: Start
+Check point 1704 passed.
+Check point 1705 passed.
+Check point 1706 passed.
+Check point 1707 passed.
+Check point 1708 passed.
+Check point 1709 passed.
+Check point 1710 passed.
+ASP_task_refer_ref_tsk_c_6_7: OK
+ASP_task_refer_ref_tsk_c_6_8: Start
+Check point 1711 passed.
+Check point 1712 passed.
+Check point 1713 passed.
+Check point 1714 passed.
+Check point 1715 passed.
+Check point 1716 passed.
+Check point 1717 passed.
+ASP_task_refer_ref_tsk_c_6_8: OK
+ASP_task_refer_ref_tsk_c_6_9: Start
+Check point 1718 passed.
+Check point 1719 passed.
+Check point 1720 passed.
+Check point 1721 passed.
+Check point 1722 passed.
+Check point 1723 passed.
+Check point 1724 passed.
+ASP_task_refer_ref_tsk_c_6_9: OK
+ASP_task_refer_ref_tsk_c_7: Start
+Check point 1725 passed.
+Check point 1726 passed.
+Check point 1727 passed.
+Check point 1728 passed.
+ASP_task_refer_ref_tsk_c_7: OK
+ASP_task_refer_ref_tsk_c_8: Start
+Check point 1729 passed.
+Check point 1730 passed.
+Check point 1731 passed.
+Check point 1732 passed.
+Check point 1733 passed.
+Check point 1734 passed.
+Check point 1735 passed.
+Check point 1736 passed.
+Check point 1737 passed.
+ASP_task_refer_ref_tsk_c_8: OK
+ASP_task_refer_ref_tsk_c_9: Start
+Check point 1738 passed.
+Check point 1739 passed.
+Check point 1740 passed.
+Check point 1741 passed.
+Check point 1742 passed.
+Check point 1743 passed.
+Check point 1744 passed.
+Check point 1745 passed.
+Check point 1746 passed.
+ASP_task_refer_ref_tsk_c_9: OK
+ASP_task_refer_ref_tsk_d: Start
+Check point 1747 passed.
+Check point 1748 passed.
+Check point 1749 passed.
+Check point 1750 passed.
+ASP_task_refer_ref_tsk_d: OK
+ASP_task_sync_can_wup_a_1: Start
+Check point 1751 passed.
+Check point 1752 passed.
+Check point 1753 passed.
+Check point 1754 passed.
+Check point 1755 passed.
+Check point 1756 passed.
+ASP_task_sync_can_wup_a_1: OK
+ASP_task_sync_can_wup_a_2: Start
+Check point 1757 passed.
+Check point 1758 passed.
+Check point 1759 passed.
+Check point 1760 passed.
+Check point 1761 passed.
+Check point 1762 passed.
+Check point 1763 passed.
+Check point 1764 passed.
+ASP_task_sync_can_wup_a_2: OK
+ASP_task_sync_can_wup_b_1: Start
+Check point 1765 passed.
+Check point 1766 passed.
+Check point 1767 passed.
+Check point 1768 passed.
+Check point 1769 passed.
+Check point 1770 passed.
+Check point 1771 passed.
+ASP_task_sync_can_wup_b_1: OK
+ASP_task_sync_can_wup_b_2: Start
+Check point 1772 passed.
+Check point 1773 passed.
+Check point 1774 passed.
+Check point 1775 passed.
+Check point 1776 passed.
+Check point 1777 passed.
+Check point 1778 passed.
+ASP_task_sync_can_wup_b_2: OK
+ASP_task_sync_can_wup_c: Start
+Check point 1779 passed.
+Check point 1780 passed.
+Check point 1781 passed.
+Check point 1782 passed.
+ASP_task_sync_can_wup_c: OK
+ASP_task_sync_can_wup_d_1: Start
+Check point 1783 passed.
+Check point 1784 passed.
+Check point 1785 passed.
+Check point 1786 passed.
+ASP_task_sync_can_wup_d_1: OK
+ASP_task_sync_can_wup_d_2: Start
+Check point 1787 passed.
+Check point 1788 passed.
+Check point 1789 passed.
+Check point 1790 passed.
+Check point 1791 passed.
+ASP_task_sync_can_wup_d_2: OK
+ASP_task_sync_can_wup_e_1_1: Start
+Check point 1792 passed.
+Check point 1793 passed.
+Check point 1794 passed.
+Check point 1795 passed.
+Check point 1796 passed.
+Check point 1797 passed.
+Check point 1798 passed.
+ASP_task_sync_can_wup_e_1_1: OK
+ASP_task_sync_can_wup_e_1_2: Start
+Check point 1799 passed.
+Check point 1800 passed.
+Check point 1801 passed.
+Check point 1802 passed.
+Check point 1803 passed.
+Check point 1804 passed.
+Check point 1805 passed.
+Check point 1806 passed.
+ASP_task_sync_can_wup_e_1_2: OK
+ASP_task_sync_can_wup_e_2: Start
+Check point 1807 passed.
+Check point 1808 passed.
+Check point 1809 passed.
+Check point 1810 passed.
+Check point 1811 passed.
+Check point 1812 passed.
+ASP_task_sync_can_wup_e_2: OK
+ASP_task_sync_can_wup_e_3_1: Start
+Check point 1813 passed.
+Check point 1814 passed.
+Check point 1815 passed.
+Check point 1816 passed.
+Check point 1817 passed.
+Check point 1818 passed.
+ASP_task_sync_can_wup_e_3_1: OK
+ASP_task_sync_can_wup_e_3_2: Start
+Check point 1819 passed.
+Check point 1820 passed.
+Check point 1821 passed.
+Check point 1822 passed.
+Check point 1823 passed.
+Check point 1824 passed.
+Check point 1825 passed.
+ASP_task_sync_can_wup_e_3_2: OK
+ASP_task_sync_can_wup_e_4_1: Start
+Check point 1826 passed.
+Check point 1827 passed.
+Check point 1828 passed.
+Check point 1829 passed.
+Check point 1830 passed.
+Check point 1831 passed.
+Check point 1832 passed.
+ASP_task_sync_can_wup_e_4_1: OK
+ASP_task_sync_can_wup_e_4_2: Start
+Check point 1833 passed.
+Check point 1834 passed.
+Check point 1835 passed.
+Check point 1836 passed.
+Check point 1837 passed.
+Check point 1838 passed.
+Check point 1839 passed.
+Check point 1840 passed.
+ASP_task_sync_can_wup_e_4_2: OK
+ASP_task_sync_can_wup_e_5_1: Start
+Check point 1841 passed.
+Check point 1842 passed.
+Check point 1843 passed.
+Check point 1844 passed.
+Check point 1845 passed.
+Check point 1846 passed.
+Check point 1847 passed.
+ASP_task_sync_can_wup_e_5_1: OK
+ASP_task_sync_can_wup_e_5_2: Start
+Check point 1848 passed.
+Check point 1849 passed.
+Check point 1850 passed.
+Check point 1851 passed.
+Check point 1852 passed.
+Check point 1853 passed.
+Check point 1854 passed.
+Check point 1855 passed.
+ASP_task_sync_can_wup_e_5_2: OK
+ASP_task_sync_can_wup_e_6_1: Start
+Check point 1856 passed.
+Check point 1857 passed.
+Check point 1858 passed.
+Check point 1859 passed.
+Check point 1860 passed.
+Check point 1861 passed.
+ASP_task_sync_can_wup_e_6_1: OK
+ASP_task_sync_can_wup_e_6_2: Start
+Check point 1862 passed.
+Check point 1863 passed.
+Check point 1864 passed.
+Check point 1865 passed.
+Check point 1866 passed.
+Check point 1867 passed.
+Check point 1868 passed.
+ASP_task_sync_can_wup_e_6_2: OK
+ASP_task_sync_can_wup_e_7: Start
+Check point 1869 passed.
+Check point 1870 passed.
+Check point 1871 passed.
+Check point 1872 passed.
+Check point 1873 passed.
+Check point 1874 passed.
+Check point 1875 passed.
+ASP_task_sync_can_wup_e_7: OK
+ASP_task_sync_can_wup_e_8_1: Start
+Check point 1876 passed.
+Check point 1877 passed.
+Check point 1878 passed.
+Check point 1879 passed.
+Check point 1880 passed.
+Check point 1881 passed.
+Check point 1882 passed.
+ASP_task_sync_can_wup_e_8_1: OK
+ASP_task_sync_can_wup_e_8_2: Start
+Check point 1883 passed.
+Check point 1884 passed.
+Check point 1885 passed.
+Check point 1886 passed.
+Check point 1887 passed.
+Check point 1888 passed.
+Check point 1889 passed.
+Check point 1890 passed.
+ASP_task_sync_can_wup_e_8_2: OK
+ASP_task_sync_dly_tsk_a_1: Start
+Check point 1891 passed.
+Check point 1892 passed.
+Check point 1893 passed.
+Check point 1894 passed.
+Check point 1895 passed.
+Check point 1896 passed.
+ASP_task_sync_dly_tsk_a_1: OK
+ASP_task_sync_dly_tsk_a_2: Start
+Check point 1897 passed.
+Check point 1898 passed.
+Check point 1899 passed.
+Check point 1900 passed.
+Check point 1901 passed.
+ASP_task_sync_dly_tsk_a_2: OK
+ASP_task_sync_dly_tsk_a_3: Start
+Check point 1902 passed.
+Check point 1903 passed.
+Check point 1904 passed.
+Check point 1905 passed.
+ASP_task_sync_dly_tsk_a_3: OK
+ASP_task_sync_dly_tsk_a_4: Start
+Check point 1906 passed.
+Check point 1907 passed.
+Check point 1908 passed.
+Check point 1909 passed.
+ASP_task_sync_dly_tsk_a_4: OK
+ASP_task_sync_dly_tsk_b_1: Start
+Check point 1910 passed.
+Check point 1911 passed.
+Check point 1912 passed.
+Check point 1913 passed.
+ASP_task_sync_dly_tsk_b_1: OK
+ASP_task_sync_dly_tsk_b_2: Start
+Check point 1914 passed.
+Check point 1915 passed.
+Check point 1916 passed.
+Check point 1917 passed.
+ASP_task_sync_dly_tsk_b_2: OK
+ASP_task_sync_dly_tsk_c: Start
+Check point 1918 passed.
+Check point 1919 passed.
+Check point 1920 passed.
+Check point 1921 passed.
+Check point 1922 passed.
+Check point 1923 passed.
+Check point 1924 passed.
+Check point 1925 passed.
+ASP_task_sync_dly_tsk_c: OK
+ASP_task_sync_dly_tsk_d: Start
+Check point 1926 passed.
+Check point 1927 passed.
+Check point 1928 passed.
+Check point 1929 passed.
+Check point 1930 passed.
+Check point 1931 passed.
+Check point 1932 passed.
+Check point 1933 passed.
+Check point 1934 passed.
+Check point 1935 passed.
+ASP_task_sync_dly_tsk_d: OK
+ASP_task_sync_dly_tsk_e: Start
+Check point 1936 passed.
+Check point 1937 passed.
+Check point 1938 passed.
+Check point 1939 passed.
+Check point 1940 passed.
+Check point 1941 passed.
+Check point 1942 passed.
+Check point 1943 passed.
+Check point 1944 passed.
+Check point 1945 passed.
+Check point 1946 passed.
+Check point 1947 passed.
+ASP_task_sync_dly_tsk_e: OK
+ASP_task_sync_dly_tsk_f_1: Start
+Check point 1948 passed.
+Check point 1949 passed.
+Check point 1950 passed.
+Check point 1951 passed.
+Check point 1952 passed.
+Check point 1953 passed.
+Check point 1954 passed.
+Check point 1955 passed.
+Check point 1956 passed.
+Check point 1957 passed.
+Check point 1958 passed.
+Check point 1959 passed.
+Check point 1960 passed.
+Check point 1961 passed.
+ASP_task_sync_dly_tsk_f_1: OK
+ASP_task_sync_dly_tsk_f_2: Start
+Check point 1962 passed.
+Check point 1963 passed.
+Check point 1964 passed.
+Check point 1965 passed.
+Check point 1966 passed.
+Check point 1967 passed.
+Check point 1968 passed.
+Check point 1969 passed.
+Check point 1970 passed.
+Check point 1971 passed.
+Check point 1972 passed.
+Check point 1973 passed.
+Check point 1974 passed.
+ASP_task_sync_dly_tsk_f_2: OK
+ASP_task_sync_dly_tsk_W_a: Start
+Check point 1975 passed.
+Check point 1976 passed.
+Check point 1977 passed.
+Check point 1978 passed.
+Check point 1979 passed.
+Check point 1980 passed.
+Check point 1981 passed.
+Check point 1982 passed.
+Check point 1983 passed.
+Check point 1984 passed.
+Check point 1985 passed.
+Check point 1986 passed.
+Check point 1987 passed.
+Check point 1988 passed.
+ASP_task_sync_dly_tsk_W_a: OK
+ASP_task_sync_dly_tsk_W_b: Start
+Check point 1989 passed.
+Check point 1990 passed.
+Check point 1991 passed.
+Check point 1992 passed.
+Check point 1993 passed.
+Check point 1994 passed.
+Check point 1995 passed.
+Check point 1996 passed.
+Check point 1997 passed.
+Check point 1998 passed.
+Check point 1999 passed.
+Check point 2000 passed.
+Check point 2001 passed.
+Check point 2002 passed.
+Check point 2003 passed.
+Check point 2004 passed.
+Check point 2005 passed.
+ASP_task_sync_dly_tsk_W_b: OK
+ASP_task_sync_dly_tsk_W_c: Start
+Check point 2006 passed.
+Check point 2007 passed.
+Check point 2008 passed.
+Check point 2009 passed.
+Check point 2010 passed.
+Check point 2011 passed.
+Check point 2012 passed.
+Check point 2013 passed.
+Check point 2014 passed.
+Check point 2015 passed.
+Check point 2016 passed.
+Check point 2017 passed.
+Check point 2018 passed.
+Check point 2019 passed.
+Check point 2020 passed.
+Check point 2021 passed.
+Check point 2022 passed.
+Check point 2023 passed.
+Check point 2024 passed.
+Check point 2025 passed.
+Check point 2026 passed.
+Check point 2027 passed.
+Check point 2028 passed.
+Check point 2029 passed.
+Check point 2030 passed.
+Check point 2031 passed.
+Check point 2032 passed.
+ASP_task_sync_dly_tsk_W_c: OK
+ASP_task_sync_dly_tsk_W_d: Start
+Check point 2033 passed.
+Check point 2034 passed.
+Check point 2035 passed.
+Check point 2036 passed.
+Check point 2037 passed.
+Check point 2038 passed.
+Check point 2039 passed.
+Check point 2040 passed.
+Check point 2041 passed.
+Check point 2042 passed.
+Check point 2043 passed.
+Check point 2044 passed.
+Check point 2045 passed.
+Check point 2046 passed.
+Check point 2047 passed.
+ASP_task_sync_dly_tsk_W_d: OK
+ASP_task_sync_irel_wai_a_1: Start
+Check point 2048 passed.
+Check point 2049 passed.
+Check point 2050 passed.
+Check point 2051 passed.
+Check point 2052 passed.
+Check point 2053 passed.
+ASP_task_sync_irel_wai_a_1: OK
+ASP_task_sync_irel_wai_a_2: Start
+Check point 2054 passed.
+Check point 2055 passed.
+Check point 2056 passed.
+Check point 2057 passed.
+Check point 2058 passed.
+Check point 2059 passed.
+Check point 2060 passed.
+ASP_task_sync_irel_wai_a_2: OK
+ASP_task_sync_irel_wai_b_1: Start
+Check point 2061 passed.
+Check point 2062 passed.
+Check point 2063 passed.
+Check point 2064 passed.
+Check point 2065 passed.
+Check point 2066 passed.
+ASP_task_sync_irel_wai_b_1: OK
+ASP_task_sync_irel_wai_b_2: Start
+Check point 2067 passed.
+Check point 2068 passed.
+Check point 2069 passed.
+Check point 2070 passed.
+Check point 2071 passed.
+Check point 2072 passed.
+ASP_task_sync_irel_wai_b_2: OK
+ASP_task_sync_irel_wai_c_1: Start
+Check point 2073 passed.
+Check point 2074 passed.
+Check point 2075 passed.
+Check point 2076 passed.
+Check point 2077 passed.
+Check point 2078 passed.
+Check point 2079 passed.
+Check point 2080 passed.
+Check point 2081 passed.
+ASP_task_sync_irel_wai_c_1: OK
+ASP_task_sync_irel_wai_c_2: Start
+Check point 2082 passed.
+Check point 2083 passed.
+Check point 2084 passed.
+Check point 2085 passed.
+Check point 2086 passed.
+Check point 2087 passed.
+Check point 2088 passed.
+ASP_task_sync_irel_wai_c_2: OK
+ASP_task_sync_irel_wai_c_3: Start
+Check point 2089 passed.
+Check point 2090 passed.
+Check point 2091 passed.
+Check point 2092 passed.
+Check point 2093 passed.
+ASP_task_sync_irel_wai_c_3: OK
+ASP_task_sync_irel_wai_c_4: Start
+Check point 2094 passed.
+Check point 2095 passed.
+Check point 2096 passed.
+Check point 2097 passed.
+Check point 2098 passed.
+Check point 2099 passed.
+ASP_task_sync_irel_wai_c_4: OK
+ASP_task_sync_irel_wai_d_1_1: Start
+Check point 2100 passed.
+Check point 2101 passed.
+Check point 2102 passed.
+Check point 2103 passed.
+Check point 2104 passed.
+Check point 2105 passed.
+Check point 2106 passed.
+Check point 2107 passed.
+Check point 2108 passed.
+Check point 2109 passed.
+ASP_task_sync_irel_wai_d_1_1: OK
+ASP_task_sync_irel_wai_d_1_2: Start
+Check point 2110 passed.
+Check point 2111 passed.
+Check point 2112 passed.
+Check point 2113 passed.
+Check point 2114 passed.
+Check point 2115 passed.
+Check point 2116 passed.
+Check point 2117 passed.
+Check point 2118 passed.
+ASP_task_sync_irel_wai_d_1_2: OK
+ASP_task_sync_irel_wai_d_1_3: Start
+Check point 2119 passed.
+Check point 2120 passed.
+Check point 2121 passed.
+Check point 2122 passed.
+Check point 2123 passed.
+Check point 2124 passed.
+Check point 2125 passed.
+Check point 2126 passed.
+Check point 2127 passed.
+ASP_task_sync_irel_wai_d_1_3: OK
+ASP_task_sync_irel_wai_d_2: Start
+Check point 2128 passed.
+Check point 2129 passed.
+Check point 2130 passed.
+Check point 2131 passed.
+Check point 2132 passed.
+Check point 2133 passed.
+Check point 2134 passed.
+Check point 2135 passed.
+Check point 2136 passed.
+Check point 2137 passed.
+Check point 2138 passed.
+Check point 2139 passed.
+ASP_task_sync_irel_wai_d_2: OK
+ASP_task_sync_irel_wai_d_3: Start
+Check point 2140 passed.
+Check point 2141 passed.
+Check point 2142 passed.
+Check point 2143 passed.
+Check point 2144 passed.
+Check point 2145 passed.
+Check point 2146 passed.
+Check point 2147 passed.
+ASP_task_sync_irel_wai_d_3: OK
+ASP_task_sync_irel_wai_d_4: Start
+Check point 2148 passed.
+Check point 2149 passed.
+Check point 2150 passed.
+Check point 2151 passed.
+Check point 2152 passed.
+Check point 2153 passed.
+Check point 2154 passed.
+Check point 2155 passed.
+Check point 2156 passed.
+ASP_task_sync_irel_wai_d_4: OK
+ASP_task_sync_irel_wai_d_5: Start
+Check point 2157 passed.
+Check point 2158 passed.
+Check point 2159 passed.
+Check point 2160 passed.
+Check point 2161 passed.
+Check point 2162 passed.
+Check point 2163 passed.
+ASP_task_sync_irel_wai_d_5: OK
+ASP_task_sync_irel_wai_e_1_1: Start
+Check point 2164 passed.
+Check point 2165 passed.
+Check point 2166 passed.
+Check point 2167 passed.
+Check point 2168 passed.
+Check point 2169 passed.
+Check point 2170 passed.
+Check point 2171 passed.
+Check point 2172 passed.
+Check point 2173 passed.
+ASP_task_sync_irel_wai_e_1_1: OK
+ASP_task_sync_irel_wai_e_1_2: Start
+Check point 2174 passed.
+Check point 2175 passed.
+Check point 2176 passed.
+Check point 2177 passed.
+Check point 2178 passed.
+Check point 2179 passed.
+Check point 2180 passed.
+Check point 2181 passed.
+Check point 2182 passed.
+ASP_task_sync_irel_wai_e_1_2: OK
+ASP_task_sync_irel_wai_e_1_3: Start
+Check point 2183 passed.
+Check point 2184 passed.
+Check point 2185 passed.
+Check point 2186 passed.
+Check point 2187 passed.
+Check point 2188 passed.
+Check point 2189 passed.
+Check point 2190 passed.
+Check point 2191 passed.
+ASP_task_sync_irel_wai_e_1_3: OK
+ASP_task_sync_irel_wai_e_2: Start
+Check point 2192 passed.
+Check point 2193 passed.
+Check point 2194 passed.
+Check point 2195 passed.
+Check point 2196 passed.
+Check point 2197 passed.
+Check point 2198 passed.
+Check point 2199 passed.
+Check point 2200 passed.
+Check point 2201 passed.
+Check point 2202 passed.
+Check point 2203 passed.
+ASP_task_sync_irel_wai_e_2: OK
+ASP_task_sync_irel_wai_e_3: Start
+Check point 2204 passed.
+Check point 2205 passed.
+Check point 2206 passed.
+Check point 2207 passed.
+Check point 2208 passed.
+Check point 2209 passed.
+Check point 2210 passed.
+Check point 2211 passed.
+ASP_task_sync_irel_wai_e_3: OK
+ASP_task_sync_irel_wai_e_4: Start
+Check point 2212 passed.
+Check point 2213 passed.
+Check point 2214 passed.
+Check point 2215 passed.
+Check point 2216 passed.
+Check point 2217 passed.
+Check point 2218 passed.
+Check point 2219 passed.
+Check point 2220 passed.
+ASP_task_sync_irel_wai_e_4: OK
+ASP_task_sync_irel_wai_e_5: Start
+Check point 2221 passed.
+Check point 2222 passed.
+Check point 2223 passed.
+Check point 2224 passed.
+Check point 2225 passed.
+Check point 2226 passed.
+Check point 2227 passed.
+ASP_task_sync_irel_wai_e_5: OK
+ASP_task_sync_irel_wai_f_1_1: Start
+Check point 2228 passed.
+Check point 2229 passed.
+Check point 2230 passed.
+Check point 2231 passed.
+Check point 2232 passed.
+Check point 2233 passed.
+Check point 2234 passed.
+Check point 2235 passed.
+Check point 2236 passed.
+Check point 2237 passed.
+ASP_task_sync_irel_wai_f_1_1: OK
+ASP_task_sync_irel_wai_f_1_2: Start
+Check point 2238 passed.
+Check point 2239 passed.
+Check point 2240 passed.
+Check point 2241 passed.
+Check point 2242 passed.
+Check point 2243 passed.
+Check point 2244 passed.
+Check point 2245 passed.
+Check point 2246 passed.
+ASP_task_sync_irel_wai_f_1_2: OK
+ASP_task_sync_irel_wai_f_1_3: Start
+Check point 2247 passed.
+Check point 2248 passed.
+Check point 2249 passed.
+Check point 2250 passed.
+Check point 2251 passed.
+Check point 2252 passed.
+Check point 2253 passed.
+Check point 2254 passed.
+Check point 2255 passed.
+ASP_task_sync_irel_wai_f_1_3: OK
+ASP_task_sync_irel_wai_f_2: Start
+Check point 2256 passed.
+Check point 2257 passed.
+Check point 2258 passed.
+Check point 2259 passed.
+Check point 2260 passed.
+Check point 2261 passed.
+Check point 2262 passed.
+Check point 2263 passed.
+Check point 2264 passed.
+Check point 2265 passed.
+Check point 2266 passed.
+Check point 2267 passed.
+Check point 2268 passed.
+ASP_task_sync_irel_wai_f_2: OK
+ASP_task_sync_irel_wai_f_3: Start
+Check point 2269 passed.
+Check point 2270 passed.
+Check point 2271 passed.
+Check point 2272 passed.
+Check point 2273 passed.
+Check point 2274 passed.
+Check point 2275 passed.
+Check point 2276 passed.
+Check point 2277 passed.
+ASP_task_sync_irel_wai_f_3: OK
+ASP_task_sync_irel_wai_f_4: Start
+Check point 2278 passed.
+Check point 2279 passed.
+Check point 2280 passed.
+Check point 2281 passed.
+Check point 2282 passed.
+Check point 2283 passed.
+Check point 2284 passed.
+Check point 2285 passed.
+Check point 2286 passed.
+Check point 2287 passed.
+ASP_task_sync_irel_wai_f_4: OK
+ASP_task_sync_irel_wai_f_5: Start
+Check point 2288 passed.
+Check point 2289 passed.
+Check point 2290 passed.
+Check point 2291 passed.
+Check point 2292 passed.
+Check point 2293 passed.
+Check point 2294 passed.
+Check point 2295 passed.
+ASP_task_sync_irel_wai_f_5: OK
+ASP_task_sync_irel_wai_g_1_1: Start
+Check point 2296 passed.
+Check point 2297 passed.
+Check point 2298 passed.
+Check point 2299 passed.
+Check point 2300 passed.
+Check point 2301 passed.
+Check point 2302 passed.
+Check point 2303 passed.
+Check point 2304 passed.
+Check point 2305 passed.
+ASP_task_sync_irel_wai_g_1_1: OK
+ASP_task_sync_irel_wai_g_1_2: Start
+Check point 2306 passed.
+Check point 2307 passed.
+Check point 2308 passed.
+Check point 2309 passed.
+Check point 2310 passed.
+Check point 2311 passed.
+Check point 2312 passed.
+Check point 2313 passed.
+Check point 2314 passed.
+ASP_task_sync_irel_wai_g_1_2: OK
+ASP_task_sync_irel_wai_g_1_3: Start
+Check point 2315 passed.
+Check point 2316 passed.
+Check point 2317 passed.
+Check point 2318 passed.
+Check point 2319 passed.
+Check point 2320 passed.
+Check point 2321 passed.
+Check point 2322 passed.
+Check point 2323 passed.
+ASP_task_sync_irel_wai_g_1_3: OK
+ASP_task_sync_irel_wai_g_2: Start
+Check point 2324 passed.
+Check point 2325 passed.
+Check point 2326 passed.
+Check point 2327 passed.
+Check point 2328 passed.
+Check point 2329 passed.
+Check point 2330 passed.
+Check point 2331 passed.
+Check point 2332 passed.
+Check point 2333 passed.
+Check point 2334 passed.
+Check point 2335 passed.
+Check point 2336 passed.
+ASP_task_sync_irel_wai_g_2: OK
+ASP_task_sync_irel_wai_g_3: Start
+Check point 2337 passed.
+Check point 2338 passed.
+Check point 2339 passed.
+Check point 2340 passed.
+Check point 2341 passed.
+Check point 2342 passed.
+Check point 2343 passed.
+Check point 2344 passed.
+Check point 2345 passed.
+ASP_task_sync_irel_wai_g_3: OK
+ASP_task_sync_irel_wai_g_4: Start
+Check point 2346 passed.
+Check point 2347 passed.
+Check point 2348 passed.
+Check point 2349 passed.
+Check point 2350 passed.
+Check point 2351 passed.
+Check point 2352 passed.
+Check point 2353 passed.
+Check point 2354 passed.
+Check point 2355 passed.
+ASP_task_sync_irel_wai_g_4: OK
+ASP_task_sync_irel_wai_g_5: Start
+Check point 2356 passed.
+Check point 2357 passed.
+Check point 2358 passed.
+Check point 2359 passed.
+Check point 2360 passed.
+Check point 2361 passed.
+Check point 2362 passed.
+Check point 2363 passed.
+ASP_task_sync_irel_wai_g_5: OK
+ASP_task_sync_iwup_tsk_a_1: Start
+Check point 2364 passed.
+Check point 2365 passed.
+Check point 2366 passed.
+Check point 2367 passed.
+Check point 2368 passed.
+Check point 2369 passed.
+ASP_task_sync_iwup_tsk_a_1: OK
+ASP_task_sync_iwup_tsk_a_2: Start
+Check point 2370 passed.
+Check point 2371 passed.
+Check point 2372 passed.
+Check point 2373 passed.
+Check point 2374 passed.
+Check point 2375 passed.
+Check point 2376 passed.
+ASP_task_sync_iwup_tsk_a_2: OK
+ASP_task_sync_iwup_tsk_b_1: Start
+Check point 2377 passed.
+Check point 2378 passed.
+Check point 2379 passed.
+Check point 2380 passed.
+Check point 2381 passed.
+Check point 2382 passed.
+ASP_task_sync_iwup_tsk_b_1: OK
+ASP_task_sync_iwup_tsk_b_2: Start
+Check point 2383 passed.
+Check point 2384 passed.
+Check point 2385 passed.
+Check point 2386 passed.
+Check point 2387 passed.
+Check point 2388 passed.
+ASP_task_sync_iwup_tsk_b_2: OK
+ASP_task_sync_iwup_tsk_c: Start
+Check point 2389 passed.
+Check point 2390 passed.
+Check point 2391 passed.
+Check point 2392 passed.
+Check point 2393 passed.
+ASP_task_sync_iwup_tsk_c: OK
+ASP_task_sync_iwup_tsk_d: Start
+Check point 2394 passed.
+Check point 2395 passed.
+Check point 2396 passed.
+Check point 2397 passed.
+Check point 2398 passed.
+Check point 2399 passed.
+Check point 2400 passed.
+Check point 2401 passed.
+ASP_task_sync_iwup_tsk_d: OK
+ASP_task_sync_iwup_tsk_e_1_1_1: Start
+Check point 2402 passed.
+Check point 2403 passed.
+Check point 2404 passed.
+Check point 2405 passed.
+Check point 2406 passed.
+Check point 2407 passed.
+Check point 2408 passed.
+Check point 2409 passed.
+Check point 2410 passed.
+Check point 2411 passed.
+ASP_task_sync_iwup_tsk_e_1_1_1: OK
+ASP_task_sync_iwup_tsk_e_1_1_2: Start
+Check point 2412 passed.
+Check point 2413 passed.
+Check point 2414 passed.
+Check point 2415 passed.
+Check point 2416 passed.
+Check point 2417 passed.
+Check point 2418 passed.
+Check point 2419 passed.
+Check point 2420 passed.
+ASP_task_sync_iwup_tsk_e_1_1_2: OK
+ASP_task_sync_iwup_tsk_e_1_1_3: Start
+Check point 2421 passed.
+Check point 2422 passed.
+Check point 2423 passed.
+Check point 2424 passed.
+Check point 2425 passed.
+Check point 2426 passed.
+Check point 2427 passed.
+Check point 2428 passed.
+Check point 2429 passed.
+ASP_task_sync_iwup_tsk_e_1_1_3: OK
+ASP_task_sync_iwup_tsk_e_1_2: Start
+Check point 2430 passed.
+Check point 2431 passed.
+Check point 2432 passed.
+Check point 2433 passed.
+Check point 2434 passed.
+Check point 2435 passed.
+Check point 2436 passed.
+Check point 2437 passed.
+Check point 2438 passed.
+Check point 2439 passed.
+Check point 2440 passed.
+Check point 2441 passed.
+ASP_task_sync_iwup_tsk_e_1_2: OK
+ASP_task_sync_iwup_tsk_e_1_3: Start
+Check point 2442 passed.
+Check point 2443 passed.
+Check point 2444 passed.
+Check point 2445 passed.
+Check point 2446 passed.
+Check point 2447 passed.
+Check point 2448 passed.
+Check point 2449 passed.
+ASP_task_sync_iwup_tsk_e_1_3: OK
+ASP_task_sync_iwup_tsk_e_1_4: Start
+Check point 2450 passed.
+Check point 2451 passed.
+Check point 2452 passed.
+Check point 2453 passed.
+Check point 2454 passed.
+Check point 2455 passed.
+Check point 2456 passed.
+ASP_task_sync_iwup_tsk_e_1_4: OK
+ASP_task_sync_iwup_tsk_e_2: Start
+Check point 2457 passed.
+Check point 2458 passed.
+Check point 2459 passed.
+Check point 2460 passed.
+Check point 2461 passed.
+Check point 2462 passed.
+Check point 2463 passed.
+Check point 2464 passed.
+Check point 2465 passed.
+ASP_task_sync_iwup_tsk_e_2: OK
+ASP_task_sync_iwup_tsk_e_3: Start
+Check point 2466 passed.
+Check point 2467 passed.
+Check point 2468 passed.
+Check point 2469 passed.
+Check point 2470 passed.
+Check point 2471 passed.
+Check point 2472 passed.
+Check point 2473 passed.
+Check point 2474 passed.
+Check point 2475 passed.
+ASP_task_sync_iwup_tsk_e_3: OK
+ASP_task_sync_iwup_tsk_e_4: Start
+Check point 2476 passed.
+Check point 2477 passed.
+Check point 2478 passed.
+Check point 2479 passed.
+Check point 2480 passed.
+Check point 2481 passed.
+Check point 2482 passed.
+Check point 2483 passed.
+Check point 2484 passed.
+Check point 2485 passed.
+ASP_task_sync_iwup_tsk_e_4: OK
+ASP_task_sync_iwup_tsk_e_5: Start
+Check point 2486 passed.
+Check point 2487 passed.
+Check point 2488 passed.
+Check point 2489 passed.
+Check point 2490 passed.
+Check point 2491 passed.
+Check point 2492 passed.
+Check point 2493 passed.
+ASP_task_sync_iwup_tsk_e_5: OK
+ASP_task_sync_iwup_tsk_e_6: Start
+Check point 2494 passed.
+Check point 2495 passed.
+Check point 2496 passed.
+Check point 2497 passed.
+Check point 2498 passed.
+Check point 2499 passed.
+Check point 2500 passed.
+Check point 2501 passed.
+Check point 2502 passed.
+ASP_task_sync_iwup_tsk_e_6: OK
+ASP_task_sync_iwup_tsk_e_7: Start
+Check point 2503 passed.
+Check point 2504 passed.
+Check point 2505 passed.
+Check point 2506 passed.
+Check point 2507 passed.
+Check point 2508 passed.
+Check point 2509 passed.
+Check point 2510 passed.
+Check point 2511 passed.
+ASP_task_sync_iwup_tsk_e_7: OK
+ASP_task_sync_iwup_tsk_e_8: Start
+Check point 2512 passed.
+Check point 2513 passed.
+Check point 2514 passed.
+Check point 2515 passed.
+Check point 2516 passed.
+Check point 2517 passed.
+Check point 2518 passed.
+Check point 2519 passed.
+Check point 2520 passed.
+ASP_task_sync_iwup_tsk_e_8: OK
+ASP_task_sync_iwup_tsk_e_9: Start
+Check point 2521 passed.
+Check point 2522 passed.
+Check point 2523 passed.
+Check point 2524 passed.
+Check point 2525 passed.
+Check point 2526 passed.
+Check point 2527 passed.
+ASP_task_sync_iwup_tsk_e_9: OK
+ASP_task_sync_rel_wai_a_1: Start
+Check point 2528 passed.
+Check point 2529 passed.
+Check point 2530 passed.
+Check point 2531 passed.
+Check point 2532 passed.
+Check point 2533 passed.
+ASP_task_sync_rel_wai_a_1: OK
+ASP_task_sync_rel_wai_a_2: Start
+Check point 2534 passed.
+Check point 2535 passed.
+Check point 2536 passed.
+Check point 2537 passed.
+Check point 2538 passed.
+Check point 2539 passed.
+Check point 2540 passed.
+Check point 2541 passed.
+ASP_task_sync_rel_wai_a_2: OK
+ASP_task_sync_rel_wai_b_1: Start
+Check point 2542 passed.
+Check point 2543 passed.
+Check point 2544 passed.
+Check point 2545 passed.
+Check point 2546 passed.
+Check point 2547 passed.
+Check point 2548 passed.
+ASP_task_sync_rel_wai_b_1: OK
+ASP_task_sync_rel_wai_b_2: Start
+Check point 2549 passed.
+Check point 2550 passed.
+Check point 2551 passed.
+Check point 2552 passed.
+Check point 2553 passed.
+Check point 2554 passed.
+Check point 2555 passed.
+ASP_task_sync_rel_wai_b_2: OK
+ASP_task_sync_rel_wai_c_1: Start
+Check point 2556 passed.
+Check point 2557 passed.
+Check point 2558 passed.
+Check point 2559 passed.
+Check point 2560 passed.
+Check point 2561 passed.
+Check point 2562 passed.
+ASP_task_sync_rel_wai_c_1: OK
+ASP_task_sync_rel_wai_c_2: Start
+Check point 2563 passed.
+Check point 2564 passed.
+Check point 2565 passed.
+Check point 2566 passed.
+Check point 2567 passed.
+Check point 2568 passed.
+ASP_task_sync_rel_wai_c_2: OK
+ASP_task_sync_rel_wai_c_3: Start
+Check point 2569 passed.
+Check point 2570 passed.
+Check point 2571 passed.
+Check point 2572 passed.
+ASP_task_sync_rel_wai_c_3: OK
+ASP_task_sync_rel_wai_d_1_1: Start
+Check point 2573 passed.
+Check point 2574 passed.
+Check point 2575 passed.
+Check point 2576 passed.
+Check point 2577 passed.
+Check point 2578 passed.
+Check point 2579 passed.
+ASP_task_sync_rel_wai_d_1_1: OK
+ASP_task_sync_rel_wai_d_1_2: Start
+Check point 2580 passed.
+Check point 2581 passed.
+Check point 2582 passed.
+Check point 2583 passed.
+Check point 2584 passed.
+Check point 2585 passed.
+Check point 2586 passed.
+ASP_task_sync_rel_wai_d_1_2: OK
+ASP_task_sync_rel_wai_d_1_3: Start
+Check point 2587 passed.
+Check point 2588 passed.
+Check point 2589 passed.
+Check point 2590 passed.
+Check point 2591 passed.
+Check point 2592 passed.
+Check point 2593 passed.
+ASP_task_sync_rel_wai_d_1_3: OK
+ASP_task_sync_rel_wai_d_2: Start
+Check point 2594 passed.
+Check point 2595 passed.
+Check point 2596 passed.
+Check point 2597 passed.
+Check point 2598 passed.
+Check point 2599 passed.
+Check point 2600 passed.
+Check point 2601 passed.
+Check point 2602 passed.
+Check point 2603 passed.
+ASP_task_sync_rel_wai_d_2: OK
+ASP_task_sync_rel_wai_d_3: Start
+Check point 2604 passed.
+Check point 2605 passed.
+Check point 2606 passed.
+Check point 2607 passed.
+Check point 2608 passed.
+Check point 2609 passed.
+ASP_task_sync_rel_wai_d_3: OK
+ASP_task_sync_rel_wai_d_4: Start
+Check point 2610 passed.
+Check point 2611 passed.
+Check point 2612 passed.
+Check point 2613 passed.
+Check point 2614 passed.
+Check point 2615 passed.
+Check point 2616 passed.
+ASP_task_sync_rel_wai_d_4: OK
+ASP_task_sync_rel_wai_e_1_1: Start
+Check point 2617 passed.
+Check point 2618 passed.
+Check point 2619 passed.
+Check point 2620 passed.
+Check point 2621 passed.
+Check point 2622 passed.
+Check point 2623 passed.
+ASP_task_sync_rel_wai_e_1_1: OK
+ASP_task_sync_rel_wai_e_1_2: Start
+Check point 2624 passed.
+Check point 2625 passed.
+Check point 2626 passed.
+Check point 2627 passed.
+Check point 2628 passed.
+Check point 2629 passed.
+Check point 2630 passed.
+ASP_task_sync_rel_wai_e_1_2: OK
+ASP_task_sync_rel_wai_e_1_3: Start
+Check point 2631 passed.
+Check point 2632 passed.
+Check point 2633 passed.
+Check point 2634 passed.
+Check point 2635 passed.
+Check point 2636 passed.
+Check point 2637 passed.
+ASP_task_sync_rel_wai_e_1_3: OK
+ASP_task_sync_rel_wai_e_2: Start
+Check point 2638 passed.
+Check point 2639 passed.
+Check point 2640 passed.
+Check point 2641 passed.
+Check point 2642 passed.
+Check point 2643 passed.
+Check point 2644 passed.
+Check point 2645 passed.
+Check point 2646 passed.
+Check point 2647 passed.
+ASP_task_sync_rel_wai_e_2: OK
+ASP_task_sync_rel_wai_e_3: Start
+Check point 2648 passed.
+Check point 2649 passed.
+Check point 2650 passed.
+Check point 2651 passed.
+Check point 2652 passed.
+Check point 2653 passed.
+ASP_task_sync_rel_wai_e_3: OK
+ASP_task_sync_rel_wai_e_4: Start
+Check point 2654 passed.
+Check point 2655 passed.
+Check point 2656 passed.
+Check point 2657 passed.
+Check point 2658 passed.
+Check point 2659 passed.
+Check point 2660 passed.
+ASP_task_sync_rel_wai_e_4: OK
+ASP_task_sync_rel_wai_f_1_1: Start
+Check point 2661 passed.
+Check point 2662 passed.
+Check point 2663 passed.
+Check point 2664 passed.
+Check point 2665 passed.
+Check point 2666 passed.
+Check point 2667 passed.
+ASP_task_sync_rel_wai_f_1_1: OK
+ASP_task_sync_rel_wai_f_1_2: Start
+Check point 2668 passed.
+Check point 2669 passed.
+Check point 2670 passed.
+Check point 2671 passed.
+Check point 2672 passed.
+Check point 2673 passed.
+Check point 2674 passed.
+ASP_task_sync_rel_wai_f_1_2: OK
+ASP_task_sync_rel_wai_f_1_3: Start
+Check point 2675 passed.
+Check point 2676 passed.
+Check point 2677 passed.
+Check point 2678 passed.
+Check point 2679 passed.
+Check point 2680 passed.
+Check point 2681 passed.
+ASP_task_sync_rel_wai_f_1_3: OK
+ASP_task_sync_rel_wai_f_2: Start
+Check point 2682 passed.
+Check point 2683 passed.
+Check point 2684 passed.
+Check point 2685 passed.
+Check point 2686 passed.
+Check point 2687 passed.
+Check point 2688 passed.
+Check point 2689 passed.
+Check point 2690 passed.
+Check point 2691 passed.
+Check point 2692 passed.
+ASP_task_sync_rel_wai_f_2: OK
+ASP_task_sync_rel_wai_f_3: Start
+Check point 2693 passed.
+Check point 2694 passed.
+Check point 2695 passed.
+Check point 2696 passed.
+Check point 2697 passed.
+Check point 2698 passed.
+Check point 2699 passed.
+ASP_task_sync_rel_wai_f_3: OK
+ASP_task_sync_rel_wai_f_4: Start
+Check point 2700 passed.
+Check point 2701 passed.
+Check point 2702 passed.
+Check point 2703 passed.
+Check point 2704 passed.
+Check point 2705 passed.
+Check point 2706 passed.
+Check point 2707 passed.
+ASP_task_sync_rel_wai_f_4: OK
+ASP_task_sync_rel_wai_g_1_1: Start
+Check point 2708 passed.
+Check point 2709 passed.
+Check point 2710 passed.
+Check point 2711 passed.
+Check point 2712 passed.
+Check point 2713 passed.
+Check point 2714 passed.
+ASP_task_sync_rel_wai_g_1_1: OK
+ASP_task_sync_rel_wai_g_1_2: Start
+Check point 2715 passed.
+Check point 2716 passed.
+Check point 2717 passed.
+Check point 2718 passed.
+Check point 2719 passed.
+Check point 2720 passed.
+Check point 2721 passed.
+ASP_task_sync_rel_wai_g_1_2: OK
+ASP_task_sync_rel_wai_g_1_3: Start
+Check point 2722 passed.
+Check point 2723 passed.
+Check point 2724 passed.
+Check point 2725 passed.
+Check point 2726 passed.
+Check point 2727 passed.
+Check point 2728 passed.
+ASP_task_sync_rel_wai_g_1_3: OK
+ASP_task_sync_rel_wai_g_2: Start
+Check point 2729 passed.
+Check point 2730 passed.
+Check point 2731 passed.
+Check point 2732 passed.
+Check point 2733 passed.
+Check point 2734 passed.
+Check point 2735 passed.
+Check point 2736 passed.
+Check point 2737 passed.
+Check point 2738 passed.
+Check point 2739 passed.
+ASP_task_sync_rel_wai_g_2: OK
+ASP_task_sync_rel_wai_g_3: Start
+Check point 2740 passed.
+Check point 2741 passed.
+Check point 2742 passed.
+Check point 2743 passed.
+Check point 2744 passed.
+Check point 2745 passed.
+Check point 2746 passed.
+ASP_task_sync_rel_wai_g_3: OK
+ASP_task_sync_rel_wai_g_4: Start
+Check point 2747 passed.
+Check point 2748 passed.
+Check point 2749 passed.
+Check point 2750 passed.
+Check point 2751 passed.
+Check point 2752 passed.
+Check point 2753 passed.
+Check point 2754 passed.
+ASP_task_sync_rel_wai_g_4: OK
+ASP_task_sync_rsm_tsk_a_1: Start
+Check point 2755 passed.
+Check point 2756 passed.
+Check point 2757 passed.
+Check point 2758 passed.
+Check point 2759 passed.
+Check point 2760 passed.
+Check point 2761 passed.
+ASP_task_sync_rsm_tsk_a_1: OK
+ASP_task_sync_rsm_tsk_a_2: Start
+Check point 2762 passed.
+Check point 2763 passed.
+Check point 2764 passed.
+Check point 2765 passed.
+Check point 2766 passed.
+Check point 2767 passed.
+Check point 2768 passed.
+ASP_task_sync_rsm_tsk_a_2: OK
+ASP_task_sync_rsm_tsk_b_1: Start
+Check point 2769 passed.
+Check point 2770 passed.
+Check point 2771 passed.
+Check point 2772 passed.
+Check point 2773 passed.
+Check point 2774 passed.
+ASP_task_sync_rsm_tsk_b_1: OK
+ASP_task_sync_rsm_tsk_b_2: Start
+Check point 2775 passed.
+Check point 2776 passed.
+Check point 2777 passed.
+Check point 2778 passed.
+Check point 2779 passed.
+Check point 2780 passed.
+ASP_task_sync_rsm_tsk_b_2: OK
+ASP_task_sync_rsm_tsk_c_1: Start
+Check point 2781 passed.
+Check point 2782 passed.
+Check point 2783 passed.
+Check point 2784 passed.
+Check point 2785 passed.
+Check point 2786 passed.
+Check point 2787 passed.
+ASP_task_sync_rsm_tsk_c_1: OK
+ASP_task_sync_rsm_tsk_c_2: Start
+Check point 2788 passed.
+Check point 2789 passed.
+Check point 2790 passed.
+Check point 2791 passed.
+Check point 2792 passed.
+Check point 2793 passed.
+ASP_task_sync_rsm_tsk_c_2: OK
+ASP_task_sync_rsm_tsk_c_3: Start
+Check point 2794 passed.
+Check point 2795 passed.
+Check point 2796 passed.
+Check point 2797 passed.
+Check point 2798 passed.
+Check point 2799 passed.
+ASP_task_sync_rsm_tsk_c_3: OK
+ASP_task_sync_rsm_tsk_c_4: Start
+Check point 2800 passed.
+Check point 2801 passed.
+Check point 2802 passed.
+Check point 2803 passed.
+Check point 2804 passed.
+Check point 2805 passed.
+Check point 2806 passed.
+ASP_task_sync_rsm_tsk_c_4: OK
+ASP_task_sync_rsm_tsk_c_5: Start
+Check point 2807 passed.
+Check point 2808 passed.
+Check point 2809 passed.
+Check point 2810 passed.
+Check point 2811 passed.
+Check point 2812 passed.
+Check point 2813 passed.
+ASP_task_sync_rsm_tsk_c_5: OK
+ASP_task_sync_rsm_tsk_c_6: Start
+Check point 2814 passed.
+Check point 2815 passed.
+Check point 2816 passed.
+Check point 2817 passed.
+ASP_task_sync_rsm_tsk_c_6: OK
+ASP_task_sync_rsm_tsk_d_1_1: Start
+Check point 2818 passed.
+Check point 2819 passed.
+Check point 2820 passed.
+Check point 2821 passed.
+Check point 2822 passed.
+Check point 2823 passed.
+Check point 2824 passed.
+ASP_task_sync_rsm_tsk_d_1_1: OK
+ASP_task_sync_rsm_tsk_d_1_2: Start
+Check point 2825 passed.
+Check point 2826 passed.
+Check point 2827 passed.
+Check point 2828 passed.
+Check point 2829 passed.
+Check point 2830 passed.
+Check point 2831 passed.
+ASP_task_sync_rsm_tsk_d_1_2: OK
+ASP_task_sync_rsm_tsk_d_1_3: Start
+Check point 2832 passed.
+Check point 2833 passed.
+Check point 2834 passed.
+Check point 2835 passed.
+Check point 2836 passed.
+Check point 2837 passed.
+Check point 2838 passed.
+ASP_task_sync_rsm_tsk_d_1_3: OK
+ASP_task_sync_rsm_tsk_d_2: Start
+Check point 2839 passed.
+Check point 2840 passed.
+Check point 2841 passed.
+Check point 2842 passed.
+Check point 2843 passed.
+Check point 2844 passed.
+Check point 2845 passed.
+Check point 2846 passed.
+Check point 2847 passed.
+Check point 2848 passed.
+ASP_task_sync_rsm_tsk_d_2: OK
+ASP_task_sync_rsm_tsk_d_3: Start
+Check point 2849 passed.
+Check point 2850 passed.
+Check point 2851 passed.
+Check point 2852 passed.
+Check point 2853 passed.
+Check point 2854 passed.
+ASP_task_sync_rsm_tsk_d_3: OK
+ASP_task_sync_rsm_tsk_e_1: Start
+Check point 2855 passed.
+Check point 2856 passed.
+Check point 2857 passed.
+Check point 2858 passed.
+Check point 2859 passed.
+Check point 2860 passed.
+Check point 2861 passed.
+ASP_task_sync_rsm_tsk_e_1: OK
+ASP_task_sync_rsm_tsk_e_2: Start
+Check point 2862 passed.
+Check point 2863 passed.
+Check point 2864 passed.
+Check point 2865 passed.
+Check point 2866 passed.
+Check point 2867 passed.
+Check point 2868 passed.
+ASP_task_sync_rsm_tsk_e_2: OK
+ASP_task_sync_slp_tsk_a_1: Start
+Check point 2869 passed.
+Check point 2870 passed.
+Check point 2871 passed.
+Check point 2872 passed.
+Check point 2873 passed.
+Check point 2874 passed.
+ASP_task_sync_slp_tsk_a_1: OK
+ASP_task_sync_slp_tsk_a_2: Start
+Check point 2875 passed.
+Check point 2876 passed.
+Check point 2877 passed.
+Check point 2878 passed.
+Check point 2879 passed.
+ASP_task_sync_slp_tsk_a_2: OK
+ASP_task_sync_slp_tsk_a_3: Start
+Check point 2880 passed.
+Check point 2881 passed.
+Check point 2882 passed.
+Check point 2883 passed.
+ASP_task_sync_slp_tsk_a_3: OK
+ASP_task_sync_slp_tsk_a_4: Start
+Check point 2884 passed.
+Check point 2885 passed.
+Check point 2886 passed.
+Check point 2887 passed.
+ASP_task_sync_slp_tsk_a_4: OK
+ASP_task_sync_slp_tsk_b: Start
+Check point 2888 passed.
+Check point 2889 passed.
+Check point 2890 passed.
+Check point 2891 passed.
+Check point 2892 passed.
+Check point 2893 passed.
+Check point 2894 passed.
+Check point 2895 passed.
+ASP_task_sync_slp_tsk_b: OK
+ASP_task_sync_slp_tsk_c: Start
+Check point 2896 passed.
+Check point 2897 passed.
+Check point 2898 passed.
+Check point 2899 passed.
+Check point 2900 passed.
+Check point 2901 passed.
+Check point 2902 passed.
+Check point 2903 passed.
+ASP_task_sync_slp_tsk_c: OK
+ASP_task_sync_slp_tsk_d: Start
+Check point 2904 passed.
+Check point 2905 passed.
+Check point 2906 passed.
+Check point 2907 passed.
+Check point 2908 passed.
+ASP_task_sync_slp_tsk_d: OK
+ASP_task_sync_slp_tsk_e_1: Start
+Check point 2909 passed.
+Check point 2910 passed.
+Check point 2911 passed.
+Check point 2912 passed.
+Check point 2913 passed.
+Check point 2914 passed.
+Check point 2915 passed.
+ASP_task_sync_slp_tsk_e_1: OK
+ASP_task_sync_slp_tsk_e_2: Start
+Check point 2916 passed.
+Check point 2917 passed.
+Check point 2918 passed.
+Check point 2919 passed.
+Check point 2920 passed.
+Check point 2921 passed.
+Check point 2922 passed.
+ASP_task_sync_slp_tsk_e_2: OK
+ASP_task_sync_sus_tsk_a_1: Start
+Check point 2923 passed.
+Check point 2924 passed.
+Check point 2925 passed.
+Check point 2926 passed.
+Check point 2927 passed.
+Check point 2928 passed.
+ASP_task_sync_sus_tsk_a_1: OK
+ASP_task_sync_sus_tsk_a_2: Start
+Check point 2929 passed.
+Check point 2930 passed.
+Check point 2931 passed.
+Check point 2932 passed.
+Check point 2933 passed.
+Check point 2934 passed.
+Check point 2935 passed.
+Check point 2936 passed.
+ASP_task_sync_sus_tsk_a_2: OK
+ASP_task_sync_sus_tsk_a_3_1: Start
+Check point 2937 passed.
+Check point 2938 passed.
+Check point 2939 passed.
+Check point 2940 passed.
+ASP_task_sync_sus_tsk_a_3_1: OK
+ASP_task_sync_sus_tsk_a_3_2: Start
+Check point 2941 passed.
+Check point 2942 passed.
+Check point 2943 passed.
+Check point 2944 passed.
+ASP_task_sync_sus_tsk_a_3_2: OK
+ASP_task_sync_sus_tsk_b_1: Start
+Check point 2945 passed.
+Check point 2946 passed.
+Check point 2947 passed.
+Check point 2948 passed.
+Check point 2949 passed.
+Check point 2950 passed.
+Check point 2951 passed.
+ASP_task_sync_sus_tsk_b_1: OK
+ASP_task_sync_sus_tsk_b_2: Start
+Check point 2952 passed.
+Check point 2953 passed.
+Check point 2954 passed.
+Check point 2955 passed.
+Check point 2956 passed.
+Check point 2957 passed.
+Check point 2958 passed.
+ASP_task_sync_sus_tsk_b_2: OK
+ASP_task_sync_sus_tsk_c: Start
+Check point 2959 passed.
+Check point 2960 passed.
+Check point 2961 passed.
+Check point 2962 passed.
+ASP_task_sync_sus_tsk_c: OK
+ASP_task_sync_sus_tsk_d: Start
+Check point 2963 passed.
+Check point 2964 passed.
+Check point 2965 passed.
+Check point 2966 passed.
+Check point 2967 passed.
+Check point 2968 passed.
+ASP_task_sync_sus_tsk_d: OK
+ASP_task_sync_sus_tsk_e_1: Start
+Check point 2969 passed.
+Check point 2970 passed.
+Check point 2971 passed.
+Check point 2972 passed.
+Check point 2973 passed.
+Check point 2974 passed.
+Check point 2975 passed.
+ASP_task_sync_sus_tsk_e_1: OK
+ASP_task_sync_sus_tsk_e_2: Start
+Check point 2976 passed.
+Check point 2977 passed.
+Check point 2978 passed.
+Check point 2979 passed.
+Check point 2980 passed.
+Check point 2981 passed.
+Check point 2982 passed.
+ASP_task_sync_sus_tsk_e_2: OK
+ASP_task_sync_sus_tsk_f_1: Start
+Check point 2983 passed.
+Check point 2984 passed.
+Check point 2985 passed.
+Check point 2986 passed.
+Check point 2987 passed.
+Check point 2988 passed.
+Check point 2989 passed.
+ASP_task_sync_sus_tsk_f_1: OK
+ASP_task_sync_sus_tsk_f_2: Start
+Check point 2990 passed.
+Check point 2991 passed.
+Check point 2992 passed.
+Check point 2993 passed.
+Check point 2994 passed.
+Check point 2995 passed.
+Check point 2996 passed.
+ASP_task_sync_sus_tsk_f_2: OK
+ASP_task_sync_sus_tsk_f_3: Start
+Check point 2997 passed.
+Check point 2998 passed.
+Check point 2999 passed.
+Check point 3000 passed.
+Check point 3001 passed.
+Check point 3002 passed.
+Check point 3003 passed.
+ASP_task_sync_sus_tsk_f_3: OK
+ASP_task_sync_sus_tsk_g_1: Start
+Check point 3004 passed.
+Check point 3005 passed.
+Check point 3006 passed.
+Check point 3007 passed.
+Check point 3008 passed.
+Check point 3009 passed.
+Check point 3010 passed.
+ASP_task_sync_sus_tsk_g_1: OK
+ASP_task_sync_sus_tsk_g_2: Start
+Check point 3011 passed.
+Check point 3012 passed.
+Check point 3013 passed.
+Check point 3014 passed.
+Check point 3015 passed.
+Check point 3016 passed.
+Check point 3017 passed.
+Check point 3018 passed.
+ASP_task_sync_sus_tsk_g_2: OK
+ASP_task_sync_sus_tsk_h: Start
+Check point 3019 passed.
+Check point 3020 passed.
+Check point 3021 passed.
+Check point 3022 passed.
+Check point 3023 passed.
+Check point 3024 passed.
+ASP_task_sync_sus_tsk_h: OK
+ASP_task_sync_sus_tsk_i: Start
+Check point 3025 passed.
+Check point 3026 passed.
+Check point 3027 passed.
+Check point 3028 passed.
+Check point 3029 passed.
+Check point 3030 passed.
+ASP_task_sync_sus_tsk_i: OK
+ASP_task_sync_sus_tsk_j: Start
+Check point 3031 passed.
+Check point 3032 passed.
+Check point 3033 passed.
+Check point 3034 passed.
+Check point 3035 passed.
+Check point 3036 passed.
+Check point 3037 passed.
+ASP_task_sync_sus_tsk_j: OK
+ASP_task_sync_sus_tsk_k: Start
+Check point 3038 passed.
+Check point 3039 passed.
+Check point 3040 passed.
+Check point 3041 passed.
+Check point 3042 passed.
+Check point 3043 passed.
+Check point 3044 passed.
+ASP_task_sync_sus_tsk_k: OK
+ASP_task_sync_sus_tsk_W_a: Start
+Check point 3045 passed.
+Check point 3046 passed.
+Check point 3047 passed.
+Check point 3048 passed.
+Check point 3049 passed.
+Check point 3050 passed.
+Check point 3051 passed.
+Check point 3052 passed.
+ASP_task_sync_sus_tsk_W_a: OK
+ASP_task_sync_sus_tsk_W_b: Start
+Check point 3053 passed.
+Check point 3054 passed.
+Check point 3055 passed.
+Check point 3056 passed.
+Check point 3057 passed.
+ASP_task_sync_sus_tsk_W_b: OK
+ASP_task_sync_sus_tsk_W_c_1: Start
+Check point 3058 passed.
+Check point 3059 passed.
+Check point 3060 passed.
+Check point 3061 passed.
+Check point 3062 passed.
+Check point 3063 passed.
+Check point 3064 passed.
+Check point 3065 passed.
+ASP_task_sync_sus_tsk_W_c_1: OK
+ASP_task_sync_sus_tsk_W_c_2: Start
+Check point 3066 passed.
+Check point 3067 passed.
+Check point 3068 passed.
+Check point 3069 passed.
+Check point 3070 passed.
+Check point 3071 passed.
+Check point 3072 passed.
+Check point 3073 passed.
+ASP_task_sync_sus_tsk_W_c_2: OK
+ASP_task_sync_tslp_tsk_a_1: Start
+Check point 3074 passed.
+Check point 3075 passed.
+Check point 3076 passed.
+Check point 3077 passed.
+Check point 3078 passed.
+Check point 3079 passed.
+ASP_task_sync_tslp_tsk_a_1: OK
+ASP_task_sync_tslp_tsk_a_2: Start
+Check point 3080 passed.
+Check point 3081 passed.
+Check point 3082 passed.
+Check point 3083 passed.
+Check point 3084 passed.
+ASP_task_sync_tslp_tsk_a_2: OK
+ASP_task_sync_tslp_tsk_a_3: Start
+Check point 3085 passed.
+Check point 3086 passed.
+Check point 3087 passed.
+Check point 3088 passed.
+ASP_task_sync_tslp_tsk_a_3: OK
+ASP_task_sync_tslp_tsk_a_4: Start
+Check point 3089 passed.
+Check point 3090 passed.
+Check point 3091 passed.
+Check point 3092 passed.
+ASP_task_sync_tslp_tsk_a_4: OK
+ASP_task_sync_tslp_tsk_b: Start
+Check point 3093 passed.
+Check point 3094 passed.
+Check point 3095 passed.
+Check point 3096 passed.
+ASP_task_sync_tslp_tsk_b: OK
+ASP_task_sync_tslp_tsk_c: Start
+Check point 3097 passed.
+Check point 3098 passed.
+Check point 3099 passed.
+Check point 3100 passed.
+ASP_task_sync_tslp_tsk_c: OK
+ASP_task_sync_tslp_tsk_d: Start
+Check point 3101 passed.
+Check point 3102 passed.
+Check point 3103 passed.
+Check point 3104 passed.
+ASP_task_sync_tslp_tsk_d: OK
+ASP_task_sync_tslp_tsk_e: Start
+Check point 3105 passed.
+Check point 3106 passed.
+Check point 3107 passed.
+Check point 3108 passed.
+Check point 3109 passed.
+Check point 3110 passed.
+Check point 3111 passed.
+Check point 3112 passed.
+ASP_task_sync_tslp_tsk_e: OK
+ASP_task_sync_tslp_tsk_f: Start
+Check point 3113 passed.
+Check point 3114 passed.
+Check point 3115 passed.
+Check point 3116 passed.
+Check point 3117 passed.
+Check point 3118 passed.
+Check point 3119 passed.
+Check point 3120 passed.
+ASP_task_sync_tslp_tsk_f: OK
+ASP_task_sync_tslp_tsk_g: Start
+Check point 3121 passed.
+Check point 3122 passed.
+Check point 3123 passed.
+Check point 3124 passed.
+Check point 3125 passed.
+ASP_task_sync_tslp_tsk_g: OK
+ASP_task_sync_tslp_tsk_h_1: Start
+Check point 3126 passed.
+Check point 3127 passed.
+Check point 3128 passed.
+Check point 3129 passed.
+Check point 3130 passed.
+Check point 3131 passed.
+Check point 3132 passed.
+Check point 3133 passed.
+Check point 3134 passed.
+Check point 3135 passed.
+Check point 3136 passed.
+Check point 3137 passed.
+Check point 3138 passed.
+ASP_task_sync_tslp_tsk_h_1: OK
+ASP_task_sync_tslp_tsk_h_2: Start
+Check point 3139 passed.
+Check point 3140 passed.
+Check point 3141 passed.
+Check point 3142 passed.
+Check point 3143 passed.
+Check point 3144 passed.
+Check point 3145 passed.
+Check point 3146 passed.
+Check point 3147 passed.
+Check point 3148 passed.
+Check point 3149 passed.
+Check point 3150 passed.
+Check point 3151 passed.
+ASP_task_sync_tslp_tsk_h_2: OK
+ASP_task_sync_tslp_tsk_i: Start
+Check point 3152 passed.
+Check point 3153 passed.
+Check point 3154 passed.
+Check point 3155 passed.
+Check point 3156 passed.
+Check point 3157 passed.
+Check point 3158 passed.
+Check point 3159 passed.
+Check point 3160 passed.
+Check point 3161 passed.
+Check point 3162 passed.
+Check point 3163 passed.
+Check point 3164 passed.
+Check point 3165 passed.
+Check point 3166 passed.
+Check point 3167 passed.
+Check point 3168 passed.
+Check point 3169 passed.
+Check point 3170 passed.
+Check point 3171 passed.
+Check point 3172 passed.
+Check point 3173 passed.
+Check point 3174 passed.
+Check point 3175 passed.
+Check point 3176 passed.
+Check point 3177 passed.
+Check point 3178 passed.
+Check point 3179 passed.
+Check point 3180 passed.
+Check point 3181 passed.
+Check point 3182 passed.
+Check point 3183 passed.
+Check point 3184 passed.
+Check point 3185 passed.
+Check point 3186 passed.
+Check point 3187 passed.
+Check point 3188 passed.
+Check point 3189 passed.
+Check point 3190 passed.
+Check point 3191 passed.
+Check point 3192 passed.
+Check point 3193 passed.
+Check point 3194 passed.
+Check point 3195 passed.
+Check point 3196 passed.
+Check point 3197 passed.
+Check point 3198 passed.
+Check point 3199 passed.
+Check point 3200 passed.
+Check point 3201 passed.
+Check point 3202 passed.
+Check point 3203 passed.
+Check point 3204 passed.
+Check point 3205 passed.
+Check point 3206 passed.
+Check point 3207 passed.
+Check point 3208 passed.
+Check point 3209 passed.
+Check point 3210 passed.
+Check point 3211 passed.
+Check point 3212 passed.
+Check point 3213 passed.
+Check point 3214 passed.
+Check point 3215 passed.
+Check point 3216 passed.
+Check point 3217 passed.
+Check point 3218 passed.
+Check point 3219 passed.
+Check point 3220 passed.
+Check point 3221 passed.
+Check point 3222 passed.
+Check point 3223 passed.
+Check point 3224 passed.
+Check point 3225 passed.
+Check point 3226 passed.
+Check point 3227 passed.
+Check point 3228 passed.
+Check point 3229 passed.
+Check point 3230 passed.
+Check point 3231 passed.
+Check point 3232 passed.
+Check point 3233 passed.
+Check point 3234 passed.
+Check point 3235 passed.
+Check point 3236 passed.
+Check point 3237 passed.
+Check point 3238 passed.
+Check point 3239 passed.
+Check point 3240 passed.
+Check point 3241 passed.
+Check point 3242 passed.
+Check point 3243 passed.
+Check point 3244 passed.
+Check point 3245 passed.
+Check point 3246 passed.
+Check point 3247 passed.
+Check point 3248 passed.
+Check point 3249 passed.
+Check point 3250 passed.
+Check point 3251 passed.
+Check point 3252 passed.
+Check point 3253 passed.
+Check point 3254 passed.
+Check point 3255 passed.
+Check point 3256 passed.
+Check point 3257 passed.
+Check point 3258 passed.
+Check point 3259 passed.
+ASP_task_sync_tslp_tsk_i: OK
+ASP_task_sync_wup_tsk_a_1: Start
+Check point 3260 passed.
+Check point 3261 passed.
+Check point 3262 passed.
+Check point 3263 passed.
+Check point 3264 passed.
+Check point 3265 passed.
+ASP_task_sync_wup_tsk_a_1: OK
+ASP_task_sync_wup_tsk_a_2: Start
+Check point 3266 passed.
+Check point 3267 passed.
+Check point 3268 passed.
+Check point 3269 passed.
+Check point 3270 passed.
+Check point 3271 passed.
+Check point 3272 passed.
+Check point 3273 passed.
+ASP_task_sync_wup_tsk_a_2: OK
+ASP_task_sync_wup_tsk_b_1: Start
+Check point 3274 passed.
+Check point 3275 passed.
+Check point 3276 passed.
+Check point 3277 passed.
+Check point 3278 passed.
+Check point 3279 passed.
+Check point 3280 passed.
+ASP_task_sync_wup_tsk_b_1: OK
+ASP_task_sync_wup_tsk_b_2: Start
+Check point 3281 passed.
+Check point 3282 passed.
+Check point 3283 passed.
+Check point 3284 passed.
+Check point 3285 passed.
+Check point 3286 passed.
+Check point 3287 passed.
+ASP_task_sync_wup_tsk_b_2: OK
+ASP_task_sync_wup_tsk_c: Start
+Check point 3288 passed.
+Check point 3289 passed.
+Check point 3290 passed.
+Check point 3291 passed.
+ASP_task_sync_wup_tsk_c: OK
+ASP_task_sync_wup_tsk_d_1: Start
+Check point 3292 passed.
+Check point 3293 passed.
+Check point 3294 passed.
+Check point 3295 passed.
+Check point 3296 passed.
+Check point 3297 passed.
+ASP_task_sync_wup_tsk_d_1: OK
+ASP_task_sync_wup_tsk_d_2: Start
+Check point 3298 passed.
+Check point 3299 passed.
+Check point 3300 passed.
+Check point 3301 passed.
+Check point 3302 passed.
+Check point 3303 passed.
+Check point 3304 passed.
+Check point 3305 passed.
+Check point 3306 passed.
+ASP_task_sync_wup_tsk_d_2: OK
+ASP_task_sync_wup_tsk_e: Start
+Check point 3307 passed.
+Check point 3308 passed.
+Check point 3309 passed.
+Check point 3310 passed.
+Check point 3311 passed.
+ASP_task_sync_wup_tsk_e: OK
+ASP_task_sync_wup_tsk_f_1_1_1: Start
+Check point 3312 passed.
+Check point 3313 passed.
+Check point 3314 passed.
+Check point 3315 passed.
+Check point 3316 passed.
+Check point 3317 passed.
+Check point 3318 passed.
+ASP_task_sync_wup_tsk_f_1_1_1: OK
+ASP_task_sync_wup_tsk_f_1_1_2: Start
+Check point 3319 passed.
+Check point 3320 passed.
+Check point 3321 passed.
+Check point 3322 passed.
+Check point 3323 passed.
+Check point 3324 passed.
+Check point 3325 passed.
+ASP_task_sync_wup_tsk_f_1_1_2: OK
+ASP_task_sync_wup_tsk_f_1_1_3: Start
+Check point 3326 passed.
+Check point 3327 passed.
+Check point 3328 passed.
+Check point 3329 passed.
+Check point 3330 passed.
+Check point 3331 passed.
+Check point 3332 passed.
+ASP_task_sync_wup_tsk_f_1_1_3: OK
+ASP_task_sync_wup_tsk_f_1_2: Start
+Check point 3333 passed.
+Check point 3334 passed.
+Check point 3335 passed.
+Check point 3336 passed.
+Check point 3337 passed.
+Check point 3338 passed.
+Check point 3339 passed.
+Check point 3340 passed.
+Check point 3341 passed.
+Check point 3342 passed.
+ASP_task_sync_wup_tsk_f_1_2: OK
+ASP_task_sync_wup_tsk_f_1_3: Start
+Check point 3343 passed.
+Check point 3344 passed.
+Check point 3345 passed.
+Check point 3346 passed.
+Check point 3347 passed.
+Check point 3348 passed.
+ASP_task_sync_wup_tsk_f_1_3: OK
+ASP_task_sync_wup_tsk_f_2: Start
+Check point 3349 passed.
+Check point 3350 passed.
+Check point 3351 passed.
+Check point 3352 passed.
+Check point 3353 passed.
+Check point 3354 passed.
+Check point 3355 passed.
+ASP_task_sync_wup_tsk_f_2: OK
+ASP_task_sync_wup_tsk_f_3: Start
+Check point 3356 passed.
+Check point 3357 passed.
+Check point 3358 passed.
+Check point 3359 passed.
+Check point 3360 passed.
+Check point 3361 passed.
+Check point 3362 passed.
+Check point 3363 passed.
+ASP_task_sync_wup_tsk_f_3: OK
+ASP_task_sync_wup_tsk_f_4: Start
+Check point 3364 passed.
+Check point 3365 passed.
+Check point 3366 passed.
+Check point 3367 passed.
+Check point 3368 passed.
+Check point 3369 passed.
+Check point 3370 passed.
+Check point 3371 passed.
+ASP_task_sync_wup_tsk_f_4: OK
+ASP_task_sync_wup_tsk_f_5: Start
+Check point 3372 passed.
+Check point 3373 passed.
+Check point 3374 passed.
+Check point 3375 passed.
+Check point 3376 passed.
+Check point 3377 passed.
+Check point 3378 passed.
+ASP_task_sync_wup_tsk_f_5: OK
+ASP_task_sync_wup_tsk_f_6: Start
+Check point 3379 passed.
+Check point 3380 passed.
+Check point 3381 passed.
+Check point 3382 passed.
+Check point 3383 passed.
+Check point 3384 passed.
+Check point 3385 passed.
+ASP_task_sync_wup_tsk_f_6: OK
+ASP_task_sync_wup_tsk_f_7: Start
+Check point 3386 passed.
+Check point 3387 passed.
+Check point 3388 passed.
+Check point 3389 passed.
+Check point 3390 passed.
+Check point 3391 passed.
+Check point 3392 passed.
+Check point 3393 passed.
+ASP_task_sync_wup_tsk_f_7: OK
+ASP_task_sync_wup_tsk_f_8: Start
+Check point 3394 passed.
+Check point 3395 passed.
+Check point 3396 passed.
+Check point 3397 passed.
+Check point 3398 passed.
+Check point 3399 passed.
+Check point 3400 passed.
+Check point 3401 passed.
+ASP_task_sync_wup_tsk_f_8: OK
+Check point 3402 passed.
+ASP_staticAPI_ATT_TER_b_TER3: Start
+Check point 3403 passed.
+ASP_staticAPI_ATT_TER_b_TER3: OK
+ASP_staticAPI_ATT_TER_b_TER2: Start
+Check point 3404 passed.
+ASP_staticAPI_ATT_TER_b_TER2: OK
+ASP_staticAPI_ATT_TER_b_TER1: Start
+Check point 3405 passed.
+ASP_staticAPI_ATT_TER_b_TER1: OK
 All check points passed.
 EXIT for timeout(80000000).
