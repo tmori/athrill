@@ -58,7 +58,7 @@ ttsp_target_stop_tick(void)
 	
 	SIL_LOC_INT();
 
-	x_disable_int(INTNO_TIMER);
+	dev_disable_int(INTNO_TIMER);
 	SetTimerStopTAA(INTNO_TIMER);
 	x_clear_int(INTNO_TIMER);
 	SIL_UNL_INT();
@@ -78,7 +78,7 @@ ttsp_target_start_tick(void)
 	SIL_LOC_INT();
 
 	SetTimerStartTAA(TIMER_DTIM_ID);
-	x_enable_int(INTNO_TIMER);
+	dev_enable_int(INTNO_TIMER);
 	
 	SIL_UNL_INT();
 
@@ -96,14 +96,14 @@ ttsp_target_gain_tick(void)
 
 	SIL_LOC_INT();
 	SetTimerStartTAA(TIMER_DTIM_ID);
-	x_enable_int(INTNO_TIMER);
+	dev_enable_int(INTNO_TIMER);
 
 	do_halt();
 
 	SIL_UNL_INT();
 
 	SIL_LOC_INT();
-	x_disable_int(INTNO_TIMER);
+	dev_disable_int(INTNO_TIMER);
 	SetTimerStopTAA(INTNO_TIMER);
 	SIL_UNL_INT();
 
