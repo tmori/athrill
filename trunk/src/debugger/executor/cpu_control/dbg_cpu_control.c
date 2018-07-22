@@ -477,6 +477,7 @@ static void cpuctrl_access_context_add(uint8 access_type, DataAccessInfoType *ac
 		dp->sp = context.sp;
 		dp->funcid = context.funcid;
 	}
+	//printf("gladdr=0x%x glid=%u access_type=%u\n", gladdr, glid, access_type);
 
 	dp->access_num++;
 	cpuemu_get_elaps(&elaps);

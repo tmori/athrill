@@ -618,6 +618,7 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 	if (virtual_cpu.cores[core_id].core.is_halt == TRUE) {
 		return STD_E_OK;
 	}
+	virtual_cpu.cores[core_id].core.reg.r[0] = 0U;
 
 	cached_code = virtual_cpu_get_cached_code(virtual_cpu.cores[core_id].core.reg.pc);
 	if (cached_code != NULL) {
@@ -628,6 +629,7 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 		if (err != STD_E_OK) {
 			return err;
 		}
+		virtual_cpu.cores[core_id].core.reg.r[0] = 0U;
 	}
 	else {
 		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
@@ -648,7 +650,6 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 			return STD_E_EXEC;
 		}
 		virtual_cpu.cores[core_id].core.reg.r[0] = 0U;
-
 	}
 	return STD_E_OK;
 }
