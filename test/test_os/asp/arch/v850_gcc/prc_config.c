@@ -46,6 +46,7 @@
 #include "kernel_impl.h"
 #include "check.h"
 #include "task.h"
+#include "v850es_fk3.h"
 
 /*
  *  プロセッサ依存部で用いる変数
@@ -55,6 +56,8 @@ uint8_t current_intpri;
 bool_t lock_flag;
 uint16_t saved_imr[IMR_SIZE];
 uint16_t disint_table[IMR_SIZE];
+
+static uint8_t intcfg_table[TNUM_INT];
 
 /*
  *  プロセッサ依存の初期化
@@ -130,6 +133,7 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	assert(TMIN_INTPRI <= intpri && intpri <= TMAX_INTPRI);
 	uint32_t intreg_addr = INTREG_ADDRESS(intno);
 	
+	intcfg_table[intno] = true;
 	/*
 	 *  割込みのマスク
 	 *
@@ -137,8 +141,42 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	 *  込み優先度の設定を行うのは危険なため，割込み属性にかかわらず，
 	 *  一旦マスクする．
 	 */
-	(void)x_disable_int(intno);
-	
+	(void)private_disable_int(intno);
+
+	if(VALID_INTNO_DISINT(intno))
+	{
+		/* INT端子の場合は割込み検知方法を設定する */
+		if((intatr & TA_POSEDGE) != 0U)
+		{
+			/* 立上がりエッジ , pol_setting0を0に，pol_setting1を1に */
+			sil_wrb_mem((void *)int_pol_table[intno].pol_setting0 , 
+					((sil_reb_mem((void *)int_pol_table[intno].pol_setting0))
+						& ~(1U << int_pol_table[intno].bitpos)));
+			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
+					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
+						| (1U << int_pol_table[intno].bitpos)));
+		}
+		else if((intatr & TA_NEGEDGE) != 0U)
+		{
+			/* 立下がりエッジ , pol_setting0を1に，pol_setting1を0に */
+			sil_wrb_mem((void *)int_pol_table[intno].pol_setting0 , 
+					((sil_reb_mem((void *)int_pol_table[intno].pol_setting0))
+						| (1U << int_pol_table[intno].bitpos)));
+			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
+					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
+						& ~(1U << int_pol_table[intno].bitpos)));
+		}
+		else if((intatr & TA_BOTHEDGE) != 0U)
+		{
+			/* 両エッジ , pol_setting0を1に，pol_setting1を1に */
+			sil_wrb_mem((void *)int_pol_table[intno].pol_setting0 , 
+					((sil_reb_mem((void *)int_pol_table[intno].pol_setting0))
+						| (1U << int_pol_table[intno].bitpos)));
+			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
+					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
+						| (1U << int_pol_table[intno].bitpos)));
+		}
+	}
 	/*
 	 *  割込み優先度の設定
 	 */
@@ -151,7 +189,43 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
  	 */
 	(void)x_enable_int(intno);
 }
+bool_t
+x_enable_int(INTNO intno)
+{
+	if (intcfg_table[intno] == false) {
+		return false;
+	}
+	return private_enable_int(intno);
+}
+bool_t
+x_disable_int(INTNO intno)
+{
+	if (intcfg_table[intno] == false) {
+		return false;
+	}
+	return private_disable_int(intno);
+}
+bool_t
+dev_enable_int(INTNO intno)
+{
+	uint32_t intreg_addr = INTREG_ADDRESS(intno);
+	/* 6bit目をクリア */
+	sil_wrb_mem((void *)intreg_addr , 
+		sil_reb_mem((void *)intreg_addr) & ~(0x01U << 6));
+	disint_table[(intno / 16u)] &= ~(1u << (intno % 16u));
+	return true;
+}
+bool_t
+dev_disable_int(INTNO intno)
+{
+	uint32_t intreg_addr = INTREG_ADDRESS(intno);
+	/* 6bit目をセット */
+	sil_wrb_mem((void *)intreg_addr , 
+		sil_reb_mem((void *)intreg_addr) | (0x01U << 6));
+	disint_table[(intno / 16u)] |= (1u << (intno % 16u));
 
+	return true;
+}
 /*
  * CPU例外ハンドラの初期化
  * 　空マクロにしたいが、asp/kernel/exception.hでプロトタイプ宣言

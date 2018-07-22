@@ -10,7 +10,7 @@
  *
  *  Copyright (C) 2010-2011 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の (1)〜(4) の条件か，Free Software Foundation 
+ *  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation 
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -249,10 +249,6 @@ x_sense_lock(void)
 #define VALID_INTNO_CREINT          VALID_INTNO_CFGINT((intno))
 
 /*
- *  chg_ipmで有効な割込み優先度の範囲の判定
- */
-#define VALID_INTPRI_CHGIPM(intpri) ((intpri) < 8)
-/*
  * （モデル上の）割込み優先度マスクの設定
  */
 
@@ -397,6 +393,8 @@ extern void initialize_exception(void);
 #define _INTHDR_ENTRY(inhno, inthdr) extern void _kernel_##inthdr##_##inhno(void);
 #define INTHDR_ENTRY(inhno, inhno_num, inthdr)  _INTHDR_ENTRY(inhno, inthdr) 
 
+extern bool_t dev_disable_int(INTNO intno);
+
 /*
  *  割込み要求禁止フラグのセット
  *
@@ -404,23 +402,26 @@ extern void initialize_exception(void);
  *  フラグをクリアしようとした場合には，falseを返す．
  */
 Inline bool_t
-x_disable_int(INTNO intno)
+private_disable_int(INTNO intno)
 {
-	uint32_t intreg_addr = INTREG_ADDRESS(intno);
 	
 	if(!VALID_INTNO_DISINT(intno))
 	{
 		return false;
 	}
-	
+
+#if 0	
+	uint32_t intreg_addr = INTREG_ADDRESS(intno);
 	/* 6bit目をセット */
 	sil_wrb_mem((void *)intreg_addr , 
 		sil_reb_mem((void *)intreg_addr) | (0x01U << 6));
+#endif
 	/* 割込み禁止状態ビットをセット */
 	disint_table[(intno / 16u)] |= (1u << (intno % 16u));
 	
 	return(true);
 }
+extern bool_t x_disable_int(INTNO intno);
 
 #define t_disable_int(intno) x_disable_int(intno)
 #define i_disable_int(intno) x_disable_int(intno)
@@ -432,24 +433,30 @@ x_disable_int(INTNO intno)
  *  フラグをクリアしようとした場合には，falseを返す．
  */
 
+extern bool_t dev_enable_int(INTNO intno);
+
 Inline bool_t
-x_enable_int(INTNO intno)
+private_enable_int(INTNO intno)
 {
-	uint32_t intreg_addr = INTREG_ADDRESS(intno);
-	
 	if(!VALID_INTNO_DISINT(intno))
 	{
 		return false;
 	}
-	
+
+#if 0	
+	uint32_t intreg_addr = INTREG_ADDRESS(intno);
 	/* 6bit目をクリア */
 	sil_wrb_mem((void *)intreg_addr , 
 		sil_reb_mem((void *)intreg_addr) & ~(0x01U << 6));
+#endif
 	/* 割込み禁止状態ビットをクリア */
 	disint_table[(intno / 16u)] &= ~(1u << (intno % 16u));
 	
 	return(true);
 }
+
+extern bool_t x_enable_int(INTNO intno);
+
 
 #define t_enable_int(intno) x_enable_int(intno)
 #define i_enable_int(intno) x_enable_int(intno)
@@ -506,7 +513,7 @@ x_probe_int(INTNO intno)
  *  割込み要求ラインの属性の設定
  *
  *  V850では，カーネルで扱える割込み優先度は8段階であるため，intpri
- *  として与えることができる値は-7〜0が標準である．
+ *  として与えることができる値は-7~0が標準である．
  */
 extern void x_config_int(INTNO intno, ATR intatr, PRI intpri);
 

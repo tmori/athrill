@@ -337,8 +337,9 @@ interrupt:
 	stsr	eipsw,  r6
 	sst.w	r6 ,   0[ep]
 	
+	/* ロックフラグを解除する */
 	Lea		_lock_flag , r7
-	ld.w	0[r7] , r7
+	st.w	r0 , 0[r7]
 	
 	/* 割込み発生前の割込みレベルを保存，発生中の割込みレベル(r11)に書き換え */
 	Lea		_current_intpri , r13
@@ -651,7 +652,7 @@ set_excinf:
 	 *  TIPM_ENAALLで設定すると割込みハンドラで発生したCPU例外で
 	 *  優先度が逆転するため，引数は現在の割込み優先度マスクを用いる
 	 */
-	st.w	r0 , 0[r14]
+	/* st.w	r0 , 0[r14] */
 	add		-8 , sp
 	st.w	r10 , 4[sp]
 	st.w	r6 , 0[sp]
@@ -712,8 +713,77 @@ end_exc_handler_1:
 	st.b	r10, 0[r11]
 	cmp		r0 , r10	
 	/* 以降は共通処理 */
-	be		return_to_task
-	br		return_from_int
+	be		return_to_task_from_exc
+	br		return_from_exc
+
+
+return_to_task_from_exc:
+	/* スタックの復帰 */
+	ld.w	0[sp], sp
+	
+	/* 遅延ディスパッチ及びタスク例外処理の処理要求があるかチェック */
+	Lea		_reqflg, r10
+	ld.w	0[r10], r11
+	cmp		r0, r11
+	be		return_from_exc
+	st.w	r0, 0[r10]			/* reqflgのクリア */
+	
+	/* ディスパッチ可能状態かチェック */
+	Lea		_dspflg , r10
+	ld.w	0[r10], r10
+	cmp		r0, r10
+	bz		check_texrtn_cond
+	
+	/* 割込み全解除状態フラグのチェック */
+	Lea		_ipmflg , r10
+	ld.w	0[r10], r10
+	cmp		r0, r10
+	bz		check_texrtn_cond
+	
+	/* タスク切り替えの必要があるかチェック */
+	Lea		_p_schedtsk, r10
+	ld.w	0[r10], r10
+	Lea		_p_runtsk, r11
+	ld.w	0[r11], r11
+	cmp		r10,r11
+	bne		ret_int
+	br		check_texrtn_cond_1
+
+return_from_exc:
+	/*
+	 * レジスタ復帰 
+	 */
+	mov		sp , ep	/* EPへ切り替え */
+	Lea		_current_intpri , r10
+	sld.w	76[ep] , r6
+	st.b	r6 , 0[r10]
+	di
+	jarl	_set_intpri , lp
+	/* CPUロックフラグの解除 */
+	sld.w	 4[ep] , r10
+	ldsr	r10 , eipc
+	sld.w    0[ep] , r10
+	ldsr    r10 , eipsw
+	sld.w	72[ep] , r1
+	sld.w	68[ep] , r6
+	sld.w	64[ep] , r7
+	sld.w	60[ep] , r8
+	sld.w	56[ep] , r9
+	sld.w	52[ep] , r10
+	sld.w	48[ep] , r11
+	sld.w	44[ep] , r12
+	sld.w	40[ep] , r13
+	sld.w	36[ep] , r14
+	sld.w	32[ep] , r15
+	sld.w	28[ep] , r16
+	sld.w	24[ep] , r17
+	sld.w	20[ep] , r18
+	sld.w	16[ep] , r19
+	sld.w	 8[ep] , r31
+	addi	80 , ep, sp
+	sld.w	12[ep] , r30
+
+	reti	/* 割込み元へ */
 
 /*
  *  カーネルの終了処理の呼出し

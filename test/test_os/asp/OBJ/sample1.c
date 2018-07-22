@@ -8,7 +8,7 @@
  *  Copyright (C) 2004-2012 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -49,7 +49,7 @@
  *
  *  ユーザインタフェースを受け持つメインタスク（タスクID: MAIN_TASK，優
  *  先度: MAIN_PRIORITY）と，3つの並行実行されるタスク（タスクID:
- *  TASK1〜TASK3，初期優先度: MID_PRIORITY）で構成される．また，起動周
+ *  TASK1~TASK3，初期優先度: MID_PRIORITY）で構成される．また，起動周
  *  期が2秒の周期ハンドラ（周期ハンドラID: CYCHDR1）を用いる．
  *
  *  並行実行されるタスクは，task_loop回空ループを実行する度に，タスクが
@@ -360,7 +360,7 @@ void main_task(intptr_t exinf)
 	SVC_PERROR(get_tim(&stime1));
 	for (i = 0; i < task_loop; i++);
 	SVC_PERROR(get_tim(&stime2));
-	task_loop = LOOP_REF * 400UL / (stime2 - stime1);
+	task_loop = LOOP_REF  / (stime2 - stime1);
 
 #endif /* TASK_LOOP */
 	tex_loop = task_loop / 4;
