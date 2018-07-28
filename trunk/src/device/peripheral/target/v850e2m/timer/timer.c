@@ -82,15 +82,21 @@ static void device_timer_do_update(DeviceClockType *device, int ch)
 	TimerDeviceType *timer = &(TimerDevice[ch]);
 
 	if (timer->state == TIMER_STATE_STOP) {
-		return;
+		 if (timer->mode == TIMER_MODE_FREERUN) {
+			if (timer->start_clock != 0U) {
+				timer->start_clock += (uint64)timer->fd;
+			}
+		}
 	}
 	else if (timer->state == TIMER_STATE_READY) {
 		timer->state = TIMER_STATE_RUNNING;
-		timer->start_clock = device->clock;
+		if ((timer->start_clock == 0U) || (timer->mode == TIMER_MODE_INTERVAL)) {
+			timer->start_clock = device->clock;
+		}
 		//printf("device_timer_do_update:ch=%d compare=%d\n", ch, timer->compare0);
 	}
 
-	timer->cnt = (device->clock - timer->start_clock) / timer->fd;
+	timer->cnt = (uint16)((device->clock - timer->start_clock) / (uint64)timer->fd);
 	if (timer->mode == TIMER_MODE_INTERVAL) {
 		if (timer->cnt == timer->compare0) {
 			//printf("raise INT:ch=%d cnt=%d\n", ch, timer->cnt);
@@ -182,7 +188,7 @@ static Std_ReturnType timer_put_data8(MpuAddressRegionType *region, CoreIdType c
 			}
 			else {
 				TimerDevice[ch].state = TIMER_STATE_STOP;
-				TimerDevice[ch].cnt = 0;
+				//TimerDevice[ch].cnt = 0;
 				//printf("timer%d addr=0x%x stop\n", ch, addr);
 			}
 			break;
@@ -225,6 +231,16 @@ static Std_ReturnType timer_put_data32(MpuAddressRegionType *region, CoreIdType 
 static Std_ReturnType timer_get_pointer(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 **data)
 {
 	uint32 off = (addr - region->start);
+	uint8 ch;
+	uint16 *cntp;
+
+	for (ch = 0; ch < TAAnChannelNum; ch++) {
+		if (addr == (TAAnCNT(ch) & region->mask)) {
+			cntp = (uint16*)&region->data[off];
+			*cntp = TimerDevice[ch].cnt;
+			break;
+		}
+	}
 	*data = &region->data[off];
 	return STD_E_OK;
 }
