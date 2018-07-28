@@ -8,7 +8,7 @@
 #  Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
 #  Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
 # 
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -465,7 +465,8 @@ make_directory_for_check_library()
 	rm -rf $OBJECT_DIR/$root_dir/temp_dir_chk
 	mkdir -p $OBJECT_DIR/$root_dir/temp_dir_chk
 	cd $OBJECT_DIR/$root_dir/temp_dir_chk
-	perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	#perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	ruby ../../../../configure.rb $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
 	cd ../
 	for dir_name in ${loop_dir_name[@]}
 	do
@@ -473,6 +474,7 @@ make_directory_for_check_library()
 		echo "$PRE_MAKE_DIRECTORY $dir_name $POST_MAKE_DIRECTORY"
 		mkdir -p $dir_name
 		cp -p temp_dir_chk/$MAKE_FILE_NAME ./$dir_name
+		mkdir ./$dir_name/deps
 		cp -p $TTSP_DIR/library/$PROFILE_NAME/check_library/$dir_name/* ./$dir_name
 		cd $dir_name
 		rename_scratch_program
@@ -519,7 +521,8 @@ continuous_execute_for_check_library()
 	rm -rf $OBJECT_DIR/$root_dir/temp_dir_chk
 	mkdir -p $OBJECT_DIR/$root_dir/temp_dir_chk
 	cd $OBJECT_DIR/$root_dir/temp_dir_chk
-	perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	#perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	ruby ../../../../configure.rb $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
 	cd ../
 	for dir_name in ${loop_dir_name[@]}
 	do
@@ -528,6 +531,7 @@ continuous_execute_for_check_library()
 		echo "$PRE_MAKE_DIRECTORY $dir_name $POST_MAKE_DIRECTORY"
 		mkdir -p $dir_name
 		cp -p temp_dir_chk/$MAKE_FILE_NAME ./$dir_name
+		mkdir ./$dir_name/deps
 		cp -p $TTSP_DIR/library/$PROFILE_NAME/check_library/$dir_name/* ./$dir_name
 
 		# make depend実行

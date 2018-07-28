@@ -10,7 +10,7 @@
  *  Copyright (C) 2010-2011 by Industrial Technology Institute,
  *								Miyagi Prefectural Government, JAPAN
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -60,7 +60,9 @@
 #include <kernel/eventflag.h>
 #include <kernel/dataqueue.h>
 #include <kernel/pridataq.h>
+#if 0
 #include <kernel/mailbox.h>
+#endif
 #include <kernel/mempfix.h>
 #include <kernel/time_event.h>
 #include <kernel/alarm.h>
@@ -183,7 +185,7 @@ typedef struct t_ttsp_rtsk {
 	ATR			tskatr;		/* タスク属性 */
 	intptr_t	exinf;		/* タスクの拡張情報 */
 	PRI			itskpri;	/* タスクの起動時優先度 */
-	SIZE		stksz;		/* スタック領域のサイズ */
+	size_t		stksz;		/* スタック領域のサイズ */
 	void		*stk;		/* スタック領域の先頭番地 */
 	uint_t		porder;		/* 同一優先度タスク内での優先順位 */
 } T_TTSP_RTSK;
@@ -191,7 +193,7 @@ typedef struct t_ttsp_rtsk {
 extern ER ttsp_ref_tsk(ID tskid, T_TTSP_RTSK *pk_rtsk);
 
 
-
+#if 0
 /*
  *  ref_tex代替関数
  */
@@ -202,7 +204,7 @@ typedef struct t_ttsp_rtex {
 } T_TTSP_RTEX;
 
 extern ER ttsp_ref_tex(ID tskid, T_TTSP_RTEX *pk_rtex);
-
+#endif
 
 
 /*
@@ -312,7 +314,7 @@ extern ER ttsp_ref_swait_pdq(ID pdqid, uint_t order, ID *p_tskid, intptr_t *p_da
 extern ER ttsp_ref_rwait_pdq(ID pdqid, uint_t order, ID *p_tskid);
 
 
-
+#if 0
 /*
  *  ref_mbx代替関数
  */
@@ -337,7 +339,7 @@ extern ER ttsp_ref_msg(ID mbxid, uint_t index, T_MSG **pp_msg);
  */
 extern ER ttsp_ref_rwait_mbx(ID mbxid, uint_t order, ID *p_tskid);
 
-
+#endif
 
 /*
  *  ref_mpf代替関数

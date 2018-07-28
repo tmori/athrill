@@ -8,7 +8,7 @@
  *  Copyright (C) 2010-2011 by NEC Communication Systems, Ltd.
  *  Copyright (C) 2010-2012 by FUJISOFT INCORPORATED
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -46,15 +46,6 @@
 
 #ifndef TTSP_TARGET_TEST_H
 #define TTSP_TARGET_TEST_H
-
-/*
- *  CPU例外を発生させる命令
- */
-#if defined(TOPPERS_ENABLE_GCOV_PART) || defined(TOPPERS_ENABLE_GCOV_FULL)
-#define RAISE_CPU_EXCEPTION Asm(".long 0x16000010");
-#else
-#define RAISE_CPU_EXCEPTION Asm(".long 0x06000010");
-#endif /* defined(TOPPERS_ENABLE_GCOV_PART) || defined(TOPPERS_ENABLE_GCOV_FULL) */
 
 
 /*
@@ -108,18 +99,18 @@
 /*  
  *  割込み番号(正常値)
  */
-#define TTSP_INTNO_A    9	/* 割込み番号A */
-#define TTSP_INTNO_B   10	/* 割込み番号B */
-#define TTSP_INTNO_C   11	/* 割込み番号C */
-#define TTSP_INTNO_D   12	/* 割込み番号D */
-#define TTSP_INTNO_E   13	/* 割込み番号E */
-#define TTSP_INTNO_F   14	/* 割込み番号F */
+#define TTSP_INTNO_A   80	/* 割込み番号A */
+#define TTSP_INTNO_B   81	/* 割込み番号B */
+#define TTSP_INTNO_C   82	/* 割込み番号C */
+#define TTSP_INTNO_D   83	/* 割込み番号D */
+#define TTSP_INTNO_E   84	/* 割込み番号E */
+#define TTSP_INTNO_F   85	/* 割込み番号F */
 
 /*
  *  割込み番号(異常値)
  */
-#define TTSP_INVALID_INTNO  50	/* ターゲットでサポートしていない割込み番号 */
-#define TTSP_NOT_SET_INTNO   1	/* 割込み要求ラインに対して割込み属性が設定されていない割込み番号 */
+#define TTSP_INVALID_INTNO  200	/* ターゲットでサポートしていない割込み番号 */
+#define TTSP_NOT_SET_INTNO   86	/* 割込み要求ラインに対して割込み属性が設定されていない割込み番号 */
 
 /*
  *  割込みハンドラ番号(正常値)
@@ -131,13 +122,13 @@
 /*
  *  割込みハンドラ番号(異常値)
  */
-#define TTSP_INVALID_INHNO  50
+#define TTSP_INVALID_INHNO  200
 
 /*
  *  CPU例外ハンドラ番号(正常値)
  */
-#define TTSP_EXCNO_A  1		/* CPU例外発生元のコンテキストへreturn可能(未定義命令) */
-#define TTSP_EXCNO_B  2		/* 本番号でCPU例外を発生させるテストケースはない(SWI) */
+#define TTSP_EXCNO_A  4		/* CPU例外発生元のコンテキストへreturn可能(TRAP) */
+#define TTSP_EXCNO_B  3		/* 本番号でCPU例外を発生させるテストケースはない(FETRAP) */
 
 /*
  *  CPU例外ハンドラ番号(異常値)

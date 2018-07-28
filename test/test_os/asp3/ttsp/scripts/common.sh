@@ -8,7 +8,7 @@
 #  Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
 #  Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
 # 
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -493,7 +493,7 @@ make_for_no_manifest()
 		fi
 		case $rule in
 			$RULE_DEPEND)
-			 make depend $MAKE_OPT KERNEL_COBJS="$KERNEL_COBJS_COMMON $KERNEL_COBJS_TARGET" 2>&1 | tee $RESULT_MAKE_DEPEND
+			 #make depend $MAKE_OPT KERNEL_COBJS="$KERNEL_COBJS_COMMON $KERNEL_COBJS_TARGET" 2>&1 | tee $RESULT_MAKE_DEPEND
 			 ;;
 			$RULE_BUILD)
 			 make $MAKE_OPT KERNEL_COBJS="$KERNEL_COBJS_COMMON $KERNEL_COBJS_TARGET" 2>&1 | tee $RESULT_MAKE
@@ -516,7 +516,7 @@ make_for_common()
 	case $rule in
 		$RULE_DEPEND)
 		 header_single "$MAKE_DEPEND $dir_name"
-		 ( make depend $MAKE_OPT KERNEL_COBJS="$KERNEL_COBJS_COMMON $KERNEL_COBJS_TARGET" 2>&1; echo $? >status_file ) | tee $RESULT_MAKE_DEPEND
+		# ( make depend $MAKE_OPT KERNEL_COBJS="$KERNEL_COBJS_COMMON $KERNEL_COBJS_TARGET" 2>&1; echo $? >status_file ) | tee $RESULT_MAKE_DEPEND
 		 status=`cat status_file`
 		 rm -rf status_file
 		 ;;

@@ -45,7 +45,7 @@
 #
 # ターゲット略称の定義
 #
-TARGET_NAME="athrill_gcc"
+TARGET_NAME="v850_gcc"
 
 #
 # プロファイル設定

@@ -9,7 +9,7 @@
 #  Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
 #  Copyright (C) 2009-2012 by FUJISOFT INCORPORATED
 # 
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -84,7 +84,7 @@ if [ $PROFILE_NAME = "ASP" ]
 then
 	API_TEST_DIR="api_test/ASP"
 	SIL_TEST_DIR="sil_test/ASP"
-	KERNEL_COBJS_COMMON="startup.o task.o wait.o time_event.o task_manage.o task_refer.o task_sync.o task_except.o semaphore.o eventflag.o dataqueue.o pridataq.o mailbox.o mempfix.o time_manage.o cyclic.o alarm.o sys_manage.o interrupt.o exception.o"
+	KERNEL_COBJS_COMMON="startup.o task.o wait.o time_event.o task_manage.o task_refer.o task_sync.o task_term.o taskhook.o mutex.o semaphore.o eventflag.o dataqueue.o pridataq.o mempfix.o time_manage.o cyclic.o alarm.o sys_manage.o interrupt.o exception.o"
 elif [ $PROFILE_NAME = "FMP" ]
 then
 	API_TEST_DIR="api_test"

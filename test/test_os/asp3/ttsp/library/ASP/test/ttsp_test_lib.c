@@ -10,7 +10,7 @@
  *  Copyright (C) 2010-2011 by Industrial Technology Institute,
  *								Miyagi Prefectural Government, JAPAN
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -233,7 +233,7 @@ ttsp_ref_tsk(ID tskid, T_TTSP_RTSK *pk_rtsk)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_TSKID(tskid);
+	CHECK_ID(VALID_TSKID(tskid));
 	p_tcb = &_kernel_tcb_table[tskid - 1];
 
 	tstat = p_tcb->tstat;
@@ -275,49 +275,51 @@ ttsp_ref_tsk(ID tskid, T_TTSP_RTSK *pk_rtsk)
 			/*
 			 *  待ち要因と待ち対象のオブジェクトのIDの取出し
 			 */
-			switch (tstat & TS_WAIT_MASK) {
-			case TS_WAIT_SLP:
+			switch (tstat & TS_WAITING_MASK) {
+			case TS_WAITING_SLP:
 				pk_rtsk->tskwait = TTW_SLP;
 				break;
-			case TS_WAIT_DLY:
+			case TS_WAITING_DLY:
 				pk_rtsk->tskwait = TTW_DLY;
 				break;
-			case TS_WAIT_SEM:
+			case TS_WAITING_SEM:
 				pk_rtsk->tskwait = TTW_SEM;
 				pk_rtsk->wobjid = SEMID(((WINFO_SEM *)(p_tcb->p_winfo))
 																->p_semcb);
 				break;
-			case TS_WAIT_FLG:
+			case TS_WAITING_FLG:
 				pk_rtsk->tskwait = TTW_FLG;
 				pk_rtsk->wobjid = FLGID(((WINFO_FLG *)(p_tcb->p_winfo))
 																->p_flgcb);
 				break;
-			case TS_WAIT_SDTQ:
+			case TS_WAITING_SDTQ:
 				pk_rtsk->tskwait = TTW_SDTQ;
-				pk_rtsk->wobjid = DTQID(((WINFO_DTQ *)(p_tcb->p_winfo))
+				pk_rtsk->wobjid = DTQID(((WINFO_SDTQ *)(p_tcb->p_winfo))
 																->p_dtqcb);
 				break;
-			case TS_WAIT_RDTQ:
+			case TS_WAITING_RDTQ:
 				pk_rtsk->tskwait = TTW_RDTQ;
-				pk_rtsk->wobjid = DTQID(((WINFO_DTQ *)(p_tcb->p_winfo))
+				pk_rtsk->wobjid = DTQID(((WINFO_RDTQ *)(p_tcb->p_winfo))
 																->p_dtqcb);
 				break;
-			case TS_WAIT_SPDQ:
+			case TS_WAITING_SPDQ:
 				pk_rtsk->tskwait = TTW_SPDQ;
-				pk_rtsk->wobjid = PDQID(((WINFO_PDQ *)(p_tcb->p_winfo))
+				pk_rtsk->wobjid = PDQID(((WINFO_SPDQ *)(p_tcb->p_winfo))
 																->p_pdqcb);
 				break;
-			case TS_WAIT_RPDQ:
+			case TS_WAITING_RPDQ:
 				pk_rtsk->tskwait = TTW_RPDQ;
-				pk_rtsk->wobjid = PDQID(((WINFO_PDQ *)(p_tcb->p_winfo))
+				pk_rtsk->wobjid = PDQID(((WINFO_RPDQ *)(p_tcb->p_winfo))
 																->p_pdqcb);
 				break;
+#if 0				
 			case TS_WAIT_MBX:
 				pk_rtsk->tskwait = TTW_MBX;
 				pk_rtsk->wobjid = MBXID(((WINFO_MBX *)(p_tcb->p_winfo))
 																->p_mbxcb);
 				break;
-			case TS_WAIT_MPF:
+#endif
+			case TS_WAITING_MPF:
 				pk_rtsk->tskwait = TTW_MPF;
 				pk_rtsk->wobjid = MPFID(((WINFO_MPF *)(p_tcb->p_winfo))
 																->p_mpfcb);
@@ -412,7 +414,7 @@ ttsp_ref_tsk(ID tskid, T_TTSP_RTSK *pk_rtsk)
 	return(ercd);
 }
 
-
+#if 0
 /*
  *  ref_tex代替関数
  */
@@ -450,7 +452,7 @@ ttsp_ref_tex(ID tskid, T_TTSP_RTEX *pk_rtex)
 	ttsp_unl_cpu(locked);
 	return(ercd);
 }
-
+#endif
 
 /*
  *  ref_sem代替関数
@@ -466,7 +468,7 @@ ttsp_ref_sem(ID semid, T_TTSP_RSEM *pk_rsem)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_SEMID(semid);
+	CHECK_ID(VALID_SEMID(semid));
 	p_semcb = &_kernel_semcb_table[semid - 1];
 
 	/*
@@ -514,7 +516,7 @@ ttsp_ref_wait_sem(ID semid, uint_t order, ID *p_tskid)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_SEMID(semid);
+	CHECK_ID(VALID_SEMID(semid));
 	p_semcb = &_kernel_semcb_table[semid - 1];
 
 	/*
@@ -560,7 +562,7 @@ ttsp_ref_flg(ID flgid, T_TTSP_RFLG *pk_rflg)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_FLGID(flgid);
+	CHECK_ID(VALID_FLGID(flgid));
 	p_flgcb = &_kernel_flgcb_table[flgid - 1];
 
 	/*
@@ -607,7 +609,7 @@ ttsp_ref_wait_flg(ID flgid, uint_t order, ID *p_tskid, FLGPTN *p_waiptn, MODE *p
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_FLGID(flgid);
+	CHECK_ID(VALID_FLGID(flgid));
 	p_flgcb = &_kernel_flgcb_table[flgid - 1];
 
 	/*
@@ -656,7 +658,7 @@ ttsp_ref_dtq(ID dtqid, T_TTSP_RDTQ *pk_rdtq)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_DTQID(dtqid);
+	CHECK_ID(VALID_DTQID(dtqid));
 	p_dtqcb = &_kernel_dtqcb_table[dtqid - 1];
 
 	/*
@@ -713,7 +715,7 @@ ttsp_ref_data(ID dtqid, uint_t index, intptr_t *p_data)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_DTQID(dtqid);
+	CHECK_ID(VALID_DTQID(dtqid));
 	p_dtqcb = &_kernel_dtqcb_table[dtqid - 1];
 
 	/*
@@ -753,7 +755,7 @@ ttsp_ref_swait_dtq(ID dtqid, uint_t order, ID *p_tskid, intptr_t *p_data)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_DTQID(dtqid);
+	CHECK_ID(VALID_DTQID(dtqid));
 	p_dtqcb = &_kernel_dtqcb_table[dtqid - 1];
 
 	/*
@@ -776,7 +778,7 @@ ttsp_ref_swait_dtq(ID dtqid, uint_t order, ID *p_tskid, intptr_t *p_data)
 		i++;
 	}
 	*p_tskid = wait_tskid(p_next);
-	*p_data = ((WINFO_DTQ*)(((TCB *)(p_next->p_next))->p_winfo))->data;
+	*p_data = ((WINFO_SDTQ*)(((TCB *)(p_next->p_next))->p_winfo))->data;
 
 	ercd = E_OK;
 
@@ -801,7 +803,7 @@ ttsp_ref_rwait_dtq(ID dtqid, uint_t order, ID *p_tskid)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_DTQID(dtqid);
+	CHECK_ID(VALID_DTQID(dtqid));
 	p_dtqcb = &_kernel_dtqcb_table[dtqid - 1];
 
 	/*
@@ -848,7 +850,7 @@ ttsp_ref_pdq(ID pdqid, T_TTSP_RPDQ *pk_rpdq)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_PDQID(pdqid);
+	CHECK_ID(VALID_PDQID(pdqid));
 	p_pdqcb = &_kernel_pdqcb_table[pdqid - 1];
 
 	/*
@@ -909,7 +911,7 @@ ttsp_ref_pridata(ID pdqid, uint_t index, intptr_t *p_data, PRI *p_datapri)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_PDQID(pdqid);
+	CHECK_ID(VALID_PDQID(pdqid));
 	p_pdqcb = &_kernel_pdqcb_table[pdqid - 1];
 
 	/*
@@ -955,7 +957,7 @@ ttsp_ref_swait_pdq(ID pdqid, uint_t order, ID *p_tskid, intptr_t *p_data, PRI *p
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_PDQID(pdqid);
+	CHECK_ID(VALID_PDQID(pdqid));
 	p_pdqcb = &_kernel_pdqcb_table[pdqid - 1];
 
 	/*
@@ -978,8 +980,8 @@ ttsp_ref_swait_pdq(ID pdqid, uint_t order, ID *p_tskid, intptr_t *p_data, PRI *p
 		i++;
 	}
 	*p_tskid = wait_tskid(p_next);
-	*p_data = ((WINFO_PDQ *)(((TCB *)(p_next->p_next))->p_winfo))->data;
-	*p_datapri = ((WINFO_PDQ *)(((TCB *)(p_next->p_next))->p_winfo))->datapri;
+	*p_data = ((WINFO_SPDQ *)(((TCB *)(p_next->p_next))->p_winfo))->data;
+	*p_datapri = ((WINFO_SPDQ *)(((TCB *)(p_next->p_next))->p_winfo))->datapri;
 
 	ercd = E_OK;
 
@@ -1004,7 +1006,7 @@ ttsp_ref_rwait_pdq(ID pdqid, uint_t order, ID *p_tskid)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_PDQID(pdqid);
+	CHECK_ID(VALID_PDQID(pdqid));
 	p_pdqcb = &_kernel_pdqcb_table[pdqid - 1];
 
 	/*
@@ -1036,6 +1038,7 @@ ttsp_ref_rwait_pdq(ID pdqid, uint_t order, ID *p_tskid)
 }
 
 
+#if 0
 /*
  *  ref_mbx代替関数
  */
@@ -1185,7 +1188,7 @@ ttsp_ref_rwait_mbx(ID mbxid, uint_t order, ID *p_tskid)
 	ttsp_unl_cpu(locked);
 	return(ercd);
 }
-
+#endif
 
 /*
  *  ref_mpf代替関数
@@ -1201,7 +1204,7 @@ ttsp_ref_mpf(ID mpfid, T_TTSP_RMPF *pk_rmpf)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_MPFID(mpfid);
+	CHECK_ID(VALID_MPFID(mpfid));
 	p_mpfcb = &_kernel_mpfcb_table[mpfid - 1];
 
 	/*
@@ -1251,7 +1254,7 @@ ttsp_ref_wait_mpf(ID mpfid, uint_t order, ID *p_tskid)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_MPFID(mpfid);
+	CHECK_ID(VALID_MPFID(mpfid));
 	p_mpfcb = &_kernel_mpfcb_table[mpfid - 1];
 
 	/*
@@ -1296,7 +1299,7 @@ ttsp_ref_cyc(ID cycid, T_TTSP_RCYC *pk_rcyc)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_CYCID(cycid);
+	CHECK_ID(VALID_CYCID(cycid));
 	p_cyccb = &_kernel_cyccb_table[cycid - 1];
 
 	/*
@@ -1339,7 +1342,7 @@ ttsp_ref_alm(ID almid, T_TTSP_RALM *pk_ralm)
 
 	locked = ttsp_loc_cpu();
 
-	CHECK_ALMID(almid);
+	CHECK_ID(VALID_ALMID(almid));
 	p_almcb = &_kernel_almcb_table[almid - 1];
 
 	/*
