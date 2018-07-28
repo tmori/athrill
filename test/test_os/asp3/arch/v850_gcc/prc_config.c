@@ -176,6 +176,7 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	assert(TMIN_INTPRI <= intpri && intpri <= TMAX_INTPRI);
 	uint32_t intreg_addr = INTREG_ADDRESS(intno);
 	
+	intcfg_table[intno] = true;
 	/*
 	 *  割込みのマスク
 	 *
@@ -183,8 +184,8 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	 *  込み優先度の設定を行うのは危険なため，割込み属性にかかわらず，
 	 *  一旦マスクする．
 	 */
-	(void)x_disable_int(intno);
-	
+	(void)private_disable_int(intno);
+
 	if(VALID_INTNO_DISINT(intno))
 	{
 		/* INT端子の場合は割込み検知方法を設定する */
@@ -197,7 +198,6 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
 					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
 						| (1U << int_pol_table[intno].bitpos)));
-			intcfg_table[intno] = true;
 		}
 		else if((intatr & TA_NEGEDGE) != 0U)
 		{
@@ -208,7 +208,6 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
 					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
 						& ~(1U << int_pol_table[intno].bitpos)));
-			intcfg_table[intno] = true;
 		}
 		else if((intatr & TA_BOTHEDGE) != 0U)
 		{
@@ -219,10 +218,8 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 			sil_wrb_mem((void *)int_pol_table[intno].pol_setting1 , 
 					((sil_reb_mem((void *)int_pol_table[intno].pol_setting1))
 						| (1U << int_pol_table[intno].bitpos)));
-			intcfg_table[intno] = true;
 		}
 	}
-	
 	/*
 	 *  割込み優先度の設定
 	 */
@@ -236,6 +233,43 @@ x_config_int(INTNO intno, ATR intatr, PRI intpri)
 	(void)x_enable_int(intno);
 }
 
+bool_t
+x_enable_int(INTNO intno)
+{
+	if (intcfg_table[intno] == false) {
+		return false;
+	}
+	return private_enable_int(intno);
+}
+bool_t
+x_disable_int(INTNO intno)
+{
+	if (intcfg_table[intno] == false) {
+		return false;
+	}
+	return private_disable_int(intno);
+}
+bool_t
+dev_enable_int(INTNO intno)
+{
+	uint32_t intreg_addr = INTREG_ADDRESS(intno);
+	/* 6bit目をクリア */
+	sil_wrb_mem((void *)intreg_addr , 
+		sil_reb_mem((void *)intreg_addr) & ~(0x01U << 6));
+	disint_table[(intno / 16u)] &= ~(1u << (intno % 16u));
+	return true;
+}
+bool_t
+dev_disable_int(INTNO intno)
+{
+	uint32_t intreg_addr = INTREG_ADDRESS(intno);
+	/* 6bit目をセット */
+	sil_wrb_mem((void *)intreg_addr , 
+		sil_reb_mem((void *)intreg_addr) | (0x01U << 6));
+	disint_table[(intno / 16u)] |= (1u << (intno % 16u));
+
+	return true;
+}
 /*
  * CPU例外ハンドラの初期化
  * 　空マクロにしたいが、asp/kernel/exception.hでプロトタイプ宣言

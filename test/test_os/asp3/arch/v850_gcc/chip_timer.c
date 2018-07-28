@@ -76,27 +76,6 @@ HwcounterEnableInterrupt(uint32_t intno)
 	(void)x_enable_int(intno);
 }
 
- /*
- *  TAA タイマの動作開始／停止処理
- */
-Inline void
-SetTimerStartTAA(uint8_t ch)
-{
-	/* タイマ開始処理 */
-	sil_wrb_mem((void *) TAAnCTL0(ch),
-		( sil_reb_mem((void *) TAAnCTL0(ch)) | (1U << 7U) )	//TAAnCEビットセット
-	);
-}
-
-Inline void
-SetTimerStopTAA(uint8_t ch)
-{
-	/* タイマ停止処理 */
-	sil_wrb_mem((void *) TAAnCTL0(ch),
-		( sil_reb_mem((void *) TAAnCTL0(ch)) & ~(1U << 7U) )	//TAAnCEビットクリア
-	);
-}
-
 /*
  *  TAAハードウェアカウンタ現在ティック値取得
  */
@@ -141,7 +120,7 @@ target_hrt_initialize(intptr_t exinf)
 
 	/* 現在値タイマのインターバルタイマモード設定 */
 	wk = sil_reb_mem((void *) TAAnCTL1(TIMER_CTIM_ID));
-	wk = 0x00;
+	wk = 0x05;
 	sil_wrb_mem((void *) TAAnCTL1(TIMER_CTIM_ID), wk);
 
 	/* 現在値タイマカウント周期設定 */

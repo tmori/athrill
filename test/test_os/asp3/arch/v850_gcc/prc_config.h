@@ -338,6 +338,8 @@ extern void initialize_exception(void);
  */
 
 #define define_inh(inhno, int_entry)
+
+extern bool_t dev_disable_int(INTNO intno);
 /*
  *  割込み要求禁止フラグのセット
  *
@@ -345,23 +347,26 @@ extern void initialize_exception(void);
  *  フラグをクリアしようとした場合には，falseを返す．
  */
 Inline bool_t
-x_disable_int(INTNO intno)
+private_disable_int(INTNO intno)
 {
-	uint32_t intreg_addr = INTREG_ADDRESS(intno);
 	
 	if(!VALID_INTNO_DISINT(intno))
 	{
 		return false;
 	}
-	
+
+#if 0	
+	uint32_t intreg_addr = INTREG_ADDRESS(intno);
 	/* 6bit目をセット */
 	sil_wrb_mem((void *)intreg_addr , 
 		sil_reb_mem((void *)intreg_addr) | (0x01U << 6));
+#endif
 	/* 割込み禁止状態ビットをセット */
 	disint_table[(intno / 16u)] |= (1u << (intno % 16u));
 	
 	return(true);
 }
+extern bool_t x_disable_int(INTNO intno);
 
 #define t_disable_int(intno) x_disable_int(intno)
 #define i_disable_int(intno) x_disable_int(intno)
@@ -374,24 +379,29 @@ x_disable_int(INTNO intno)
  *  フラグをクリアしようとした場合には，falseを返す．
  */
 
+extern bool_t dev_enable_int(INTNO intno);
+
 Inline bool_t
-x_enable_int(INTNO intno)
+private_enable_int(INTNO intno)
 {
-	uint32_t intreg_addr = INTREG_ADDRESS(intno);
-	
 	if(!VALID_INTNO_DISINT(intno))
 	{
 		return false;
 	}
-	
+
+#if 0	
+	uint32_t intreg_addr = INTREG_ADDRESS(intno);
 	/* 6bit目をクリア */
 	sil_wrb_mem((void *)intreg_addr , 
 		sil_reb_mem((void *)intreg_addr) & ~(0x01U << 6));
+#endif
 	/* 割込み禁止状態ビットをクリア */
 	disint_table[(intno / 16u)] &= ~(1u << (intno % 16u));
 	
 	return(true);
 }
+
+extern bool_t x_enable_int(INTNO intno);
 
 #define t_enable_int(intno) x_enable_int(intno)
 #define i_enable_int(intno) x_enable_int(intno)

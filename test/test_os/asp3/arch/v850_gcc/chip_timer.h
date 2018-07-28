@@ -197,4 +197,24 @@ extern void	target_hrt_handler(void);
 #define TIMER_DTIM_ID    TAAnCH2	/* 差分タイマ */
 #define TIMER_CTIM_ID    TAAnCH3	/* 現在値タイマ */
 
+ /*
+ *  TAA タイマの動作開始／停止処理
+ */
+Inline void
+SetTimerStartTAA(uint8_t ch)
+{
+	/* タイマ開始処理 */
+	sil_wrb_mem((void *) TAAnCTL0(ch),
+		( sil_reb_mem((void *) TAAnCTL0(ch)) | (1U << 7U) )	//TAAnCEビットセット
+	);
+}
+
+Inline void
+SetTimerStopTAA(uint8_t ch)
+{
+	/* タイマ停止処理 */
+	sil_wrb_mem((void *) TAAnCTL0(ch),
+		( sil_reb_mem((void *) TAAnCTL0(ch)) & ~(1U << 7U) )	//TAAnCEビットクリア
+	);
+}
 #endif /* TOPPERS_CHIP_TIMER_H */

@@ -58,6 +58,9 @@ ttsp_target_stop_tick(void)
 	
 	SIL_LOC_INT();
 
+	/* ¸½ºßÃÍ¥¿¥¤¥ÞÄä»ß */
+	SetTimerStopTAA(TIMER_CTIM_ID);
+	/* º¹Ê¬¥¿¥¤¥ÞÄä»ß */
 	dev_disable_int(INTNO_TIMER);
 	SetTimerStopTAA(INTNO_TIMER);
 	x_clear_int(INTNO_TIMER);
@@ -79,6 +82,7 @@ ttsp_target_start_tick(void)
 
 	SetTimerStartTAA(TIMER_DTIM_ID);
 	dev_enable_int(INTNO_TIMER);
+	SetTimerStartTAA(TIMER_CTIM_ID);
 	
 	SIL_UNL_INT();
 
@@ -92,11 +96,14 @@ ttsp_target_start_tick(void)
 void
 ttsp_target_gain_tick(void)
 {
+#if 0
+
 	SIL_PRE_LOC;
 
 	SIL_LOC_INT();
-	SetTimerStartTAA(TIMER_DTIM_ID);
-	dev_enable_int(INTNO_TIMER);
+	//SetTimerStartTAA(TIMER_CTIM_ID);
+	//SetTimerStartTAA(TIMER_DTIM_ID);
+	//dev_enable_int(INTNO_TIMER);
 
 	do_halt();
 
@@ -105,8 +112,18 @@ ttsp_target_gain_tick(void)
 	SIL_LOC_INT();
 	dev_disable_int(INTNO_TIMER);
 	SetTimerStopTAA(INTNO_TIMER);
+	SetTimerStopTAA(TIMER_CTIM_ID);
 	SIL_UNL_INT();
+#else
+	SIL_PRE_LOC;
+	SIL_LOC_INT();
+	SetTimerStartTAA(TIMER_CTIM_ID);
 
+	sil_dly_nse(1000);
+
+	SetTimerStopTAA(TIMER_CTIM_ID);
+	SIL_UNL_INT();
+#endif
 }
 
 /*

@@ -65,6 +65,38 @@ Inline void enable_int_all(void)
 	Asm("	ei");
 }
 
+Inline void do_trap(uint8_t vector)
+{
+	switch (vector) {
+	case 0x0:
+		Asm("trap 0x00");
+		break;
+	case 0x1:
+		Asm("trap 0x01");
+		break;
+	case 0x2:
+		Asm("trap 0x02");
+		break;
+	case 0x3:
+		Asm("trap 0x03");
+		break;
+	case 0x4:
+		Asm("trap 0x04");
+		break;
+	default:
+		Asm("trap 0x00");
+		break;
+	}
+}
+
+Inline void do_halt(void)
+{
+	Asm("	halt");
+}
+Inline void do_nop(void)
+{
+	Asm("	nop");
+}
 
 Inline void set_bit(uint8_t bit_offset , uint32_t addr)
 {

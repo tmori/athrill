@@ -168,7 +168,14 @@ ttsp_check_finish(uint_t count)
 {
 	ttsp_check_point(count);
 	syslog_0(LOG_NOTICE, "All check points passed.");
+#if 1
+	// log task waiting..
+	while (1) {
+		;
+	}
+#else
 	ext_ker();
+#endif
 }
 
 /*
