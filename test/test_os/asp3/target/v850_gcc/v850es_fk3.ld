@@ -6,8 +6,9 @@ OUTPUT_ARCH(v850-rh850)
 
 MEMORY
 {
-	INTROM(raxi) : org = 0x00000000, len = 512k
-	INTRAM(wax)  : org = 0x05FF7000, len = 1024k
+	INTROM(raxi) : org = 0x00000000, len = 4096k
+	INTRAM(wax)  : org = 0x03FF7000, len = 4096k
+	ADEV(wax)    : org = 0xDEAD0000, len = 1k
 };
 
 PROVIDE(__stack = 0);
@@ -85,6 +86,13 @@ SECTIONS
 		*(.tbss)
 		*(.tcommon)
 	} > INTRAM
+
+	.athrill_device_section	: 
+	{
+		. = ALIGN(4);
+		*(.athrill_device_section)
+		. = ALIGN(4);
+	} > ADEV
 
 	.comment 0 : { *(.comment) }
 	.debug			0 : { *(.debug) }

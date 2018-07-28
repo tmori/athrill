@@ -8,7 +8,7 @@
  *  Copyright (C) 2010-2011 by NEC Communication Systems, Ltd.
  *  Copyright (C) 2010-2011 by FUJISOFT INCORPORATED
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -46,6 +46,18 @@
 #include "kernel_cfg.h"
 #include "ttsp_test_lib.h"
 #include "out.h"
+
+typedef uint32_t TEXPTN;
+static void texhdr_tex(TEXPTN texptn, intptr_t exinf);
+static ER ena_tex(void) 
+{
+	return E_OK;
+}
+static ER ras_tex(uint32_t taskid, uint32_t ex_id)
+{
+	texhdr_tex(ex_id, 0U);
+	return E_OK;
+}
 
 void main_task(intptr_t exinf){
 	ER ercd;
@@ -108,7 +120,7 @@ void main_task(intptr_t exinf){
 #endif /* TTSP_INTNO_B */
 }
 
-void texhdr_tex(TEXPTN texptn, intptr_t exinf){
+static void texhdr_tex(TEXPTN texptn, intptr_t exinf){
 	ttsp_check_point(4);
 
 	/* 割込みを起こす */
