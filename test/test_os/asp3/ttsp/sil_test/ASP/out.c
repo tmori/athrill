@@ -8,7 +8,7 @@
  *  Copyright (C) 2010-2011 by NEC Communication Systems, Ltd.
  *  Copyright (C) 2010-2012 by FUJISOFT INCORPORATED
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -48,6 +48,22 @@
 
 /* 割込みが発生したか判別するためのフラグ */
 bool_t int_flag;
+
+typedef uint32_t TEXPTN;
+static void texhdr(TEXPTN texptn, intptr_t exinf);
+static ER ena_tex(void) 
+{
+	return E_OK;
+}
+static ER dis_tex(void) 
+{
+	return E_OK;
+}
+static ER ras_tex(uint32_t taskid, uint32_t ex_id)
+{
+	texhdr(ex_id, 0U);
+	return E_OK;
+}
 
 void main_task(intptr_t exinf) {
 	SIL_PRE_LOC;
@@ -195,12 +211,19 @@ void main_task(intptr_t exinf) {
 #endif /* TTSP_INTNO_C */
 
 
+#if 0
 	/* 全割込みロック状態でext_kerを発行できることの確認 */
 	SIL_LOC_INT();
 	ext_ker();
+#else
+	terrtn(0x0);
+	while (1) {
+		;
+	}
+#endif
 }
 
-void texhdr(TEXPTN texptn, intptr_t exinf) {
+static void texhdr(TEXPTN texptn, intptr_t exinf) {
 	ttsp_check_point(3);
 	all_test();
 }
@@ -604,7 +627,13 @@ void wait_raise_int(void) {
 		if (timeout > TTSP_LOOP_COUNT) {
 			syslog_0(LOG_ERROR, "## wait_raise_int() caused a timeout.");
 			ttsp_set_cp_state(false);
+#if 0
 			ext_ker();
+#else
+			while (1) {
+				;
+			}
+#endif
 		}
 		sil_dly_nse(TTSP_SIL_DLY_NSE_TIME);
 	}

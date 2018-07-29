@@ -83,19 +83,16 @@
 /*
  * タイマ割込みの遅延時間よりも長い値
  *
- * CPU周波数を50MHzとする
+ * CPU周波数を100MHzとする
  *
  * 以下，athrill での実測結果
  *
- * clock = cpu 2872400 intc 440
- * clock = cpu 2872450 intc 490
+ * 100clock
  *
- * 50clock
- *
- * 10clockはバッファ時間とする
+ * 20clockはバッファ時間とする
  *
  */
-#define TCYC_INT_DELAY_CNT	(50 + 10)
+#define TCYC_INT_DELAY_CNT	(100 + 20)
 
 /*
  * (6-13-2-6) HRTCNT_BOUND
