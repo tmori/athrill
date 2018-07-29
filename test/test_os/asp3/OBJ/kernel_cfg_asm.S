@@ -28,7 +28,7 @@ __reset:
 	nop
 	nop
 
-_ext_handler_1:
+_nmi_handler_1:
 	jr _goto_default_exc_handler
 	nop
 	nop
@@ -37,7 +37,7 @@ _ext_handler_1:
 	nop
 	nop
 
-_ext_handler_2:
+_nmi_handler_2:
 	jr _goto_default_exc_handler
 	nop
 	nop
@@ -46,7 +46,7 @@ _ext_handler_2:
 	nop
 	nop
 
-_ext_handler_3:
+_exc_handler_0:
 	jr _goto_default_exc_handler
 	nop
 	nop
@@ -55,7 +55,7 @@ _ext_handler_3:
 	nop
 	nop
 
-_ext_handler_4:
+_exc_handler_1:
 	jr _goto_default_exc_handler
 	nop
 	nop
@@ -64,7 +64,7 @@ _ext_handler_4:
 	nop
 	nop
 
-_ext_handler_5:
+_exc_handler_2:
 	jr _goto_default_exc_handler
 	nop
 	nop
@@ -73,7 +73,7 @@ _ext_handler_5:
 	nop
 	nop
 
-_ext_handler_6:
+_exc_handler_3:
 	jr _goto_default_exc_handler
 	nop
 	nop

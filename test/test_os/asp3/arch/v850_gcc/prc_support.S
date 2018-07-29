@@ -736,7 +736,7 @@ set_excinf:
 	 *  TIPM_ENAALLで設定すると割込みハンドラで発生したCPU例外で
 	 *  優先度が逆転するため，引数は現在の割込み優先度マスクを用いる
 	 */
-	st.w	r0 , 0[r14]
+	/* st.w	r0 , 0[r14] */
 	add		-8 , sp
 	st.w	r10 , 4[sp]
 	st.w	r6 , 0[sp]

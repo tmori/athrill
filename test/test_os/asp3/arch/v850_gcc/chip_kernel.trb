@@ -12,13 +12,21 @@ $INHNO_VALID = $INTNO_VALID
 #
 #  有効なCPU例外ハンドラ番号
 #
-$EXCNO_VALID = [ 0, 1, 2, 3, 4, 5 ]
+$EXCNO_VALID = [ 3, 4, 5, 6 ]
 
 #
 #  DEF_EXCで使用できるCPU例外ハンドラ番号
 #
-$EXCNO_DEFEXC_VALID = [ 0, 1, 2, 3, 5 ]
-
+$EXCNO_DEFEXC_VALID = [ 3, 4, 5, 6 ]
+def hasExcno(eno)
+	$cfgData[:DEF_EXC].each do |key, params|
+		excno = params[:excno]
+		if (excno == eno) then
+			return true
+		end
+	end
+	return false
+end
 
 #
 #  ターゲット定義の割込み要求ライン属性
@@ -112,13 +120,25 @@ def get_handler_name(ino)
 		end
 	end
 	return nil
+end
 
+
+def get_exhandler_name(eno)
+	$cfgData[:DEF_EXC].each do |key, params|
+		excno = key
+		if (excno == eno) then
+			return "_" + params[:exchdr]
+		end
+	end
+	return nil
 end
 
 def get_handler_label_name(intno)
 	return "_goto_kernel_int_handler_" + intno.to_s
 end
-
+def get_exhandler_label_name(excno)
+	return "_goto_kernel_exc_handler_" + excno.to_s
+end
 
 
 
@@ -150,12 +170,19 @@ $kernelCfgAsm.add("\t.global _default_int_handler")
 $kernelCfgAsm.add("\t.global __reset")
 
 add_block("__reset", "_start")
-add_block("_ext_handler_1", "_goto_default_exc_handler")
-add_block("_ext_handler_2", "_goto_default_exc_handler")
-add_block("_ext_handler_3", "_goto_default_exc_handler")
-add_block("_ext_handler_4", "_goto_default_exc_handler")
-add_block("_ext_handler_5", "_goto_default_exc_handler")
-add_block("_ext_handler_6", "_goto_default_exc_handler")
+add_block("_nmi_handler_1", "_goto_default_exc_handler")
+add_block("_nmi_handler_2", "_goto_default_exc_handler")
+
+$EXCNO_VALID.each do |excno|
+	if hasExcno(excno) == true then
+		add_block("_exc_handler_"+ excno.to_s, get_exhandler_label_name(excno))
+	else
+		add_block("_exc_handler_"+ excno.to_s, "_goto_default_exc_handler")
+	end
+end
+
+$kernelCfgAsm.add2()
+
 add_security_block()
 $INTNO_VALID.each do |ino|
 	if hasIntno(ino) == true then
@@ -186,12 +213,39 @@ def add_int_func(ino, prio)
 	$kernelCfgAsm.add("\tjr		interrupt")
 end
 
+
+def add_exc_func(exno)
+	label_name = get_exhandler_label_name(exno)
+	$kernelCfgAsm.add()
+	handler_name = get_exhandler_name(exno)
+	$kernelCfgAsm.add("\t.global	" + handler_name)
+	$kernelCfgAsm.add("\t.global	" + label_name)
+	$kernelCfgAsm.add(label_name + ":")
+	$kernelCfgAsm.add("\taddi	-80 , sp , sp")
+	$kernelCfgAsm.add("\tst.w	r10 , 52[sp]")
+	$kernelCfgAsm.add("\tst.w	r11 , 48[sp]")
+	$kernelCfgAsm.add("\tst.w	r12 , 44[sp]")
+	$kernelCfgAsm.add("\tLea	"+ handler_name +" , r10")
+	$kernelCfgAsm.add("\tmov	" + exno.to_s + " , r12")
+	$kernelCfgAsm.add("\tjr		exception")
+end
+
 $INTNO_VALID.each do |ino|
 	$cfgData[:CFG_INT].each do |key, params|
 		intno = params[:intno]
 		prio = -params[:intpri]
 		if (intno == ino) then
 			add_int_func(ino, prio)
+		end
+	end
+end
+
+
+$EXCNO_VALID.each do |exno|
+	$cfgData[:DEF_EXC].each do |key, params|
+		excno = params[:excno]
+		if (excno == exno) then
+			add_exc_func(exno)
 		end
 	end
 end
