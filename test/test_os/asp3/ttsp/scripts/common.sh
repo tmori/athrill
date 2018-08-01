@@ -517,8 +517,9 @@ make_for_common()
 		$RULE_DEPEND)
 		 header_single "$MAKE_DEPEND $dir_name"
 		# ( make depend $MAKE_OPT KERNEL_COBJS="$KERNEL_COBJS_COMMON $KERNEL_COBJS_TARGET" 2>&1; echo $? >status_file ) | tee $RESULT_MAKE_DEPEND
-		 status=`cat status_file`
-		 rm -rf status_file
+		 #status=`cat status_file`
+		 #rm -rf status_file
+		 cp ${TTSP_DIR}/${SIL_TEST_DIR}/out.cdl .
 		 ;;
 		$RULE_BUILD)
 		 header_single "$MAKE_BUILD $dir_name"
