@@ -8,7 +8,7 @@
 #  Copyright (C) 2009-2011 by NEC Communication Systems, Ltd.
 #  Copyright (C) 2009-2011 by FUJISOFT INCORPORATED
 # 
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -449,7 +449,8 @@ echo -n " $INPUT_NO "
 			 echo "$PRE_MAKE_DIRECTORY $SPECIFIED_YAML_DIR_NAME $POST_MAKE_DIRECTORY"
 			 mkdir -p $OBJECT_DIR/$API_TEST_ROOT/$SPECIFIED_YAML_DIR_NAME
 			 cd $OBJECT_DIR/$API_TEST_ROOT/$SPECIFIED_YAML_DIR_NAME
-			 perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+			 #perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+			 ruby ../../../../configure.rb $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
 			 cd $TTSP_DIR
 			 ;;
 			3)
@@ -792,7 +793,8 @@ make_directory_for_tesry()
 	rm -rf $OBJECT_DIR/$root_dir/$pre_dir_name\_*
 	mkdir -p $OBJECT_DIR/$root_dir/temp_dir_aut
 	cd $OBJECT_DIR/$root_dir/temp_dir_aut
-	perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	#perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	ruby ../../../../configure.rb $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
 	cd ../
 	rm -f temp_aut
 	cnt=1
@@ -856,7 +858,8 @@ make_directory_for_scr_and_err()
 	rm -rf $OBJECT_DIR/$root_dir/$sub_dir/*/
 	mkdir -p $OBJECT_DIR/$root_dir/$sub_dir/$temp_dir
 	cd $OBJECT_DIR/$root_dir/$sub_dir/$temp_dir
-	perl ../../../../../configure $CONFIG_TEST_PROGRAM  "$INCLUDE_DIR" &> /dev/null
+	#perl ../../../../../configure $CONFIG_TEST_PROGRAM  "$INCLUDE_DIR" &> /dev/null
+	ruby ../../../../../configure.rb $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
 	cd ../
 
 	for dir in ${test_case_list[@]}
@@ -1105,7 +1108,8 @@ continuous_execute_for_tesry()
 
 	mkdir -p $OBJECT_DIR/$root_dir/temp_dir_aut
 	cd $OBJECT_DIR/$root_dir/temp_dir_aut
-	perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	#perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	ruby ../../../../configure.rb $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
 	check_file_name=$MAKE_FILE_NAME
 	check_file
 	if [ $? -eq 1 ]
@@ -1282,7 +1286,8 @@ continuous_execute_for_scr_and_err()
 	rm -rf $OBJECT_DIR/$root_dir/$sub_dir/*/
 	mkdir -p $OBJECT_DIR/$root_dir/$sub_dir/$temp_dir
 	cd $OBJECT_DIR/$root_dir/$sub_dir/$temp_dir
-	perl ../../../../../configure $CONFIG_TEST_PROGRAM  "$INCLUDE_DIR" &> /dev/null
+	#perl ../../../../../configure $CONFIG_TEST_PROGRAM  "$INCLUDE_DIR" &> /dev/null
+	ruby ../../../../../configure.rb $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
 	check_file_name=$MAKE_FILE_NAME
 	check_file
 	if [ $? -eq 1 ]
@@ -1366,7 +1371,8 @@ continuous_execute_for_specified_yaml()
 	mkdir -p $OBJECT_DIR/$root_dir/$dir_name
 	cd $OBJECT_DIR/$root_dir/$dir_name
 	rm -f temp_ttg
-	perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	#perl ../../../../configure $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
+	ruby ../../../../configure.rb $CONFIG_TEST_PROGRAM "$INCLUDE_DIR" &> /dev/null
 	check_file_name=$MAKE_FILE_NAME
 	check_file
 	if [ $? -eq 1 ]
