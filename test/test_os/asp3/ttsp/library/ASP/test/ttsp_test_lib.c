@@ -338,7 +338,8 @@ ttsp_ref_tsk(ID tskid, T_TTSP_RTSK *pk_rtsk)
 			 */
 			if (p_tcb->p_winfo->p_tmevtb != NULL) {
 				pk_rtsk->lefttmo
-						= (TMO) tmevt_lefttim(p_tcb->p_winfo->p_tmevtb);
+//						= (TMO) tmevt_lefttim(p_tcb->p_winfo->p_tmevtb);
+						= (TMO) ( ((tmevt_lefttim(p_tcb->p_winfo->p_tmevtb) + TCYC_INT_DELAY_CNT) / 1000) * 1000 );
 			}
 			else {
 				pk_rtsk->lefttmo = TMO_FEVR;

@@ -13,6 +13,6 @@ ASP_sys_manage_rot_rdq_a_1:
   do:
     id     : ALM1
     syscall: rot_rdq(TSK_PRI_MID)
-    ercd   : E_CTX
+    ercd   : E_OK
 
   post_condition:

@@ -46,6 +46,8 @@
 #include "ttsp_test_lib.h"
 #include "out.h"
 
+unsigned int ttsp_is_api_test = 0;
+
 /* 割込みが発生したか判別するためのフラグ */
 bool_t int_flag;
 

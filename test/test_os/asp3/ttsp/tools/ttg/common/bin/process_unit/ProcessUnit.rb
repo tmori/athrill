@@ -8,7 +8,7 @@
 #  Copyright (C) 2010-2011 by Graduate School of Information Science,
 #                             Aichi Prefectural Univ., JAPAN
 #
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -143,7 +143,7 @@ module CommonModule
           # 何もしない
 
         when TSR_PRM_TSKSTAT, TSR_PRM_ALMSTAT, TSR_PRM_CYCSTAT, TSR_PRM_TEXSTAT, TSR_PRM_INTSTAT
-          if (GRP_OBJECT_STATE.has_key?(val))
+        if (GRP_OBJECT_STATE.has_key?(val))
             @hState[TSR_PRM_STATE] = GRP_OBJECT_STATE[val]
             @bConvertState = true
           else

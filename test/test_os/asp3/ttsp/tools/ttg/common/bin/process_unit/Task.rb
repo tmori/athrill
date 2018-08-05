@@ -8,7 +8,7 @@
 #  Copyright (C) 2010-2011 by Graduate School of Information Science,
 #                             Aichi Prefectural Univ., JAPAN
 #
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -121,7 +121,7 @@ module CommonModule
 
       # 順序に依存するためタスク例外ハンドラの分もここで作成
       if (@cTex)
-        cElement.set_config("#{API_DEF_TEX}(#{@sObjectID}, {#{KER_TA_NULL}, #{@cTex.sObjectID.downcase}});", @hState[TSR_PRM_CLASS])
+        cElement.set_config("//#{API_DEF_TEX}(#{@sObjectID}, {#{KER_TA_NULL}, #{@cTex.sObjectID.downcase}});", @hState[TSR_PRM_CLASS])
       end
     end
 

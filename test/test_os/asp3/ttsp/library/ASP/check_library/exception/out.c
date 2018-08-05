@@ -46,6 +46,7 @@
 #include "kernel_cfg.h"
 #include "ttsp_test_lib.h"
 #include "out.h"
+unsigned int ttsp_is_api_test = 0;
 
 typedef uint32_t TEXPTN;
 static void texhdr_tex(TEXPTN texptn, intptr_t exinf);

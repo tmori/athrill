@@ -513,6 +513,7 @@ make_for_no_manifest()
 # make realclean)¤Î¼Â¹Ô
 make_for_common()
 {
+	chngRubyVer.sh 2
 	case $rule in
 		$RULE_DEPEND)
 		 header_single "$MAKE_DEPEND $dir_name"
@@ -534,6 +535,8 @@ make_for_common()
 		 make realclean $MAKE_OPT KERNEL_COBJS="$KERNEL_COBJS_COMMON $KERNEL_COBJS_TARGET"
 		 ;;
 	esac
+	chngRubyVer.sh 1
+
 	return $status
 }
 

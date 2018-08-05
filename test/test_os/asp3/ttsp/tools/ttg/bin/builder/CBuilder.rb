@@ -8,7 +8,7 @@
 #  Copyright (C) 2010-2011 by Graduate School of Information Science,
 #                             Aichi Prefectural Univ., JAPAN
 #
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -81,9 +81,10 @@ module TTG
       # 出力コードの臨時文字列
       sCfgCode = <<-EOS
 #{VERSION}
-INCLUDE("target_timer.cfg");
-INCLUDE("syssvc/syslog.cfg");
-INCLUDE("syssvc/serial.cfg");
+INCLUDE("tecsgen.cfg");
+//INCLUDE("target_timer.cfg");
+//INCLUDE("syssvc/syslog.cfg");
+//INCLUDE("syssvc/serial.cfg");
 #include "#{@sFileName}.h"
 
       EOS
@@ -138,6 +139,7 @@ INCLUDE("syssvc/serial.cfg");
       sHeaderCode = <<-EOS
 #{VERSION}
 #include "ttsp_target_test.h"
+typedef uint32_t TEXPTN;
 
       EOS
 
@@ -190,6 +192,15 @@ INCLUDE("syssvc/serial.cfg");
 #include "kernel_cfg.h"
 #include "ttsp_test_lib.h"
 #include "#{@sFileName}.h"
+unsigned int ttsp_is_api_test = 1;
+static void local_ext_ker(void) {
+  syslog_0(LOG_NOTICE, "All check points passed.");
+  (void)chg_pri(MAIN_TASK, 10);
+  while (1) {
+    ;
+  }
+}
+#define ext_ker() local_ext_ker()
 
       EOS
 

@@ -13,6 +13,6 @@ ASP_sys_manage_loc_cpu_a:
   do:
     id     : ALM1
     syscall: loc_cpu()
-    ercd   : E_CTX
+    ercd   : E_OK
 
   post_condition:

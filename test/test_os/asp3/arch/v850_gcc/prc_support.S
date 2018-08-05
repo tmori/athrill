@@ -383,6 +383,13 @@ interrupt:
 	ld.bu	0[r13] , r14
 	sst.w	r14 , 76[ep]
 	st.b	r11 , 0[r13]
+
+	/* BUGFIX START: add set_intpri */
+	/* mov		r10, r19
+	mov 	r11, r6
+	jarl 	_set_intpri, lp
+	mov		r19, r10 */
+	/* BUGFIX END */
 	
 	/* 多重割り込みチェックとネストカウンタをインクリメント */
 	Lea		_intnest, r13
@@ -554,7 +561,12 @@ return_to_idle:
 	/* 割込み優先度マスクは，全解除状態（TIPM_ENAALL）になって
 							いなければならない … (*i) */
 	mov 	INTPRI_ENAALL, r6
+	/* BUGFIX: start */
+	Lea		_current_intpri , r13
+	st.b	r6 , 0[r13]
+	/* BUGFIX: end */
 	jarl 	_set_intpri, lp
+
 
 	/*	dispatcher_0に分岐する */
 	br 		dispatcher_0

@@ -46,6 +46,7 @@
 #include "kernel_cfg.h"
 #include "ttsp_test_lib.h"
 #include "out.h"
+unsigned int ttsp_is_api_test = 0;
 
 /* sil_dly_nseによる遅延処理設定(10ミリ秒) */
 #define SIL_DELAY_TIME 10000000

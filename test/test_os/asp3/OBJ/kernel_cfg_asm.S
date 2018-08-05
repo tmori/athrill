@@ -46,33 +46,6 @@ _nmi_handler_2:
 	nop
 	nop
 
-_exc_handler_0:
-	jr _goto_default_exc_handler
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-
-_exc_handler_1:
-	jr _goto_default_exc_handler
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-
-_exc_handler_2:
-	jr _goto_default_exc_handler
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
-
 _exc_handler_3:
 	jr _goto_default_exc_handler
 	nop
@@ -81,6 +54,35 @@ _exc_handler_3:
 	nop
 	nop
 	nop
+
+_exc_handler_4:
+	jr _goto_default_exc_handler
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+
+_exc_handler_5:
+	jr _goto_default_exc_handler
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+
+_exc_handler_6:
+	jr _goto_default_exc_handler
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+
+
 security_id:
 	.long 	0xFFFFFFFF
 	.long 	0xFFFFFFFF

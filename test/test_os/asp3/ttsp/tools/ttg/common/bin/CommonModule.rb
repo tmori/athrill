@@ -9,7 +9,7 @@
 #                             Aichi Prefectural Univ., JAPAN
 #  Copyright (C) 2012 by FUJISOFT INCORPORATED
 #
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -916,6 +916,15 @@ module CommonModule
   KER_TA_CLR    = "TA_CLR"
   KER_TA_MPRI   = "TA_MPRI"
   KER_TA_STA    = "TA_STA"
+
+  KER_TNFY_HANDLER = "TNFY_HANDLER"
+  KER_TNFY_SETVAR = "TNFY_SETVAR"
+  KER_TNFY_INCVAR = "TNFY_INCVAR"
+  KER_TNFY_ACTTSK = "TNFY_ACTTSK"
+  KER_TNFY_WUPTSK = "TNFY_WUPTSK"
+  KER_TNFY_SIGSEM = "TNFY_SIGSEM"
+  KER_TNFY_SETFLG = "TNFY_SETFLG"
+  KER_TNFY_SNDDTQ = "TNFY_SNDDTQ"
 
   # 割込み優先度マスクのマクロ定義
   KER_TIPM_ENAALL = "TIPM_ENAALL"

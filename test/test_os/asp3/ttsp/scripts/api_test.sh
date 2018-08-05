@@ -812,6 +812,7 @@ make_directory_for_tesry()
 				echo "$PRE_MAKE_DIRECTORY "$pre_dir_name\_$cnt" $POST_MAKE_DIRECTORY"
 				mv temp_aut $pre_dir_name\_$cnt/$manifest_name\_$cnt
 				cp -p temp_dir_aut/$MAKE_FILE_NAME ./$pre_dir_name\_$cnt
+				mkdir ./$pre_dir_name\_$cnt/deps
 				cnt=`expr $cnt + 1 `
 				flg=1
 			fi
@@ -823,6 +824,7 @@ make_directory_for_tesry()
 		echo "$PRE_MAKE_DIRECTORY "$pre_dir_name\_$cnt" $POST_MAKE_DIRECTORY"
 		mv temp_aut $pre_dir_name\_$cnt/$manifest_name\_$cnt
 		cp -p temp_dir_aut/$MAKE_FILE_NAME ./$pre_dir_name\_$cnt
+		mkdir ./$pre_dir_name\_$cnt/deps
 	fi
 
 	rm -rf temp_dir_aut
@@ -1136,6 +1138,7 @@ continuous_execute_for_tesry()
 				echo "$PRE_MAKE_DIRECTORY "$dir_name" $POST_MAKE_DIRECTORY"
 				mv temp_aut $dir_name/$manifest_name\_$cnt
 				cp -p temp_dir_aut/$MAKE_FILE_NAME ./$dir_name
+				mkdir ./$dir_name/deps
 
 				cd $dir_name
 				# TTG¼Â¹Ô

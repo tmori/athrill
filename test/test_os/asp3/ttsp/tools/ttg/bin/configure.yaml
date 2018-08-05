@@ -406,7 +406,7 @@ macro:
 # (TMO型用, タイムティック指定/タイムアウト値などに使用)
 # [0より大きい整数]
   FOREVER_TIME      : 100
-  ANY_ELAPSED_TIME  : 3
+  ANY_ELAPSED_TIME  : 3000
 
 # 相対時間
 # (RELTIM型用, dly_tsk/sta_almなどに使用)

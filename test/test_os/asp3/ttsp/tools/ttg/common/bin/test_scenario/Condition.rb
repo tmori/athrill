@@ -8,7 +8,7 @@
 #  Copyright (C) 2010-2011 by Graduate School of Information Science,
 #                             Aichi Prefectural Univ., JAPAN
 #
-#  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+#  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 #  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 #  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -531,9 +531,9 @@ module CommonModule
       end
 
       # タスク例外がACTIAVTEだった場合，texptn/exinfが引数と一致していることを確認するコードを入れる
-      if (@cActivate.nil?() && !@cRunning.nil?() && @cRunning.sObjectType == TSR_OBJ_TASK_EXC)
-        @cRunning.gc_assert_texptn_exinf(cElement, hProcUnitInfo)
-      end
+      #if (@cActivate.nil?() && !@cRunning.nil?() && @cRunning.sObjectType == TSR_OBJ_TASK_EXC)
+      #  @cRunning.gc_assert_texptn_exinf(cElement, hProcUnitInfo)
+      #end
 
       # 割込みサービスルーチンがACTIAVTEだった場合，exinfが引数と一致していることを確認するコードを入れる
       if (!@cActivate.nil?() && @cActivate.sObjectType == TSR_OBJ_ISR)

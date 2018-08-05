@@ -313,7 +313,6 @@ extern ER ttsp_ref_swait_pdq(ID pdqid, uint_t order, ID *p_tskid, intptr_t *p_da
  */
 extern ER ttsp_ref_rwait_pdq(ID pdqid, uint_t order, ID *p_tskid);
 
-
 #if 0
 /*
  *  ref_mbxÂåÂØ´Ø¿ô

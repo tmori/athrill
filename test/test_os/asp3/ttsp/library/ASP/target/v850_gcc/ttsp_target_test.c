@@ -47,6 +47,7 @@
 
 static unsigned int athrill_device_raise_interrupt __attribute__ ((section(".athrill_device_section")));
 static unsigned int is_ttsp_target_timer_running = 1;
+extern unsigned int ttsp_is_api_test;
 
 /*
  *  ティック更新の停止
@@ -54,18 +55,19 @@ static unsigned int is_ttsp_target_timer_running = 1;
 void
 ttsp_target_stop_tick(void)
 {
-	SIL_PRE_LOC;
-	
-	SIL_LOC_INT();
+	if (ttsp_is_api_test == 0) {
+		SIL_PRE_LOC;
+		
+		SIL_LOC_INT();
 
-	/* 現在値タイマ停止 */
-	SetTimerStopTAA(TIMER_CTIM_ID);
-	/* 差分タイマ停止 */
-	dev_disable_int(INTNO_TIMER);
-	SetTimerStopTAA(INTNO_TIMER);
-	x_clear_int(INTNO_TIMER);
-	SIL_UNL_INT();
-
+		/* 現在値タイマ停止 */
+		SetTimerStopTAA(TIMER_CTIM_ID);
+		/* 差分タイマ停止 */
+		dev_disable_int(INTNO_TIMER);
+		SetTimerStopTAA(INTNO_TIMER);
+		x_clear_int(INTNO_TIMER);
+		SIL_UNL_INT();
+	}
 	is_ttsp_target_timer_running = 0;
 	return;
 }
@@ -96,34 +98,20 @@ ttsp_target_start_tick(void)
 void
 ttsp_target_gain_tick(void)
 {
-#if 0
+	if (ttsp_is_api_test == 0) {
+		SIL_PRE_LOC;
 
-	SIL_PRE_LOC;
+		SIL_LOC_INT();
+		SetTimerStartTAA(TIMER_CTIM_ID);
 
-	SIL_LOC_INT();
-	//SetTimerStartTAA(TIMER_CTIM_ID);
-	//SetTimerStartTAA(TIMER_DTIM_ID);
-	//dev_enable_int(INTNO_TIMER);
+		sil_dly_nse(1000);
 
-	do_halt();
-
-	SIL_UNL_INT();
-
-	SIL_LOC_INT();
-	dev_disable_int(INTNO_TIMER);
-	SetTimerStopTAA(INTNO_TIMER);
-	SetTimerStopTAA(TIMER_CTIM_ID);
-	SIL_UNL_INT();
-#else
-	SIL_PRE_LOC;
-	SIL_LOC_INT();
-	SetTimerStartTAA(TIMER_CTIM_ID);
-
-	sil_dly_nse(1000);
-
-	SetTimerStopTAA(TIMER_CTIM_ID);
-	SIL_UNL_INT();
-#endif
+		SetTimerStopTAA(TIMER_CTIM_ID);
+		SIL_UNL_INT();
+	}
+	else {
+		sil_dly_nse(1000);
+	}
 }
 
 /*

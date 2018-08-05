@@ -60,7 +60,7 @@
  */
 #define INHNO_TIMER		TIMER_DTIM_INTNO	/* 割込みハンドラ番号 */
 #define INTNO_TIMER		TIMER_DTIM_INTNO	/* 割込み番号 */
-#define INTPRI_TIMER	(TMAX_INTPRI - 1)	/* 割込み優先度 */
+#define INTPRI_TIMER	(TMAX_INTPRI - 6)	/* 割込み優先度 */
 #define INTATR_TIMER	TA_NULL				/* 割込み属性 */
 
 /*
