@@ -50,7 +50,7 @@ Copyright (C) 2015-2017 by SUZUKI MOTOR CORPORATION
 により直接的または間接的に生じたいかなる損害に関しても，その責任を負
 わない．
 
-$Id: README.txt 761 2017-03-01 07:28:00Z witz-itoyo $
+$Id: README.txt 2401 2017-03-14 09:09:24Z witz-itoyo $
 ----------------------------------------------------------------------
 
 ATK2-SC1-MCは，「AUTOSAR R4.0 Rev 3」仕様に準拠した，スケーラビリティ

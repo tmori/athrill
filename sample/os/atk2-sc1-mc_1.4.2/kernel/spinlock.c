@@ -52,7 +52,7 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  $Id: spinlock.c 740 2017-01-25 01:19:37Z witz-itoyo $
+ *  $Id: spinlock.c 2401 2017-03-14 09:09:24Z witz-itoyo $
  */
 
 /*
@@ -824,42 +824,36 @@ TryToGetSpinlock(SpinlockIdType SpinlockId, TryToGetSpinlockType *Success)
 
 	if (try_spn_lock(&(p_spncb->spn_lock)) != FALSE) {
 		/* スピンロックロックが取得できた場合 */
-		if (p_spncb->p_holdcb == NULL) {
-			/* スピンロックが取得できる */
-			/*
-			 * スピンロック取得時に割込み禁止を行う場合は，ここで割込
-			 * み禁止を行う．割込み禁止がネスト回数の上限に達した場合
-			 * に，ロック取得に成功しないようにするため
-			 */
-			if (p_spninib->susint != NULL) {
-				ercd = p_spninib->susint();
-				if (ercd != E_OK) {
-					release_spn_lock(&(p_spncb->spn_lock));
-					goto d_error_exit;
-				}
+		/*
+		 * スピンロック取得時に割込み禁止を行う場合は，ここで割込
+		 * み禁止を行う．割込み禁止がネスト回数の上限に達した場合
+		 * に，ロック取得に成功しないようにするため
+		 */
+		if (p_spninib->susint != NULL) {
+			ercd = p_spninib->susint();
+			if (ercd != E_OK) {
+				release_spn_lock(&(p_spncb->spn_lock));
+				goto d_error_exit;
 			}
+		}
 
-			/* spncbの更新 */
-			/* スピンロックを獲得したコア */
-			p_spncb->p_ccb = p_ccb;
-			/* スピンロックを獲得した処理単位 */
-			if ((p_ccb->callevel_stat & TCL_PROTECT) != 0U) {
-				p_spncb->p_holdcb = (void *) &(p_ccb->p_protectspncb);
-			}
-			else if (p_ccb->p_runisr != NULL) {
-				p_spncb->p_holdcb = (void *) (p_ccb->p_runisr);
-			}
-			else {
-				p_spncb->p_holdcb = (void *) (p_ccb->p_runtsk);
-			}
-			/* 最後に獲得したスピンロックのつなぎ換え */
-			p_spncb->p_prevspncb = *pp_lastspncb;
-			*pp_lastspncb = p_spncb;
-			*Success = TRYTOGETSPINLOCK_SUCCESS;
+		/* spncbの更新 */
+		/* スピンロックを獲得したコア */
+		p_spncb->p_ccb = p_ccb;
+		/* スピンロックを獲得した処理単位 */
+		if ((p_ccb->callevel_stat & TCL_PROTECT) != 0U) {
+			p_spncb->p_holdcb = (void *) &(p_ccb->p_protectspncb);
+		}
+		else if (p_ccb->p_runisr != NULL) {
+			p_spncb->p_holdcb = (void *) (p_ccb->p_runisr);
 		}
 		else {
-			release_spn_lock(&(p_spncb->spn_lock));
+			p_spncb->p_holdcb = (void *) (p_ccb->p_runtsk);
 		}
+		/* 最後に獲得したスピンロックのつなぎ換え */
+		p_spncb->p_prevspncb = *pp_lastspncb;
+		*pp_lastspncb = p_spncb;
+		*Success = TRYTOGETSPINLOCK_SUCCESS;
 	}
 
   d_exit_no_errorhook:

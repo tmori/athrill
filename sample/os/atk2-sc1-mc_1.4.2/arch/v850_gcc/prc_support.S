@@ -75,7 +75,7 @@
  */
 .macro MYCCB reg12, reg13
     GET_CID AMARG(reg12)
-    Lea     _p_ccb_table, AMARG(reg13)
+    Lea     _kernel_p_ccb_table, AMARG(reg13)
     shl     2, AMARG(reg12)
     add     AMARG(reg12), AMARG(reg13)
     ld.w    0[AMARG(reg13)], AMARG(reg12)
@@ -370,7 +370,7 @@ FLABEL(ei_exception_3)
 	 * プロテクションフックを呼び出す
 	 */
 	mov     E_OS_PROTECTION_EXCEPTION, r6
-	jarl    _call_protectionhk_main, r31
+	jarl    _kernel_call_protectionhk_main, r31
 
 #ifdef CFG_USE_PROTECTIONHOOK
 	mov     sp, ep
@@ -599,7 +599,7 @@ FLABEL(int_nested)
 	/*
 	 *  スタック残量チェック方式
 	 */
-	Lea     _isr_p_isrcb_table, r6          /* テーブルのアドレスの取得 */
+	Lea     __kernel_isr_p_isrcb_table, r6          /* テーブルのアドレスの取得 */
 	add     r11, r6
 	ld.w    0[r6], r7
 
@@ -693,7 +693,7 @@ FLABEL(not_ici)
 	 */
 	GET_CID r11
 	shl     2, r11
-	Lea     _isr_p_isrcb_table, r6          /* テーブルのアドレスの取得 */
+	Lea     _kernel_isr_p_isrcb_table, r6          /* テーブルのアドレスの取得 */
 	add     r11, r6
 	ld.w    0[r6], r7
 	shl     2, r12                          /* 割込み番号を4倍してオフセットを生成  */
@@ -704,7 +704,7 @@ FLABEL(not_ici)
 	/*
 	 *  割込みハンドラのアドレスを読み込む(r6)
 	 */
-	Lea     _isr_table, r6
+	Lea     _kernel_isr_table, r6
 	add     r11, r6
 	ld.w    0[r6], r6
 	add     r12, r6
@@ -756,7 +756,7 @@ FLABEL(end_int_handler)
 	ld.w    CCB_p_runisr[r16], r7
 	cmp     r0, r7
 	be      end_int_handler_1 
-	jarl    _exit_isr2, r31
+	jarl    _kernel_exit_isr2, r31
 
 FLABEL(end_int_handler_1)
 	MYCCB   r16, r6
@@ -958,7 +958,7 @@ FLABEL(ret_int_1)
  */    
 #ifdef USE_ICI_DIS_HANDER_BYPASS
 FLABEL(ret_int_ici_dispatch)
-	Lea   _shutdown_reqflg, r10      /* シャットダウン要求かのチェック */
+	Lea   _kernel_shutdown_reqflg, r10      /* シャットダウン要求かのチェック */
 	ld.w  0[r10], r10
 	cmp   1, r10
 	be    call_shtdown_os
@@ -971,7 +971,7 @@ FLABEL(ret_int_ici_dispatch)
 
 FLABEL(call_shtdown_os)
 	mov   E_OS_SHUTDOWN_OTHER_CORE, r6   /* 引数 */
-	jarl  _internal_shutdownallcores, r31
+	jarl  _kernel_internal_shutdownallcores, r31
 	halt                                 /* ここには戻って来ない */
 #endif /* USE_ICI_DIS_HANDER_BYPASS */
 
@@ -1104,7 +1104,7 @@ FLABEL(dispatcher)
 	 */
 #ifdef CFG_USE_POSTTASKHOOK
 FLABEL(posttaskhook_call)
-	Lea     _call_posttaskhook, r6
+	Lea     _kernel_call_posttaskhook, r6
 	jarl    _stack_change_and_call_func_1, r31
 #endif /* CFG_USE_POSTTASKHOOK */
 
@@ -1161,7 +1161,7 @@ FLABEL(dispatcher_1)
 
 #ifdef CFG_USE_PRETASKHOOK
 FLABEL(pretaskhook_call)
-	Lea     _call_pretaskhook, r6
+	Lea     _kernel_call_pretaskhook, r6
 	jarl    _stack_change_and_call_func_1, r31
 #endif /* CFG_USE_PRETASKHOOK */
 
@@ -1252,7 +1252,7 @@ FLABEL(stack_monitoring_error)
 	MYOSTKPT sp, r12                          /* スタックを更に壊さないため，割込みスタックの初期値を使用する */
 
 	mov     E_OS_STACKFAULT, r6                 /* プロテクションフックの引数を設定 */
-	jarl    _call_protectionhk_main, r31        /* プロテクションフックを呼び出し */
+	jarl    _kernel_call_protectionhk_main, r31        /* プロテクションフックを呼び出し */
 	/*
 	 * プロテクションフックからは戻ってこない
 	 */
@@ -1287,7 +1287,7 @@ FLABEL(_start_r)
 	 *  タスクが不正終了した場合は保護処理を行うよう
 	 *  戻りアドレスにexit_taskを設定
 	 */
-	Lea     _exit_task, r31
+	Lea     _kernel_exit_task, r31
 
 	ld.w    TCB_p_tinib[ep], r22
 	ld.w    TINIB_task[r22], r10
