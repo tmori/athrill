@@ -133,7 +133,7 @@ endif
 #  コンフィギュレーションファイルに関する定義
 #
 CFGNAME = sample1
-#CFGNAME := $(CFGNAME) target_serial
+CFGNAME := $(CFGNAME) uart
 ifdef ENABLE_SYS_TIMER
   CFGNAME := $(CFGNAME) target_timer
 endif

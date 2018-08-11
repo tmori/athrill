@@ -59,58 +59,9 @@
 #include "target_serial.h"
 #include "uart.h"
 #include "Os_Lcfg.h"
+#include "kernel/kernel_impl.h"
 
-#ifdef DBG_ENABLE_SERIAL
-/*
- * 送信用バッファ
- */
-static char8 uart_tx_buf[UART_TX_BUFSIZE];
 
-/*
- * バッファリングサイズ
- */
-static uint16 uart_tx_count = UINT_C(0);
-/*
- * 読み込み可能な先頭番地
- */
-static uint16 uart_tx_rp = UINT_C(0);
-/*
- * 書き込み可能な先頭番地
- */
-static uint16 uart_tx_wp = UINT_C(0);
-
-#define UART_TX_IS_BUFF_EMPTY()	(uart_tx_count == 0U)
-#define UART_TX_IS_BUFF_FULL()	(uart_tx_count == UART_TX_BUFSIZE)
-
-boolean
-uart_tx_buf_put(char8 c)
-{
-	if (UART_TX_IS_BUFF_FULL()) {
-		return FALSE;
-	}
-	uart_tx_buf[uart_tx_wp] = c;
-	uart_tx_wp++;
-	uart_tx_count++;
-	if (uart_tx_wp == UART_TX_BUFSIZE) {
-		uart_tx_wp = 0U;
-	}
-	return TRUE;
-}
-
-boolean
-uart_tx_buf_get(char8 *c)
-{
-	if (UART_TX_IS_BUFF_EMPTY()) {
-		return FALSE;
-	}
-	*c = uart_tx_buf[uart_tx_rp];
-	uart_tx_rp++;
-	uart_tx_count--;
-	if (uart_tx_rp == UART_TX_BUFSIZE) {
-		uart_tx_rp = 0U;
-	}
-	return TRUE;
-}
 
 /*
  *  カーネルの低レベル出力用関数
@@ -118,9 +69,7 @@ uart_tx_buf_get(char8 *c)
 void
 uart_putc(char8 c)
 {
-	SuspendAllInterrupts();
-	(void)uart_tx_buf_put(c);
-	ResumeAllInterrupts();
+	sil_wrb_mem((void *)UDnTX(UDnCH0), c);
 }
 
 /*
@@ -183,22 +132,6 @@ InitHwSerial(void)
 void
 TermHwSerial(void)
 {
-	char8 c;
-	boolean ret;
-
-	while (1) {
-		if ((sil_reb_mem((void *)UDnSTR(UDnCH0)) & 0x80) == 0x00) {
-			SuspendAllInterrupts();
-			ret = uart_tx_buf_get(&c);
-			ResumeAllInterrupts();
-			if (ret == TRUE) {
-				sil_wrb_mem((void *)UDnTX(UDnCH0), c);
-			}
-			else {
-				break;
-			}
-		}
-	}
 }
 
 /*
@@ -214,8 +147,9 @@ ISR(RxHwSerialInt)
 	str = sil_reb_mem((void *)UDnSTR(UDnCH0));
 	str &= ~0x10;
 	sil_wrb_mem((void *)UDnSTR(UDnCH0), str);
-
 	RxSerialInt(dat);
+
+	x_clear_int(36);
 }
 
 /*
@@ -223,70 +157,4 @@ ISR(RxHwSerialInt)
  */
 ISR(TxHwSerialInt)
 {
-	boolean ret;
-	char8 c;
-
-	SuspendAllInterrupts();
-	ret = uart_tx_buf_get(&c);
-	if (ret) {
-		sil_wrb_mem((void *)UDnTX(UDnCH0), c);
-	}
-	ResumeAllInterrupts();
 }
-#ifdef ACTUAL_BEHVIOR_ENABLE
-void uart_sync(void)
-{
-	boolean ret;
-	char8 c;
-	int count = 100;
-
-	SuspendAllInterrupts();
-	while (count > 0) {
-		if ((sil_reb_mem((void *)UDnSTR(UDnCH0)) & 0x80) == 0x00) {
-			ret = uart_tx_buf_get(&c);
-			if (ret == TRUE) {
-				sil_wrb_mem((void *)UDnTX(UDnCH0), c);
-			}
-		}
-		else {
-			break;
-		}
-		count--;
-	}
-	ResumeAllInterrupts();
-	return;
-}
-#else
-void uart_sync(void)
-{
-	boolean ret;
-	char8 c;
-
-	SuspendAllInterrupts();
-	if ((sil_reb_mem((void *)UDnSTR(UDnCH0)) & 0x80) == 0x00) {
-		ret = uart_tx_buf_get(&c);
-		if (ret == TRUE) {
-			sil_wrb_mem((void *)UDnTX(UDnCH0), c);
-		}
-	}
-	ResumeAllInterrupts();
-	return;
-}
-#endif /* ACTUAL_BEHVIOR_ENABLE */
-
-#ifdef ACTUAL_BEHVIOR_ENABLE
-TASK(DebugTask)
-{
-	uart_sync();
-	
-	TerminateTask();
-}
-#else
-TASK(DebugTask)
-{
-	while (1) {
-		uart_sync();
-	}
-}
-#endif /* ACTUAL_BEHVIOR_ENABLE */
-#endif /* DBG_ENABLE_SERIAL */
