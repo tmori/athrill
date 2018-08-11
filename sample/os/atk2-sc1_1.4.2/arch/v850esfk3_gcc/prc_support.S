@@ -243,7 +243,7 @@ FLABEL(ei_exception_1)
 	 * カーネル起動中かどうかチェックする
 	 *  カーネル起動していない場合に起きたCPU例外は，無限ループへ
 	 */
-	Lea   _kerflg, r12          /* kerflgがFALSEなら無限ループ */
+	Lea   _kernel_kerflg, r12          /* kerflgがFALSEなら無限ループ */
 	ld.b  0[r12], r12
 
 	/*
@@ -329,7 +329,7 @@ FLABEL(ei_exception_2)
 	 * プロテクションフック関数呼び出し
 	 */
 	Lea     E_OS_PROTECTION_EXCEPTION, r6
-	jarl    _call_protectionhk_main, r31
+	jarl    _kernel_call_protectionhk_main, r31
 
 #ifdef CFG_USE_PROTECTIONHOOK
 
@@ -518,7 +518,7 @@ FLABEL(interrupt_1)
 	/*
 	 *  _callevel_stat 保存
 	 */
-	Lea     _callevel_stat, r6
+	Lea     _kernel_callevel_stat, r6
 	ld.h    0[r6], r7
 	Push    r7
 
@@ -553,7 +553,7 @@ FLABEL(end_int_handler)
 	/*
 	 * ISR2の不正終了チェック
 	 */
-	jarl    _exit_isr2, r31
+	jarl    _kernel_exit_isr2, r31
 
 	/*
 	 * p_runisr の復帰
@@ -565,7 +565,7 @@ FLABEL(end_int_handler)
 	/*
 	 * _callevel_stat の復帰
 	 */
-	Lea     _callevel_stat, r7
+	Lea     _kernel_callevel_stat, r7
 	Pop     r6
 	st.h    r6, 0[r7]
 
@@ -638,9 +638,9 @@ FLABEL(ret_int_task)
 	/*
 	 *  ディスパッチの必要があるかチェック
 	 */
-	Lea     _p_runtsk, r6
+	Lea     _kernel_p_runtsk, r6
 	ld.w    0[r6], r6
-	Lea     _p_schedtsk, r7
+	Lea     _kernel_p_schedtsk, r7
 	ld.w    0[r7], r7
 	cmp     r6, r7
 	be      ret_int_1      /* ディスパッチの必要がなければ割込み元へ戻る(ret_int_1へ移動する) */
@@ -686,7 +686,7 @@ FLABEL(ret_int_task)
 	/* 
 	 * スタックポインタを自タスク（p_runtsk）のTCBに保存する
 	 */
-	Lea     _p_runtsk, ep
+	Lea     _kernel_p_runtsk, ep
 	sld.w   0[ep], ep
 	sst.w   sp, TCB_sp[ep]
 	
@@ -818,7 +818,7 @@ FLABEL(_interrupt_isr1_1)
 	/*
 	 *  _callevel_stat 保存
 	 */
-	Lea     _callevel_stat, r6
+	Lea     _kernel_callevel_stat, r6
 	ld.h    0[r6], r7
 	Push    r7
 
@@ -844,7 +844,7 @@ FLABEL(end_c1isr_int_handler)
 	/*
 	 * _callevel_stat の復帰
 	 */
-	Lea     _callevel_stat, r7
+	Lea     _kernel_callevel_stat, r7
 	Pop     r6
 	st.h    r6, 0[r7]
 
@@ -910,7 +910,7 @@ FLABEL(_dispatch)
 	sst.w   r31, 0[ep]
 
 	/* スタックと次の起動番地を保存 */
-	Lea     _p_runtsk, ep
+	Lea     _kernel_p_runtsk, ep
 	sld.w   0[ep], ep
 	sst.w   sp, TCB_sp[ep]
 	Lea     dispatch_r, r10
@@ -981,7 +981,7 @@ FLABEL(dispatcher)
 	cmp     r20, r0
 	be      dispatcher_0
 FLABEL(posttaskhook_call)
-	Lea     _call_posttaskhook, r6
+	Lea     _kernel_call_posttaskhook, r6
 	jarl    _stack_change_and_call_func_1, r31
 #endif /* CFG_USE_POSTTASKHOOK */
 
@@ -995,7 +995,7 @@ FLABEL(dispatcher_0)
 	/*
 	 * ディスパッチャ入口ログ出力
 	 */
-	Lea     _p_runtsk, r21
+	Lea     _kernel_p_runtsk, r21
 	ld.w    0[r21], r21
 	cmp     r0, r21
 	be      dispatcher_0_1
@@ -1007,7 +1007,7 @@ FLABEL(dispatcher_0_1)
 	/*
 	 * 全割込み禁止解除(callevel_statにTSYS_DSALLINTが立っている場合)
 	 */
-	Lea     _callevel_stat, r21
+	Lea     _kernel_callevel_stat, r21
 	ld.h    0[r21], r22
 	Lea     TSYS_DISALLINT, r20
 	and     r22, r20
@@ -1027,8 +1027,8 @@ FLABEL(dispatcher_1)
 	/*
 	 * 最高優先度タスク(p_schedtsk)を現在実行中タスク(p_runtsk)に設定
 	 */
-	Lea     _p_runtsk, r21
-	Lea     _p_schedtsk, r20
+	Lea     _kernel_p_runtsk, r21
+	Lea     _kernel_p_schedtsk, r20
 	ld.w    0[r20], r22
 	st.w    r22, 0[r21]
 	/*
@@ -1065,7 +1065,7 @@ FLABEL(dispatcher_1)
 	be      dispatcher_2
 
 FLABEL(pretaskhook_call)
-	Lea     _call_pretaskhook, r6
+	Lea     _kernel_call_pretaskhook, r6
 	jarl    _stack_change_and_call_func_1, r31
 #endif /* CFG_USE_PRETASKHOOK */
 
@@ -1073,7 +1073,7 @@ FLABEL(dispatcher_2)
 	/*
 	 * 自タスクのTCBから実行再開番地を復帰し，そこへ分岐する
 	 */
-	Lea     _p_runtsk, r20
+	Lea     _kernel_p_runtsk, r20
 	ld.w    0[r20], r22
 	mov     r22, ep
 	sld.w   TCB_pc[ep], r31
@@ -1159,7 +1159,7 @@ FLABEL(_start_r)
 	 *  OS割込み禁止解除前に現在優先度(TCB.curpri)を実行優先度(TINIB.exepri)に
 	 *  変更(内部リソースを獲得)
 	 */
-	Lea     _p_runtsk, ep
+	Lea     _kernel_p_runtsk, ep
 	ld.w    0[ep], ep
 	ld.w    TCB_p_tinib[ep], r22
 	ld.b    TINIB_exepri[r22], r21			/* TINIB.exepri -> TCB.curpri */
@@ -1176,7 +1176,7 @@ FLABEL(_start_r)
 	 *  タスクが不正終了した場合は保護処理を行うよう
 	 *  戻りアドレスにexit_taskを設定
 	 */
-	Lea     _exit_task, r31
+	Lea     _kernel_exit_task, r31
 
 	ld.w    TCB_p_tinib[ep], r22
 	ld.w    TINIB_task[r22], r10

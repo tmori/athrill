@@ -54,7 +54,7 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  $Id: interrupt_manage.c 727 2017-01-23 09:27:59Z witz-itoyo $
+ *  $Id: interrupt_manage.c 2401 2017-03-14 09:09:24Z witz-itoyo $
  */
 
 /*

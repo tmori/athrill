@@ -3,20 +3,20 @@
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *      Automotive Kernel Version 2
  *
- *  Copyright (C) 2011-2016 by Center for Embedded Computing Systems
+ *  Copyright (C) 2011-2017 by Center for Embedded Computing Systems
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
- *  Copyright (C) 2011-2016 by FUJI SOFT INCORPORATED, JAPAN
+ *  Copyright (C) 2011-2017 by FUJI SOFT INCORPORATED, JAPAN
  *  Copyright (C) 2011-2013 by Spansion LLC, USA
- *  Copyright (C) 2011-2016 by NEC Communication Systems, Ltd., JAPAN
+ *  Copyright (C) 2011-2017 by NEC Communication Systems, Ltd., JAPAN
  *  Copyright (C) 2011-2016 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
  *  Copyright (C) 2011-2014 by Renesas Electronics Corporation, JAPAN
  *  Copyright (C) 2011-2016 by Sunny Giken Inc., JAPAN
- *  Copyright (C) 2011-2016 by TOSHIBA CORPORATION, JAPAN
- *  Copyright (C) 2011-2016 by Witz Corporation
+ *  Copyright (C) 2011-2017 by TOSHIBA CORPORATION, JAPAN
+ *  Copyright (C) 2011-2017 by Witz Corporation
  *  Copyright (C) 2014-2016 by AISIN COMCRUISE Co., Ltd., JAPAN
  *  Copyright (C) 2014-2016 by eSOL Co.,Ltd., JAPAN
- *  Copyright (C) 2014-2016 by SCSK Corporation, JAPAN
- *  Copyright (C) 2015-2016 by SUZUKI MOTOR CORPORATION
+ *  Copyright (C) 2014-2017 by SCSK Corporation, JAPAN
+ *  Copyright (C) 2015-2017 by SUZUKI MOTOR CORPORATION
  *
  *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -52,7 +52,7 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  $Id: Rte_Os_Type.h 636 2016-03-22 01:35:30Z witz-itoyo $
+ *  $Id: Rte_Os_Type.h 2401 2017-03-14 09:09:24Z witz-itoyo $
  */
 
 #ifndef TOPPERS_RTE_OS_TYPE_H
@@ -61,7 +61,7 @@
 #ifndef TOPPERS_MACRO_ONLY
 
 /* RTEジェネレータにより生成される */
-//#include "Rte_Type.h"
+#include "Rte_Type.h"
 
 #endif /* TOPPERS_MACRO_ONLY */
 

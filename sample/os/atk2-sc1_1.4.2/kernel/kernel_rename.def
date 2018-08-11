@@ -22,9 +22,7 @@ set_event_action
 interrupt_initialize
 release_interrupts
 exit_isr2
-p_runisr
-sus_os_cnt
-sus_all_cnt
+
 
 # osctl.c
 internal_call_errorhook
