@@ -5,20 +5,20 @@
 #
 #  Copyright (C) 2000-2003 by Embedded and Real-Time Systems Laboratory
 #                              Toyohashi Univ. of Technology, JAPAN
-#  Copyright (C) 2006-2017 by Center for Embedded Computing Systems
+#  Copyright (C) 2006-2015 by Center for Embedded Computing Systems
 #              Graduate School of Information Science, Nagoya Univ., JAPAN
-#  Copyright (C) 2011-2017 by FUJI SOFT INCORPORATED, JAPAN
+#  Copyright (C) 2011-2015 by FUJI SOFT INCORPORATED, JAPAN
 #  Copyright (C) 2011-2013 by Spansion LLC, USA
-#  Copyright (C) 2011-2017 by NEC Communication Systems, Ltd., JAPAN
-#  Copyright (C) 2011-2016 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
+#  Copyright (C) 2011-2015 by NEC Communication Systems, Ltd., JAPAN
+#  Copyright (C) 2011-2015 by Panasonic Advanced Technology Development Co., Ltd., JAPAN
 #  Copyright (C) 2011-2014 by Renesas Electronics Corporation, JAPAN
-#  Copyright (C) 2011-2016 by Sunny Giken Inc., JAPAN
-#  Copyright (C) 2011-2017 by TOSHIBA CORPORATION, JAPAN
-#  Copyright (C) 2011-2017 by Witz Corporation
-#  Copyright (C) 2014-2016 by AISIN COMCRUISE Co., Ltd., JAPAN
-#  Copyright (C) 2014-2016 by eSOL Co.,Ltd., JAPAN
-#  Copyright (C) 2014-2017 by SCSK Corporation, JAPAN
-#  Copyright (C) 2015-2017 by SUZUKI MOTOR CORPORATION
+#  Copyright (C) 2011-2015 by Sunny Giken Inc., JAPAN
+#  Copyright (C) 2011-2015 by TOSHIBA CORPORATION, JAPAN
+#  Copyright (C) 2011-2015 by Witz Corporation
+#  Copyright (C) 2014-2015 by AISIN COMCRUISE Co., Ltd., JAPAN
+#  Copyright (C) 2014-2015 by eSOL Co.,Ltd., JAPAN
+#  Copyright (C) 2014-2015 by SCSK Corporation, JAPAN
+#  Copyright (C) 2015 by SUZUKI MOTOR CORPORATION
 #
 #  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
 #  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
@@ -54,8 +54,10 @@
 #  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
 #  の責任を負わない．
 #
-#  $Id: Makefile 727 2017-01-23 09:27:59Z witz-itoyo $
+#  $Id: Makefile 495 2015-12-21 04:55:08Z ertl-ishikawa $
 #
+
+include Makefile.common
 
 #
 #  ターゲットの指定（Makefile.targetで上書きされるのを防ぐため）
@@ -65,7 +67,7 @@ all:
 #
 #  ターゲット略称の定義
 #
-TARGET = rh850f1h_pb_gcc
+TARGET = v850esfk3_gcc
 
 #
 #  プログラミング言語の定義
@@ -131,7 +133,7 @@ endif
 #  コンフィギュレーションファイルに関する定義
 #
 CFGNAME = sample1
-CFGNAME := $(CFGNAME) target_serial
+CFGNAME := $(CFGNAME) uart
 ifdef ENABLE_SYS_TIMER
   CFGNAME := $(CFGNAME) target_timer
 endif
@@ -189,9 +191,9 @@ ifndef OMIT_WARNING_ALL
   COPTS := $(COPTS) -Wall -Wno-unused-label -Wpointer-arith
 endif
 ifndef OMIT_OPTIMIZATION
-  COPTS := $(COPTS) -O2
+  COPTS := $(COPTS) -O0  -gdwarf-2
 endif
-CDEFS := $(CDEFS) 
+
 INCLUDES := -I. -I$(SRCDIR)/include -I$(SRCDIR)/arch -I$(SRCDIR) $(INCLUDES)
 LDFLAGS := $(LDFLAGS) 
 LIBS := $(LIBS) $(CXXLIBS)
@@ -255,7 +257,6 @@ ifdef OMIT_MAKEOFFSET
 else
   OFFSET_H = offset.h
 endif
-
 
 #
 #  ターゲットファイル（複数を同時に選択してはならない）
