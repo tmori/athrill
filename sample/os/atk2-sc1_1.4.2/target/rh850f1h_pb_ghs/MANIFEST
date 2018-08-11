@@ -1,8 +1,0 @@
-PACKAGE atk2-sc1
-
-MANIFEST
-Makefile.target
-target.tf
-target_check.tf
-target_test.h
-target_user.txt
