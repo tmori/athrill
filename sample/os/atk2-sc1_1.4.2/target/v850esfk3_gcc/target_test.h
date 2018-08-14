@@ -14,7 +14,7 @@
  *  Copyright (C) 2012-2014 by TOSHIBA CORPORATION, JAPAN
  *  Copyright (C) 2012-2014 by Witz Corporation, JAPAN
  *
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -59,9 +59,9 @@
 #define TOPPERS_TARGET_TEST_H
 
 /*
- *  sample1で使用するアラームの周期（約1秒）
+ *  sample1で使用するアラームの周期（約0.5秒）
  */
-#define COUNTER_MIN_CYCLE	((uint32) 8000000)
+#define COUNTER_MIN_CYCLE	((uint32) 5000)
 
 /*
  *  sample1で使用する例外
