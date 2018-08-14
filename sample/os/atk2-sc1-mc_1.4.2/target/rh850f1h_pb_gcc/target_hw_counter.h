@@ -90,6 +90,6 @@
 /*
  *  10msと一致するティック値(サンプルプログラム用)
  */
-#define TICK_FOR_10MS	10U
+#define TICK_FOR_10MS	100U
 
 #endif /* TOPPERS_TARGET_HW_COUNTER_H */

@@ -231,7 +231,6 @@ set_hwcounter_tauj(uint8 n_d, uint8 ch_d, uint8 n_c, uint8 ch_c, TickType exprti
 	 */
 	SetTimerStopTAA(HwCounterId[coreId].dtim_id);
 
-	exprtick = exprtick * 2;
 	/* 差分タイマに設定する値を算出	*/
 	curr_time = GetCurrentTimeTAA(HwCounterId[coreId].ctim_id, tauj_MAIN_HW_COUNTER_maxval[coreId]);
 	if (exprtick >= curr_time) {
@@ -267,7 +266,7 @@ TickType
 get_hwcounter_tauj(uint8 n_c, uint8 ch_c, TickType maxval)
 {
 	uint16 coreId = current_peid() - 1U;
-	return (GetCurrentTimeTAA(HwCounterId[coreId].ctim_id, tauj_MAIN_HW_COUNTER_maxval[coreId])/2);
+	return (GetCurrentTimeTAA(HwCounterId[coreId].ctim_id, tauj_MAIN_HW_COUNTER_maxval[coreId]));
 }
 
 /*

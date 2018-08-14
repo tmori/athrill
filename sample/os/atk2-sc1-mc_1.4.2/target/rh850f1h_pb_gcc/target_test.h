@@ -59,9 +59,9 @@
 #define TOPPERS_TARGET_TEST_H
 
 /*
- *  sample1で使用するアラームの周期（約1秒）
+ *  sample1で使用するアラームの周期（約0.5秒）
  */
-#define COUNTER_MIN_CYCLE	((uint32) 8000000)
+#define COUNTER_MIN_CYCLE	((uint32) 5000)
 
 /*
  *  sample1で使用するCPU例外
