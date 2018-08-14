@@ -475,8 +475,8 @@ static const AlarmType		alarm_id_tbl[] = {
 
 /* ティック値テーブル */
 static const TickType		tick_tbl[] = {
-	(TickType) 500,
-	(TickType) 900
+	(TickType) 5000,
+	(TickType) 9000
 };
 
 /* サイクル値テーブル */

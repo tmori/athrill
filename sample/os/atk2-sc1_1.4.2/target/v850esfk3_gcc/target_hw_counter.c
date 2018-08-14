@@ -208,7 +208,6 @@ set_hwcounter_MAIN_HW_COUNTER(TickType exprtick)
 	 */
 	SetTimerStopTAA(HWC_DTIM_ID);
 	
-	exprtick = exprtick * 2;
 	/* 差分タイマに設定する値を算出	*/
 	curr_time = GetCurrentTimeTAA(HWC_CTIM_ID, MAIN_HW_COUNTER_maxval);
 	if (exprtick >= curr_time) {
@@ -244,7 +243,7 @@ set_hwcounter_MAIN_HW_COUNTER(TickType exprtick)
 TickType
 get_hwcounter_MAIN_HW_COUNTER(void)
 {
-	return (GetCurrentTimeTAA(HWC_CTIM_ID, MAIN_HW_COUNTER_maxval)/2);
+	return (GetCurrentTimeTAA(HWC_CTIM_ID, MAIN_HW_COUNTER_maxval));
 }
 
 /*

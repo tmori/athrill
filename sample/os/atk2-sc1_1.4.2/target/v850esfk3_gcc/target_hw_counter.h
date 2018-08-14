@@ -78,14 +78,6 @@
 #define HWC_CTIM_INTNO  (25)
 
 
-/*
- *  分周．
- *  20MHzで500msec周期を作る場合は，
- *  分周は10000にしなければならない．
- */
-#define TIMER_CLOCK_FD		((uint16) 10000)
-
-
 
 /***************************************************
  * 16ビットタイマ／イベントカウンタAA(TAA)操作関数
@@ -152,6 +144,14 @@ GetCurrentTimeTAA(uint8 ch, TickType maxval)
 	return(curr_time);
 }
 
-#define TICK_FOR_10MS        10U
+
+
+/*
+ * CPU 100MHz
+ * hw_counter:0.1ms/tick
+ */
+
+#define TICK_FOR_10MS        100U
+
 
 #endif /* TOPPERS_TARGET_HW_COUNTER_H */
