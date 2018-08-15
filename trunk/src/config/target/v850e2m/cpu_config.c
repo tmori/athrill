@@ -165,19 +165,6 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 	switch (region_type) {
 	case GLOBAL_MEMORY:
 	case READONLY_MEMORY:
-		/* dmp check */
-		if ((access_type == CpuMemoryAccess_EXEC) || IS_TRUSTED_DMP(psw)) {
-			dmp_permission = TRUE;
-		}
-		else { /* READ or WRITE */
-			dmp_permission = cpu_has_permission_dmp(core_id, access_type, addr, size);
-		}
-		if (dmp_permission == FALSE) {
-			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MDP;
-			virtual_cpu.cores[core_id].core.mpu.error_address = addr;
-			virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
-			break;
-		}
 		/* imp check */
 		if ((access_type == CpuMemoryAccess_WRITE) || IS_TRUSTED_IMP(psw)) {
 			imp_permission = TRUE;
@@ -185,13 +172,33 @@ bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type
 		else { /* READ or EXEC */
 			imp_permission = cpu_has_permission_imp(core_id, access_type, addr, size);
 		}
-		if (imp_permission == FALSE) {
-			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MIP;
-			virtual_cpu.cores[core_id].core.mpu.error_address = cpu_get_current_core_pc();
-			virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
+		/* dmp check */
+		if ((access_type == CpuMemoryAccess_EXEC) || IS_TRUSTED_DMP(psw)) {
+			dmp_permission = TRUE;
 		}
-		if ((dmp_permission == TRUE) && (imp_permission == TRUE)) {
+		else { /* READ or WRITE */
+			dmp_permission = cpu_has_permission_dmp(core_id, access_type, addr, size);
+		}
+		if (access_type == CpuMemoryAccess_READ) {
+			if ((dmp_permission == TRUE) || (imp_permission == TRUE)) {
+				permission = TRUE;
+			}
+		}
+		else if ((dmp_permission == TRUE) && (imp_permission == TRUE)) {
 			permission = TRUE;
+		}
+		if (permission == FALSE) {
+			if (imp_permission == FALSE) {
+				virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MIP;
+				virtual_cpu.cores[core_id].core.mpu.error_address = cpu_get_current_core_pc();
+				virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
+			}
+			if (dmp_permission == FALSE) {
+				virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MDP;
+				virtual_cpu.cores[core_id].core.mpu.error_address = addr;
+				virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
+				break;
+			}
 		}
 		break;
 	case DEVICE:
