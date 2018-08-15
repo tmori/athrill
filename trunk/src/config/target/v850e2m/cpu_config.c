@@ -59,14 +59,14 @@ static bool is_overlap(TargetCoreMpuConfigType *config, CpuMemoryCheckType *chec
 		return FALSE;
 	}
 	else {
-		printf("ERROR:no permission: access_addr=0x%x access_end=0x%x config_addr=0x%x config_end=0x%x\n", 
-			check_arg->start, check_arg->end, config_start, config_end);
+		//printf("ERROR:no permission(access_type=%u): access_addr=0x%x access_end=0x%x config_addr=0x%x config_end=0x%x\n", 
+		//	check_arg->access_type, check_arg->start, check_arg->end, config_start, config_end);
 		return TRUE;
 	}
 }
 /*
- * FALSE: permission OK
- * TRUE:  permission NG
+ * FALSE: permission is not allowed
+ * TRUE:  permission is allowed
  */
 static bool dmp_object_filter(const void *p, const void *arg)
 {
@@ -76,22 +76,23 @@ static bool dmp_object_filter(const void *p, const void *arg)
 	if (config->common.enable_protection == FALSE) {
 		return FALSE;
 	}
-	if (check_arg->access_type == CpuMemoryAccess_READ) {
-		if (config->enable_read == TRUE) {
-			return FALSE;
-		}
-	}
-	else { //WRITE
-		if (config->enable_write == TRUE) {
-			return FALSE;
-		}
-	}
 
-	return is_overlap(&config->common, check_arg);
+	if (is_overlap(&config->common, check_arg) == FALSE) {
+		return FALSE;
+	}
+	if (check_arg->access_type == CpuMemoryAccess_READ) {
+		return config->enable_read;
+	}
+	else if (check_arg->access_type == CpuMemoryAccess_WRITE) {
+		return config->enable_write;
+	}
+	//EXEC
+	return FALSE;
 }
+
 /*
- * FALSE: permission OK
- * TRUE:  permission NG
+ * FALSE: permission is not allowed
+ * TRUE:  permission is allowed
  */
 static bool dip_object_filter(const void *p, const void *arg)
 {
@@ -101,21 +102,20 @@ static bool dip_object_filter(const void *p, const void *arg)
 	if (config->common.enable_protection == FALSE) {
 		return FALSE;
 	}
-	if (check_arg->access_type == CpuMemoryAccess_EXEC) {
-		if (config->enable_exec == TRUE) {
-			return FALSE;
-		}
-	}
-	else if (check_arg->access_type == CpuMemoryAccess_READ) {
-		if (config->enable_read == TRUE) {
-			return FALSE;
-		}
-	}
-	else { //WRITE
-		/* do not check hear. write access must be checked on dmp */
+
+	if (is_overlap(&config->common, check_arg) == FALSE) {
 		return FALSE;
 	}
-	return is_overlap(&config->common, check_arg);
+	if (check_arg->access_type == CpuMemoryAccess_EXEC) {
+		return config->enable_exec;
+	}
+	else if (check_arg->access_type == CpuMemoryAccess_READ) {
+		return config->enable_read;
+	}
+
+	//WRITE
+	/* do not check hear. write access must be checked on dmp */
+	return FALSE;
 }
 
 static bool cpu_has_permission_dmp(CoreIdType core_id, CpuMemoryAccessType access_type, uint32 addr, uint32 size)
@@ -130,10 +130,10 @@ static bool cpu_has_permission_dmp(CoreIdType core_id, CpuMemoryAccessType acces
 
 	obj = object_container_find_first2(container, dmp_object_filter, &arg);
 	if (obj != NULL) {
-		return FALSE;
+		return TRUE;
 	}
 	else {
-		return TRUE;
+		return FALSE;
 	}
 }
 
@@ -149,44 +149,49 @@ static bool cpu_has_permission_imp(CoreIdType core_id, CpuMemoryAccessType acces
 
 	obj = object_container_find_first2(container, dip_object_filter, &arg);
 	if (obj != NULL) {
-		return FALSE;
+		return TRUE;
 	}
 	else {
-		return TRUE;
+		return FALSE;
 	}
 }
 bool cpu_has_permission(CoreIdType core_id, MpuAddressRegionEnumType region_type, CpuMemoryAccessType access_type, uint32 addr, uint32 size)
 {
 	uint32 psw = cpu_get_psw(&virtual_cpu.cores[core_id].core.reg.sys);
 	bool permission = FALSE;
+	bool dmp_permission = FALSE;
+	bool imp_permission = FALSE;
 
 	switch (region_type) {
 	case GLOBAL_MEMORY:
 	case READONLY_MEMORY:
 		/* dmp check */
-		if (IS_TRUSTED_DMP(psw)) {
-			permission = TRUE;
+		if ((access_type == CpuMemoryAccess_EXEC) || IS_TRUSTED_DMP(psw)) {
+			dmp_permission = TRUE;
 		}
-		else {
-			permission = cpu_has_permission_dmp(core_id, access_type, addr, size);
+		else { /* READ or WRITE */
+			dmp_permission = cpu_has_permission_dmp(core_id, access_type, addr, size);
 		}
-		if (permission == FALSE) {
+		if (dmp_permission == FALSE) {
 			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MDP;
 			virtual_cpu.cores[core_id].core.mpu.error_address = addr;
 			virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
 			break;
 		}
 		/* imp check */
-		if (IS_TRUSTED_IMP(psw)) {
-			permission = TRUE;
+		if ((access_type == CpuMemoryAccess_WRITE) || IS_TRUSTED_IMP(psw)) {
+			imp_permission = TRUE;
 		}
-		else {
-			permission = cpu_has_permission_imp(core_id, access_type, addr, size);
+		else { /* READ or EXEC */
+			imp_permission = cpu_has_permission_imp(core_id, access_type, addr, size);
 		}
-		if (permission == FALSE) {
+		if (imp_permission == FALSE) {
 			virtual_cpu.cores[core_id].core.mpu.exception_error_code = CpuExceptionError_MIP;
 			virtual_cpu.cores[core_id].core.mpu.error_address = cpu_get_current_core_pc();
 			virtual_cpu.cores[core_id].core.mpu.error_access = access_type;
+		}
+		if ((dmp_permission == TRUE) && (imp_permission == TRUE)) {
+			permission = TRUE;
 		}
 		break;
 	case DEVICE:
