@@ -35,39 +35,12 @@ _start:
 	stsr mpm, r11
 
 	/************************
-	 * KERNEL REGION
-	 ************************/
-	/*
-	 * set IPA0L
-	 */
-	mov 0x00000001, r10
-	ldsr r10, ipa0l
-
-	/*
-	 * set IPA0U
-	 */
-	mov 0x000FFFF0, r10
-	ldsr r10, ipa0u
-
-	/*
-	 * set DPA0L
-	 */
-	mov 0x06000001, r10
-	ldsr r10, dpa0l
-
-	/*
-	 * set DPA0U
-	 */
-	mov 0x060FFFF0, r10
-	ldsr r10, dpa0u
-
-	/************************
 	 * USER REGION
 	 ************************/
 	/*
 	 * set IPA1L
 	 */
-	mov 0x00100000, r10
+	mov 0x00100001, r10
 	ldsr r10, ipa1l
 
 	/*
@@ -77,16 +50,16 @@ _start:
 	ldsr r10, ipa1u
 
 	/*
-	 * set DPA1L
+	 * set DPA2L
 	 */
-	mov 0x07000000, r10
-	ldsr r10, dpa1l
+	mov 0x07000001, r10
+	ldsr r10, dpa2l
 
 	/*
-	 * set DPA0U
+	 * set DPA2U
 	 */
 	mov 0x070FFFF6, r10
-	ldsr r10, dpa1u
+	ldsr r10, dpa2u
 
 
 	/* mpu setting end */
