@@ -1,12 +1,7 @@
 #ifndef _INTERRUPT_H_
 #define _INTERRUPT_H_
 
-typedef unsigned char uint8;
-typedef unsigned int uint32;
-typedef unsigned char bool;
-#define TRUE 1
-#define FALSE 0
-
+#include "types.h"
 /*
  *	割込み制御レジスタの番地を算出するためのマクロ
  *

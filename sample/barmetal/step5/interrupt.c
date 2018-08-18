@@ -1,16 +1,8 @@
 #include "interrupt.h"
 #include "interrupt_table.h"
 #include "v850_ins.h"
+#include "device_io.h"
 
-static void sil_wrb_mem(void *addr, uint8 data)
-{
-	(*(uint8*)addr) = data;
-	return;
-}
-static uint8 sil_reb_mem(void *addr)
-{
-	return (*(uint8*)addr);
-}
 void default_int_handler(void)
 {
 	return;
