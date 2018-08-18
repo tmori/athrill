@@ -1,0 +1,7 @@
+- PrimitiveType:
+  - name: uint8
+    size: 8
+  - name: uint16
+    size: 16
+  - name: uint32 
+    size: 32

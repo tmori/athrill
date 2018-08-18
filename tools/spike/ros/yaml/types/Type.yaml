@@ -1,0 +1,29 @@
+BusType:
+  - attr: name
+  - attr: elements
+
+BusElement:
+  - attr: name
+    insRef: busElmTypeRef
+
+QueueType:
+  - attr: name
+  - attr: len
+  - insRef: dataElmTypeRef
+
+DataType:
+  - attr: name
+  - insRef: dataElmTypeRef
+
+DataElementSingleType:
+  - insRef: pTypeRef
+
+DataElementArrayType:
+  - insRef: pTypeRef
+  - attr: size
+  - attr: initialValue
+
+PrimitiveType:
+  - attr: name
+    attr: size
+
