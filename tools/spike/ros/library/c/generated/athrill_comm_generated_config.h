@@ -26,12 +26,17 @@
         ( ACOMM_BUS1_ELM_1_TYPE_SIZE )                              \
     )
 
-#define ACOMM_BUS1_BUFFER_SIZE  (                                   \
-        (ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
-        (ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
+#define ACOMM_BUS1_DATA_SIZE    (                                   \
         ACOMM_BUS1_ELM_0_SIZE                     +                     \
         ACOMM_BUS1_ELM_1_SIZE                     +                     \
         ACOMM_BUS1_ELM_2_SIZE                                           \
+    )
+
+#define ACOMM_BUS1_BUFFER_SIZE  (                                   \
+        ACOMM_BUS_METADATA_SIZE                         +               \
+        (ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
+        (ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
+        ACOMM_BUS1_DATA_SIZE                                           \
     )
 
 /*****************************
@@ -57,10 +62,17 @@
         ( ACOMM_BUS2_ELM_1_TYPE_SIZE )                              \
     )
 
+#define ACOMM_BUS2_DATA_SIZE    (                                   \
+        ACOMM_BUS2_ELM_0_SIZE                     +                     \
+        ACOMM_BUS2_ELM_1_SIZE                     +                     \
+        ACOMM_BUS2_ELM_2_SIZE                                           \
+    )
+
 #define ACOMM_BUS2_BUFFER_SIZE  (   \
-        ACOMM_BUS2_ELM_0_SIZE +      \
-        ACOMM_BUS2_ELM_1_SIZE +      \
-        ACOMM_BUS2_ELM_2_SIZE        \
+        ACOMM_BUS_METADATA_SIZE                         +               \
+        (ACOMM_BUS2_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
+        (ACOMM_BUS2_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
+        ACOMM_BUS2_DATA_SIZE        \
     )
 
 #endif

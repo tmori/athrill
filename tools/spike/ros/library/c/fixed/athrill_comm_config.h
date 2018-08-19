@@ -13,8 +13,6 @@ typedef struct {
     acomm_uint32            meta_buffer_offset_size;
     acomm_uint32            meta_buffer_size_soff;
     acomm_uint32            meta_buffer_size_size;
-    acomm_uint32            data_queue_soff;
-    acomm_uint32            data_queue_size;
     acomm_uint32            data_data_soff;
     acomm_uint32            data_data_size;
 } acomm_bus_metadata_type;

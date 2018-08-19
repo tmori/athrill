@@ -3,12 +3,13 @@
 
 acomm_bus_type acomm_bus[ATHRILL_COMM_CONFIG_BUS_NUM];
 
-static acomm_uint8 acomm_bus1_mapbuffer[ACOMM_BUS_METADATA_SIZE + ACOMM_BUS1_BUFFER_SIZE] __attribute__ ((section(".mmap_bus1_section")));
-static acomm_uint8 acomm_bus2_mapbuffer[ACOMM_BUS_METADATA_SIZE + ACOMM_BUS2_BUFFER_SIZE] __attribute__ ((section(".mmap_bus2_section")));
+static acomm_uint8 acomm_bus1_mapbuffer[ACOMM_BUS1_BUFFER_SIZE] __attribute__ ((section(".mmap_bus1_section")));
+static acomm_uint8 acomm_bus2_mapbuffer[ACOMM_BUS2_BUFFER_SIZE] __attribute__ ((section(".mmap_bus2_section")));
 
 void acomm_generated_code_init(void)
 {
     acomm_bus_metadata_type *mp;
+    acomm_queue_type *qp;
 
     /*****************************
      * bus1
