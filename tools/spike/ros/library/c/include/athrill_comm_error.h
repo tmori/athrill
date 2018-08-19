@@ -5,5 +5,6 @@
 
 #define ACOMM_E_INVALID      1U
 #define ACOMM_E_NOENT        2U
+#define ACOMM_E_LIMIT        3U
 
 #endif /* _ATHRILL_COMM_ERROR_H_ */

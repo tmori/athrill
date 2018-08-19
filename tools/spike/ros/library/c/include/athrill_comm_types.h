@@ -21,6 +21,7 @@ typedef unsigned short      acomm_uint16;
 typedef unsigned int        acomm_uint32;
 typedef unsigned int        acomm_busid;
 typedef unsigned int        acomm_elmid;
+typedef unsigned char       acomm_bool;
 
 /*
  * ReturnType
@@ -32,9 +33,12 @@ typedef unsigned int        acomm_rtype;
  */
 typedef struct {
     acomm_uint32    maxlen;
-    acomm_uint32    len;
     acomm_uint32    elmsize;
-    void            *elements;
+    acomm_uint32    len;
+    acomm_uint32    woff;
+    acomm_uint32    roff;
+    acomm_uint8     *elements;
 } acomm_queue_type;
+#define ACOMM_QUEUE_ELEM_BUFFER_OFF(entry, off)    ((off) * (entry)->elmsize)
 
 #endif /* _ATHRILL_COMM_TYPES_H_ */
