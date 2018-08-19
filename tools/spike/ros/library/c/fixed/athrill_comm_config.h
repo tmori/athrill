@@ -4,6 +4,22 @@
 #include "athrill_comm_types.h"
 #include "athrill_comm_generated_config.h"
 
+#define ACOMM_BUS_META_VERSION      0x100
+#define ACOMM_BUS_META_MAGICNO      0xBEAFDEAD
+typedef struct {
+    acomm_uint32            meta_version;
+    acomm_uint32            meta_magicno;
+    acomm_uint32            meta_buffer_offset_soff;
+    acomm_uint32            meta_buffer_offset_size;
+    acomm_uint32            meta_buffer_size_soff;
+    acomm_uint32            meta_buffer_size_size;
+    acomm_uint32            data_queue_soff;
+    acomm_uint32            data_queue_size;
+    acomm_uint32            data_data_soff;
+    acomm_uint32            data_data_size;
+} acomm_bus_metadata_type;
+#define ACOMM_BUS_METADATA_SIZE     sizeof(acomm_bus_metadata_type)
+
 typedef struct {
     acomm_uint32            num;
     acomm_uint32            *comm_buffer_offset;

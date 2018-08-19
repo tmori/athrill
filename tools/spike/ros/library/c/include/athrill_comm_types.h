@@ -37,7 +37,7 @@ typedef struct {
     acomm_uint32    len;
     acomm_uint32    woff;
     acomm_uint32    roff;
-    acomm_uint8     *elements;
+    acomm_uint8     elements[4];
 } acomm_queue_type;
 #define ACOMM_QUEUE_ELEM_BUFFER_OFF(entry, off)    ((off) * (entry)->elmsize)
 
