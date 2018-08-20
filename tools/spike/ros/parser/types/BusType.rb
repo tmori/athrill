@@ -48,4 +48,8 @@ class BusType
         return nil
     end
 
+    def self.getAll()
+        return @@objs
+    end
+
 end

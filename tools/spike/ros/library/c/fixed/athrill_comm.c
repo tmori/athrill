@@ -113,8 +113,11 @@ static acomm_rtype athrill_comm_send_common(acomm_busid busid, acomm_elmid elmid
         }
     }
     else { /* force set on top */
-        boff = ACOMM_QUEUE_ELEM_BUFFER_OFF(entry, entry->roff);
+        boff = ACOMM_QUEUE_ELEM_BUFFER_OFF(entry, 0U);
         memcpy(&entry->elements[boff], data, entry->elmsize);
+        entry->len = 1U;
+        entry->woff = 1U;
+        entry->roff = 0U;
     }
 
 done:
