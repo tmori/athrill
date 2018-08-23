@@ -1,1 +1,4 @@
-test.c,test_c.erb
+test.c,test_c.erb,
+athrill_comm_generated_config.c, athrill_comm_generated_config_c.erb,
+athrill_comm_generated_config.h, athrill_comm_generated_config_h.erb,
+athrill_comm_generated_image.c, athrill_comm_generated_image_c.erb,
