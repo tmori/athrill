@@ -15,4 +15,6 @@
       busElmTypeRef: BusElementQueueType/canDataQueue15
     - name: CANID_0x208
       busElmTypeRef: BusElementDataType/canDataType
+    - name: CANID_0x209
+      busElmTypeRef: BusElementDataType/uint8
 

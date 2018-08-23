@@ -1,9 +1,35 @@
 <%-
-BusType.getAll().each do |elm|
+BusType.getAll().each do |bus|
 -%>
 /*
- * BUS: <%= elm.name %>
+ * BUS: <%= bus.name %>
  */
+<%-
+    for elm in bus.elements do
+-%>
+       /*
+        * ELM: <%= elm.name %>
+        * ptype: <%= elm.busElmType.dataElmType.ptype.name %>
+        * ptype_size: <%= elm.busElmType.dataElmType.ptype.size %>
+        * array_size: <%= elm.busElmType.dataElmType.array_size %>
+        */
+<%-
+        if elm.busElmType.instance_of?(BusElementQueueType) then
+-%>
+           /*
+            * len: <%= elm.busElmType.len %>
+            */
+<%-
+        else
+-%>
+           /*
+            * init: <%= elm.busElmType.initialValue %>
+            */
+<%-
+        end
+    end
+-%>
+
  <%-
 end
 -%>

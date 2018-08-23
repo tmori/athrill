@@ -11,7 +11,9 @@ class BusElement
         if elmName == "BusElementQueueType"
             self.busElmType = BusElementQueueType.get(typeName)
         else
+            #p "BusElement:" + typeName
             self.busElmType = BusElementDataType.get(typeName)
+            #p self.busElmType
         end
     end
 end
@@ -45,6 +47,7 @@ class BusType
                 return elm
             end
         end
+        p "ERROR: BusType(" + name + ") is not found!"
         return nil
     end
 

@@ -5,10 +5,10 @@ class DataElementArrayType
 
     attr_accessor :name
     attr_accessor :ptype
-    attr_accessor :size
+    attr_accessor :array_size
     def initialize(name, ptyperef, size)
         self.name = name
-        self.size = size
+        self.array_size = size
 
         type = ptyperef.split("/")[1]
         self.ptype = PrimitiveType.get(type)
@@ -30,6 +30,7 @@ class DataElementArrayType
                 return elm
             end
         end
+        p "ERROR: DataElementArrayType(" + name + ") is not found!"
         return nil
     end
 

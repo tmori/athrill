@@ -10,6 +10,6 @@
   - name: uint8
     dataElmTypeRef: DataElementSingleType/uint8
     initialValue: 0
-  - name: canData
+  - name: canDataType
     dataElmTypeRef: DataElementArrayType/canDataType
     initialValue: [0,0,0,0,0,0,0,0]

@@ -14,11 +14,12 @@ class BusElementDataType
         if elmName == "DataElementArrayType"
             self.dataElmType = DataElementArrayType.get(type)
         else
+            #p "BusElementDataType:" + type
             self.dataElmType = DataElementSingleType.get(type)
         end
+        #p "BusElementDataType:" + self.dataElmType.name
 
         BusElementDataType.register(self)
-
     end
 
     def self.add(name, dataElmTypeRef, initialValue)
@@ -35,6 +36,7 @@ class BusElementDataType
                 return elm
             end
         end
+        p "ERROR: BusElementDataType(" + name + ") is not found!"
         return nil
     end    
 end

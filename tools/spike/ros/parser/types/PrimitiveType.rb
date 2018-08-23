@@ -23,6 +23,7 @@ class PrimitiveType
                 return ptype
             end
         end
+        p "ERROR: PrimitiveType(" + name + ") is not found!"
         return nil
     end
 

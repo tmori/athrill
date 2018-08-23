@@ -34,6 +34,7 @@ class BusElementQueueType
                 return elm
             end
         end
+        p "ERROR: BusElementQueueType(" + name + ") is not found!"
         return nil
     end
 end

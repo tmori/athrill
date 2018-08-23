@@ -5,11 +5,13 @@ class DataElementSingleType
     
     attr_accessor :name
     attr_accessor :ptype
+    attr_accessor :array_size
 
     def initialize(name, ptyperef)
         self.name = name
         type = ptyperef.split("/")[1]
         self.ptype = PrimitiveType.get(type)
+        self.array_size = 1
 
         DataElementSingleType.register(self)
 
@@ -29,6 +31,7 @@ class DataElementSingleType
                 return elm
             end
         end
+        p "ERROR: DataElementSingleType(" + name + ") is not found!"
         return nil
     end
 end
