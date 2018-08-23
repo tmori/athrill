@@ -1,78 +1,70 @@
 #ifndef _ATHRILL_COMM_GENERATED_CONFIG_H_
 #define _ATHRILL_COMM_GENERATED_CONFIG_H_
 
-#define ATHRILL_COMM_CONFIG_BUS_NUM     2U
+#define ATHRILL_COMM_CONFIG_BUS_NUM     <%= BusType.getAll().length() %>U
 
+<%-
+    BusType.getAll().each do |bus|
+-%>
 /*****************************
- * bus1
+ * BUS: <%= bus.name %>
  *****************************/
-#define ACOMM_BUS1_ELEMENT_NUM  3U
-#define ACOMM_BUS1_ELM_0_QUEUE_LEN    (1U)
-#define ACOMM_BUS1_ELM_0_TYPE_SIZE    (8U)
-#define ACOMM_BUS1_ELM_0_SIZE    (                                  \
-        sizeof(acomm_queue_type) +                                  \
-        ( ACOMM_BUS1_ELM_0_QUEUE_LEN * ACOMM_BUS1_ELM_0_TYPE_SIZE ) \
-    )
-
-#define ACOMM_BUS1_ELM_1_QUEUE_LEN    (1U)
-#define ACOMM_BUS1_ELM_1_TYPE_SIZE    (8U)
-#define ACOMM_BUS1_ELM_1_SIZE    (                                  \
-        sizeof(acomm_queue_type) +                                  \
-        ( ACOMM_BUS1_ELM_1_QUEUE_LEN * ACOMM_BUS1_ELM_1_TYPE_SIZE ) \
-    )
-
-#define ACOMM_BUS1_ELM_2_TYPE_SIZE    (8U)
-#define ACOMM_BUS1_ELM_2_SIZE    (                                  \
-        ( ACOMM_BUS1_ELM_1_TYPE_SIZE )                              \
-    )
-
-#define ACOMM_BUS1_DATA_SIZE    (                                   \
-        ACOMM_BUS1_ELM_0_SIZE                     +                     \
-        ACOMM_BUS1_ELM_1_SIZE                     +                     \
-        ACOMM_BUS1_ELM_2_SIZE                                           \
-    )
-
-#define ACOMM_BUS1_BUFFER_SIZE  (                                   \
-        ACOMM_BUS_METADATA_SIZE                         +               \
-        (ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
-        (ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
-        ACOMM_BUS1_DATA_SIZE                                           \
-    )
-
+#define ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM  <%= bus.elements.length() %>U
+<%-
+        for elm in bus.elements do
+-%>
 /*****************************
- * bus2
+ * ELM: <%= elm.name %>
  *****************************/
-#define ACOMM_BUS2_ELEMENT_NUM  3U
-#define ACOMM_BUS2_ELM_0_QUEUE_LEN    (1U)
-#define ACOMM_BUS2_ELM_0_TYPE_SIZE    (8U)
-#define ACOMM_BUS2_ELM_0_SIZE    (                                  \
+#define ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE_SIZE    (<%= elm.busElmType.dataElmType.ptype.size %>U)
+<%-
+            if elm.busElmType.instance_of?(BusElementQueueType) then
+-%>
+#define ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_QUEUE_LEN    (<%= elm.busElmType.len %>U)
+#define ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE    (                                  \
         sizeof(acomm_queue_type) +                                  \
-        ( ACOMM_BUS2_ELM_0_QUEUE_LEN * ACOMM_BUS2_ELM_0_TYPE_SIZE ) \
+        ( ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_QUEUE_LEN * ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE_SIZE ) \
     )
-
-#define ACOMM_BUS2_ELM_1_QUEUE_LEN    (15U)
-#define ACOMM_BUS2_ELM_1_TYPE_SIZE    (8U)
-#define ACOMM_BUS2_ELM_1_SIZE    (                                  \
-        sizeof(acomm_queue_type) +                                  \
-        ( ACOMM_BUS2_ELM_1_QUEUE_LEN * ACOMM_BUS2_ELM_1_TYPE_SIZE ) \
+<%-
+            else
+-%>
+#define ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE    (                                  \
+        ( ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_QUEUE_LEN * ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE_SIZE ) \
     )
+<%-
+            end
+        end
+-%>
 
-#define ACOMM_BUS2_ELM_2_TYPE_SIZE    (8U)
-#define ACOMM_BUS2_ELM_2_SIZE    (                                  \
-        ( ACOMM_BUS2_ELM_1_TYPE_SIZE )                              \
-    )
-
-#define ACOMM_BUS2_DATA_SIZE    (                                   \
-        ACOMM_BUS2_ELM_0_SIZE                     +                     \
-        ACOMM_BUS2_ELM_1_SIZE                     +                     \
-        ACOMM_BUS2_ELM_2_SIZE                                           \
-    )
-
-#define ACOMM_BUS2_BUFFER_SIZE  (   \
+/*
+ * <%= bus.name.upcase() %> data size
+ */
+#define ACOMM_<%= bus.name.upcase() %>_DATA_SIZE    (                                   \
+<%-
+        for elm in bus.elements do
+            if (bus.elements.index(elm) != (bus.elements.length() - 1)) then
+-%>
+    ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE +        \
+<%-
+            else
+-%>
+    ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE          \
+<%-
+            end
+        end
+-%>
+)
+/*
+ * <%= bus.name.upcase() %> buffer size
+ */
+#define ACOMM_<%= bus.name.upcase() %>_BUFFER_SIZE  (                                   \
         ACOMM_BUS_METADATA_SIZE                         +               \
-        (ACOMM_BUS2_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
-        (ACOMM_BUS2_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
-        ACOMM_BUS2_DATA_SIZE        \
+        (ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
+        (ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32)) +               \
+        ACOMM_<%= bus.name.upcase() %>_DATA_SIZE                                           \
     )
 
+<%-
+    end
+-%>
 #endif
