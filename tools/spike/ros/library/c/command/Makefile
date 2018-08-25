@@ -1,5 +1,6 @@
 TARGET1	:= athrill_mkfs
 TARGET2	:= acomm_read
+TARGET3	:= acomm_write
 
 IFLAGS	:= -I.
 IFLAGS	+= -I../include
@@ -18,10 +19,12 @@ DFLAGS	:=
 OBJS	:= athrill_mkfs.o
 OBJS	+= athrill_comm_generated_image.o
 OBJS	+= acomm_read.o
+OBJS	+= acomm_write.o
 OBJS	+= athrill_comm.o
 
 ATHRILL_MKFS_OBS := athrill_mkfs.o athrill_comm_generated_image.o
 ACOMM_READ_OBS := acomm_read.o athrill_comm.o
+ACOMM_WRITE_OBS := acomm_write.o athrill_comm.o
 
 .c.o:
 	gcc -c $(CFLAGS) $(IFLAGS) $<
@@ -29,8 +32,10 @@ ACOMM_READ_OBS := acomm_read.o athrill_comm.o
 all: $(OBJS)
 	gcc -o $(TARGET1) $(CFLAGS) $(ATHRILL_MKFS_OBS)
 	gcc -o $(TARGET2) $(CFLAGS) $(ACOMM_READ_OBS)
+	gcc -o $(TARGET3) $(CFLAGS) $(ACOMM_WRITE_OBS)
 
 clean:
 	rm -f *.o
 	rm -f $(TARGET1)
 	rm -f $(TARGET2)
+	rm -f $(TARGET3)
