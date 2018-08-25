@@ -2,13 +2,18 @@
 #include "athrill_comm_config.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
 #include "athrill_comm_generated_config.h"
 
 static acomm_uint8 acomm_bus1_mapbuffer[ACOMM_BUS1_BUFFER_SIZE];
 static acomm_uint8 acomm_bus2_mapbuffer[ACOMM_BUS2_BUFFER_SIZE];
 
-
-acomm_rtype athrill_comm_make_image(void)
+void athrill_comm_make_image(void)
 {
     acomm_bus_metadata_type *mp;
     acomm_uint32 *work_offp;
@@ -166,5 +171,49 @@ acomm_rtype athrill_comm_make_image(void)
     *****************************/
     arrayp = &acomm_bus2_mapbuffer[work_offp[3]];
     *((acomm_uint32 *)&arrayp[0U]) = 0;
+}
+
+int athrill_comm_generate_image(const char *generate_path)
+{
+    int fd;
+    char path[4096];
+
+    if (generate_path == NULL_PTR) {
+        return ACOMM_E_INVALID;
+    }
+    {
+        ssize_t size;
+        memset(path, 0, 4096);
+        sprintf(path, "%s/athrill_bus1.bin", generate_path);
+        fd = open(path, O_RDWR|O_CREAT|O_TRUNC, 0644);
+        if (fd < 0) {
+            fprintf(stderr, "ERROR: can not open file(%s):err=%d\n", path, errno);
+            return ACOMM_E_INVALID;
+        }
+        size = write(fd, acomm_bus1_mapbuffer, sizeof(acomm_bus1_mapbuffer));
+        if (size != sizeof(acomm_bus1_mapbuffer)) {
+            fprintf(stderr, "ERROR: can not write file(%s):err=%d\n", path, errno);
+            return ACOMM_E_INVALID;
+        }
+        close(fd);
+    }
+
+    {
+        ssize_t size;
+        memset(path, 0, 4096);
+        sprintf(path, "%s/athrill_bus2.bin", generate_path);
+        fd = open(path, O_RDWR|O_CREAT|O_TRUNC, 0644);
+        if (fd < 0) {
+            fprintf(stderr, "ERROR: can not open file(%s):err=%d\n", path, errno);
+            return ACOMM_E_INVALID;
+        }
+        size = write(fd, acomm_bus2_mapbuffer, sizeof(acomm_bus2_mapbuffer));
+        if (size != sizeof(acomm_bus2_mapbuffer)) {
+            fprintf(stderr, "ERROR: can not write file(%s):err=%d\n", path, errno);
+            return ACOMM_E_INVALID;
+        }
+        close(fd);
+    }
+
     return ACOMM_E_OK;
 }
