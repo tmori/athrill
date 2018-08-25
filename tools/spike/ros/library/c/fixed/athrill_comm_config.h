@@ -14,10 +14,13 @@ typedef struct {
     acomm_uint32            meta_version;
     acomm_uint32            meta_magicno;
     acomm_uint32            meta_busid;
+    acomm_uint32            meta_entrynum;
     acomm_uint32            meta_buffer_offset_soff;
     acomm_uint32            meta_buffer_offset_size;
     acomm_uint32            meta_buffer_size_soff;
     acomm_uint32            meta_buffer_size_size;
+    acomm_uint32            meta_buffer_elmsize_soff;
+    acomm_uint32            meta_buffer_elmsize_size;
     acomm_uint32            meta_buffer_type_soff;
     acomm_uint32            meta_buffer_type_size;
     acomm_uint32            data_data_soff;
@@ -27,8 +30,10 @@ typedef struct {
 
 typedef struct {
     acomm_uint32            num;
+    acomm_bus_metadata_type *meta;
     acomm_uint32            *comm_buffer_offset;
     acomm_uint32            *comm_buffer_size;
+    acomm_uint32            *comm_buffer_elmsize;
     acomm_uint32            *comm_buffer_type;
     acomm_uint8             *comm_buffer;
 } acomm_bus_type;

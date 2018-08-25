@@ -20,7 +20,7 @@ acomm_rtype athrill_comm_write(acomm_busid busid, acomm_elmid elmid, acomm_uint8
     else if (size != bus->comm_buffer_size[elmid]) {
         return ACOMM_E_INVALID;
     }
-    off = bus->comm_buffer_offset[elmid];
+    off = bus->comm_buffer_offset[elmid] - bus->meta->data_data_soff;
 
     /* TODO ex */
     memcpy(&bus->comm_buffer[off], data, size);
@@ -52,7 +52,7 @@ acomm_rtype athrill_comm_read(acomm_busid busid, acomm_elmid elmid, acomm_uint8 
         err = ACOMM_E_INVALID;
         goto done;
     }
-    off = bus->comm_buffer_offset[elmid];
+    off = bus->comm_buffer_offset[elmid] - bus->meta->data_data_soff;
     /* TODO ex */
     memcpy(data, &bus->comm_buffer[off], size);
     /* TODO ex */
@@ -93,7 +93,7 @@ static acomm_rtype athrill_comm_send_common(acomm_busid busid, acomm_elmid elmid
     }
 
     bus = &acomm_bus[busid];
-    off = bus->comm_buffer_offset[elmid];
+    off = bus->comm_buffer_offset[elmid] - bus->meta->data_data_soff;
     entry = (acomm_queue_type*)&bus->comm_buffer[off];
     if (entry->elmsize != size) {
         err = ACOMM_E_INVALID;
@@ -140,7 +140,7 @@ static acomm_rtype athrill_comm_recv_common(acomm_busid busid, acomm_elmid elmid
     }
 
     bus = &acomm_bus[busid];
-    off = bus->comm_buffer_offset[elmid];
+    off = bus->comm_buffer_offset[elmid] - bus->meta->data_data_soff;
     entry = (acomm_queue_type*)&bus->comm_buffer[off];
     if (entry->elmsize != size) {
         err = ACOMM_E_INVALID;
@@ -198,7 +198,7 @@ acomm_bool athrill_comm_is_arrived(acomm_busid busid, acomm_elmid elmid)
         return FALSE;
     }
     bus = &acomm_bus[busid];
-    off = bus->comm_buffer_offset[elmid];
+    off = bus->comm_buffer_offset[elmid] - bus->meta->data_data_soff;
     entry = (acomm_queue_type*)&bus->comm_buffer[off];
     if (entry->len > 0) {
         ret = TRUE;

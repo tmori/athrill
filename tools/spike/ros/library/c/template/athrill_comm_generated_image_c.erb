@@ -23,6 +23,7 @@ void athrill_comm_make_image(void)
     acomm_bus_metadata_type *mp;
     acomm_uint32 *work_offp;
     acomm_uint32 *work_sizep;
+    acomm_uint32 *work_elmsizep;
     acomm_uint32 *work_typep;
     acomm_queue_type *qp;
     acomm_uint8 *arrayp;
@@ -41,11 +42,14 @@ void athrill_comm_make_image(void)
     mp->meta_version = ACOMM_BUS_META_VERSION;
     mp->meta_magicno = ACOMM_BUS_META_MAGICNO;
     mp->meta_busid = <%= BusType.getAll().index(bus) %>;
+    mp->meta_entrynum = <%= bus.elements.length %>U;
     mp->meta_buffer_offset_soff = ACOMM_BUS_METADATA_SIZE;
     mp->meta_buffer_offset_size = ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;
     mp->meta_buffer_size_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
-    mp->meta_buffer_type_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
+    mp->meta_buffer_elmsize_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
+    mp->meta_buffer_elmsize_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->meta_buffer_type_soff =  mp->meta_buffer_elmsize_soff + mp->meta_buffer_elmsize_size;
     mp->meta_buffer_type_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->data_data_soff =  mp->meta_buffer_type_soff + mp->meta_buffer_type_size;
     mp->data_data_size =  ACOMM_<%= bus.name.upcase() %>_DATA_SIZE;
@@ -58,6 +62,7 @@ void athrill_comm_make_image(void)
     /* type */
     work_offp = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_offset_soff];
     work_sizep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_size_soff];
+    work_elmsizep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_elmsize_soff];
     work_typep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_type_soff];
 <%-
         for elm in bus.elements do
@@ -65,8 +70,19 @@ void athrill_comm_make_image(void)
     /*****************************
     * ELM: <%= elm.name %>
     *****************************/
+<%-
+            if bus.elements.index(elm) == 0 then
+-%>
     work_offp[<%= bus.elements.index(elm) %>]  = mp->data_data_soff;
+<%-
+            else
+-%>
+    work_offp[<%= bus.elements.index(elm) %>]  = work_offp[<%= bus.elements.index(elm) -1 %>] + work_sizep[<%= bus.elements.index(elm) -1 %>];
+<%-
+            end
+-%>
     work_sizep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE;
+    work_elmsizep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE_SIZE;
     work_typep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE;
 <%-
         end
@@ -86,7 +102,7 @@ void athrill_comm_make_image(void)
     qp->maxlen = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_QUEUE_LEN;
     qp->roff = 0U;
     qp->woff = 0U;
-    qp->elmsize = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE;
+    qp->elmsize = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_RAW_SIZE;
 <%-
             else
 -%>
@@ -98,7 +114,7 @@ void athrill_comm_make_image(void)
 -%>
     *((acomm_<%= elm.busElmType.dataElmType.ptype.name %> *)&arrayp[<%= index %>]) = <%= array_elm.to_s %>;
 <%-
-                        index = index +  (elm.busElmType.dataElmType.ptype.size / 8)
+                        index = index +  (elm.busElmType.dataElmType.ptype.size)
                     end
                 else
 -%>
