@@ -37,9 +37,10 @@ void athrill_comm_make_image(void)
     /*
      * meta data region
      */
-    mp = (acomm_bus_metadata_type*)acomm_bus1_mapbuffer;
+    mp = (acomm_bus_metadata_type*)acomm_<%= bus.name %>_mapbuffer;
     mp->meta_version = ACOMM_BUS_META_VERSION;
     mp->meta_magicno = ACOMM_BUS_META_MAGICNO;
+    mp->meta_busid = <%= BusType.getAll().index(bus) %>;
     mp->meta_buffer_offset_soff = ACOMM_BUS_METADATA_SIZE;
     mp->meta_buffer_offset_size = ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;

@@ -32,6 +32,7 @@ void athrill_comm_make_image(void)
     mp = (acomm_bus_metadata_type*)acomm_bus1_mapbuffer;
     mp->meta_version = ACOMM_BUS_META_VERSION;
     mp->meta_magicno = ACOMM_BUS_META_MAGICNO;
+    mp->meta_busid = 0;
     mp->meta_buffer_offset_soff = ACOMM_BUS_METADATA_SIZE;
     mp->meta_buffer_offset_size = ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;
@@ -106,9 +107,10 @@ void athrill_comm_make_image(void)
     /*
      * meta data region
      */
-    mp = (acomm_bus_metadata_type*)acomm_bus1_mapbuffer;
+    mp = (acomm_bus_metadata_type*)acomm_bus2_mapbuffer;
     mp->meta_version = ACOMM_BUS_META_VERSION;
     mp->meta_magicno = ACOMM_BUS_META_MAGICNO;
+    mp->meta_busid = 1;
     mp->meta_buffer_offset_soff = ACOMM_BUS_METADATA_SIZE;
     mp->meta_buffer_offset_size = ACOMM_BUS2_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;
