@@ -29,7 +29,7 @@
             else
 -%>
 #define ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE    (                                  \
-        ( ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_QUEUE_LEN * ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE_SIZE ) \
+        ( ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE_SIZE ) \
     )
 <%-
             end

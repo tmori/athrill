@@ -2,9 +2,15 @@
 #include "athrill_comm_config.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "athrill_comm_generated_config.h"
 
-static acomm_uint8 acomm_bus1_mapbuffer[ACOMM_BUS1_BUFFER_SIZE];
-static acomm_uint8 acomm_bus2_mapbuffer[ACOMM_BUS2_BUFFER_SIZE];
+<%-
+    BusType.getAll().each do |bus|
+-%>
+static acomm_uint8 acomm_<%= bus.name %>_mapbuffer[ACOMM_<%= bus.name.upcase() %>_BUFFER_SIZE];
+<%-
+    end
+-%>
 
 
 acomm_rtype athrill_comm_make_image(void)
@@ -15,9 +21,13 @@ acomm_rtype athrill_comm_make_image(void)
     acomm_queue_type *qp;
     acomm_uint8 *arrayp;
 
+<%-
+    BusType.getAll().each do |bus|
+-%>
     /********************************************
-     * bus2
+     * <%= bus.name %>
      ********************************************/
+
     /*
      * meta data region
      */
@@ -25,55 +35,67 @@ acomm_rtype athrill_comm_make_image(void)
     mp->meta_version = ACOMM_BUS_META_VERSION;
     mp->meta_magicno = ACOMM_BUS_META_MAGICNO;
     mp->meta_buffer_offset_soff = ACOMM_BUS_METADATA_SIZE;
-    mp->meta_buffer_offset_size = ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->meta_buffer_offset_size = ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;
-    mp->meta_buffer_size_size =  ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->meta_buffer_size_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->data_data_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
-    mp->data_data_size =  ACOMM_BUS1_DATA_SIZE;
+    mp->data_data_size =  ACOMM_<%= bus.name.upcase() %>_DATA_SIZE;
+
     /*
      * data region
      */
     /* offset */
     /* size */
-    work_offp = (acomm_uint32*)&acomm_bus1_mapbuffer[mp->meta_buffer_offset_soff];
-    work_sizep = (acomm_uint32*)&acomm_bus1_mapbuffer[mp->meta_buffer_size_soff];
+    work_offp = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_offset_soff];
+    work_sizep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_size_soff];
+<%-
+        for elm in bus.elements do
+-%>
+    /*****************************
+    * ELM: <%= elm.name %>
+    *****************************/
+    work_offp[<%= bus.elements.index(elm) %>]  = mp->data_data_soff;
+    work_sizep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE;
+<%-
+        end
+-%>
 
-    work_offp[0]  = mp->data_data_soff;
-    work_sizep[0] = ACOMM_BUS1_ELM_0_SIZE;
-
-    work_offp[1]  = work_offp[0] + work_sizep[0];
-    work_sizep[1] = ACOMM_BUS1_ELM_1_SIZE;
-
-    work_offp[2]  = work_offp[1] + work_sizep[1];
-    work_sizep[2] = ACOMM_BUS1_ELM_2_SIZE;
-
-    /* data */
-    /* elm1 */
-    qp = (acomm_queue_type*)&acomm_bus1_mapbuffer[work_offp[0]];
+<%-
+        for elm in bus.elements do
+-%>
+    /*****************************
+    * data elm: <%= elm.name %>
+    *****************************/
+<%-
+            if elm.busElmType.instance_of?(BusElementQueueType) then
+-%>
+    qp = (acomm_queue_type*)&acomm_<%= bus.name %>_mapbuffer[work_offp[<%= bus.elements.index(elm) %>]];
     qp->len = 0U;
-    qp->maxlen = ACOMM_BUS1_ELM_0_QUEUE_LEN;
+    qp->maxlen = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_QUEUE_LEN;
     qp->roff = 0U;
     qp->woff = 0U;
-    qp->elmsize = ACOMM_BUS1_ELM_0_SIZE;
-
-    /* elm2 */
-    qp = (acomm_queue_type*)&acomm_bus1_mapbuffer[work_offp[1]];
-    qp->len = 0U;
-    qp->maxlen = ACOMM_BUS1_ELM_1_QUEUE_LEN;
-    qp->roff = 0U;
-    qp->woff = 0U;
-    qp->elmsize = ACOMM_BUS1_ELM_1_SIZE;
-
-    /* elm3 */
-    arrayp = &acomm_bus1_mapbuffer[work_offp[2]];
-    arrayp[0] = 0U;
-    arrayp[1] = 0U;
-    arrayp[2] = 0U;
-    arrayp[3] = 0U;
-    arrayp[4] = 0U;
-    arrayp[5] = 0U;
-    arrayp[6] = 0U;
-    arrayp[7] = 0U;
-
+    qp->elmsize = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE;
+<%-
+            else
+-%>
+    arrayp = &acomm_<%= bus.name %>_mapbuffer[work_offp[<%= bus.elements.index(elm) %>]];
+<%-
+                if elm.busElmType.initialValue.class == Array then
+                    index = 0
+                    for array_elm in elm.busElmType.initialValue do
+-%>
+    *((acomm_<%= elm.busElmType.dataElmType.ptype.name %> *)&arrayp[<%= index %>]) = <%= array_elm.to_s %>;
+<%-
+                        index = index +  (elm.busElmType.dataElmType.ptype.size / 8)
+                    end
+                else
+-%>
+    *((acomm_<%= elm.busElmType.dataElmType.ptype.name %> *)&arrayp[0U]) = <%= elm.busElmType.initialValue %>;
+<%-
+                end
+            end
+        end
+    end
+-%>
     return ACOMM_E_OK;
 }

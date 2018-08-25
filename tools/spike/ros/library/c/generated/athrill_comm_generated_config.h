@@ -30,7 +30,7 @@
  *****************************/
 #define ACOMM_BUS1_ELM_2_TYPE_SIZE    (8U)
 #define ACOMM_BUS1_ELM_2_SIZE    (                                  \
-        ( ACOMM_BUS1_ELM_2_QUEUE_LEN * ACOMM_BUS1_ELM_2_TYPE_SIZE ) \
+        ( ACOMM_BUS1_ELM_2_TYPE_SIZE ) \
     )
 
 /*
@@ -78,14 +78,14 @@
  *****************************/
 #define ACOMM_BUS2_ELM_2_TYPE_SIZE    (8U)
 #define ACOMM_BUS2_ELM_2_SIZE    (                                  \
-        ( ACOMM_BUS2_ELM_2_QUEUE_LEN * ACOMM_BUS2_ELM_2_TYPE_SIZE ) \
+        ( ACOMM_BUS2_ELM_2_TYPE_SIZE ) \
     )
 /*****************************
  * ELM: CANID_0x209
  *****************************/
-#define ACOMM_BUS2_ELM_3_TYPE_SIZE    (8U)
+#define ACOMM_BUS2_ELM_3_TYPE_SIZE    (32U)
 #define ACOMM_BUS2_ELM_3_SIZE    (                                  \
-        ( ACOMM_BUS2_ELM_3_QUEUE_LEN * ACOMM_BUS2_ELM_3_TYPE_SIZE ) \
+        ( ACOMM_BUS2_ELM_3_TYPE_SIZE ) \
     )
 
 /*

@@ -7,9 +7,9 @@
     len: 15
 
 - BusElementDataType:
-  - name: uint8
-    dataElmTypeRef: DataElementSingleType/uint8
+  - name: uint32
+    dataElmTypeRef: DataElementSingleType/uint32
     initialValue: 0
   - name: canDataType
     dataElmTypeRef: DataElementArrayType/canDataType
-    initialValue: [0,0,0,0,0,0,0,0]
+    initialValue: [0,2,0,4,0,0,8,0]

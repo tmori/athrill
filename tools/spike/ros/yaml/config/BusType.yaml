@@ -16,5 +16,5 @@
     - name: CANID_0x208
       busElmTypeRef: BusElementDataType/canDataType
     - name: CANID_0x209
-      busElmTypeRef: BusElementDataType/uint8
+      busElmTypeRef: BusElementDataType/uint32
 
