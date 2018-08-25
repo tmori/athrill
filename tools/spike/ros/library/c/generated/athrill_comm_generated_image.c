@@ -18,6 +18,7 @@ void athrill_comm_make_image(void)
     acomm_bus_metadata_type *mp;
     acomm_uint32 *work_offp;
     acomm_uint32 *work_sizep;
+    acomm_uint32 *work_typep;
     acomm_queue_type *qp;
     acomm_uint8 *arrayp;
 
@@ -35,7 +36,9 @@ void athrill_comm_make_image(void)
     mp->meta_buffer_offset_size = ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;
     mp->meta_buffer_size_size =  ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32);
-    mp->data_data_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
+    mp->meta_buffer_type_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
+    mp->meta_buffer_type_size =  ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->data_data_soff =  mp->meta_buffer_type_soff + mp->meta_buffer_type_size;
     mp->data_data_size =  ACOMM_BUS1_DATA_SIZE;
 
     /*
@@ -43,23 +46,28 @@ void athrill_comm_make_image(void)
      */
     /* offset */
     /* size */
+    /* type */
     work_offp = (acomm_uint32*)&acomm_bus1_mapbuffer[mp->meta_buffer_offset_soff];
     work_sizep = (acomm_uint32*)&acomm_bus1_mapbuffer[mp->meta_buffer_size_soff];
+    work_typep = (acomm_uint32*)&acomm_bus1_mapbuffer[mp->meta_buffer_type_soff];
     /*****************************
     * ELM: CANID_0x100
     *****************************/
     work_offp[0]  = mp->data_data_soff;
     work_sizep[0] = ACOMM_BUS1_ELM_0_SIZE;
+    work_typep[0] = ACOMM_BUS1_ELM_0_TYPE;
     /*****************************
     * ELM: CANID_0x200
     *****************************/
     work_offp[1]  = mp->data_data_soff;
     work_sizep[1] = ACOMM_BUS1_ELM_1_SIZE;
+    work_typep[1] = ACOMM_BUS1_ELM_1_TYPE;
     /*****************************
     * ELM: CANID_0x201
     *****************************/
     work_offp[2]  = mp->data_data_soff;
     work_sizep[2] = ACOMM_BUS1_ELM_2_SIZE;
+    work_typep[2] = ACOMM_BUS1_ELM_2_TYPE;
 
     /*****************************
     * data elm: CANID_0x100
@@ -105,7 +113,9 @@ void athrill_comm_make_image(void)
     mp->meta_buffer_offset_size = ACOMM_BUS2_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;
     mp->meta_buffer_size_size =  ACOMM_BUS2_ELEMENT_NUM * sizeof(acomm_uint32);
-    mp->data_data_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
+    mp->meta_buffer_type_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
+    mp->meta_buffer_type_size =  ACOMM_BUS2_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->data_data_soff =  mp->meta_buffer_type_soff + mp->meta_buffer_type_size;
     mp->data_data_size =  ACOMM_BUS2_DATA_SIZE;
 
     /*
@@ -113,28 +123,34 @@ void athrill_comm_make_image(void)
      */
     /* offset */
     /* size */
+    /* type */
     work_offp = (acomm_uint32*)&acomm_bus2_mapbuffer[mp->meta_buffer_offset_soff];
     work_sizep = (acomm_uint32*)&acomm_bus2_mapbuffer[mp->meta_buffer_size_soff];
+    work_typep = (acomm_uint32*)&acomm_bus2_mapbuffer[mp->meta_buffer_type_soff];
     /*****************************
     * ELM: CANID_0x101
     *****************************/
     work_offp[0]  = mp->data_data_soff;
     work_sizep[0] = ACOMM_BUS2_ELM_0_SIZE;
+    work_typep[0] = ACOMM_BUS2_ELM_0_TYPE;
     /*****************************
     * ELM: CANID_0x202
     *****************************/
     work_offp[1]  = mp->data_data_soff;
     work_sizep[1] = ACOMM_BUS2_ELM_1_SIZE;
+    work_typep[1] = ACOMM_BUS2_ELM_1_TYPE;
     /*****************************
     * ELM: CANID_0x208
     *****************************/
     work_offp[2]  = mp->data_data_soff;
     work_sizep[2] = ACOMM_BUS2_ELM_2_SIZE;
+    work_typep[2] = ACOMM_BUS2_ELM_2_TYPE;
     /*****************************
     * ELM: CANID_0x209
     *****************************/
     work_offp[3]  = mp->data_data_soff;
     work_sizep[3] = ACOMM_BUS2_ELM_3_SIZE;
+    work_typep[3] = ACOMM_BUS2_ELM_3_TYPE;
 
     /*****************************
     * data elm: CANID_0x101

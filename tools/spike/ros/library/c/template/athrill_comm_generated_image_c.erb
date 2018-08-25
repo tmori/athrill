@@ -23,6 +23,7 @@ void athrill_comm_make_image(void)
     acomm_bus_metadata_type *mp;
     acomm_uint32 *work_offp;
     acomm_uint32 *work_sizep;
+    acomm_uint32 *work_typep;
     acomm_queue_type *qp;
     acomm_uint8 *arrayp;
 
@@ -43,7 +44,9 @@ void athrill_comm_make_image(void)
     mp->meta_buffer_offset_size = ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;
     mp->meta_buffer_size_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
-    mp->data_data_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
+    mp->meta_buffer_type_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
+    mp->meta_buffer_type_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->data_data_soff =  mp->meta_buffer_type_soff + mp->meta_buffer_type_size;
     mp->data_data_size =  ACOMM_<%= bus.name.upcase() %>_DATA_SIZE;
 
     /*
@@ -51,8 +54,10 @@ void athrill_comm_make_image(void)
      */
     /* offset */
     /* size */
+    /* type */
     work_offp = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_offset_soff];
     work_sizep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_size_soff];
+    work_typep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_type_soff];
 <%-
         for elm in bus.elements do
 -%>
@@ -61,6 +66,7 @@ void athrill_comm_make_image(void)
     *****************************/
     work_offp[<%= bus.elements.index(elm) %>]  = mp->data_data_soff;
     work_sizep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE;
+    work_typep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE;
 <%-
         end
 -%>
