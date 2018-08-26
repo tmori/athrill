@@ -86,7 +86,7 @@ void athrill_comm_make_image(void)
     qp->maxlen = ACOMM_BUS1_ELM_0_QUEUE_LEN;
     qp->roff = 0U;
     qp->woff = 0U;
-    qp->elmsize = ACOMM_BUS1_ELM_0_RAW_SIZE;
+    qp->elmsize = ACOMM_BUS1_ELM_0_TYPE_SIZE;
     /*****************************
     * data elm: CANID_0x200
     *****************************/
@@ -95,7 +95,7 @@ void athrill_comm_make_image(void)
     qp->maxlen = ACOMM_BUS1_ELM_1_QUEUE_LEN;
     qp->roff = 0U;
     qp->woff = 0U;
-    qp->elmsize = ACOMM_BUS1_ELM_1_RAW_SIZE;
+    qp->elmsize = ACOMM_BUS1_ELM_1_TYPE_SIZE;
     /*****************************
     * data elm: CANID_0x201
     *****************************/
@@ -178,7 +178,7 @@ void athrill_comm_make_image(void)
     qp->maxlen = ACOMM_BUS2_ELM_0_QUEUE_LEN;
     qp->roff = 0U;
     qp->woff = 0U;
-    qp->elmsize = ACOMM_BUS2_ELM_0_RAW_SIZE;
+    qp->elmsize = ACOMM_BUS2_ELM_0_TYPE_SIZE;
     /*****************************
     * data elm: CANID_0x202
     *****************************/
@@ -187,7 +187,7 @@ void athrill_comm_make_image(void)
     qp->maxlen = ACOMM_BUS2_ELM_1_QUEUE_LEN;
     qp->roff = 0U;
     qp->woff = 0U;
-    qp->elmsize = ACOMM_BUS2_ELM_1_RAW_SIZE;
+    qp->elmsize = ACOMM_BUS2_ELM_1_TYPE_SIZE;
     /*****************************
     * data elm: CANID_0x208
     *****************************/

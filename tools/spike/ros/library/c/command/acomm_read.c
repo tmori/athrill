@@ -9,22 +9,8 @@
 #include "athrill_comm.h"
 #include "athrill_comm_config.h"
 #include "athrill_comm_generated_config.h"
+#include "acomm_init.h"
 
-acomm_bus_type acomm_bus[ATHRILL_COMM_CONFIG_BUS_NUM];
-static acomm_bus_metadata_type    *bus_map;
-
-void acomm_generated_code_init(void)
-{
-    acomm_uint8 *p = (acomm_uint8*)bus_map;
-    acomm_bus[bus_map->meta_busid].num = bus_map->meta_entrynum;
-    acomm_bus[bus_map->meta_busid].meta = bus_map;
-    acomm_bus[bus_map->meta_busid].comm_buffer_offset = (acomm_uint32*)&p[bus_map->meta_buffer_offset_soff];
-    acomm_bus[bus_map->meta_busid].comm_buffer_size = (acomm_uint32*)&p[bus_map->meta_buffer_size_soff];
-    acomm_bus[bus_map->meta_busid].comm_buffer_elmsize = (acomm_uint32*)&p[bus_map->meta_buffer_elmsize_soff];
-    acomm_bus[bus_map->meta_busid].comm_buffer_type = (acomm_uint32*)&p[bus_map->meta_buffer_type_soff];
-    acomm_bus[bus_map->meta_busid].comm_buffer = (acomm_uint8*)&p[bus_map->data_data_soff];
-    return;
-}
 static acomm_uint8 retdata[4096];
 
 static void acomm_show_data(acomm_uint8 *datap, acomm_uint32 size)
@@ -49,7 +35,7 @@ static void acomm_show_data(acomm_uint8 *datap, acomm_uint32 size)
     return;
 }
 
-static void acomm_read_entry(int index)
+static void acomm_read_entry(acomm_bus_metadata_type *bus_map, int index)
 {
     acomm_rtype err;
 #if 0
@@ -99,12 +85,10 @@ static void acomm_read_entry(int index)
 
 int main(int argc, const char *argv[])
 {
-	int fd;
-	int err;
-	struct stat statbuf;
     int i;
     char *indexp;
     char *path;
+    acomm_bus_metadata_type *p;
 
     if (argc != 3) {
         fprintf(stderr, "Usage: %s <filepath> <index>\n", argv[0]);
@@ -114,25 +98,12 @@ int main(int argc, const char *argv[])
     indexp = (char*)argv[2];
     i = atoi(indexp);
 
-	fd = open(path, O_RDWR);
-    if (fd < 0) {
-        fprintf(stderr, "Error: can not open file %s\n", path);
+    p = acomm_open(path);
+    if (p == NULL) {
+        fprintf(stderr, "Error: acomm_init() %s\n", path);
         return 1;
     }
-    err = fstat(fd, &statbuf);
-    if (err != 0) {
-        fprintf(stderr, "Error: can not stat file %s\n", path);
-        return 1;
-    }
-    bus_map = (acomm_bus_metadata_type*)mmap(NULL, statbuf.st_size, (PROT_READ|PROT_WRITE), MAP_SHARED, fd, 0);
-    if (bus_map == NULL) {
-        fprintf(stderr, "Error: can not mmap file %s\n", path);
-        return 1;
-    }
-    //printf("path=%s index=%d\n", path, i);
-
-    (void)athrill_comm_init();
-    acomm_read_entry(i);
-    close(fd);
+    acomm_read_entry(p, i);
+    acomm_close(p);
     return 0;
 }

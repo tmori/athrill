@@ -102,7 +102,7 @@ void athrill_comm_make_image(void)
     qp->maxlen = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_QUEUE_LEN;
     qp->roff = 0U;
     qp->woff = 0U;
-    qp->elmsize = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_RAW_SIZE;
+    qp->elmsize = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE_SIZE;
 <%-
             else
 -%>

@@ -9,23 +9,7 @@
 #include "athrill_comm.h"
 #include "athrill_comm_config.h"
 #include "athrill_comm_generated_config.h"
-
-
-acomm_bus_type acomm_bus[ATHRILL_COMM_CONFIG_BUS_NUM];
-static acomm_bus_metadata_type    *bus_map;
-
-void acomm_generated_code_init(void)
-{
-    acomm_uint8 *p = (acomm_uint8*)bus_map;
-    acomm_bus[bus_map->meta_busid].num = bus_map->meta_entrynum;
-    acomm_bus[bus_map->meta_busid].meta = bus_map;
-    acomm_bus[bus_map->meta_busid].comm_buffer_offset = (acomm_uint32*)&p[bus_map->meta_buffer_offset_soff];
-    acomm_bus[bus_map->meta_busid].comm_buffer_size = (acomm_uint32*)&p[bus_map->meta_buffer_size_soff];
-    acomm_bus[bus_map->meta_busid].comm_buffer_elmsize = (acomm_uint32*)&p[bus_map->meta_buffer_elmsize_soff];
-    acomm_bus[bus_map->meta_busid].comm_buffer_type = (acomm_uint32*)&p[bus_map->meta_buffer_type_soff];
-    acomm_bus[bus_map->meta_busid].comm_buffer = (acomm_uint8*)&p[bus_map->data_data_soff];
-    return;
-}
+#include "acomm_init.h"
 
 typedef struct {
     int isArray;
@@ -39,7 +23,7 @@ typedef struct {
     } data;
 } parsed_data_type;
 
-static int acomm_write_entry(int index, parsed_data_type *in)
+static int acomm_write_entry(acomm_bus_metadata_type *bus_map, int index, parsed_data_type *in)
 {
     acomm_rtype err;
 
@@ -102,15 +86,14 @@ static int parse(char* sizep, char* data, parsed_data_type *out)
 
 int main(int argc, const char *argv[])
 {
+    int err;
     int i;
-	int fd;
-	int err;
-	struct stat statbuf;
     char *indexp;
     char *sizep;
     char *datap;
     char *path;
     parsed_data_type parsed_data;
+    acomm_bus_metadata_type *p;
 
     if (argc != 5) {
         fprintf(stderr, "Usage: %s <filepath> <index> <size> <data>\n", argv[0]);
@@ -129,30 +112,18 @@ int main(int argc, const char *argv[])
     }
 
 
-	fd = open(path, O_RDWR);
-    if (fd < 0) {
-        fprintf(stderr, "Error: can not open file %s\n", path);
+    p = acomm_open(path);
+    if (p == NULL) {
+        fprintf(stderr, "Error: acomm_init() %s\n", path);
         return 1;
     }
-    err = fstat(fd, &statbuf);
-    if (err != 0) {
-        fprintf(stderr, "Error: can not stat file %s\n", path);
-        return 1;
-    }
-    bus_map = (acomm_bus_metadata_type*)mmap(NULL, statbuf.st_size, (PROT_READ|PROT_WRITE), MAP_SHARED, fd, 0);
-    if (bus_map == NULL) {
-        fprintf(stderr, "Error: can not mmap file %s\n", path);
-        return 1;
-    }
-    //printf("path=%s index=%d\n", path, i);
-    (void)athrill_comm_init();
 
-    err = acomm_write_entry(i, &parsed_data);
+    err = acomm_write_entry(p, i, &parsed_data);
     if (err != 0) {
         fprintf(stderr, "Error: can not write file %s\n", path);
         return 1;
     }
 
-    close(fd);
+    acomm_close(p);
     return 0;
 }
