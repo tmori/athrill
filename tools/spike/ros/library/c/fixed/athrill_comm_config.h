@@ -21,6 +21,8 @@ typedef struct {
     acomm_uint32            meta_buffer_size_size;
     acomm_uint32            meta_buffer_elmsize_soff;
     acomm_uint32            meta_buffer_elmsize_size;
+    acomm_uint32            meta_buffer_earraysize_soff;
+    acomm_uint32            meta_buffer_earraysize_size;
     acomm_uint32            meta_buffer_type_soff;
     acomm_uint32            meta_buffer_type_size;
     acomm_uint32            data_data_soff;
@@ -34,6 +36,7 @@ typedef struct {
     acomm_uint32            *comm_buffer_offset;
     acomm_uint32            *comm_buffer_size;
     acomm_uint32            *comm_buffer_elmsize;
+    acomm_uint32            *comm_buffer_earraysize;
     acomm_uint32            *comm_buffer_type;
     acomm_uint8             *comm_buffer;
 } acomm_bus_type;

@@ -65,6 +65,8 @@ static void acomm_stat(acomm_bus_metadata_type *bus_map)
     printf("meta_buffer_size_size=%u\n", bus_map->meta_buffer_size_size);
     printf("meta_buffer_elmsize_soff=%u\n", bus_map->meta_buffer_elmsize_soff);
     printf("meta_buffer_elmsize_size=%u\n", bus_map->meta_buffer_elmsize_size);
+    printf("meta_buffer_earraysize_soff=%u\n", bus_map->meta_buffer_earraysize_soff);
+    printf("meta_buffer_earraysize_size=%u\n", bus_map->meta_buffer_earraysize_size);
     printf("meta_buffer_type_soff=%u\n", bus_map->meta_buffer_type_soff);
     printf("meta_buffer_type_size=%u\n", bus_map->meta_buffer_type_size);
     printf("data_data_soff=%u\n", bus_map->data_data_soff);
