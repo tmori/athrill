@@ -6,11 +6,18 @@ require File.dirname(__FILE__) + '/DataElementSingleType'
 require File.dirname(__FILE__) + '/PrimitiveType'
 
 class TypeBuilder
+    def self.setBus(bus)
+        @@template_bus = bus
+    end
+    def self.getBus()
+        return @@template_bus
+    end
+
     def self.buildBusType(yaml_data)
         for bus in yaml_data[0].values[0] do
             busObj = BusType.add(bus.values[0])
             for elm in bus.values[1] do
-                busObj.add(elm["name"], elm["busElmTypeRef"])
+                busObj.add(elm["name"], elm["busElmTypeRef"], elm["dir"])
             end
             #p busObj
         end

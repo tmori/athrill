@@ -8,10 +8,12 @@ require File.dirname(__FILE__) + '/parser/types/TypeBuilder'
 class TemplateFileMap
     attr_accessor :output
     attr_accessor :template
+    attr_accessor :bus
 
     def initialize(line)
-  self.output   = line[0].strip
-  self.template   = line[1].strip
+      self.output   = line[0].strip
+      self.template   = line[1].strip
+      self.bus   = line[2].strip
     end
 end
 
@@ -58,6 +60,7 @@ def main(config_path, csv_file, root_path)
 
   #generate for each template
   parser.get.each { |entry|
+    TypeBuilder.setBus(entry.bus)
     src = render(root_path + "/template/" + entry.template)
     open(root_path + "/generated/" + entry.output, "w") { |f|
       f.write(src)

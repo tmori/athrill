@@ -2,9 +2,11 @@
 class BusElement
     attr_accessor :name
     attr_accessor :busElmType
+    attr_accessor :dir
 
-    def initialize(name, busElmTypeRef)
+    def initialize(name, busElmTypeRef, dir)
         self.name = name
+        self.dir = dir
 
         elmName = busElmTypeRef.split("/")[0]
         typeName = busElmTypeRef.split("/")[1]
@@ -30,8 +32,8 @@ class BusType
         BusType.register(self)
     end
 
-    def add(name, busElmTypeRef)
-        self.elements.push(BusElement.new(name, busElmTypeRef))
+    def add(name, busElmTypeRef, dir)
+        self.elements.push(BusElement.new(name, busElmTypeRef, dir))
     end
 
     def self.add(name)

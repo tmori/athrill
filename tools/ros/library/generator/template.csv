@@ -1,3 +1,7 @@
-athrill_comm_generated_config.c, athrill_comm_generated_config_c.erb,
-athrill_comm_generated_config.h, athrill_comm_generated_config_h.erb,
-athrill_comm_generated_image.c, athrill_comm_generated_image_c.erb,
+athrill_comm_generated_config.c, athrill_comm_generated_config_c.erb,all
+athrill_comm_generated_config.h, athrill_comm_generated_config_h.erb,all
+athrill_comm_generated_image.c, athrill_comm_generated_image_c.erb,all
+athrill_comm_subscriber_bus1_cpp.c, virtual_ecu_proxy_subscriber_cpp.erb, bus1
+athrill_comm_subscriber_bus2_cpp.c, virtual_ecu_proxy_subscriber_cpp.erb, bus2
+athrill_comm_publisher_bus1_cpp.c, virtual_ecu_proxy_publisher_cpp.erb, bus1
+athrill_comm_publisher_bus2_cpp.c, virtual_ecu_proxy_publisher_cpp.erb, bus2

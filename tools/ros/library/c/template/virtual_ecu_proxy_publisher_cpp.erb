@@ -1,0 +1,105 @@
+// ros/ros.h　ROSに関する基本的なAPIのためのヘッダ
+#include "ros/ros.h"
+#include "virtual_can_bus/can.h"
+#include "acomm_init.h"
+#include "athrill_comm.h"
+#include <stdio.h>
+
+
+<%-
+    BusType.getAll().each do |bus|
+        if TypeBuilder.getBus() == bus.name then
+-%>
+/*****************************
+ * BUS: <%= bus.name %>
+ *****************************/
+<%-
+            for elm in bus.elements do
+                if elm.dir == "TX"
+-%>
+/*****************************
+ * ELM: <%= elm.name %>
+ *****************************/
+ static void <%= bus.name %>_<%= elm.dir %>_<%= elm.name %>_do_task(ros::Publisher &pub)
+ {
+     acomm_rtype ret;
+     acomm_uint8 can_data[8];
+
+     ret = athrill_comm_recv(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
+     if (ret != ACOMM_E_OK) {
+         return;
+     }
+ 
+     virtual_can_bus::can msg;
+     msg.c0 = can_data[0];
+     msg.c1 = can_data[1];
+     msg.c2 = can_data[2];
+     msg.c3 = can_data[3];
+     msg.c4 = can_data[4];
+     msg.c5 = can_data[5];
+     msg.c6 = can_data[6];
+     msg.c7 = can_data[7];
+ 
+     pub.publish(msg);
+     return;
+ }
+ <%-
+                end
+            end
+        end
+    end
+-%>
+
+
+int main(int argc, char **argv)
+{
+    char *path = (char*)"/mnt/c/project/esm/athrill/tools/spike/ros/library/c/command/athrill_bus1.bin";
+    acomm_bus_metadata_type *p;
+
+    ros::init(argc, argv, "virtual_ecu_proxy_publisher_<%= TypeBuilder.getBus() %>"");
+
+    p = acomm_open(path);
+    if (p == NULL) {
+        fprintf(stderr, "ERROR: acomm_open() error\n");
+        return 1;
+    }
+
+    ros::NodeHandle n;
+
+<%-
+    BusType.getAll().each do |bus|
+        if TypeBuilder.getBus() == bus.name then
+            for elm in bus.elements do
+                if elm.dir == "TX"
+-%>
+    ros::Publisher pub_<%= bus.name %>_<%= elm.dir %>_<%= elm.name %> = n.advertise<virtual_can_bus::can>("<%= bus.name %>/<%= elm.dir %>_<%= elm.name %>", 1000);
+<%-
+                end
+            end
+        end
+    end
+-%>
+
+    ros::Rate loop_rate(1);
+    while (ros::ok())
+    {
+<%-
+        BusType.getAll().each do |bus|
+            if TypeBuilder.getBus() == bus.name then
+                for elm in bus.elements do
+                    if elm.dir == "TX"
+-%>
+        <%= bus.name %>_<%= elm.dir %>_<%= elm.name %>_do_task(pub_<%= bus.name %>_<%= elm.dir %>_<%= elm.name %>);
+<%-
+                    end
+                end
+            end
+        end
+-%>
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
+
+    acomm_close(p);
+    return 0;
+}
