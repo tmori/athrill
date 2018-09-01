@@ -5,6 +5,8 @@
 #include "athrill_comm.h"
 #include <stdio.h>
 
+#define FILEPATH_MAX    4096
+static char mmap_filepath[FILEPATH_MAX];
 
 <%-
     BusType.getAll().each do |bus|
@@ -53,12 +55,13 @@
 
 int main(int argc, char **argv)
 {
-    char *path = (char*)"/mnt/c/project/esm/athrill/tools/spike/ros/library/c/command/athrill_bus1.bin";
     acomm_bus_metadata_type *p;
+    memset(mmap_filepath, 0, FILEPATH_MAX);
+    sprintf(mmap_filepath, "%s/%s_<%= TypeBuilder.getBus() %>.bin", std::getenv("GENERATED_MMAP_PATH"), std::getenv("GENERATED_MMAP_FILE_PREFIX"));
 
     ros::init(argc, argv, "virtual_ecu_proxy_publisher_<%= TypeBuilder.getBus() %>");
 
-    p = acomm_open(path);
+    p = acomm_open(mmap_filepath);
     if (p == NULL) {
         fprintf(stderr, "ERROR: acomm_open() error\n");
         return 1;

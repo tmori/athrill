@@ -5,6 +5,8 @@
 #include "athrill_comm.h"
 #include <stdio.h>
 
+#define FILEPATH_MAX    4096
+static char mmap_filepath[FILEPATH_MAX];
 
 
 /*****************************
@@ -39,9 +41,9 @@
  }
 
 /*****************************
- * ELM: CANID_0x201
+ * ELM: CANID_0x102
  *****************************/
- static void bus1_TX_CANID_0x201_do_task(ros::Publisher &pub)
+ static void bus1_TX_CANID_0x102_do_task(ros::Publisher &pub)
  {
      acomm_rtype ret;
      acomm_uint8 can_data[8];
@@ -69,12 +71,13 @@
 
 int main(int argc, char **argv)
 {
-    char *path = (char*)"/mnt/c/project/esm/athrill/tools/spike/ros/library/c/command/athrill_bus1.bin";
     acomm_bus_metadata_type *p;
+    memset(mmap_filepath, 0, FILEPATH_MAX);
+    sprintf(mmap_filepath, "%s/%s_bus1.bin", std::getenv("GENERATED_MMAP_PATH"), std::getenv("GENERATED_MMAP_FILE_PREFIX"));
 
     ros::init(argc, argv, "virtual_ecu_proxy_publisher_bus1");
 
-    p = acomm_open(path);
+    p = acomm_open(mmap_filepath);
     if (p == NULL) {
         fprintf(stderr, "ERROR: acomm_open() error\n");
         return 1;
@@ -85,7 +88,7 @@ int main(int argc, char **argv)
 
     ros::Publisher pub_bus1_TX_CANID_0x100 = n.advertise<virtual_can_bus::can>("bus1/TX_CANID_0x100", 1000);
 
-    ros::Publisher pub_bus1_TX_CANID_0x201 = n.advertise<virtual_can_bus::can>("bus1/TX_CANID_0x201", 1000);
+    ros::Publisher pub_bus1_TX_CANID_0x102 = n.advertise<virtual_can_bus::can>("bus1/TX_CANID_0x102", 1000);
 
 
     ros::Rate loop_rate(1);
@@ -94,7 +97,7 @@ int main(int argc, char **argv)
 
         bus1_TX_CANID_0x100_do_task(pub_bus1_TX_CANID_0x100);
 
-        bus1_TX_CANID_0x201_do_task(pub_bus1_TX_CANID_0x201);
+        bus1_TX_CANID_0x102_do_task(pub_bus1_TX_CANID_0x102);
 
         ros::spinOnce();
         loop_rate.sleep();

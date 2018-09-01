@@ -20,7 +20,7 @@
         ( ACOMM_BUS1_ELM_0_QUEUE_LEN * ACOMM_BUS1_ELM_0_TYPE_SIZE ) \
     )
 /*****************************
- * ELM: CANID_0x200
+ * ELM: CANID_0x101
  *****************************/
 #define ACOMM_BUS1_ELM_1_ARRAY_SIZE    ((8U))
 #define ACOMM_BUS1_ELM_1_TYPE_SIZE    ((1U) * (8U))
@@ -32,14 +32,16 @@
         ( ACOMM_BUS1_ELM_1_QUEUE_LEN * ACOMM_BUS1_ELM_1_TYPE_SIZE ) \
     )
 /*****************************
- * ELM: CANID_0x201
+ * ELM: CANID_0x102
  *****************************/
 #define ACOMM_BUS1_ELM_2_ARRAY_SIZE    ((8U))
 #define ACOMM_BUS1_ELM_2_TYPE_SIZE    ((1U) * (8U))
-#define ACOMM_BUS1_ELM_2_TYPE    AcommDataType_Primitive
-#define ACOMM_BUS1_ELM_2_RAW_SIZE      ( ACOMM_BUS1_ELM_2_TYPE_SIZE )
+#define ACOMM_BUS1_ELM_2_TYPE    AcommDataType_Queue
+#define ACOMM_BUS1_ELM_2_QUEUE_LEN    (1U)
+#define ACOMM_BUS1_ELM_2_RAW_SIZE     ( ACOMM_BUS1_ELM_2_QUEUE_LEN * ACOMM_BUS1_ELM_2_TYPE_SIZE )
 #define ACOMM_BUS1_ELM_2_SIZE    (                                  \
-        ( ACOMM_BUS1_ELM_2_TYPE_SIZE ) \
+        sizeof(acomm_queue_type) +                                  \
+        ( ACOMM_BUS1_ELM_2_QUEUE_LEN * ACOMM_BUS1_ELM_2_TYPE_SIZE ) \
     )
 
 /*
@@ -68,7 +70,7 @@
  *****************************/
 #define ACOMM_BUS2_ELEMENT_NUM  4U
 /*****************************
- * ELM: CANID_0x101
+ * ELM: CANID_0x200
  *****************************/
 #define ACOMM_BUS2_ELM_0_ARRAY_SIZE    ((8U))
 #define ACOMM_BUS2_ELM_0_TYPE_SIZE    ((1U) * (8U))
@@ -80,36 +82,40 @@
         ( ACOMM_BUS2_ELM_0_QUEUE_LEN * ACOMM_BUS2_ELM_0_TYPE_SIZE ) \
     )
 /*****************************
- * ELM: CANID_0x202
+ * ELM: CANID_0x201
  *****************************/
 #define ACOMM_BUS2_ELM_1_ARRAY_SIZE    ((8U))
 #define ACOMM_BUS2_ELM_1_TYPE_SIZE    ((1U) * (8U))
 #define ACOMM_BUS2_ELM_1_TYPE    AcommDataType_Queue
-#define ACOMM_BUS2_ELM_1_QUEUE_LEN    (15U)
+#define ACOMM_BUS2_ELM_1_QUEUE_LEN    (1U)
 #define ACOMM_BUS2_ELM_1_RAW_SIZE     ( ACOMM_BUS2_ELM_1_QUEUE_LEN * ACOMM_BUS2_ELM_1_TYPE_SIZE )
 #define ACOMM_BUS2_ELM_1_SIZE    (                                  \
         sizeof(acomm_queue_type) +                                  \
         ( ACOMM_BUS2_ELM_1_QUEUE_LEN * ACOMM_BUS2_ELM_1_TYPE_SIZE ) \
     )
 /*****************************
- * ELM: CANID_0x208
+ * ELM: CANID_0x202
  *****************************/
 #define ACOMM_BUS2_ELM_2_ARRAY_SIZE    ((8U))
 #define ACOMM_BUS2_ELM_2_TYPE_SIZE    ((1U) * (8U))
-#define ACOMM_BUS2_ELM_2_TYPE    AcommDataType_Primitive
-#define ACOMM_BUS2_ELM_2_RAW_SIZE      ( ACOMM_BUS2_ELM_2_TYPE_SIZE )
+#define ACOMM_BUS2_ELM_2_TYPE    AcommDataType_Queue
+#define ACOMM_BUS2_ELM_2_QUEUE_LEN    (1U)
+#define ACOMM_BUS2_ELM_2_RAW_SIZE     ( ACOMM_BUS2_ELM_2_QUEUE_LEN * ACOMM_BUS2_ELM_2_TYPE_SIZE )
 #define ACOMM_BUS2_ELM_2_SIZE    (                                  \
-        ( ACOMM_BUS2_ELM_2_TYPE_SIZE ) \
+        sizeof(acomm_queue_type) +                                  \
+        ( ACOMM_BUS2_ELM_2_QUEUE_LEN * ACOMM_BUS2_ELM_2_TYPE_SIZE ) \
     )
 /*****************************
- * ELM: CANID_0x209
+ * ELM: CANID_0x203
  *****************************/
-#define ACOMM_BUS2_ELM_3_ARRAY_SIZE    ((1U))
-#define ACOMM_BUS2_ELM_3_TYPE_SIZE    ((4U) * (1U))
-#define ACOMM_BUS2_ELM_3_TYPE    AcommDataType_Primitive
-#define ACOMM_BUS2_ELM_3_RAW_SIZE      ( ACOMM_BUS2_ELM_3_TYPE_SIZE )
+#define ACOMM_BUS2_ELM_3_ARRAY_SIZE    ((8U))
+#define ACOMM_BUS2_ELM_3_TYPE_SIZE    ((1U) * (8U))
+#define ACOMM_BUS2_ELM_3_TYPE    AcommDataType_Queue
+#define ACOMM_BUS2_ELM_3_QUEUE_LEN    (1U)
+#define ACOMM_BUS2_ELM_3_RAW_SIZE     ( ACOMM_BUS2_ELM_3_QUEUE_LEN * ACOMM_BUS2_ELM_3_TYPE_SIZE )
 #define ACOMM_BUS2_ELM_3_SIZE    (                                  \
-        ( ACOMM_BUS2_ELM_3_TYPE_SIZE ) \
+        sizeof(acomm_queue_type) +                                  \
+        ( ACOMM_BUS2_ELM_3_QUEUE_LEN * ACOMM_BUS2_ELM_3_TYPE_SIZE ) \
     )
 
 /*

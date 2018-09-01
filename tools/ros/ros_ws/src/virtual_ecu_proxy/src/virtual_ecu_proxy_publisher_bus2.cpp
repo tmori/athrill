@@ -5,6 +5,8 @@
 #include "athrill_comm.h"
 #include <stdio.h>
 
+#define FILEPATH_MAX    4096
+static char mmap_filepath[FILEPATH_MAX];
 
 
 /*****************************
@@ -12,9 +14,9 @@
  *****************************/
 
 /*****************************
- * ELM: CANID_0x101
+ * ELM: CANID_0x200
  *****************************/
- static void bus2_TX_CANID_0x101_do_task(ros::Publisher &pub)
+ static void bus2_TX_CANID_0x200_do_task(ros::Publisher &pub)
  {
      acomm_rtype ret;
      acomm_uint8 can_data[8];
@@ -39,9 +41,9 @@
  }
 
 /*****************************
- * ELM: CANID_0x209
+ * ELM: CANID_0x203
  *****************************/
- static void bus2_TX_CANID_0x209_do_task(ros::Publisher &pub)
+ static void bus2_TX_CANID_0x203_do_task(ros::Publisher &pub)
  {
      acomm_rtype ret;
      acomm_uint8 can_data[8];
@@ -69,12 +71,13 @@
 
 int main(int argc, char **argv)
 {
-    char *path = (char*)"/mnt/c/project/esm/athrill/tools/spike/ros/library/c/command/athrill_bus1.bin";
     acomm_bus_metadata_type *p;
+    memset(mmap_filepath, 0, FILEPATH_MAX);
+    sprintf(mmap_filepath, "%s/%s_bus2.bin", std::getenv("GENERATED_MMAP_PATH"), std::getenv("GENERATED_MMAP_FILE_PREFIX"));
 
     ros::init(argc, argv, "virtual_ecu_proxy_publisher_bus2");
 
-    p = acomm_open(path);
+    p = acomm_open(mmap_filepath);
     if (p == NULL) {
         fprintf(stderr, "ERROR: acomm_open() error\n");
         return 1;
@@ -83,18 +86,18 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
 
-    ros::Publisher pub_bus2_TX_CANID_0x101 = n.advertise<virtual_can_bus::can>("bus2/TX_CANID_0x101", 1000);
+    ros::Publisher pub_bus2_TX_CANID_0x200 = n.advertise<virtual_can_bus::can>("bus2/TX_CANID_0x200", 1000);
 
-    ros::Publisher pub_bus2_TX_CANID_0x209 = n.advertise<virtual_can_bus::can>("bus2/TX_CANID_0x209", 1000);
+    ros::Publisher pub_bus2_TX_CANID_0x203 = n.advertise<virtual_can_bus::can>("bus2/TX_CANID_0x203", 1000);
 
 
     ros::Rate loop_rate(1);
     while (ros::ok())
     {
 
-        bus2_TX_CANID_0x101_do_task(pub_bus2_TX_CANID_0x101);
+        bus2_TX_CANID_0x200_do_task(pub_bus2_TX_CANID_0x200);
 
-        bus2_TX_CANID_0x209_do_task(pub_bus2_TX_CANID_0x209);
+        bus2_TX_CANID_0x203_do_task(pub_bus2_TX_CANID_0x203);
 
         ros::spinOnce();
         loop_rate.sleep();

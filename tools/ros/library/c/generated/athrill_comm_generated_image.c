@@ -69,7 +69,7 @@ void athrill_comm_make_image(void)
     work_arraysizep[0] = ACOMM_BUS1_ELM_0_ARRAY_SIZE;
     work_typep[0] = ACOMM_BUS1_ELM_0_TYPE;
     /*****************************
-    * ELM: CANID_0x200
+    * ELM: CANID_0x101
     *****************************/
     work_offp[1]  = work_offp[0] + work_sizep[0];
     work_sizep[1] = ACOMM_BUS1_ELM_1_SIZE;
@@ -77,7 +77,7 @@ void athrill_comm_make_image(void)
     work_arraysizep[1] = ACOMM_BUS1_ELM_1_ARRAY_SIZE;
     work_typep[1] = ACOMM_BUS1_ELM_1_TYPE;
     /*****************************
-    * ELM: CANID_0x201
+    * ELM: CANID_0x102
     *****************************/
     work_offp[2]  = work_offp[1] + work_sizep[1];
     work_sizep[2] = ACOMM_BUS1_ELM_2_SIZE;
@@ -95,7 +95,7 @@ void athrill_comm_make_image(void)
     qp->woff = 0U;
     qp->elmsize = ACOMM_BUS1_ELM_0_TYPE_SIZE;
     /*****************************
-    * data elm: CANID_0x200
+    * data elm: CANID_0x101
     *****************************/
     qp = (acomm_queue_type*)&acomm_bus1_mapbuffer[work_offp[1]];
     qp->len = 0U;
@@ -104,17 +104,14 @@ void athrill_comm_make_image(void)
     qp->woff = 0U;
     qp->elmsize = ACOMM_BUS1_ELM_1_TYPE_SIZE;
     /*****************************
-    * data elm: CANID_0x201
+    * data elm: CANID_0x102
     *****************************/
-    arrayp = &acomm_bus1_mapbuffer[work_offp[2]];
-    *((acomm_uint8 *)&arrayp[0]) = 0;
-    *((acomm_uint8 *)&arrayp[1]) = 2;
-    *((acomm_uint8 *)&arrayp[2]) = 0;
-    *((acomm_uint8 *)&arrayp[3]) = 4;
-    *((acomm_uint8 *)&arrayp[4]) = 0;
-    *((acomm_uint8 *)&arrayp[5]) = 0;
-    *((acomm_uint8 *)&arrayp[6]) = 8;
-    *((acomm_uint8 *)&arrayp[7]) = 0;
+    qp = (acomm_queue_type*)&acomm_bus1_mapbuffer[work_offp[2]];
+    qp->len = 0U;
+    qp->maxlen = ACOMM_BUS1_ELM_2_QUEUE_LEN;
+    qp->roff = 0U;
+    qp->woff = 0U;
+    qp->elmsize = ACOMM_BUS1_ELM_2_TYPE_SIZE;
     /********************************************
      * bus2
      ********************************************/
@@ -152,7 +149,7 @@ void athrill_comm_make_image(void)
     work_arraysizep = (acomm_uint32*)&acomm_bus2_mapbuffer[mp->meta_buffer_earraysize_soff];
     work_typep = (acomm_uint32*)&acomm_bus2_mapbuffer[mp->meta_buffer_type_soff];
     /*****************************
-    * ELM: CANID_0x101
+    * ELM: CANID_0x200
     *****************************/
     work_offp[0]  = mp->data_data_soff;
     work_sizep[0] = ACOMM_BUS2_ELM_0_SIZE;
@@ -160,7 +157,7 @@ void athrill_comm_make_image(void)
     work_arraysizep[0] = ACOMM_BUS2_ELM_0_ARRAY_SIZE;
     work_typep[0] = ACOMM_BUS2_ELM_0_TYPE;
     /*****************************
-    * ELM: CANID_0x202
+    * ELM: CANID_0x201
     *****************************/
     work_offp[1]  = work_offp[0] + work_sizep[0];
     work_sizep[1] = ACOMM_BUS2_ELM_1_SIZE;
@@ -168,7 +165,7 @@ void athrill_comm_make_image(void)
     work_arraysizep[1] = ACOMM_BUS2_ELM_1_ARRAY_SIZE;
     work_typep[1] = ACOMM_BUS2_ELM_1_TYPE;
     /*****************************
-    * ELM: CANID_0x208
+    * ELM: CANID_0x202
     *****************************/
     work_offp[2]  = work_offp[1] + work_sizep[1];
     work_sizep[2] = ACOMM_BUS2_ELM_2_SIZE;
@@ -176,7 +173,7 @@ void athrill_comm_make_image(void)
     work_arraysizep[2] = ACOMM_BUS2_ELM_2_ARRAY_SIZE;
     work_typep[2] = ACOMM_BUS2_ELM_2_TYPE;
     /*****************************
-    * ELM: CANID_0x209
+    * ELM: CANID_0x203
     *****************************/
     work_offp[3]  = work_offp[2] + work_sizep[2];
     work_sizep[3] = ACOMM_BUS2_ELM_3_SIZE;
@@ -185,7 +182,7 @@ void athrill_comm_make_image(void)
     work_typep[3] = ACOMM_BUS2_ELM_3_TYPE;
 
     /*****************************
-    * data elm: CANID_0x101
+    * data elm: CANID_0x200
     *****************************/
     qp = (acomm_queue_type*)&acomm_bus2_mapbuffer[work_offp[0]];
     qp->len = 0U;
@@ -194,7 +191,7 @@ void athrill_comm_make_image(void)
     qp->woff = 0U;
     qp->elmsize = ACOMM_BUS2_ELM_0_TYPE_SIZE;
     /*****************************
-    * data elm: CANID_0x202
+    * data elm: CANID_0x201
     *****************************/
     qp = (acomm_queue_type*)&acomm_bus2_mapbuffer[work_offp[1]];
     qp->len = 0U;
@@ -203,22 +200,23 @@ void athrill_comm_make_image(void)
     qp->woff = 0U;
     qp->elmsize = ACOMM_BUS2_ELM_1_TYPE_SIZE;
     /*****************************
-    * data elm: CANID_0x208
+    * data elm: CANID_0x202
     *****************************/
-    arrayp = &acomm_bus2_mapbuffer[work_offp[2]];
-    *((acomm_uint8 *)&arrayp[0]) = 0;
-    *((acomm_uint8 *)&arrayp[1]) = 2;
-    *((acomm_uint8 *)&arrayp[2]) = 0;
-    *((acomm_uint8 *)&arrayp[3]) = 4;
-    *((acomm_uint8 *)&arrayp[4]) = 0;
-    *((acomm_uint8 *)&arrayp[5]) = 0;
-    *((acomm_uint8 *)&arrayp[6]) = 8;
-    *((acomm_uint8 *)&arrayp[7]) = 0;
+    qp = (acomm_queue_type*)&acomm_bus2_mapbuffer[work_offp[2]];
+    qp->len = 0U;
+    qp->maxlen = ACOMM_BUS2_ELM_2_QUEUE_LEN;
+    qp->roff = 0U;
+    qp->woff = 0U;
+    qp->elmsize = ACOMM_BUS2_ELM_2_TYPE_SIZE;
     /*****************************
-    * data elm: CANID_0x209
+    * data elm: CANID_0x203
     *****************************/
-    arrayp = &acomm_bus2_mapbuffer[work_offp[3]];
-    *((acomm_uint32 *)&arrayp[0U]) = 0;
+    qp = (acomm_queue_type*)&acomm_bus2_mapbuffer[work_offp[3]];
+    qp->len = 0U;
+    qp->maxlen = ACOMM_BUS2_ELM_3_QUEUE_LEN;
+    qp->roff = 0U;
+    qp->woff = 0U;
+    qp->elmsize = ACOMM_BUS2_ELM_3_TYPE_SIZE;
 }
 
 int athrill_comm_generate_image(const char *generate_path)

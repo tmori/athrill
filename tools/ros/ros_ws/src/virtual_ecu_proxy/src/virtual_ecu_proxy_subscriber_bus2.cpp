@@ -3,8 +3,10 @@
 #include "acomm_init.h"
 #include "athrill_comm.h"
 #include <stdio.h>
+#include <cstdlib>
 
-
+#define FILEPATH_MAX    4096
+static char mmap_filepath[FILEPATH_MAX];
 static acomm_bus_metadata_type *map_busp;
 
 
@@ -13,9 +15,9 @@ static acomm_bus_metadata_type *map_busp;
  *****************************/
 
 /*****************************
- * ELM: CANID_0x202
+ * ELM: CANID_0x201
  *****************************/
- static void bus2_RX_CANID_0x202_sub_callback(const virtual_can_bus::can msg)
+ static void bus2_RX_CANID_0x201_sub_callback(const virtual_can_bus::can msg)
  {
      acomm_rtype ret;
      acomm_uint8 can_data[8];
@@ -39,9 +41,9 @@ static acomm_bus_metadata_type *map_busp;
 
 
 /*****************************
- * ELM: CANID_0x208
+ * ELM: CANID_0x202
  *****************************/
- static void bus2_RX_CANID_0x208_sub_callback(const virtual_can_bus::can msg)
+ static void bus2_RX_CANID_0x202_sub_callback(const virtual_can_bus::can msg)
  {
      acomm_rtype ret;
      acomm_uint8 can_data[8];
@@ -67,18 +69,19 @@ static acomm_bus_metadata_type *map_busp;
 
 int main(int argc, char **argv)
 {
-    char *path = (char*)"/mnt/c/project/esm/athrill/tools/spike/ros/library/c/command/athrill_bus1.bin";
+    memset(mmap_filepath, 0, FILEPATH_MAX);
+    sprintf(mmap_filepath, "%s/%s_bus2.bin", std::getenv("GENERATED_MMAP_PATH"), std::getenv("GENERATED_MMAP_FILE_PREFIX"));
 
     ros::init(argc, argv, "virtual_ecu_proxy_subscriber_bus2");
 
-    map_busp = ::acomm_open(path);
+    map_busp = ::acomm_open(mmap_filepath);
 
     ros::NodeHandle n;
 
 
-    ros::Subscriber sub_bus2_RX_CANID_0x202 = n.subscribe("bus2/RX_CANID_0x202", 100, bus2_RX_CANID_0x202_sub_callback);
+    ros::Subscriber sub_bus2_RX_CANID_0x201 = n.subscribe("bus2/RX_CANID_0x201", 100, bus2_RX_CANID_0x201_sub_callback);
 
-    ros::Subscriber sub_bus2_RX_CANID_0x208 = n.subscribe("bus2/RX_CANID_0x208", 100, bus2_RX_CANID_0x208_sub_callback);
+    ros::Subscriber sub_bus2_RX_CANID_0x202 = n.subscribe("bus2/RX_CANID_0x202", 100, bus2_RX_CANID_0x202_sub_callback);
 
     ros::spin();
     
