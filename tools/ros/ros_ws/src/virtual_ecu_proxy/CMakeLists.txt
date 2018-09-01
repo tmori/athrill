@@ -118,8 +118,6 @@ catkin_package(
 include_directories(
 # include
 	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/include 
-  	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/command
-  	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/fixed
   	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/generated
   	${catkin_INCLUDE_DIRS}
 )
@@ -203,8 +201,8 @@ include_directories(
 # catkin_add_nosetests(test)
 
 set(STATIC_LIBRARIES
-	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/lib/acomm_init.o
-	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/lib/athrill_comm.o
+	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/roslib/acomm_init.o
+	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/roslib/athrill_comm.o
 )
 
 add_executable(virtual_ecu_proxy_publisher src/virtual_ecu_proxy_publisher.cpp)
