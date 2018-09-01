@@ -1,0 +1,20 @@
+- BusType:
+  - name: bus1
+    elements:
+    - name: CANID_0x100
+      busElmTypeRef: BusElementQueueType/canDataQueue1
+    - name: CANID_0x200
+      busElmTypeRef: BusElementQueueType/canDataQueue1
+    - name: CANID_0x201
+      busElmTypeRef: BusElementDataType/canDataType
+  - busName: bus2
+    elements:
+    - name: CANID_0x101
+      busElmTypeRef: BusElementQueueType/canDataQueue1
+    - name: CANID_0x202
+      busElmTypeRef: BusElementQueueType/canDataQueue15
+    - name: CANID_0x208
+      busElmTypeRef: BusElementDataType/canDataType
+    - name: CANID_0x209
+      busElmTypeRef: BusElementDataType/uint32
+

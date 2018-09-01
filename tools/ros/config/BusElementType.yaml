@@ -1,0 +1,15 @@
+- BusElementQueueType:
+  - name: canDataQueue1
+    dataElmTypeRef: DataElementArrayType/canDataType
+    len: 1
+  - name: canDataQueue15
+    dataElmTypeRef: DataElementArrayType/canDataType
+    len: 15
+
+- BusElementDataType:
+  - name: uint32
+    dataElmTypeRef: DataElementSingleType/uint32
+    initialValue: 0
+  - name: canDataType
+    dataElmTypeRef: DataElementArrayType/canDataType
+    initialValue: [0,2,0,4,0,0,8,0]
