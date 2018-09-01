@@ -47,6 +47,8 @@ typedef struct {
 
 extern acomm_bus_type acomm_bus[ATHRILL_COMM_CONFIG_BUS_NUM];
 extern void acomm_generated_code_init(void);
+extern void acomm_lock(acomm_busid busid);
+extern void acomm_unlock(acomm_busid busid);
 
 
 #ifdef __cplusplus

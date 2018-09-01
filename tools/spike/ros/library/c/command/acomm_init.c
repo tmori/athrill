@@ -6,6 +6,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/file.h>
+
 #include "athrill_comm.h"
 #include "athrill_comm_config.h"
 #include "athrill_comm_generated_config.h"
@@ -61,5 +63,21 @@ void acomm_close(acomm_bus_metadata_type *p)
         fd = -1;
     }
     bus_map = NULL;
+    return;
+}
+
+void acomm_lock(acomm_busid busid)
+{
+    if (fd >= 0) {
+        flock(fd, LOCK_EX);
+    }
+    return;
+}
+
+void acomm_unlock(acomm_busid busid)
+{
+    if (fd >= 0) {
+        flock(fd, LOCK_UN);
+    }
     return;
 }

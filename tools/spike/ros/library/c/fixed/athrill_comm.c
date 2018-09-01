@@ -22,9 +22,9 @@ acomm_rtype athrill_comm_write(acomm_busid busid, acomm_elmid elmid, acomm_uint8
     }
     off = bus->comm_buffer_offset[elmid] - bus->meta->data_data_soff;
 
-    /* TODO ex */
+    acomm_lock(busid);
     memcpy(&bus->comm_buffer[off], data, size);
-    /* TODO ex */
+    acomm_unlock(busid);
 
     return ACOMM_E_OK;
 }
@@ -53,9 +53,10 @@ acomm_rtype athrill_comm_read(acomm_busid busid, acomm_elmid elmid, acomm_uint8 
         goto done;
     }
     off = bus->comm_buffer_offset[elmid] - bus->meta->data_data_soff;
-    /* TODO ex */
+
+    acomm_lock(busid);
     memcpy(data, &bus->comm_buffer[off], size);
-    /* TODO ex */
+    acomm_unlock(busid);
 
 done:
     return err;
@@ -86,7 +87,7 @@ static acomm_rtype athrill_comm_send_common(acomm_busid busid, acomm_elmid elmid
     acomm_uint32 off;
     acomm_queue_type *entry;
 
-    /* TODO ex */
+    acomm_lock(busid);
     err = athrill_comm_check(busid, elmid, data);
     if (err != ACOMM_E_OK) {
         goto done;
@@ -121,7 +122,7 @@ static acomm_rtype athrill_comm_send_common(acomm_busid busid, acomm_elmid elmid
     }
 
 done:
-    /* TODO ex */
+    acomm_unlock(busid);
     return err;
 }
 
@@ -133,7 +134,7 @@ static acomm_rtype athrill_comm_recv_common(acomm_busid busid, acomm_elmid elmid
     acomm_uint32 off;
     acomm_queue_type *entry;
 
-    /* TODO ex */
+    acomm_lock(busid);
     err = athrill_comm_check(busid, elmid, data);
     if (err != ACOMM_E_OK) {
         goto done;
@@ -161,7 +162,7 @@ static acomm_rtype athrill_comm_recv_common(acomm_busid busid, acomm_elmid elmid
         }
     }
 done:
-    /* TODO ex */
+    acomm_unlock(busid);
     return err;
 
 }
