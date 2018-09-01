@@ -47,11 +47,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
+#add_message_files(
 #   FILES
 #   Message1.msg
 #   Message2.msg
-# )
+#)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -71,7 +71,8 @@ find_package(catkin REQUIRED COMPONENTS
 # generate_messages(
 #   DEPENDENCIES
 #   std_msgs
-# )
+#   virtual_can_bus
+#)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -103,9 +104,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES virtual_ecu_proxy
-#  CATKIN_DEPENDS roscpp std_msgs virtual_can_bus
+  CATKIN_DEPENDS roscpp std_msgs virtual_can_bus
 #  DEPENDS system_lib
 )
 
@@ -205,7 +206,11 @@ set(STATIC_LIBRARIES
 	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/roslib/athrill_comm.o
 )
 
-add_executable(virtual_ecu_proxy_publisher src/virtual_ecu_proxy_publisher.cpp)
-add_executable(virtual_ecu_proxy_subscriber src/virtual_ecu_proxy_subscriber.cpp)
-target_link_libraries(virtual_ecu_proxy_publisher ${STATIC_LIBRARIES} ${catkin_LIBRARIES})
-target_link_libraries(virtual_ecu_proxy_subscriber ${STATIC_LIBRARIES} ${catkin_LIBRARIES})
+add_executable(virtual_ecu_proxy_publisher_bus1 src/virtual_ecu_proxy_publisher_bus1.cpp)
+add_executable(virtual_ecu_proxy_publisher_bus2 src/virtual_ecu_proxy_publisher_bus2.cpp)
+add_executable(virtual_ecu_proxy_subscriber_bus1 src/virtual_ecu_proxy_subscriber_bus1.cpp)
+add_executable(virtual_ecu_proxy_subscriber_bus2 src/virtual_ecu_proxy_subscriber_bus2.cpp)
+target_link_libraries(virtual_ecu_proxy_publisher_bus1 ${STATIC_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(virtual_ecu_proxy_publisher_bus2 ${STATIC_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(virtual_ecu_proxy_subscriber_bus1 ${STATIC_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(virtual_ecu_proxy_subscriber_bus2 ${STATIC_LIBRARIES} ${catkin_LIBRARIES})
