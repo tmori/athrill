@@ -1,6 +1,11 @@
 #ifndef _ATHRILL_COMM_TYPES_H_
 #define _ATHRILL_COMM_TYPES_H_
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef TRUE
 #define TRUE    1
 #endif
@@ -40,5 +45,10 @@ typedef struct {
     acomm_uint8     elements[4];
 } acomm_queue_type;
 #define ACOMM_QUEUE_ELEM_BUFFER_OFF(entry, off)    ((off) * (entry)->elmsize)
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _ATHRILL_COMM_TYPES_H_ */

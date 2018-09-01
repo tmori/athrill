@@ -1,6 +1,10 @@
 #ifndef _ATHRILL_COMM_CONFIG_H_
 #define _ATHRILL_COMM_CONFIG_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "athrill_comm_types.h"
 #include "athrill_comm_generated_config.h"
 
@@ -43,5 +47,10 @@ typedef struct {
 
 extern acomm_bus_type acomm_bus[ATHRILL_COMM_CONFIG_BUS_NUM];
 extern void acomm_generated_code_init(void);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _ATHRILL_COMM_CONFIG_H_ */
