@@ -7,9 +7,6 @@
     - name: CANID_0x101
       dir: RX
       busElmTypeRef: BusElementQueueType/canDataQueue1
-    - name: CANID_0x102
-      dir: TX
-      busElmTypeRef: BusElementQueueType/canDataQueue1
   - busName: bus2
     elements:
     - name: CANID_0x200
@@ -17,11 +14,5 @@
       busElmTypeRef: BusElementQueueType/canDataQueue1
     - name: CANID_0x201
       dir: RX
-      busElmTypeRef: BusElementQueueType/canDataQueue1
-    - name: CANID_0x202
-      dir: RX
-      busElmTypeRef: BusElementQueueType/canDataQueue1
-    - name: CANID_0x203
-      dir: TX
       busElmTypeRef: BusElementQueueType/canDataQueue1
 
