@@ -23,7 +23,7 @@ void acomm_generated_code_init(void)
     acomm_bus[0].comm_buffer_type = (acomm_uint32*)&p[bus_map->meta_buffer_type_soff];
     acomm_bus[0].comm_buffer = (acomm_uint8*)&p[bus_map->data_data_soff];
 
-    bus_map = (acomm_bus_metadata_type*)&acomm_bus2_mapbuffer[1];
+    bus_map = (acomm_bus_metadata_type*)&acomm_bus2_mapbuffer[0];
     p = (acomm_uint8*)bus_map;
     acomm_bus[1].num = bus_map->meta_entrynum;
     acomm_bus[1].meta = bus_map;

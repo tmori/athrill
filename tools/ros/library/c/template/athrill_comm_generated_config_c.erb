@@ -20,7 +20,7 @@ void acomm_generated_code_init(void)
 <%-
     BusType.getAll().each do |bus|
 -%>
-    bus_map = (acomm_bus_metadata_type*)&acomm_<%= bus.name %>_mapbuffer[<%= BusType.getAll().index(bus) %>];
+    bus_map = (acomm_bus_metadata_type*)&acomm_<%= bus.name %>_mapbuffer[0];
     p = (acomm_uint8*)bus_map;
     acomm_bus[<%= BusType.getAll().index(bus) %>].num = bus_map->meta_entrynum;
     acomm_bus[<%= BusType.getAll().index(bus) %>].meta = bus_map;

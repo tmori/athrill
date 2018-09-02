@@ -40,33 +40,6 @@ static char mmap_filepath[FILEPATH_MAX];
      return;
  }
 
-/*****************************
- * ELM: CANID_0x102
- *****************************/
- static void bus1_TX_CANID_0x102_do_task(ros::Publisher &pub)
- {
-     acomm_rtype ret;
-     acomm_uint8 can_data[8];
-
-     ret = athrill_comm_recv(0, 2, &can_data[0], 8U);
-     if (ret != ACOMM_E_OK) {
-         return;
-     }
- 
-     virtual_can_bus::can msg;
-     msg.c0 = can_data[0];
-     msg.c1 = can_data[1];
-     msg.c2 = can_data[2];
-     msg.c3 = can_data[3];
-     msg.c4 = can_data[4];
-     msg.c5 = can_data[5];
-     msg.c6 = can_data[6];
-     msg.c7 = can_data[7];
- 
-     pub.publish(msg);
-     return;
- }
-
 
 
 int main(int argc, char **argv)
@@ -88,16 +61,12 @@ int main(int argc, char **argv)
 
     ros::Publisher pub_bus1_TX_CANID_0x100 = n.advertise<virtual_can_bus::can>("bus1/TX_CANID_0x100", 1000);
 
-    ros::Publisher pub_bus1_TX_CANID_0x102 = n.advertise<virtual_can_bus::can>("bus1/TX_CANID_0x102", 1000);
-
 
     ros::Rate loop_rate(1);
     while (ros::ok())
     {
 
         bus1_TX_CANID_0x100_do_task(pub_bus1_TX_CANID_0x100);
-
-        bus1_TX_CANID_0x102_do_task(pub_bus1_TX_CANID_0x102);
 
         ros::spinOnce();
         loop_rate.sleep();
