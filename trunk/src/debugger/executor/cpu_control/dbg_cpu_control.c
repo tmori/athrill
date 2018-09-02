@@ -442,6 +442,7 @@ static void cpuctrl_access_context_add(uint8 access_type, DataAccessInfoType *ac
 	}
 
 	if ((access_info->region_type != READONLY_MEMORY) && (access_type == ACCESS_TYPE_READ)) {
+#ifndef SUPRESS_DETECT_WARNING_MESSAGE
 		void *write_objp = object_container_find_first(acp->access_context, data_access_object_write_filter);
 		if (write_objp == NULL) {
 			printf("WARNING: Unitialized data read : variable=>%s : %s()@%s\n",
@@ -449,6 +450,7 @@ static void cpuctrl_access_context_add(uint8 access_type, DataAccessInfoType *ac
 					symbol_funcid2funcname(current_funcid),
 					symbol_glid2glname(glid));
 		}
+#endif
 	}
 
 	context.access_type = access_type;
