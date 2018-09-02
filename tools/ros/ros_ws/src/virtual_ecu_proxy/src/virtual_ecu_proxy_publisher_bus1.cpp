@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     ros::Publisher pub_bus1_TX_CANID_0x100 = n.advertise<virtual_can_bus::can>("bus1/TX_CANID_0x100", 1000);
 
 
-    ros::Rate loop_rate(1);
+    ros::Rate loop_rate(100); /* 10ms */
     while (ros::ok())
     {
 

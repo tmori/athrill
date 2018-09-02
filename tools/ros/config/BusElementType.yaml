@@ -2,9 +2,9 @@
   - name: canDataQueue1
     dataElmTypeRef: DataElementArrayType/canDataType
     len: 1
-  - name: canDataQueue15
+  - name: canDataQueue100
     dataElmTypeRef: DataElementArrayType/canDataType
-    len: 15
+    len: 100
 
 - BusElementDataType:
   - name: uint32

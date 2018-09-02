@@ -100,7 +100,7 @@ static acomm_rtype athrill_comm_send_common(acomm_busid busid, acomm_elmid elmid
         err = ACOMM_E_INVALID;
         goto done;
     }
-    if ((forceflag == FALSE) || (entry->len == 0U)) {
+    if (forceflag == FALSE) {
         if (entry->len >= entry->maxlen) {
             err = ACOMM_E_LIMIT;
             goto done;

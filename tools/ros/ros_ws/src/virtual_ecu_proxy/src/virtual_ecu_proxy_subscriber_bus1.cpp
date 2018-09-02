@@ -31,7 +31,8 @@ static acomm_bus_metadata_type *map_busp;
      can_data[6] = msg.c6;
      can_data[7] = msg.c7;
  
-     ret = athrill_comm_send_force(0, 1, &can_data[0], 8U);
+     //ret = athrill_comm_send_force(0, 1, &can_data[0], 8U);
+     ret = athrill_comm_send(0, 1, &can_data[0], 8U);
      if (ret != ACOMM_E_OK) {
          fprintf(stderr, "ERROR: athrill_comm_send_force() err=%u\n", ret);
      }
