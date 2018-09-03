@@ -1020,7 +1020,7 @@ Disassembly of section .text:
      fe8:	80 ff 04 00 	jarl	fec <_main+0x38>, lp
      fec:	44 fa       	add	4, lp
      fee:	6a 00       	jmp	[r10]
-     ff0:	20 36 e8 03 	movea	1000, r0, r6
+     ff0:	20 36 64 00 	movea	100, r0, r6
      ff4:	2a 06 14 0c 	mov	0xc14, r10
      ff8:	00 00 
      ffa:	80 ff 04 00 	jarl	ffe <_main+0x4a>, lp

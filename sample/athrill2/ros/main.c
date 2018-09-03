@@ -15,7 +15,7 @@ int main(void)
 	roslib_init();
 
 	printf("Hello World!!\n");
-	timer_start(1000U);
+	timer_start(100U); /* 10ms */
 
 	while (1) {
 		do_idle();
