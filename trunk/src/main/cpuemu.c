@@ -263,12 +263,18 @@ void *cpuemu_thread_run(void* arg)
 	enable_dbg.enable_ft = TRUE;
 	enable_dbg.enable_watch = TRUE;
 	enable_dbg.enable_prof = TRUE;
+	enable_dbg.enable_sync_time = FALSE;
 	cpuemu_dev_clock.enable_skip = FALSE;
 
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_BT", &enable_dbg.enable_bt);
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_FT", &enable_dbg.enable_ft);
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_PROF", &enable_dbg.enable_watch);
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_WATCH", &enable_dbg.enable_prof);
+	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_SYNC_TIME", &enable_dbg.enable_sync_time);
+	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_SHOW_SKIP_TIME", &enable_dbg.show_skip_time);
+
+	virtual_cpu.cpu_freq = DEFAULT_CPU_FREQ; /* 100MHz */
+	(void)cpuemu_get_devcfg_value("DEVICE_CPU_FREQ", &virtual_cpu.cpu_freq);
 
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_SKIP_CLOCK", (uint32*)&cpuemu_dev_clock.enable_skip);
 	cpuemu_set_debug_romdata();
@@ -312,9 +318,6 @@ void *cpuemu_thread_run(void* arg)
 				fflush(stdout);
 				if (cpuemu_cui_mode() == TRUE) {
 					cpuctrl_set_force_break();
-		#if 0
-					cpu_illegal_opcode_trap(&CpuManager);
-		#endif
 				}
 				else {
 					exit(1);
@@ -331,6 +334,19 @@ void *cpuemu_thread_run(void* arg)
 		}
 		if (cpuemu_dev_clock.enable_skip == TRUE) {
 			if ((is_halt == TRUE) && (cpuemu_dev_clock.can_skip_clock == TRUE)) {
+#ifdef OS_LINUX
+				if (enable_dbg.enable_sync_time > 0) {
+					uint64 skipc_usec = ( (cpuemu_dev_clock.min_intr_interval - 1) / virtual_cpu.cpu_freq );
+					if (skipc_usec > ((uint64)enable_dbg.enable_sync_time)) {
+						(void)usleep((useconds_t)(skipc_usec - ((uint64)enable_dbg.enable_sync_time)));
+					}
+				}
+				if (enable_dbg.show_skip_time != 0) {
+					struct timeval elaps;
+					gettimeofday(&elaps, NULL);
+					printf("skip-clock = %llu : %ld sec %ld usec \n", (cpuemu_dev_clock.min_intr_interval - 1), elaps.tv_sec, elaps.tv_usec);
+				}
+#endif /* OS_LINUX */
 				cpuemu_dev_clock.clock += (cpuemu_dev_clock.min_intr_interval - 1);
 			}
 		}

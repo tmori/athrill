@@ -11,6 +11,11 @@ typedef struct {
 	uint32 enable_bt;
 	uint32 enable_prof;
 	uint32 enable_watch;
+	/*
+	 * enable sync real time and virtual time.
+	 */
+	uint32 enable_sync_time;
+	uint32 show_skip_time;
 } DbgCpuCallbackFuncEnableType;
 
 extern void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core);

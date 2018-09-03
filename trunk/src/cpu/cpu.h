@@ -21,7 +21,9 @@ typedef struct {
 	CpuOperationCodeType	*codes;
 } CachedOperationCodeType;
 
+#define DEFAULT_CPU_FREQ		100 /* MHz */
 typedef struct {
+	uint32						cpu_freq; /* Mhz */
 	CpuCoreType					*current_core;
 	uint32						core_id_num;
 	CpuCoreType					cores[CPU_CONFIG_CORE_NUM];
