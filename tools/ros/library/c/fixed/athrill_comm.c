@@ -156,7 +156,7 @@ static acomm_rtype athrill_comm_recv_common(acomm_busid busid, acomm_elmid elmid
     memcpy(data, &entry->elements[boff], entry->elmsize);
     if (isPeek == FALSE) {
         entry->len--;
-        entry->roff--;
+        entry->roff++;
         if (entry->roff >= entry->maxlen) {
             entry->roff = 0U;
         }
