@@ -159,6 +159,15 @@ int symbol_get_gl(char *gl_name, uint32 gl_len, uint32 *addrp, uint32 *size)
 int symbol_addr2glid(uint32 addr, uint32 *gladdr)
 {
 	int i;
+	static int last_funcid = -1;
+
+	if (last_funcid > 0) {
+		if ((addr >= symbol_gl[last_funcid].addr) &&
+				(addr < (symbol_gl[last_funcid].addr + symbol_gl[last_funcid].size))) {
+			*gladdr = symbol_gl[last_funcid].addr;
+			return last_funcid;
+		}
+	}
 
 	for (i = 0; i < symbol_gl_size; i++) {
 		if (addr < symbol_gl[i].addr) {
@@ -168,6 +177,7 @@ int symbol_addr2glid(uint32 addr, uint32 *gladdr)
 			continue;
 		}
 		*gladdr = symbol_gl[i].addr;
+		last_funcid = i;
 		return  i;
 	}
 	return -1;
