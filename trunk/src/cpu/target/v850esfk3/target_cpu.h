@@ -34,4 +34,14 @@ typedef struct {
 	OpDecodedCodeType	decoded_code;
 } TargetCoreType;
 
+static inline uint32 cpu_get_pc(const TargetCoreType *core)
+{
+	return core->reg.pc;
+}
+
+static inline uint32 cpu_get_sp(const TargetCoreType *core)
+{
+	return core->reg.r[3];
+}
+
 #endif /* _CPU_REGISTER_H_ */
