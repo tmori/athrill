@@ -142,8 +142,10 @@ do {	\
 
 void device_supply_clock_timer(DeviceClockType *dev_clock)
 {
+#ifndef MINIMUM_DEVICE_CONFIG
 	INLINE_device_supply_clock_timer(dev_clock, 0);
 	INLINE_device_supply_clock_timer(dev_clock, 1);
+#endif /* MINIMUM_DEVICE_CONFIG */
 	INLINE_device_supply_clock_timer(dev_clock, 2);
 	INLINE_device_supply_clock_timer(dev_clock, 3);
 	return;

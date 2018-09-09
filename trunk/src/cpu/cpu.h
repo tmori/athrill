@@ -32,6 +32,7 @@ typedef struct {
 } CpuType;
 
 extern CpuType	virtual_cpu;
+#define CPU_CONFIG_GET_CORE_ID_NUM()	((int)virtual_cpu.core_id_num)
 
 static inline CachedOperationCodeType *virtual_cpu_get_cached_code(uint32 pc)
 {
@@ -62,8 +63,6 @@ static inline void virtual_cpu_add_cached_code(CachedOperationCodeType *cached_c
 
 
 extern uint32 cpu_get_current_core_id(void);
-extern uint32 cpu_get_pc(const TargetCoreType *core);
-extern uint32 cpu_get_sp(const TargetCoreType *core);
 extern uint32 cpu_get_ep(const TargetCoreType *core);
 
 extern uint32 cpu_get_current_core_register(uint32 inx);

@@ -29,7 +29,7 @@
 #include "assert.h"
 
 static DeviceClockType cpuemu_dev_clock;
-static bool cpuemu_is_cui_mode = FALSE;
+bool cpuemu_is_cui_mode = FALSE;
 static uint64 cpuemu_cpu_end_clock = -1LLU;
 
 Std_ReturnType cpuemu_symbol_set(void)
@@ -74,10 +74,6 @@ Std_ReturnType cpuemu_symbol_set(void)
 	return STD_E_OK;
 }
 
-bool cpuemu_cui_mode(void)
-{
-	return cpuemu_is_cui_mode;
-}
 int cpu_config_get_core_id_num(void)
 {
 	return (int)virtual_cpu.core_id_num;
@@ -300,17 +296,23 @@ void *cpuemu_thread_run(void* arg)
 		 */
 		is_halt = TRUE;
 		for (i = 0; i < core_id_num; i++) {
-			cpu_set_current_core(i);
+			virtual_cpu.current_core = &virtual_cpu.cores[i];
 
 			/*
 			 * バスのアクセスログをクリアする
 			 */
-			bus_access_set_log(BUS_ACCESS_TYPE_NONE, 8U, 0, 0);
+			if (cpuemu_cui_mode() == TRUE) {
+				bus_access_set_log(BUS_ACCESS_TYPE_NONE, 8U, 0, 0);
+			}
 
 			/**
 			 * CPU 実行開始通知
 			 */
-			dbg_notify_cpu_clock_supply_start(&virtual_cpu.cores[i].core);
+			dbg_cpu_callback_start(cpu_get_pc(&virtual_cpu.cores[i].core), cpu_get_sp(&virtual_cpu.cores[i].core));
+
+			if (cpuemu_cui_mode() == TRUE) {
+				dbg_notify_cpu_clock_supply_start(&virtual_cpu.cores[i].core);
+			}
 
 			err = cpu_supply_clock(i);
 			if ((err != STD_E_OK) && (cpu_illegal_access(i) == FALSE)) {
@@ -326,9 +328,11 @@ void *cpuemu_thread_run(void* arg)
 			/**
 			 * CPU 実行完了通知
 			 */
-			dbg_notify_cpu_clock_supply_end(&virtual_cpu.cores[i].core, &enable_dbg);
+			if (cpuemu_cui_mode() == TRUE) {
+				dbg_notify_cpu_clock_supply_end(&virtual_cpu.cores[i].core, &enable_dbg);
+			}
 
-			if (cpu_is_halt(i) != TRUE) {
+			if (virtual_cpu.cores[i].core.is_halt != TRUE) {
 				is_halt = FALSE;
 			}
 		}

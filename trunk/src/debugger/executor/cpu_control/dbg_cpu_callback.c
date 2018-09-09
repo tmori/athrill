@@ -12,13 +12,8 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	CoreIdType core_id;
 	bool need_stop = FALSE;
 	uint32 pc = cpu_get_pc(core);
-	uint32 sp = cpu_get_sp(core);
 	bool is_debug_mode;
 
-	dbg_cpu_callback_start(pc, sp);
-	if (cpuemu_cui_mode() == FALSE) {
-		return;
-	}
 
 	is_debug_mode = cpuctrl_is_debug_mode();
 
@@ -79,9 +74,6 @@ void dbg_notify_cpu_clock_supply_end(const TargetCoreType *core, const DbgCpuCal
 	uint32 access_addr;
 	bool need_stop = FALSE;
 
-	if (cpuemu_cui_mode() == FALSE) {
-		return;
-	}
 	/*
 	 * call callback
 	 */

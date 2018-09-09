@@ -756,10 +756,6 @@ static Std_ReturnType cpu_put_data32(MpuAddressRegionType *region, CoreIdType co
 }
 
 
-uint32 cpu_get_pc(const TargetCoreType *core)
-{
-	return core->reg.pc;
-}
 uint32 cpu_get_ep(const TargetCoreType *core)
 {
 	return core->reg.r[30];
@@ -778,10 +774,6 @@ uint32 cpu_get_current_core_register(uint32 inx)
 	return ((TargetCoreType *)virtual_cpu.current_core)->reg.r[inx];
 }
 
-uint32 cpu_get_sp(const TargetCoreType *core)
-{
-	return core->reg.r[3];
-}
 uint32 cpu_get_current_core_sp(void)
 {
 	return cpu_get_sp((const TargetCoreType *)virtual_cpu.current_core);

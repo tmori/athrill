@@ -42,7 +42,7 @@ void device_init_intc(CpuType *cpu, MpuAddressRegionType *region)
 	uint8 *imr7;
 	uint8 *ispr;
 	uint32 coreId = 0;
-	int core_id_num = cpu_config_get_core_id_num();
+	int core_id_num = CPU_CONFIG_GET_CORE_ID_NUM();
 
 	intc_control.cpu = cpu;
 	intc_region = region;
@@ -131,7 +131,7 @@ void device_init_intc(CpuType *cpu, MpuAddressRegionType *region)
 void device_supply_clock_intc(DeviceClockType *dev_clock)
 {
 	uint32 coreId;
-	int core_id_num = cpu_config_get_core_id_num();
+	int core_id_num = CPU_CONFIG_GET_CORE_ID_NUM();
 
 	dev_clock->clock++;
 	for (coreId = 0; coreId < core_id_num; coreId++) {
@@ -368,7 +368,7 @@ int intc_raise_intr(uint32 intno)
 {
 	uint32 coreId;
 
-	for (coreId = 0; coreId < cpu_config_get_core_id_num(); coreId++) {
+	for (coreId = 0; coreId < CPU_CONFIG_GET_CORE_ID_NUM(); coreId++) {
 		common_raise_intr(intno, coreId);
 	}
 	return 0;

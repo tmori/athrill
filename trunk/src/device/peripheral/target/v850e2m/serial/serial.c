@@ -114,7 +114,9 @@ void device_supply_clock_serial(DeviceClockType *dev_clock)
 	SerialDevice[UDnCH0].dev_clock = dev_clock;
 	SerialDevice[UDnCH1].dev_clock = dev_clock;
 	device_do_serial(&SerialDevice[UDnCH0]);
+#ifndef MINIMUM_DEVICE_CONFIG
 	device_do_serial(&SerialDevice[UDnCH1]);
+#endif /* MINIMUM_DEVICE_CONFIG */
 }
 
 
