@@ -41,16 +41,19 @@ static acomm_bus_metadata_type *map_busp;
     if elm.busElmType.overWrite == true then
 -%>
     ret = athrill_comm_send_force(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
+    if (ret != ACOMM_E_OK) {
+         fprintf(stderr, "ERROR: athrill_comm_send_force(<%= elm.name %>) err=%u\n", ret);
+    }
 <%-
     else
 -%>     
     ret = athrill_comm_send(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
+    if (ret != ACOMM_E_OK) {
+        fprintf(stderr, "ERROR: athrill_comm_send(<%= elm.name %>) err=%u\n", ret);
+    }
 <%-
     end
 -%>
-    if (ret != ACOMM_E_OK) {
-         fprintf(stderr, "ERROR: athrill_comm_send_force() err=%u\n", ret);
-    }
  
     return;
  }
