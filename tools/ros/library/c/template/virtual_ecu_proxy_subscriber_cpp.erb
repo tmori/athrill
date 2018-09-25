@@ -25,25 +25,34 @@ static acomm_bus_metadata_type *map_busp;
  *****************************/
  static void <%= bus.name %>_<%= elm.dir %>_<%= elm.name %>_sub_callback(const virtual_can_bus::can msg)
  {
-     acomm_rtype ret;
-     acomm_uint8 can_data[8];
+    acomm_rtype ret;
+    acomm_uint8 can_data[8];
  
-     can_data[0] = msg.c0;
-     can_data[1] = msg.c1;
-     can_data[2] = msg.c2;
-     can_data[3] = msg.c3;
-     can_data[4] = msg.c4;
-     can_data[5] = msg.c5;
-     can_data[6] = msg.c6;
-     can_data[7] = msg.c7;
+    can_data[0] = msg.c0;
+    can_data[1] = msg.c1;
+    can_data[2] = msg.c2;
+    can_data[3] = msg.c3;
+    can_data[4] = msg.c4;
+    can_data[5] = msg.c5;
+    can_data[6] = msg.c6;
+    can_data[7] = msg.c7;
  
-     //ret = athrill_comm_send_force(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
-     ret = athrill_comm_send(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
-     if (ret != ACOMM_E_OK) {
+<%-
+    if elm.busElmType.overWrite == true then
+-%>
+    ret = athrill_comm_send_force(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
+<%-
+    else
+-%>     
+    ret = athrill_comm_send(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
+<%-
+    end
+-%>
+    if (ret != ACOMM_E_OK) {
          fprintf(stderr, "ERROR: athrill_comm_send_force() err=%u\n", ret);
-     }
+    }
  
-     return;
+    return;
  }
 
  <%-

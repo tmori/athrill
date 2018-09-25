@@ -25,7 +25,7 @@
 #define ACOMM_BUS1_ELM_1_ARRAY_SIZE    ((8U))
 #define ACOMM_BUS1_ELM_1_TYPE_SIZE    ((1U) * (8U))
 #define ACOMM_BUS1_ELM_1_TYPE    AcommDataType_Queue
-#define ACOMM_BUS1_ELM_1_QUEUE_LEN    (100U)
+#define ACOMM_BUS1_ELM_1_QUEUE_LEN    (1U)
 #define ACOMM_BUS1_ELM_1_RAW_SIZE     ( ACOMM_BUS1_ELM_1_QUEUE_LEN * ACOMM_BUS1_ELM_1_TYPE_SIZE )
 #define ACOMM_BUS1_ELM_1_SIZE    (                                  \
         sizeof(acomm_queue_type) +                                  \

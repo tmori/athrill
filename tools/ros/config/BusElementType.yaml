@@ -2,6 +2,10 @@
   - name: canDataQueue1
     dataElmTypeRef: DataElementArrayType/canDataType
     len: 1
+  - name: canDataQueueOverWrite
+    dataElmTypeRef: DataElementArrayType/canDataType
+    len: 1
+    overwrite: true
   - name: canDataQueue100
     dataElmTypeRef: DataElementArrayType/canDataType
     len: 100

@@ -25,7 +25,8 @@ class TypeBuilder
 
     def self.buildBusElementQueueType(objs)
         for elm in objs do
-            BusElementQueueType.add(elm["name"], elm["dataElmTypeRef"], elm["len"])
+            #p elm["overwrite"]
+            BusElementQueueType.add(elm["name"], elm["dataElmTypeRef"], elm["len"], elm["overwrite"])
             #p BusElementQueueType.get(elm["name"])
         end
     end

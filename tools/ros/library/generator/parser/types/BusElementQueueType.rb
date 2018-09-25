@@ -3,10 +3,16 @@ class BusElementQueueType
     attr_accessor :name
     attr_accessor :dataElmType
     attr_accessor :len
+    attr_accessor :overWrite
 
-    def initialize(name, dataElmTypeRef, len)
+    def initialize(name, dataElmTypeRef, len, overWrite)
         self.name = name
         self.len = len
+        if overWrite != nil
+            self.overWrite = overWrite
+        else
+            self.overWrite = false
+        end
 
         elmName = dataElmTypeRef.split("/")[0]
         type = dataElmTypeRef.split("/")[1]
@@ -20,8 +26,8 @@ class BusElementQueueType
 
     end
 
-    def self.add(name, dataElmTypeRef, len)
-        BusElementQueueType.new(name, dataElmTypeRef, len)
+    def self.add(name, dataElmTypeRef, len, overWrite)
+        BusElementQueueType.new(name, dataElmTypeRef, len, overWrite)
     end
 
     def self.register(obj)

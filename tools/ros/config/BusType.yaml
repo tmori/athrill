@@ -6,7 +6,7 @@
       busElmTypeRef: BusElementQueueType/canDataQueue100
     - name: CANID_0x101
       dir: RX
-      busElmTypeRef: BusElementQueueType/canDataQueue100
+      busElmTypeRef: BusElementQueueType/canDataQueueOverWrite
   - busName: bus2
     elements:
     - name: CANID_0x200
