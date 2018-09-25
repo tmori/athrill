@@ -339,16 +339,21 @@ void *cpuemu_thread_run(void* arg)
 		if (cpuemu_dev_clock.enable_skip == TRUE) {
 			if ((is_halt == TRUE) && (cpuemu_dev_clock.can_skip_clock == TRUE)) {
 #ifdef OS_LINUX
+				uint64 skipc_usec = 0;
 				if (enable_dbg.enable_sync_time > 0) {
-					uint64 skipc_usec = ( (cpuemu_dev_clock.min_intr_interval - 1) / virtual_cpu.cpu_freq );
+					skipc_usec = ( (cpuemu_dev_clock.min_intr_interval - 1) / virtual_cpu.cpu_freq );
 					if (skipc_usec > ((uint64)enable_dbg.enable_sync_time)) {
 						(void)usleep((useconds_t)(skipc_usec - ((uint64)enable_dbg.enable_sync_time)));
 					}
 				}
 				if (enable_dbg.show_skip_time != 0) {
+					static struct timeval prev_elaps;
+					struct timeval result;
 					struct timeval elaps;
 					gettimeofday(&elaps, NULL);
-					printf("skip-clock = %llu : %ld sec %ld usec \n", (cpuemu_dev_clock.min_intr_interval - 1), elaps.tv_sec, elaps.tv_usec);
+					cpuemu_timeval_sub(&elaps, &prev_elaps, &result);
+					printf("skip-clock = %llu : %ld sec %ld usec sync_time=%lu \n", skipc_usec, result.tv_sec, result.tv_usec, enable_dbg.enable_sync_time);
+					prev_elaps = elaps;
 				}
 #endif /* OS_LINUX */
 				cpuemu_dev_clock.clock += (cpuemu_dev_clock.min_intr_interval - 1);
