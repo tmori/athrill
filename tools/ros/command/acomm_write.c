@@ -28,7 +28,7 @@ static int acomm_write_entry(acomm_bus_metadata_type *bus_map, int index, parsed
     acomm_rtype err;
 
     if (acomm_bus[bus_map->meta_busid].comm_buffer_type[index] == AcommDataType_Queue) {
-        err = athrill_comm_send(bus_map->meta_busid, index, in->rawdatap, acomm_bus[bus_map->meta_busid].comm_buffer_elmsize[index]);
+        err = athrill_comm_send_uniq(bus_map->meta_busid, index, in->rawdatap, acomm_bus[bus_map->meta_busid].comm_buffer_elmsize[index]);
     }
     else {
         err = athrill_comm_write(bus_map->meta_busid, index, in->rawdatap, acomm_bus[bus_map->meta_busid].comm_buffer_elmsize[index]);

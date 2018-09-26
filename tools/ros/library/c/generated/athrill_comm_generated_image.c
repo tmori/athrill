@@ -35,7 +35,7 @@ void athrill_comm_make_image(void)
     mp->meta_version = ACOMM_BUS_META_VERSION;
     mp->meta_magicno = ACOMM_BUS_META_MAGICNO;
     mp->meta_busid = 0;
-    mp->meta_entrynum = 2U;
+    mp->meta_entrynum = 3U;
     mp->meta_buffer_offset_soff = ACOMM_BUS_METADATA_SIZE;
     mp->meta_buffer_offset_size = ACOMM_BUS1_ELEMENT_NUM * sizeof(acomm_uint32);
     mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;
@@ -76,6 +76,14 @@ void athrill_comm_make_image(void)
     work_elmsizep[1] = ACOMM_BUS1_ELM_1_TYPE_SIZE;
     work_arraysizep[1] = ACOMM_BUS1_ELM_1_ARRAY_SIZE;
     work_typep[1] = ACOMM_BUS1_ELM_1_TYPE;
+    /*****************************
+    * ELM: CANID_0x102
+    *****************************/
+    work_offp[2]  = work_offp[1] + work_sizep[1];
+    work_sizep[2] = ACOMM_BUS1_ELM_2_SIZE;
+    work_elmsizep[2] = ACOMM_BUS1_ELM_2_TYPE_SIZE;
+    work_arraysizep[2] = ACOMM_BUS1_ELM_2_ARRAY_SIZE;
+    work_typep[2] = ACOMM_BUS1_ELM_2_TYPE;
 
     /*****************************
     * data elm: CANID_0x100
@@ -95,6 +103,15 @@ void athrill_comm_make_image(void)
     qp->roff = 0U;
     qp->woff = 0U;
     qp->elmsize = ACOMM_BUS1_ELM_1_TYPE_SIZE;
+    /*****************************
+    * data elm: CANID_0x102
+    *****************************/
+    qp = (acomm_queue_type*)&acomm_bus1_mapbuffer[work_offp[2]];
+    qp->len = 0U;
+    qp->maxlen = ACOMM_BUS1_ELM_2_QUEUE_LEN;
+    qp->roff = 0U;
+    qp->woff = 0U;
+    qp->elmsize = ACOMM_BUS1_ELM_2_TYPE_SIZE;
     /********************************************
      * bus2
      ********************************************/
@@ -168,7 +185,7 @@ void athrill_comm_make_image(void)
     qp->elmsize = ACOMM_BUS2_ELM_1_TYPE_SIZE;
 }
 
-int athrill_comm_generate_image(const char *generate_path)
+int athrill_comm_generate_image(const char* node_name, const char *generate_path)
 {
     int fd;
     char path[4096];
@@ -179,7 +196,7 @@ int athrill_comm_generate_image(const char *generate_path)
     {
         ssize_t size;
         memset(path, 0, 4096);
-        sprintf(path, "%s/athrill_bus1.bin", generate_path);
+        sprintf(path, "%s/athrill_%s_bus1.bin", generate_path, node_name);
         fd = open(path, O_RDWR|O_CREAT|O_TRUNC, 0644);
         if (fd < 0) {
             fprintf(stderr, "ERROR: can not open file(%s):err=%d\n", path, errno);
@@ -196,7 +213,7 @@ int athrill_comm_generate_image(const char *generate_path)
     {
         ssize_t size;
         memset(path, 0, 4096);
-        sprintf(path, "%s/athrill_bus2.bin", generate_path);
+        sprintf(path, "%s/athrill_%s_bus2.bin", generate_path, node_name);
         fd = open(path, O_RDWR|O_CREAT|O_TRUNC, 0644);
         if (fd < 0) {
             fprintf(stderr, "ERROR: can not open file(%s):err=%d\n", path, errno);

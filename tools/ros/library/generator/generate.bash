@@ -26,7 +26,8 @@ cd ${CDIR}
 #build COMMAND LIB
 cd ../../command
 make
-./athrill_mkfs
+./athrill_mkfs node1
+./athrill_mkfs node2
 
 cd ${CDIR}
 

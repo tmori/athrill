@@ -9,7 +9,7 @@ extern "C" {
 #include "athrill_comm_error.h"
 
 extern void athrill_comm_make_image(void);
-extern int athrill_comm_generate_image(const char *generate_path);
+extern int athrill_comm_generate_image(const char* node_name, const char *generate_path);
 
 #ifdef __cplusplus
 }

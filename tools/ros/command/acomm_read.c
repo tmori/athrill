@@ -38,35 +38,6 @@ static void acomm_show_data(acomm_uint8 *datap, acomm_uint32 size)
 static void acomm_read_entry(acomm_bus_metadata_type *bus_map, int index)
 {
     acomm_rtype err;
-#if 0
-    if (index >= acomm_bus[bus_map->meta_busid].num) {
-        fprintf(stderr, "ERROR:invalid index(%d). entry_num=%d\n", index,acomm_bus[bus_map->meta_busid].num );
-        return;
-    }
-    printf("busid=%u\n", bus_map->meta_busid);
-    printf("entrynum=%d\n", acomm_bus[bus_map->meta_busid].num);
-    printf("meta_buffer_offset_soff=%u\n", bus_map->meta_buffer_offset_soff);
-    printf("meta_buffer_offset_size=%u\n", bus_map->meta_buffer_offset_size);
-    printf("meta_buffer_size_soff=%u\n", bus_map->meta_buffer_size_soff);
-    printf("meta_buffer_size_size=%u\n", bus_map->meta_buffer_size_size);
-    printf("meta_buffer_elmsize_soff=%u\n", bus_map->meta_buffer_elmsize_soff);
-    printf("meta_buffer_elmsize_size=%u\n", bus_map->meta_buffer_elmsize_size);
-    printf("meta_buffer_type_soff=%u\n", bus_map->meta_buffer_type_soff);
-    printf("meta_buffer_type_size=%u\n", bus_map->meta_buffer_type_size);
-    printf("data_data_soff=%u\n", bus_map->data_data_soff);
-    printf("data_data_size=%u\n", bus_map->data_data_size);
-    printf("entry[%d].type=%u\n", index, acomm_bus[bus_map->meta_busid].comm_buffer_type[index]);
-    {
-        int i;
-        for (i = 0; i < acomm_bus[bus_map->meta_busid].num; i++) {
-            printf("buffer_offset[%d]=%u\n", i, acomm_bus[bus_map->meta_busid].comm_buffer_offset[i]);
-            printf("comm_buffer_size[%d]=%u\n", i, acomm_bus[bus_map->meta_busid].comm_buffer_size[i]);
-            printf("comm_buffer_elmsize[%d]=%u\n", i, acomm_bus[bus_map->meta_busid].comm_buffer_elmsize[i]);
-            printf("comm_buffer_type[%d]=%u\n", i, acomm_bus[bus_map->meta_busid].comm_buffer_type[i]);
-        }
-    }
-#endif
-
     memset(retdata, 0, sizeof(retdata));
     if (acomm_bus[bus_map->meta_busid].comm_buffer_type[index] == AcommDataType_Queue) {
         err = athrill_comm_peek(bus_map->meta_busid, index, &retdata[0], acomm_bus[bus_map->meta_busid].comm_buffer_elmsize[index]);

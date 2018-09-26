@@ -12,6 +12,12 @@ class TypeBuilder
     def self.getBus()
         return @@template_bus
     end
+    def self.setNodeName(nodeName)
+        @@template_nodeName = nodeName
+    end
+    def self.getNodeName()
+        return @@template_nodeName
+    end
 
     def self.buildBusType(yaml_data)
         for bus in yaml_data[0].values[0] do
@@ -25,9 +31,7 @@ class TypeBuilder
 
     def self.buildBusElementQueueType(objs)
         for elm in objs do
-            #p elm["overwrite"]
-            BusElementQueueType.add(elm["name"], elm["dataElmTypeRef"], elm["len"], elm["overwrite"])
-            #p BusElementQueueType.get(elm["name"])
+            BusElementQueueType.add(elm["name"], elm["dataElmTypeRef"], elm["len"], elm["attribute"])
         end
     end
     def self.buildBusElementDataType(objs)

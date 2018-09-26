@@ -38,11 +38,18 @@ static acomm_bus_metadata_type *map_busp;
     can_data[7] = msg.c7;
  
 <%-
-    if elm.busElmType.overWrite == true then
+    if elm.busElmType.attribute == "overWrite" then
 -%>
     ret = athrill_comm_send_force(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
     if (ret != ACOMM_E_OK) {
          fprintf(stderr, "ERROR: athrill_comm_send_force(<%= elm.name %>) err=%u\n", ret);
+    }
+<%-
+    elsif elm.busElmType.attribute == "uniq" then
+-%>
+    ret = athrill_comm_send_uniq(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
+    if (ret != ACOMM_E_OK) {
+        fprintf(stderr, "ERROR: athrill_comm_send_uniq(<%= elm.name %>) err=%u\n", ret);
     }
 <%-
     else
@@ -68,9 +75,9 @@ static acomm_bus_metadata_type *map_busp;
 int main(int argc, char **argv)
 {
     memset(mmap_filepath, 0, FILEPATH_MAX);
-    sprintf(mmap_filepath, "%s/%s_<%= TypeBuilder.getBus() %>.bin", std::getenv("GENERATED_MMAP_PATH"), std::getenv("GENERATED_MMAP_FILE_PREFIX"));
+    sprintf(mmap_filepath, "%s/%s_<%= TypeBuilder.getNodeName() %>_<%= TypeBuilder.getBus() %>.bin", std::getenv("GENERATED_MMAP_PATH"), std::getenv("GENERATED_MMAP_FILE_PREFIX"));
 
-    ros::init(argc, argv, "virtual_ecu_proxy_subscriber_<%= TypeBuilder.getBus() %>");
+    ros::init(argc, argv, "virtual_ecu_proxy_subscriber_<%= TypeBuilder.getNodeName() %>_<%= TypeBuilder.getBus() %>");
 
     map_busp = ::acomm_open(mmap_filepath);
 

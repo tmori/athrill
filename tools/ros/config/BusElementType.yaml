@@ -5,10 +5,14 @@
   - name: canDataQueueOverWrite
     dataElmTypeRef: DataElementArrayType/canDataType
     len: 1
-    overwrite: true
+    attribute: overWrite
   - name: canDataQueue100
     dataElmTypeRef: DataElementArrayType/canDataType
     len: 100
+  - name: canDataQueueUniq100
+    dataElmTypeRef: DataElementArrayType/canDataType
+    len: 100
+    attribute: uniq
 
 - BusElementDataType:
   - name: uint32

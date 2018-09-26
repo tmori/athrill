@@ -57,9 +57,9 @@ int main(int argc, char **argv)
 {
     acomm_bus_metadata_type *p;
     memset(mmap_filepath, 0, FILEPATH_MAX);
-    sprintf(mmap_filepath, "%s/%s_<%= TypeBuilder.getBus() %>.bin", std::getenv("GENERATED_MMAP_PATH"), std::getenv("GENERATED_MMAP_FILE_PREFIX"));
+    sprintf(mmap_filepath, "%s/%s_<%= TypeBuilder.getNodeName() %>_<%= TypeBuilder.getBus() %>.bin", std::getenv("GENERATED_MMAP_PATH"), std::getenv("GENERATED_MMAP_FILE_PREFIX"));
 
-    ros::init(argc, argv, "virtual_ecu_proxy_publisher_<%= TypeBuilder.getBus() %>");
+    ros::init(argc, argv, "virtual_ecu_proxy_publisher_<%= TypeBuilder.getNodeName() %>_<%= TypeBuilder.getBus() %>");
 
     p = acomm_open(mmap_filepath);
     if (p == NULL) {
