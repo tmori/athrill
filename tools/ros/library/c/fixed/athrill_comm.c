@@ -87,7 +87,6 @@ static acomm_rtype athrill_comm_send_common(acomm_busid busid, acomm_elmid elmid
     acomm_uint32 off;
     acomm_queue_type *entry;
 
-    acomm_lock(busid);
     err = athrill_comm_check(busid, elmid, data);
     if (err != ACOMM_E_OK) {
         goto done;
@@ -122,7 +121,6 @@ static acomm_rtype athrill_comm_send_common(acomm_busid busid, acomm_elmid elmid
     }
 
 done:
-    acomm_unlock(busid);
     return err;
 }
 
@@ -166,14 +164,87 @@ done:
     return err;
 
 }
+static acomm_rtype athrill_comm_is_exist_nolock(acomm_busid busid, acomm_elmid elmid, acomm_uint8 *data, acomm_uint32 size)
+{
+    acomm_rtype err = ACOMM_E_OK;
+    acomm_bus_type *bus;
+    acomm_uint32 boff;
+    acomm_uint32 off;
+    acomm_uint32 roff;
+    acomm_uint32 count = 0;
+    acomm_queue_type *entry;
+
+    err = athrill_comm_check(busid, elmid, data);
+    if (err != ACOMM_E_OK) {
+        goto done;
+    }
+
+    bus = &acomm_bus[busid];
+    off = bus->comm_buffer_offset[elmid] - bus->meta->data_data_soff;
+    entry = (acomm_queue_type*)&bus->comm_buffer[off];
+    if (entry->elmsize != size) {
+        err = ACOMM_E_INVALID;
+        goto done;
+    }
+
+    if (entry->len == 0U) {
+        err = ACOMM_E_NOENT;
+        goto done;
+    }
+
+    err = ACOMM_E_NOENT;
+    for (roff = entry->roff; count < entry->len;) {
+        boff = ACOMM_QUEUE_ELEM_BUFFER_OFF(entry, roff);
+        if (memcmp(data, &entry->elements[boff], entry->elmsize) == 0) {
+            err = ACOMM_E_OK;
+            break;
+        }
+        roff++;
+        count++;
+        if (roff >= entry->maxlen) {
+            roff = 0U;
+        }
+    }
+done:
+    return err;
+}
+
+acomm_rtype athrill_comm_is_exist(acomm_busid busid, acomm_elmid elmid, acomm_uint8 *data, acomm_uint32 size)
+{
+    acomm_rtype err;
+    acomm_lock(busid);
+    err = athrill_comm_is_exist_nolock(busid, elmid, data, size);
+    acomm_unlock(busid);
+    return err;
+}
+
+acomm_rtype athrill_comm_send_uniq(acomm_busid busid, acomm_elmid elmid, acomm_uint8 *data, acomm_uint32 size)
+{
+    acomm_rtype err;
+    acomm_lock(busid);
+    err = athrill_comm_is_exist_nolock(busid, elmid, data, size);
+    if (err == ACOMM_E_NOENT) {
+        err = athrill_comm_send_common(busid, elmid, data, size, FALSE);
+    }
+    acomm_unlock(busid);
+    return err;
+}
 
 acomm_rtype athrill_comm_send(acomm_busid busid, acomm_elmid elmid, acomm_uint8 *data, acomm_uint32 size)
 {
-    return athrill_comm_send_common(busid, elmid, data, size, FALSE);
+    acomm_rtype err;
+    acomm_lock(busid);
+    err = athrill_comm_send_common(busid, elmid, data, size, FALSE);
+    acomm_unlock(busid);
+    return err;
 }
 acomm_rtype athrill_comm_send_force(acomm_busid busid, acomm_elmid elmid, acomm_uint8 *data, acomm_uint32 size)
 {
-    return athrill_comm_send_common(busid, elmid, data, size, TRUE);
+    acomm_rtype err;
+    acomm_lock(busid);
+    err = athrill_comm_send_common(busid, elmid, data, size, TRUE);
+    acomm_unlock(busid);
+    return err;
 }
 
 acomm_rtype athrill_comm_recv(acomm_busid busid, acomm_elmid elmid, acomm_uint8 *data, acomm_uint32 size)
