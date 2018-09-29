@@ -390,7 +390,9 @@ bool cpuctrl_set_break(uint32 addr, BreakPointEumType type)
 		bp->type = type;
 		bp->is_set = TRUE;
 		bp->addr = addr;
-		dbg_cpuctrl_break_points_num++;
+		if (type != BREAK_POINT_TYPE_ONLY_ONCE) {
+			dbg_cpuctrl_break_points_num++;
+		}
 		return TRUE;
 	}
 	return FALSE;
@@ -416,7 +418,9 @@ void cpuctrl_del_all_break(BreakPointEumType type)
 			 cpuctrl_del_break(i);
 		 }
 	 }
-	 dbg_cpuctrl_break_points_num = 0;
+	 if (type != BREAK_POINT_TYPE_ONLY_ONCE) {
+		 dbg_cpuctrl_break_points_num = 0;
+	 }
 	 return;
 }
 static bool data_access_object_write_filter(const void *p)

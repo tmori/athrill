@@ -405,9 +405,12 @@ void *cpuemu_thread_run(void* arg)
 	else {
 		do_cpu_run = cpuemu_thread_run_nodbg;
 	}
+	uint64 end_clock = cpuemu_get_cpu_end_clock();
+	uint64 *clockp = &cpuemu_dev_clock.clock;
+	bool enable_skip = cpuemu_dev_clock.enable_skip;
 
 	while (TRUE) {
-		if (cpuemu_dev_clock.clock >= cpuemu_get_cpu_end_clock()) {
+		if ((*clockp)>= end_clock) {
 			dbg_log_sync();
 			//printf("EXIT for timeout(%I64u).\n", cpuemu_dev_clock.clock);
 			printf("EXIT for timeout("PRINT_FMT_UINT64").\n", cpuemu_dev_clock.clock);
@@ -415,7 +418,7 @@ void *cpuemu_thread_run(void* arg)
 		}
 		is_halt = do_cpu_run(core_id_num);
 
-		if (cpuemu_dev_clock.enable_skip == TRUE) {
+		if (enable_skip == TRUE) {
 			if ((is_halt == TRUE) && (cpuemu_dev_clock.can_skip_clock == TRUE)) {
 #ifdef OS_LINUX
 				uint64 skipc_usec = 0;

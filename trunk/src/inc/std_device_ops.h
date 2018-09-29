@@ -4,6 +4,7 @@
 #include "cpu_config_ops.h"
 #ifdef OS_LINUX
 #include <sys/time.h>
+#include <time.h>
 
 static inline void cpuemu_timeval_sub(struct timeval *tv1, struct timeval *tv2, struct timeval *tv_result)
 {
@@ -27,32 +28,51 @@ static inline void cpuemu_timeval_add(struct timeval *tv1, struct timeval *tv2, 
 	}
 	return;
 }
+static inline void cpuemu_timespec_sub(struct timespec *tv1, struct timespec *tv2, struct timespec *tv_result)
+{
+	tv_result->tv_sec = tv1->tv_sec - tv2->tv_sec;
+	if (tv1->tv_nsec >= tv2->tv_nsec) {
+		tv_result->tv_nsec = tv1->tv_nsec - tv2->tv_nsec;
+	}
+	else {
+		tv_result->tv_nsec = (1000000000 + tv1->tv_nsec) - tv2->tv_nsec;
+		tv_result->tv_sec--;
+	}
+	return;
+}
 
+#define PROF_STAT_LOOP_MAX	1
 typedef struct {
-	uint64 max; /* usec */
-	uint64 total; /* usec */
+	uint64 max; /* nsec */
+	uint64 total; /* nsec */
 	uint64 count;
-	struct timeval start_time;
-	struct timeval end_time;
-	struct timeval elaps;
+	struct timespec start_ts;
+	struct timespec end_ts;
+	struct timespec elaps_ts;
 } ProfStatType;
 
 static inline void profstat_start(ProfStatType *prof)
 {
-	(void)gettimeofday(&prof->start_time, NULL);
+	clock_gettime(CLOCK_REALTIME, &prof->start_ts);
 	return;
 }
 static inline void profstat_end(ProfStatType *prof)
 {
-	(void)gettimeofday(&prof->end_time, NULL);
-	cpuemu_timeval_sub(&prof->end_time, &prof->start_time, &prof->elaps);
+	if (prof->start_ts.tv_sec == 0) {
+		return;
+	}
+	clock_gettime(CLOCK_REALTIME, &prof->end_ts);
+	cpuemu_timespec_sub(&prof->end_ts, &prof->start_ts, &prof->elaps_ts);
 	/* set max */
-	if (prof->max < prof->elaps.tv_usec) {
-		prof->max = prof->elaps.tv_usec;
+	uint64 elaps = ((uint64)(prof->elaps_ts.tv_sec) * ((uint64)1000000000)) + (uint64)(prof->elaps_ts.tv_nsec);
+	//uint64 elaps =  (uint64)(prof->elaps.tv_usec);
+	//printf("%llu start=%lu end=%lu loop=%u\n", elaps, prof->start_time.tv_sec, prof->end_time.tv_sec, prof->loop);
+	if (prof->max < elaps) {
+		prof->max = elaps;
 	}
 	/* set average */
 	prof->count++;
-	prof->total += prof->elaps.tv_usec;
+	prof->total += elaps;
 	return;
 }
 #ifdef CONFIG_STAT_PERF

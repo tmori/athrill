@@ -853,18 +853,18 @@ void dbg_std_executor_profile(void *executor)
 			printf("%-15s %-10"FMT_UINT64" %-15"FMT_UINT64" %-15"FMT_UINT64"\n",
 					op_exec_string_table[code_id].code_name,
 					op_exec_stat_table[code_id].max,
-					op_exec_stat_table[code_id].total,
+					op_exec_stat_table[code_id].total/1000,
 					op_exec_stat_table[code_id].count);
 			total_elaps += op_exec_stat_table[code_id].total;
 		}
-		printf("cpu_instr_total_elaps=%-10"FMT_UINT64"\n", total_elaps);
+		printf("cpu_instr_total_elaps=%-10"FMT_UINT64"\n", total_elaps/1000);
 		printf("cpuemu_cpu_total_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
-			cpuemu_cpu_total_prof.max, cpuemu_cpu_total_prof.total, cpuemu_cpu_total_prof.count);
+			cpuemu_cpu_total_prof.max, cpuemu_cpu_total_prof.total/1000, cpuemu_cpu_total_prof.count);
 		printf("cpuemu_dev_total_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
-			cpuemu_dev_total_prof.max, cpuemu_dev_total_prof.total, cpuemu_dev_total_prof.count);
+			cpuemu_dev_total_prof.max, cpuemu_dev_total_prof.total/1000, cpuemu_dev_total_prof.count);
 		for (i = 0; i < DEBUG_STAT_NUM; i++) {
 			printf("cpuemu_dbg%d_total_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", i, 
-				cpuemu_dbg_total_prof[i].max, cpuemu_dbg_total_prof[i].total, cpuemu_dbg_total_prof[i].count);
+				cpuemu_dbg_total_prof[i].max, cpuemu_dbg_total_prof[i].total/1000, cpuemu_dbg_total_prof[i].count);
 		}
 		memset(op_exec_stat_table, 0, sizeof(op_exec_stat_table));
 		memset(&cpuemu_cpu_total_prof, 0, sizeof(cpuemu_cpu_total_prof));
