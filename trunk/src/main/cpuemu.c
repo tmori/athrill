@@ -247,13 +247,137 @@ static void cpuemu_set_debug_romdata(void)
 	return;
 }
 
-void *cpuemu_thread_run(void* arg)
+#ifdef CONFIG_STAT_PERF
+ProfStatType cpuemu_cpu_total_prof;
+ProfStatType cpuemu_dev_total_prof;
+ProfStatType cpuemu_dbg_total_prof[DEBUG_STAT_NUM];
+
+#define CPUEMU_CPU_TOTAL_PROF_START()		profstat_start(&cpuemu_cpu_total_prof)
+#define CPUEMU_CPU_TOTAL_PROF_END()			profstat_end(&cpuemu_cpu_total_prof)
+#define CPUEMU_DEV_TOTAL_PROF_START()		profstat_start(&cpuemu_dev_total_prof)
+#define CPUEMU_DEV_TOTAL_PROF_END()			profstat_end(&cpuemu_dev_total_prof)
+#define CPUEMU_DBG_TOTAL_PROF_START(inx)	profstat_start(&cpuemu_dbg_total_prof[(inx)])
+#define CPUEMU_DBG_TOTAL_PROF_END(inx)		profstat_end(&cpuemu_dbg_total_prof[(inx)])
+#else
+#define CPUEMU_CPU_TOTAL_PROF_START()
+#define CPUEMU_CPU_TOTAL_PROF_END()
+#define CPUEMU_DEV_TOTAL_PROF_START()
+#define CPUEMU_DEV_TOTAL_PROF_END()
+#define CPUEMU_DBG_TOTAL_PROF_START(inx)
+#define CPUEMU_DBG_TOTAL_PROF_END(inx)
+#endif /* CONFIG_STAT_PERF */
+
+static DbgCpuCallbackFuncEnableType enable_dbg;
+
+static inline bool cpuemu_thread_run_nodbg(int core_id_num)
 {
+	bool is_halt;
 	CoreIdType i;
 	Std_ReturnType err;
-	DbgCpuCallbackFuncEnableType enable_dbg;
+	/**
+	 * デバイス実行実行
+	 */
+#ifdef OS_LINUX
+	device_supply_clock_athrill_device();
+#endif /* OS_LINUX */
+	device_supply_clock(&cpuemu_dev_clock);
+
+	/**
+	 * CPU 実行
+	 */
+	is_halt = TRUE;
+	for (i = 0; i < core_id_num; i++) {
+		virtual_cpu.current_core = &virtual_cpu.cores[i];
+		/**
+		 * CPU 実行開始通知
+		 */
+		dbg_cpu_callback_start(cpu_get_pc(&virtual_cpu.cores[i].core), cpu_get_sp(&virtual_cpu.cores[i].core));
+
+		err = cpu_supply_clock(i);
+		if ((err != STD_E_OK) && (cpu_illegal_access(i) == FALSE)) {
+			printf("CPU(pc=0x%x) Exception!!\n", cpu_get_pc(&virtual_cpu.cores[i].core));
+			fflush(stdout);
+			exit(1);
+		}
+		/**
+		 * CPU 実行完了通知
+		 */
+		if (virtual_cpu.cores[i].core.is_halt != TRUE) {
+			is_halt = FALSE;
+		}
+	}
+	return is_halt;
+}
+static inline bool cpuemu_thread_run_dbg(int core_id_num)
+{
+	bool is_halt;
+	CoreIdType i;
+	Std_ReturnType err;
+
+	/**
+	 * デバイス実行実行
+	 */
+	CPUEMU_DEV_TOTAL_PROF_START();
+#ifdef OS_LINUX
+	device_supply_clock_athrill_device();
+#endif /* OS_LINUX */
+	device_supply_clock(&cpuemu_dev_clock);
+	CPUEMU_DEV_TOTAL_PROF_END();
+
+	/**
+	 * CPU 実行
+	 */
+	is_halt = TRUE;
+	for (i = 0; i < core_id_num; i++) {
+		virtual_cpu.current_core = &virtual_cpu.cores[i];
+
+		CPUEMU_CPU_TOTAL_PROF_START();
+		/*
+		 * バスのアクセスログをクリアする
+		 */
+		CPUEMU_DBG_TOTAL_PROF_START(0);
+		bus_access_set_log(BUS_ACCESS_TYPE_NONE, 8U, 0, 0);
+		CPUEMU_DBG_TOTAL_PROF_END(0);
+
+		/**
+		 * CPU 実行開始通知
+		 */
+		CPUEMU_DBG_TOTAL_PROF_START(1);
+		dbg_cpu_callback_start(cpu_get_pc(&virtual_cpu.cores[i].core), cpu_get_sp(&virtual_cpu.cores[i].core));
+		CPUEMU_DBG_TOTAL_PROF_END(1);
+
+		CPUEMU_DBG_TOTAL_PROF_START(2);
+		dbg_notify_cpu_clock_supply_start(&virtual_cpu.cores[i].core);
+		CPUEMU_DBG_TOTAL_PROF_END(2);
+
+		CPUEMU_DBG_TOTAL_PROF_START(3);
+		err = cpu_supply_clock(i);
+		if ((err != STD_E_OK) && (cpu_illegal_access(i) == FALSE)) {
+			printf("CPU(pc=0x%x) Exception!!\n", cpu_get_pc(&virtual_cpu.cores[i].core));
+			fflush(stdout);
+			cpuctrl_set_force_break();
+		}
+		CPUEMU_DBG_TOTAL_PROF_END(3);
+		/**
+		 * CPU 実行完了通知
+		 */
+		CPUEMU_DBG_TOTAL_PROF_START(4);
+		dbg_notify_cpu_clock_supply_end(&virtual_cpu.cores[i].core, &enable_dbg);
+		CPUEMU_DBG_TOTAL_PROF_END(4);
+
+		CPUEMU_CPU_TOTAL_PROF_END();
+		if (virtual_cpu.cores[i].core.is_halt != TRUE) {
+			is_halt = FALSE;
+		}
+	}
+	return is_halt;
+}
+
+void *cpuemu_thread_run(void* arg)
+{
 	bool is_halt;
 	int core_id_num = cpu_config_get_core_id_num();
+	static bool (*do_cpu_run) (int);
 
 	enable_dbg.enable_bt = TRUE;
 	enable_dbg.enable_ft = TRUE;
@@ -275,6 +399,13 @@ void *cpuemu_thread_run(void* arg)
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_SKIP_CLOCK", (uint32*)&cpuemu_dev_clock.enable_skip);
 	cpuemu_set_debug_romdata();
 
+	if (cpuemu_cui_mode() == TRUE) {
+		do_cpu_run = cpuemu_thread_run_dbg;
+	}
+	else {
+		do_cpu_run = cpuemu_thread_run_nodbg;
+	}
+
 	while (TRUE) {
 		if (cpuemu_dev_clock.clock >= cpuemu_get_cpu_end_clock()) {
 			dbg_log_sync();
@@ -282,60 +413,8 @@ void *cpuemu_thread_run(void* arg)
 			printf("EXIT for timeout("PRINT_FMT_UINT64").\n", cpuemu_dev_clock.clock);
 			exit(1);
 		}
+		is_halt = do_cpu_run(core_id_num);
 
-		/**
-		 * デバイス実行実行
-		 */
-#ifdef OS_LINUX
-		device_supply_clock_athrill_device();
-#endif /* OS_LINUX */
-		device_supply_clock(&cpuemu_dev_clock);
-
-		/**
-		 * CPU 実行
-		 */
-		is_halt = TRUE;
-		for (i = 0; i < core_id_num; i++) {
-			virtual_cpu.current_core = &virtual_cpu.cores[i];
-
-			/*
-			 * バスのアクセスログをクリアする
-			 */
-			if (cpuemu_cui_mode() == TRUE) {
-				bus_access_set_log(BUS_ACCESS_TYPE_NONE, 8U, 0, 0);
-			}
-
-			/**
-			 * CPU 実行開始通知
-			 */
-			dbg_cpu_callback_start(cpu_get_pc(&virtual_cpu.cores[i].core), cpu_get_sp(&virtual_cpu.cores[i].core));
-
-			if (cpuemu_cui_mode() == TRUE) {
-				dbg_notify_cpu_clock_supply_start(&virtual_cpu.cores[i].core);
-			}
-
-			err = cpu_supply_clock(i);
-			if ((err != STD_E_OK) && (cpu_illegal_access(i) == FALSE)) {
-				printf("CPU(pc=0x%x) Exception!!\n", cpu_get_pc(&virtual_cpu.cores[i].core));
-				fflush(stdout);
-				if (cpuemu_cui_mode() == TRUE) {
-					cpuctrl_set_force_break();
-				}
-				else {
-					exit(1);
-				}
-			}
-			/**
-			 * CPU 実行完了通知
-			 */
-			if (cpuemu_cui_mode() == TRUE) {
-				dbg_notify_cpu_clock_supply_end(&virtual_cpu.cores[i].core, &enable_dbg);
-			}
-
-			if (virtual_cpu.cores[i].core.is_halt != TRUE) {
-				is_halt = FALSE;
-			}
-		}
 		if (cpuemu_dev_clock.enable_skip == TRUE) {
 			if ((is_halt == TRUE) && (cpuemu_dev_clock.can_skip_clock == TRUE)) {
 #ifdef OS_LINUX

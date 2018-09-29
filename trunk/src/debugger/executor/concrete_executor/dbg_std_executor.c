@@ -813,6 +813,9 @@ void dbg_std_executor_back_trace(void *executor)
 
 	return;
 }
+#ifdef CONFIG_STAT_PERF
+#include "cpu_exec/op_exec.h"
+#endif /* CONFIG_STAT_PERF */
 void dbg_std_executor_profile(void *executor)
 {
 	uint32 funcnum;
@@ -838,6 +841,37 @@ void dbg_std_executor_profile(void *executor)
 		}
 		printf("****************\n");
 	}
+
+#ifdef CONFIG_STAT_PERF
+	/* cpu exec */
+	{
+		int i;
+		OpCodeId code_id;
+		uint64 total_elaps = 0;
+		printf("%-15s %-10s %-15s %-15s\n", "code_id", "max", "total", "count");
+		for (code_id = 0; code_id < OP_EXEC_TABLE_NUM; code_id++) {
+			printf("%-15s %-10"FMT_UINT64" %-15"FMT_UINT64" %-15"FMT_UINT64"\n",
+					op_exec_string_table[code_id].code_name,
+					op_exec_stat_table[code_id].max,
+					op_exec_stat_table[code_id].total,
+					op_exec_stat_table[code_id].count);
+			total_elaps += op_exec_stat_table[code_id].total;
+		}
+		printf("cpu_instr_total_elaps=%-10"FMT_UINT64"\n", total_elaps);
+		printf("cpuemu_cpu_total_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
+			cpuemu_cpu_total_prof.max, cpuemu_cpu_total_prof.total, cpuemu_cpu_total_prof.count);
+		printf("cpuemu_dev_total_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
+			cpuemu_dev_total_prof.max, cpuemu_dev_total_prof.total, cpuemu_dev_total_prof.count);
+		for (i = 0; i < DEBUG_STAT_NUM; i++) {
+			printf("cpuemu_dbg%d_total_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", i, 
+				cpuemu_dbg_total_prof[i].max, cpuemu_dbg_total_prof[i].total, cpuemu_dbg_total_prof[i].count);
+		}
+		memset(op_exec_stat_table, 0, sizeof(op_exec_stat_table));
+		memset(&cpuemu_cpu_total_prof, 0, sizeof(cpuemu_cpu_total_prof));
+		memset(&cpuemu_dev_total_prof, 0, sizeof(cpuemu_dev_total_prof));
+		memset(cpuemu_dbg_total_prof, 0, sizeof(cpuemu_dbg_total_prof));
+	}
+#endif /* CONFIG_STAT_PERF */
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 
 	return;

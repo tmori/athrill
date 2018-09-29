@@ -16,6 +16,7 @@ typedef struct {
 	uint32 				addr;
 } DbgCpuCtrlBreakPointType;
 
+static int dbg_cpuctrl_break_points_num = 0U;
 DbgCpuCtrlBreakPointType dbg_cpuctrl_break_points[DBG_CPU_CONTROL_BREAK_SETSIZE] = {
 		{ TRUE, BREAK_POINT_TYPE_FOREVER, 0x00 },
 };
@@ -365,8 +366,10 @@ bool cpuctrl_get_break(uint32 index, uint32 *addrp)
 
 bool cpuctrl_is_break_point(uint32 addr)
 {
-	if (search_break_point(addr) != NULL) {
-		return TRUE;
+	if (dbg_cpuctrl_break_points_num > 0) {
+		if (search_break_point(addr) != NULL) {
+			return TRUE;
+		}
 	}
 	return FALSE;
 }
@@ -387,6 +390,7 @@ bool cpuctrl_set_break(uint32 addr, BreakPointEumType type)
 		bp->type = type;
 		bp->is_set = TRUE;
 		bp->addr = addr;
+		dbg_cpuctrl_break_points_num++;
 		return TRUE;
 	}
 	return FALSE;
@@ -396,6 +400,9 @@ bool cpuctrl_set_break(uint32 addr, BreakPointEumType type)
 bool cpuctrl_del_break(uint32 index)
 {
 	if (index > 0) {
+		if (dbg_cpuctrl_break_points[index].is_set == TRUE) {
+			dbg_cpuctrl_break_points_num--;
+		}
 		dbg_cpuctrl_break_points[index].is_set = FALSE;
 		return TRUE;
 	}
@@ -409,6 +416,7 @@ void cpuctrl_del_all_break(BreakPointEumType type)
 			 cpuctrl_del_break(i);
 		 }
 	 }
+	 dbg_cpuctrl_break_points_num = 0;
 	 return;
 }
 static bool data_access_object_write_filter(const void *p)

@@ -27,6 +27,46 @@ static inline void cpuemu_timeval_add(struct timeval *tv1, struct timeval *tv2, 
 	}
 	return;
 }
+
+typedef struct {
+	uint64 max; /* usec */
+	uint64 total; /* usec */
+	uint64 count;
+	struct timeval start_time;
+	struct timeval end_time;
+	struct timeval elaps;
+} ProfStatType;
+
+static inline void profstat_start(ProfStatType *prof)
+{
+	(void)gettimeofday(&prof->start_time, NULL);
+	return;
+}
+static inline void profstat_end(ProfStatType *prof)
+{
+	(void)gettimeofday(&prof->end_time, NULL);
+	cpuemu_timeval_sub(&prof->end_time, &prof->start_time, &prof->elaps);
+	/* set max */
+	if (prof->max < prof->elaps.tv_usec) {
+		prof->max = prof->elaps.tv_usec;
+	}
+	/* set average */
+	prof->count++;
+	prof->total += prof->elaps.tv_usec;
+	return;
+}
+#ifdef CONFIG_STAT_PERF
+#define DEBUG_STAT_NUM	5
+extern ProfStatType cpuemu_cpu_total_prof;
+extern ProfStatType cpuemu_dev_total_prof;
+extern ProfStatType cpuemu_dbg_total_prof[DEBUG_STAT_NUM];
+
+#define PROFSTAT_START(arg)	profstat_start(arg)
+#define PROFSTAT_END(arg)	profstat_end(arg)
+#else
+#define PROFSTAT_START(arg)
+#define PROFSTAT_END(arg)
+#endif
 #endif /* OS_LINUX */
 
 /*

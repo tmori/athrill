@@ -12,6 +12,9 @@ typedef struct {
 
 typedef struct {
 	OpDecodedCodeType	decoded_code;
+#ifdef CONFIG_STAT_PERF
+	OpCodeId			code_id;
+#endif /* CONFIG_STAT_PERF */
 	int (*op_exec) (TargetCoreType *cpu);
 } CpuOperationCodeType;
 
@@ -37,6 +40,14 @@ extern CpuType	virtual_cpu;
 static inline CachedOperationCodeType *virtual_cpu_get_cached_code(uint32 pc)
 {
 	uint32 i;
+	static CachedOperationCodeType *last = NULL;
+
+	if (last != NULL) {
+		if ((pc >= last->code_start_addr) && (pc < (last->code_start_addr + last->code_size))) {
+			return last;
+		}
+	}
+
 	for (i = 0; i < virtual_cpu.cached_code_num; i++) {
 		if (pc < virtual_cpu.cached_code[i]->code_start_addr) {
 			continue;
@@ -44,6 +55,7 @@ static inline CachedOperationCodeType *virtual_cpu_get_cached_code(uint32 pc)
 		else if (pc >= (virtual_cpu.cached_code[i]->code_start_addr + virtual_cpu.cached_code[i]->code_size)) {
 			continue;
 		}
+		last = virtual_cpu.cached_code[i];
 		return virtual_cpu.cached_code[i];
 	}
 	/*

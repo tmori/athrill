@@ -6,6 +6,8 @@
 #include "cpu_dec/op_parse.h"
 #include "cpu_exec/op_exec.h"
 #include "mpu_types.h"
+#include <sys/time.h>
+#include "std_device_ops.h"
 
 CpuType virtual_cpu;
 
@@ -614,6 +616,9 @@ static Std_ReturnType cpu_supply_clock_not_cached(CoreIdType core_id, CachedOper
 	}
 
 	if (cached_code != NULL) {
+#ifdef CONFIG_STAT_PERF
+		cached_code->codes[inx].code_id = optype.code_id;
+#endif /* CONFIG_STAT_PERF */
 		cached_code->codes[inx].op_exec = op_exec_table[optype.code_id].exec;
 	}
 	return STD_E_OK;
@@ -625,7 +630,6 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 	Std_ReturnType err;
 	uint32 inx;
 	CachedOperationCodeType *cached_code;
-	bool permission;
 
 	if (virtual_cpu.cores[core_id].core.is_halt == TRUE) {
 		return STD_E_OK;
@@ -644,7 +648,13 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 		virtual_cpu.cores[core_id].core.reg.r[0] = 0U;
 	}
 	else {
+#ifdef CONFIG_STAT_PERF
+		OpCodeId code_id = cached_code->codes[inx].code_id;
+		PROFSTAT_START(&op_exec_stat_table[code_id]);
+#endif /* CONFIG_STAT_PERF */
 		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
+#ifndef DISABLE_MEMPROTECT
+		bool permission;
 		permission = cpu_has_permission(core_id,
 				READONLY_MEMORY,
 				CpuMemoryAccess_EXEC,
@@ -653,7 +663,11 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 		if (permission == FALSE) {
 			return STD_E_SEGV;
 		}
+#endif /* DISABLE_MEMPROTECT */
 		ret = cached_code->codes[inx].op_exec(&virtual_cpu.cores[core_id].core);
+#ifdef CONFIG_STAT_PERF
+		PROFSTAT_END(&op_exec_stat_table[code_id]);
+#endif /* CONFIG_STAT_PERF */
 		if (ret < 0) {
 			printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x\n",
 					virtual_cpu.cores[core_id].core.current_code[0],

@@ -14,6 +14,15 @@ typedef struct {
 
 extern OpExecType op_exec_table[OP_EXEC_TABLE_NUM];
 
+#ifdef CONFIG_STAT_PERF
+#include "std_device_ops.h"
+typedef struct {
+	char *code_name;
+} OpExecStringType;
+extern ProfStatType op_exec_stat_table[OP_EXEC_TABLE_NUM];
+extern OpExecStringType op_exec_string_table[OP_EXEC_TABLE_NUM];
+#endif /* CONFIG_CALC_PERFORMANCE */
+
 //#define op_exec_add_1 op_exec_add_1
 //#define op_exec_add_2 op_exec_add_2
 #define op_exec_addi_6 op_exec_addi
