@@ -3,6 +3,27 @@
 #include "device_ex_serial_ops.h"
 #include "concrete_executor/target/dbg_target_serial.h"
 #include <stdio.h>
+#include "std_device_ops.h"
+
+#ifdef CONFIG_STAT_PERF
+ProfStatType cpuemu_dev_timer_prof;
+ProfStatType cpuemu_dev_serial_prof;
+ProfStatType cpuemu_dev_intr_prof;
+
+#define CPUEMU_DEV_TIMER_PROF_START()	profstat_start(&cpuemu_dev_timer_prof)
+#define CPUEMU_DEV_TIMER_PROF_END()		profstat_end(&cpuemu_dev_timer_prof)
+#define CPUEMU_DEV_SERIAL_PROF_START()	profstat_start(&cpuemu_dev_serial_prof)
+#define CPUEMU_DEV_SERIAL_PROF_END()		profstat_end(&cpuemu_dev_serial_prof)
+#define CPUEMU_DEV_INTR_PROF_START()	profstat_start(&cpuemu_dev_intr_prof)
+#define CPUEMU_DEV_INTR_PROF_END()		profstat_end(&cpuemu_dev_intr_prof)
+#else
+#define CPUEMU_DEV_TIMER_PROF_START()
+#define CPUEMU_DEV_TIMER_PROF_END()
+#define CPUEMU_DEV_SERIAL_PROF_START()
+#define CPUEMU_DEV_SERIAL_PROF_END()
+#define CPUEMU_DEV_INTR_PROF_START()
+#define CPUEMU_DEV_INTR_PROF_END()
+#endif /* CONFIG_STAT_PERF */
 
 static DeviceExSerialOpType device_ex_serial_op = {
 		.putchar = dbg_serial_putchar,
@@ -49,9 +70,17 @@ void device_supply_clock(DeviceClockType *dev_clock)
 	dev_clock->min_intr_interval = DEVICE_CLOCK_MAX_INTERVAL;
 	dev_clock->can_skip_clock = TRUE;
 
+	CPUEMU_DEV_TIMER_PROF_START();
 	device_supply_clock_timer(dev_clock);
+	CPUEMU_DEV_TIMER_PROF_END();
+
+	CPUEMU_DEV_SERIAL_PROF_START();
 	device_supply_clock_serial(dev_clock);
+	CPUEMU_DEV_SERIAL_PROF_END();
+
+	CPUEMU_DEV_INTR_PROF_START();
 	device_supply_clock_intc(dev_clock);
+	CPUEMU_DEV_INTR_PROF_END();
 	return;
 }
 

@@ -14,7 +14,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include "target/target_os_api.h"
-
+#include <sched.h>
+#include <limits.h>
 
 static void do_cui(void)
 {
@@ -84,6 +85,16 @@ int main(int argc, const char *argv[])
 	}
 
 	winsock_init();
+#if 0
+	struct sched_param sp;
+
+	sp.sched_priority = sched_get_priority_max(SCHED_FIFO);
+	int ret = sched_setscheduler(0, SCHED_FIFO, &sp);
+	if (ret) {
+		perror("sched_setscheduler");
+		return 1;
+	}
+#endif
 
 	opt = parse_args(argc, argv);
 	if (opt == NULL) {

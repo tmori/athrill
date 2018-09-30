@@ -251,6 +251,8 @@ static void cpuemu_set_debug_romdata(void)
 ProfStatType cpuemu_cpu_total_prof;
 ProfStatType cpuemu_dev_total_prof;
 ProfStatType cpuemu_dbg_total_prof[DEBUG_STAT_NUM];
+ProfStatType cpuemu_tool1_prof;
+ProfStatType cpuemu_tool2_prof;
 
 #define CPUEMU_CPU_TOTAL_PROF_START()		profstat_start(&cpuemu_cpu_total_prof)
 #define CPUEMU_CPU_TOTAL_PROF_END()			profstat_end(&cpuemu_cpu_total_prof)
@@ -258,6 +260,10 @@ ProfStatType cpuemu_dbg_total_prof[DEBUG_STAT_NUM];
 #define CPUEMU_DEV_TOTAL_PROF_END()			profstat_end(&cpuemu_dev_total_prof)
 #define CPUEMU_DBG_TOTAL_PROF_START(inx)	profstat_start(&cpuemu_dbg_total_prof[(inx)])
 #define CPUEMU_DBG_TOTAL_PROF_END(inx)		profstat_end(&cpuemu_dbg_total_prof[(inx)])
+#define CPUEMU_TOOL1_PROF_START()			profstat_start(&cpuemu_tool1_prof)
+#define CPUEMU_TOOL1_PROF_END()				profstat_end(&cpuemu_tool1_prof)
+#define CPUEMU_TOOL2_PROF_START()			profstat_start(&cpuemu_tool2_prof)
+#define CPUEMU_TOOL2_PROF_END()				profstat_end(&cpuemu_tool2_prof)
 #else
 #define CPUEMU_CPU_TOTAL_PROF_START()
 #define CPUEMU_CPU_TOTAL_PROF_END()
@@ -265,6 +271,10 @@ ProfStatType cpuemu_dbg_total_prof[DEBUG_STAT_NUM];
 #define CPUEMU_DEV_TOTAL_PROF_END()
 #define CPUEMU_DBG_TOTAL_PROF_START(inx)
 #define CPUEMU_DBG_TOTAL_PROF_END(inx)
+#define CPUEMU_TOOL1_PROF_START()
+#define CPUEMU_TOOL1_PROF_END()
+#define CPUEMU_TOOL2_PROF_START()
+#define CPUEMU_TOOL2_PROF_END()
 #endif /* CONFIG_STAT_PERF */
 
 static DbgCpuCallbackFuncEnableType enable_dbg;
@@ -313,6 +323,11 @@ static inline bool cpuemu_thread_run_dbg(int core_id_num)
 	bool is_halt;
 	CoreIdType i;
 	Std_ReturnType err;
+
+	CPUEMU_TOOL1_PROF_START();
+		CPUEMU_TOOL2_PROF_START();
+		CPUEMU_TOOL2_PROF_END();
+	CPUEMU_TOOL1_PROF_END();
 
 	/**
 	 * デバイス実行実行

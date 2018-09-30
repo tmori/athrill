@@ -866,10 +866,31 @@ void dbg_std_executor_profile(void *executor)
 			printf("cpuemu_dbg%d_total_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", i, 
 				cpuemu_dbg_total_prof[i].max, cpuemu_dbg_total_prof[i].total/1000, cpuemu_dbg_total_prof[i].count);
 		}
+		printf("cpuemu_dev_timer_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
+			cpuemu_dev_timer_prof.max, cpuemu_dev_timer_prof.total/1000, cpuemu_dev_timer_prof.count);
+		printf("cpuemu_dev_serial_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
+			cpuemu_dev_serial_prof.max, cpuemu_dev_serial_prof.total/1000, cpuemu_dev_serial_prof.count);
+		printf("cpuemu_dev_intr_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
+			cpuemu_dev_intr_prof.max, cpuemu_dev_intr_prof.total/1000, cpuemu_dev_intr_prof.count);
+		printf("cpuemu_dev_adev1_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
+			cpuemu_dev_adev1_prof.max, cpuemu_dev_adev1_prof.total/1000, cpuemu_dev_adev1_prof.count);
+		printf("cpuemu_dev_adev2_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
+			cpuemu_dev_adev2_prof.max, cpuemu_dev_adev2_prof.total/1000, cpuemu_dev_adev2_prof.count);
+		printf("cpuemu_tool1_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
+			cpuemu_tool1_prof.max, cpuemu_tool1_prof.total/1000, cpuemu_tool1_prof.count);
+		printf("cpuemu_tool2_prof max=%-10"FMT_UINT64" total=%-10"FMT_UINT64"count=%-10"FMT_UINT64"\n", 
+			cpuemu_tool2_prof.max, cpuemu_tool2_prof.total/1000, cpuemu_tool2_prof.count);
 		memset(op_exec_stat_table, 0, sizeof(op_exec_stat_table));
 		memset(&cpuemu_cpu_total_prof, 0, sizeof(cpuemu_cpu_total_prof));
 		memset(&cpuemu_dev_total_prof, 0, sizeof(cpuemu_dev_total_prof));
 		memset(cpuemu_dbg_total_prof, 0, sizeof(cpuemu_dbg_total_prof));
+		memset(&cpuemu_dev_timer_prof, 0, sizeof(cpuemu_dev_timer_prof));
+		memset(&cpuemu_dev_serial_prof, 0, sizeof(cpuemu_dev_serial_prof));
+		memset(&cpuemu_dev_intr_prof, 0, sizeof(cpuemu_dev_intr_prof));
+		memset(&cpuemu_dev_adev1_prof, 0, sizeof(cpuemu_dev_intr_prof));
+		memset(&cpuemu_dev_adev2_prof, 0, sizeof(cpuemu_dev_intr_prof));
+		memset(&cpuemu_tool1_prof, 0, sizeof(cpuemu_dev_intr_prof));
+		memset(&cpuemu_tool2_prof, 0, sizeof(cpuemu_dev_intr_prof));
 	}
 #endif /* CONFIG_STAT_PERF */
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));

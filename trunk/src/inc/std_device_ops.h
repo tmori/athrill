@@ -80,6 +80,13 @@ static inline void profstat_end(ProfStatType *prof)
 extern ProfStatType cpuemu_cpu_total_prof;
 extern ProfStatType cpuemu_dev_total_prof;
 extern ProfStatType cpuemu_dbg_total_prof[DEBUG_STAT_NUM];
+extern ProfStatType cpuemu_dev_timer_prof;
+extern ProfStatType cpuemu_dev_serial_prof;
+extern ProfStatType cpuemu_dev_intr_prof;
+extern ProfStatType cpuemu_dev_adev1_prof;
+extern ProfStatType cpuemu_dev_adev2_prof;
+extern ProfStatType cpuemu_tool1_prof;
+extern ProfStatType cpuemu_tool2_prof;
 
 #define PROFSTAT_START(arg)	profstat_start(arg)
 #define PROFSTAT_END(arg)	profstat_end(arg)
