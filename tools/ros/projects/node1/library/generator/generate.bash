@@ -27,7 +27,6 @@ cd ${CDIR}
 cd ../../command
 make
 ./athrill_mkfs node1
-./athrill_mkfs node2
 
 cd ${CDIR}
 

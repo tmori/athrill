@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-
-    <node pkg="virtual_ecu_proxy" type="virtual_ecu_proxy_node1" name="virtual_ecu_proxy_node1">
-    </node>
-
-</launch>
-
