@@ -126,7 +126,7 @@ static void do_publish(void)
         for elm in bus.elements do
             if elm.dir == "TX"
 -%>
-    ros::Publisher pub_<%= bus.name %>_<%= elm.dir %>_<%= elm.name %> = n.advertise<virtual_can_bus::can>("<%= bus.name %>/<%= elm.dir %>_<%= elm.name %>", 1000);
+    ros::Publisher pub_<%= bus.name %>_<%= elm.dir %>_<%= elm.name %> = n.advertise<virtual_can_bus::can>("<%= bus.name %>/<%= elm.name %>", 1000);
 <%-
             end
         end
@@ -159,7 +159,7 @@ static void *thread_run(void *args)
             for elm in bus.elements do
                 if elm.dir == "RX"
 -%>
-    ros::Subscriber sub_<%= bus.name %>_<%= elm.dir %>_<%= elm.name %> = n.subscribe("<%= bus.name %>/<%= elm.dir %>_<%= elm.name %>", 100, <%= bus.name %>_<%= elm.dir %>_<%= elm.name %>_sub_callback);
+    ros::Subscriber sub_<%= bus.name %>_<%= elm.dir %>_<%= elm.name %> = n.subscribe("<%= bus.name %>/<%= elm.name %>", 100, <%= bus.name %>_<%= elm.dir %>_<%= elm.name %>_sub_callback);
 <%-
             end
         end
