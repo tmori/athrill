@@ -1,0 +1,22 @@
+- BusType:
+  - name: bus1
+    elements:
+    - name: CANID_0x100
+      dir: RX
+      busElmTypeRef: BusElementQueueType/canDataQueue100
+    - name: CANID_0x101
+      dir: TX
+      busElmTypeRef: BusElementQueueType/canDataQueueOverWrite
+    - name: CANID_0x102
+      dir: TX
+      busElmTypeRef: BusElementQueueType/canDataQueueUniq100
+
+  - busName: bus2
+    elements:
+    - name: CANID_0x200
+      dir: RX
+      busElmTypeRef: BusElementQueueType/canDataQueue100
+    - name: CANID_0x201
+      dir: TX
+      busElmTypeRef: BusElementQueueType/canDataQueue100
+

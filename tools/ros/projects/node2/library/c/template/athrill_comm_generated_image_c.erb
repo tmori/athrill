@@ -1,0 +1,167 @@
+#include "athrill_comm_image.h"
+#include "athrill_comm_config.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
+#include "athrill_comm_generated_config.h"
+
+<%-
+    BusType.getAll().each do |bus|
+-%>
+static acomm_uint8 acomm_<%= bus.name %>_mapbuffer[ACOMM_<%= bus.name.upcase() %>_BUFFER_SIZE];
+<%-
+    end
+-%>
+
+void athrill_comm_make_image(void)
+{
+    acomm_bus_metadata_type *mp;
+    acomm_uint32 *work_offp;
+    acomm_uint32 *work_sizep;
+    acomm_uint32 *work_arraysizep;
+    acomm_uint32 *work_elmsizep;
+    acomm_uint32 *work_typep;
+    acomm_queue_type *qp;
+    acomm_uint8 *arrayp;
+
+<%-
+    BusType.getAll().each do |bus|
+-%>
+    /********************************************
+     * <%= bus.name %>
+     ********************************************/
+
+    /*
+     * meta data region
+     */
+    mp = (acomm_bus_metadata_type*)acomm_<%= bus.name %>_mapbuffer;
+    mp->meta_version = ACOMM_BUS_META_VERSION;
+    mp->meta_magicno = ACOMM_BUS_META_MAGICNO;
+    mp->meta_busid = <%= BusType.getAll().index(bus) %>;
+    mp->meta_entrynum = <%= bus.elements.length %>U;
+    mp->meta_buffer_offset_soff = ACOMM_BUS_METADATA_SIZE;
+    mp->meta_buffer_offset_size = ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->meta_buffer_size_soff =  mp->meta_buffer_offset_soff + mp->meta_buffer_offset_size;
+    mp->meta_buffer_size_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->meta_buffer_elmsize_soff =  mp->meta_buffer_size_soff + mp->meta_buffer_size_size;
+    mp->meta_buffer_elmsize_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->meta_buffer_earraysize_soff =  mp->meta_buffer_elmsize_soff + mp->meta_buffer_elmsize_size;
+    mp->meta_buffer_earraysize_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->meta_buffer_type_soff =  mp->meta_buffer_earraysize_soff + mp->meta_buffer_elmsize_size;
+    mp->meta_buffer_type_size =  ACOMM_<%= bus.name.upcase() %>_ELEMENT_NUM * sizeof(acomm_uint32);
+    mp->data_data_soff =  mp->meta_buffer_type_soff + mp->meta_buffer_type_size;
+    mp->data_data_size =  ACOMM_<%= bus.name.upcase() %>_DATA_SIZE;
+
+    /*
+     * data region
+     */
+    /* offset */
+    /* size */
+    /* type */
+    work_offp = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_offset_soff];
+    work_sizep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_size_soff];
+    work_elmsizep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_elmsize_soff];
+    work_arraysizep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_earraysize_soff];
+    work_typep = (acomm_uint32*)&acomm_<%= bus.name %>_mapbuffer[mp->meta_buffer_type_soff];
+<%-
+        for elm in bus.elements do
+-%>
+    /*****************************
+    * ELM: <%= elm.name %>
+    *****************************/
+<%-
+            if bus.elements.index(elm) == 0 then
+-%>
+    work_offp[<%= bus.elements.index(elm) %>]  = mp->data_data_soff;
+<%-
+            else
+-%>
+    work_offp[<%= bus.elements.index(elm) %>]  = work_offp[<%= bus.elements.index(elm) -1 %>] + work_sizep[<%= bus.elements.index(elm) -1 %>];
+<%-
+            end
+-%>
+    work_sizep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_SIZE;
+    work_elmsizep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE_SIZE;
+    work_arraysizep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_ARRAY_SIZE;
+    work_typep[<%= bus.elements.index(elm) %>] = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE;
+<%-
+        end
+-%>
+
+<%-
+        for elm in bus.elements do
+-%>
+    /*****************************
+    * data elm: <%= elm.name %>
+    *****************************/
+<%-
+            if elm.busElmType.instance_of?(BusElementQueueType) then
+-%>
+    qp = (acomm_queue_type*)&acomm_<%= bus.name %>_mapbuffer[work_offp[<%= bus.elements.index(elm) %>]];
+    qp->len = 0U;
+    qp->maxlen = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_QUEUE_LEN;
+    qp->roff = 0U;
+    qp->woff = 0U;
+    qp->elmsize = ACOMM_<%= bus.name.upcase() %>_ELM_<%= bus.elements.index(elm) %>_TYPE_SIZE;
+<%-
+            else
+-%>
+    arrayp = &acomm_<%= bus.name %>_mapbuffer[work_offp[<%= bus.elements.index(elm) %>]];
+<%-
+                if elm.busElmType.initialValue.class == Array then
+                    index = 0
+                    for array_elm in elm.busElmType.initialValue do
+-%>
+    *((acomm_<%= elm.busElmType.dataElmType.ptype.name %> *)&arrayp[<%= index %>]) = <%= array_elm.to_s %>;
+<%-
+                        index = index +  (elm.busElmType.dataElmType.ptype.size)
+                    end
+                else
+-%>
+    *((acomm_<%= elm.busElmType.dataElmType.ptype.name %> *)&arrayp[0U]) = <%= elm.busElmType.initialValue %>;
+<%-
+                end
+            end
+        end
+    end
+-%>
+}
+
+int athrill_comm_generate_image(const char* node_name, const char *generate_path)
+{
+    int fd;
+    char path[4096];
+
+    if (generate_path == NULL_PTR) {
+        return ACOMM_E_INVALID;
+    }
+<%-
+    BusType.getAll().each do |bus|
+-%>
+    {
+        ssize_t size;
+        memset(path, 0, 4096);
+        sprintf(path, "%s/athrill_%s_<%= bus.name %>.bin", generate_path, node_name);
+        fd = open(path, O_RDWR|O_CREAT|O_TRUNC, 0644);
+        if (fd < 0) {
+            fprintf(stderr, "ERROR: can not open file(%s):err=%d\n", path, errno);
+            return ACOMM_E_INVALID;
+        }
+        size = write(fd, acomm_<%= bus.name %>_mapbuffer, sizeof(acomm_<%= bus.name %>_mapbuffer));
+        if (size != sizeof(acomm_<%= bus.name %>_mapbuffer)) {
+            fprintf(stderr, "ERROR: can not write file(%s):err=%d\n", path, errno);
+            return ACOMM_E_INVALID;
+        }
+        close(fd);
+    }
+
+<%-
+    end
+-%>
+    return ACOMM_E_OK;
+}

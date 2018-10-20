@@ -31,6 +31,10 @@ ORG_TEMPLATE=project_template/ros_ws/launch/hakoniwa_launch.mo
 OUT_FILE=projects/${NODE_NAME}/ros_ws/launch/hakoniwa.launch
 call_template_engine ${ORG_TEMPLATE} ${OUT_FILE}
 
+ORG_TEMPLATE=project_template/ros_ws/src/virtual_ecu_proxy/CMakeLists_txt.mo
+OUT_FILE=projects/${NODE_NAME}/ros_ws/src/virtual_ecu_proxy/CMakeLists.txt
+call_template_engine ${ORG_TEMPLATE} ${OUT_FILE}
+
 ORG_TEMPLATE=project_template/library/generator/template_csv.mo
 OUT_FILE=projects/${NODE_NAME}/library/generator/template.csv
 call_template_engine ${ORG_TEMPLATE} ${OUT_FILE}

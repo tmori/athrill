@@ -206,7 +206,7 @@ set(STATIC_LIBRARIES
 	${CMAKE_CURRENT_SOURCE_DIR}/../../../library/c/roslib/athrill_comm.o
 )
 
-add_executable(virtual_ecu_proxy_node1 src/virtual_ecu_proxy_node1.cpp)
+add_executable(virtual_ecu_proxy_node2 src/virtual_ecu_proxy_node2.cpp)
 
-target_link_libraries(virtual_ecu_proxy_node1 ${STATIC_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(virtual_ecu_proxy_node2 ${STATIC_LIBRARIES} ${catkin_LIBRARIES})
 
