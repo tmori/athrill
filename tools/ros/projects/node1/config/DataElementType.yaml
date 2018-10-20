@@ -1,0 +1,13 @@
+- DataElementArrayType:
+  - name: canDataType
+    pTypeRef: PrimitiveType/uint8
+    size: 8
+
+- DataElementSingleType:
+  - name: uint8
+    pTypeRef: PrimitiveType/uint8
+  - name: uint16
+    pTypeRef: PrimitiveType/uint16
+  - name: uint32
+    pTypeRef: PrimitiveType/uint32
+   

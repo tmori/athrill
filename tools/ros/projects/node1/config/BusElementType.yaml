@@ -1,0 +1,23 @@
+- BusElementQueueType:
+  - name: canDataQueue1
+    dataElmTypeRef: DataElementArrayType/canDataType
+    len: 1
+  - name: canDataQueueOverWrite
+    dataElmTypeRef: DataElementArrayType/canDataType
+    len: 1
+    attribute: overWrite
+  - name: canDataQueue100
+    dataElmTypeRef: DataElementArrayType/canDataType
+    len: 100
+  - name: canDataQueueUniq100
+    dataElmTypeRef: DataElementArrayType/canDataType
+    len: 100
+    attribute: uniq
+
+- BusElementDataType:
+  - name: uint32
+    dataElmTypeRef: DataElementSingleType/uint32
+    initialValue: 0
+  - name: canDataType
+    dataElmTypeRef: DataElementArrayType/canDataType
+    initialValue: [0,2,0,4,0,0,8,0]

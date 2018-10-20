@@ -1,0 +1,103 @@
+#include "ros/ros.h"
+#include "virtual_can_bus/can.h"
+#include "acomm_init.h"
+#include "athrill_comm.h"
+#include <stdio.h>
+#include <cstdlib>
+
+#define FILEPATH_MAX    4096
+static char mmap_filepath[FILEPATH_MAX];
+static acomm_bus_metadata_type *map_busp;
+
+<%-
+    BusType.getAll().each do |bus|
+        if TypeBuilder.getBus() == bus.name then
+-%>
+/*****************************
+ * BUS: <%= bus.name %>
+ *****************************/
+<%-
+            for elm in bus.elements do
+                if elm.dir == "RX"
+-%>
+/*****************************
+ * ELM: <%= elm.name %>
+ *****************************/
+ static void <%= bus.name %>_<%= elm.dir %>_<%= elm.name %>_sub_callback(const virtual_can_bus::can msg)
+ {
+    acomm_rtype ret;
+    acomm_uint8 can_data[8];
+ 
+    can_data[0] = msg.c0;
+    can_data[1] = msg.c1;
+    can_data[2] = msg.c2;
+    can_data[3] = msg.c3;
+    can_data[4] = msg.c4;
+    can_data[5] = msg.c5;
+    can_data[6] = msg.c6;
+    can_data[7] = msg.c7;
+ 
+<%-
+    if elm.busElmType.attribute == "overWrite" then
+-%>
+    ret = athrill_comm_send_force(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
+    if (ret != ACOMM_E_OK) {
+         fprintf(stderr, "ERROR: athrill_comm_send_force(<%= elm.name %>) err=%u\n", ret);
+    }
+<%-
+    elsif elm.busElmType.attribute == "uniq" then
+-%>
+    ret = athrill_comm_send_uniq(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
+    if (ret != ACOMM_E_OK) {
+        fprintf(stderr, "ERROR: athrill_comm_send_uniq(<%= elm.name %>) err=%u\n", ret);
+    }
+<%-
+    else
+-%>     
+    ret = athrill_comm_send(<%= BusType.getAll().index(bus) %>, <%= bus.elements.index(elm) %>, &can_data[0], 8U);
+    if (ret != ACOMM_E_OK) {
+        fprintf(stderr, "ERROR: athrill_comm_send(<%= elm.name %>) err=%u\n", ret);
+    }
+<%-
+    end
+-%>
+ 
+    return;
+ }
+
+ <%-
+                end
+            end
+        end
+    end
+-%>
+
+int main(int argc, char **argv)
+{
+    memset(mmap_filepath, 0, FILEPATH_MAX);
+    sprintf(mmap_filepath, "%s/%s_<%= TypeBuilder.getNodeName() %>_<%= TypeBuilder.getBus() %>.bin", std::getenv("GENERATED_MMAP_PATH"), std::getenv("GENERATED_MMAP_FILE_PREFIX"));
+
+    ros::init(argc, argv, "virtual_ecu_proxy_subscriber_<%= TypeBuilder.getNodeName() %>_<%= TypeBuilder.getBus() %>");
+
+    map_busp = ::acomm_open(mmap_filepath);
+
+    ros::NodeHandle n;
+
+<%-
+    BusType.getAll().each do |bus|
+        if TypeBuilder.getBus() == bus.name then
+            for elm in bus.elements do
+                if elm.dir == "RX"
+-%>
+    ros::Subscriber sub_<%= bus.name %>_<%= elm.dir %>_<%= elm.name %> = n.subscribe("<%= bus.name %>/<%= elm.dir %>_<%= elm.name %>", 100, <%= bus.name %>_<%= elm.dir %>_<%= elm.name %>_sub_callback);
+<%-
+                end
+            end
+        end
+    end
+-%>
+    ros::spin();
+    
+    acomm_close(map_busp);
+    return 0;
+}
