@@ -1,8 +1,8 @@
 ROOT_PATH 		:= ..
-ATHRILL_ROOT	:= $(ROOT_PATH)/../../trunk/src
+ATHRILL_ROOT	:= $(ROOT_PATH)/../../../trunk/src
 BUILD_PATH		:= .
 CPU_CONFIG_PATH	:= $(ATHRILL_ROOT)/config/target/v850esfk3
-ACOMM_ROOT_PATH		:= ../../../tools/ros/library/c
+ACOMM_ROOT_PATH		:= ../../../../tools/ros/projects/node1/library/c
 
 
 TARGET	:= test_main.elf
