@@ -237,7 +237,7 @@ static int get_maxpri_itno(TargetCoreType *cpu)
 
 static void intc_raise(TargetCoreType *cpu, uint32 intno)
 {
-	uint16 wdata16;
+	uint32 wdata32;
 	uint8 *ispr;
 	uint32 *pregaddr;
 	uint8 lvl;
@@ -278,9 +278,9 @@ static void intc_raise(TargetCoreType *cpu, uint32 intno)
 
 	cpu->reg.eipc = cpu->reg.pc;
 	cpu->reg.eipsw = cpu->reg.psw;
-	wdata16 = (cpu->reg.ecr & 0xFF00);
-	wdata16 |= INTC_MASK_ECR_CODE(intno);
-	cpu->reg.ecr = wdata16;
+	wdata32 = (cpu->reg.ecr & 0xFFFF0000);
+	wdata32 |= INTC_MASK_ECR_CODE(intno);
+	cpu->reg.ecr = wdata32;
 
 	CPU_SET_ID(&cpu->reg);
 	CPU_CLR_EP(&cpu->reg);
