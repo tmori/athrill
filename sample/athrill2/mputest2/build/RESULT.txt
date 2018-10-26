@@ -1,0 +1,88 @@
+****Start: Kernel Test:User1!****
+ START:KernelMpuTestNo_1
+ Expect: EXCEPTION for do [other user<id>_task_data = 10]
+Exec Error code[0]=0x5f6a code[1]=0x1 type_id=0x0 code_id=113
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_2
+ Expect: EXCEPTION for do [kernel_task_data = 10]
+Exec Error code[0]=0x5f6a code[1]=0x1 type_id=0x0 code_id=113
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_3
+ Expect: EXCEPTION for do [other user<id>_task_data = user2_task_data]
+ERROR:can not load data:addr=0x8000000 size=4byte
+Exec Error code[0]=0x5f2a code[1]=0x1 type_id=0x0 code_id=49
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_4
+ Expect: EXCEPTION for do [other user<id>_task_data = kernel_task_data]
+ERROR:can not load data:addr=0x60004a0 size=4byte
+Exec Error code[0]=0x5f2a code[1]=0x1 type_id=0x0 code_id=49
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_5
+ Expect: EXCEPTION for do [other user2_internal_func()]
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_6
+ Expect: EXCEPTION for do [kernel_internal_func()]
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_7
+ Expect: not happen EXCEPTION for do [internal user read/write/exec]
+ERROR:can not load data:addr=0x60004a0 size=4byte
+Exec Error code[0]=0x5f2a code[1]=0x1 type_id=0x0 code_id=49
+PASSED <user1_test_result[KernelMpuTestNo_0] == TRUE> ../kernel/main.c:134
+PASSED <user1_test_result[KernelMpuTestNo_1] == TRUE> ../kernel/main.c:135
+PASSED <user1_test_result[KernelMpuTestNo_2] == TRUE> ../kernel/main.c:136
+PASSED <user1_test_result[KernelMpuTestNo_3] == TRUE> ../kernel/main.c:137
+PASSED <user1_test_result[KernelMpuTestNo_4] == TRUE> ../kernel/main.c:138
+PASSED <user1_test_result[KernelMpuTestNo_5] == TRUE> ../kernel/main.c:139
+PASSED <user1_test_result[KernelMpuTestNo_6] == TRUE> ../kernel/main.c:140
+PASSED <user1_task_data == 100> ../kernel/main.c:142
+PASSED <user_shared_data == 100> ../kernel/main.c:143
+PASSED <user2_task_data == 99> ../kernel/main.c:144
+PASSED <kernel_task_data == 99> ../kernel/main.c:145
+
+****Start: Kernel Test:User2!****
+ START:KernelMpuTestNo_1
+ Expect: EXCEPTION for do [other user<id>_task_data = 10]
+Exec Error code[0]=0x5f6a code[1]=0x1 type_id=0x0 code_id=113
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_2
+ Expect: EXCEPTION for do [kernel_task_data = 10]
+Exec Error code[0]=0x5f6a code[1]=0x1 type_id=0x0 code_id=113
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_3
+ Expect: EXCEPTION for do [other user<id>_task_data = user2_task_data]
+ERROR:can not load data:addr=0x7000000 size=4byte
+Exec Error code[0]=0x5f2a code[1]=0x1 type_id=0x0 code_id=49
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_4
+ Expect: EXCEPTION for do [other user<id>_task_data = kernel_task_data]
+ERROR:can not load data:addr=0x60004a0 size=4byte
+Exec Error code[0]=0x5f2a code[1]=0x1 type_id=0x0 code_id=49
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_5
+ Expect: EXCEPTION for do [other user2_internal_func()]
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_6
+ Expect: EXCEPTION for do [kernel_internal_func()]
+ PASSED:Exception happened!!
+ START:KernelMpuTestNo_7
+ Expect: not happen EXCEPTION for do [internal user read/write/exec]
+ERROR:can not load data:addr=0x60004a0 size=4byte
+Exec Error code[0]=0x5f2a code[1]=0x1 type_id=0x0 code_id=49
+PASSED <user2_test_result[KernelMpuTestNo_0] == TRUE> ../kernel/main.c:150
+PASSED <user2_test_result[KernelMpuTestNo_1] == TRUE> ../kernel/main.c:151
+PASSED <user2_test_result[KernelMpuTestNo_2] == TRUE> ../kernel/main.c:152
+PASSED <user2_test_result[KernelMpuTestNo_3] == TRUE> ../kernel/main.c:153
+PASSED <user2_test_result[KernelMpuTestNo_4] == TRUE> ../kernel/main.c:154
+PASSED <user2_test_result[KernelMpuTestNo_5] == TRUE> ../kernel/main.c:155
+PASSED <user2_test_result[KernelMpuTestNo_6] == TRUE> ../kernel/main.c:156
+PASSED <user1_task_data == 100> ../kernel/main.c:158
+PASSED <user_shared_data == 101> ../kernel/main.c:159
+PASSED <user2_task_data == 100> ../kernel/main.c:160
+PASSED <kernel_task_data == 99> ../kernel/main.c:161
+
+****Start: Kernel Test:Kernel!****
+PASSED <user1_task_data == 1000> ../kernel/main.c:34
+PASSED <user2_task_data == 1000> ../kernel/main.c:35
+PASSED <kernel_task_data == 1000> ../kernel/main.c:36
+PASSED <user_shared_data == 1001> ../kernel/main.c:37
+****End: Kernel Test!

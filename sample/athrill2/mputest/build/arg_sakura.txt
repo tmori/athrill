@@ -1,2 +1,2 @@
--Y=9 ../kernel/vector.S
+-l 9 ../kernel/vector.S
 
