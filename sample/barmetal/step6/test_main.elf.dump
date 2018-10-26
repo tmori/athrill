@@ -1,8 +1,8 @@
 
-test_main.elf:     ファイル形式 elf32-v850-rh850
+test_main.elf:     file format elf32-v850-rh850
 
 
-セクション .vector の逆アセンブル:
+Disassembly of section .vector:
 
 00000000 <__reset>:
    0:	80 07 d0 07 	jr	7d0 <__text>
@@ -252,7 +252,7 @@ test_main.elf:     ファイル形式 elf32-v850-rh850
  7c0:	80 07 b4 00 	jr	874 <_default_int_handler>
 	...
 
-セクション .text の逆アセンブル:
+Disassembly of section .text:
 
 000007d0 <__text>:
  7d0:	e0 07 60 01 	di	
