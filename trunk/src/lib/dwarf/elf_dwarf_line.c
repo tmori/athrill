@@ -46,6 +46,10 @@ static uint32 parse_entry_header(ElfDwarfLineEntryHeaderType *header, uint8 *sec
 	off += 4;
 	header->minimum_instruction_length = elf_get_data8(section_data, off);
 	off += 1;
+	if (header->version == ELF_DWARF_VERSION_4) {
+		/* maximum_operations_per_instruction (ubyte) */
+		off += 1;
+	}
 	header->default_is_stmt = elf_get_data8(section_data, off);
 	off += 1;
 	header->line_base = elf_get_data8(section_data, off);

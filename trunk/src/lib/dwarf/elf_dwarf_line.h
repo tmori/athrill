@@ -46,6 +46,8 @@ typedef enum {
 	DW_LNE_set_address,
 	DW_LINE_define_file,
 	DW_LNE_set_discriminator, /* dwarf ver.4 */
+	DW_LNE_lo_user = 0x80,
+	DW_LNE_hi_user = 0xff,
 	DW_LINE_unknown,
 } ElfDwarfLineOpExtendedType;
 

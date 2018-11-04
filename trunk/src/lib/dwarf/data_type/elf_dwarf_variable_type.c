@@ -33,6 +33,7 @@ void elf_dwarf_build_variable_type(ElfDwarfDieType *die)
 			break;
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
+		case DW_AT_decl_column:
 		case DW_AT_location:
 		case DW_AT_external:
 		case DW_AT_abstract_origin:

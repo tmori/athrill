@@ -32,8 +32,10 @@ void elf_dwarf_build_typedef_type(ElfDwarfDieType *die)
 			break;
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
+		case DW_AT_decl_column:
 			break;
 		default:
+			printf("name=0x%x form=%s\n", attr_type, attr->typename);
 			ASSERT(0);
 		}
 	}

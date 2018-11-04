@@ -30,6 +30,12 @@
 #ifndef _SYS_ELF_COMMON_H_
 #define	_SYS_ELF_COMMON_H_ 1
 
+#define ELF_DWARF_VERSION_1		1
+#define ELF_DWARF_VERSION_2		2
+#define ELF_DWARF_VERSION_3		3
+#define ELF_DWARF_VERSION_4		4
+
+
 typedef uint32 uint32_t;
 typedef int		int32_t;
 typedef uint16 uint16_t;

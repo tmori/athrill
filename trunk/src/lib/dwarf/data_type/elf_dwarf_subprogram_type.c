@@ -41,6 +41,7 @@ static void elf_dwarf_build_subprogram_variable(DwarfDataSubprogramType *obj, El
 			break;
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
+		case DW_AT_decl_column:
 		case DW_AT_external:
 		case DW_AT_abstract_origin:
 		case DW_AT_declaration:
@@ -112,6 +113,7 @@ void elf_dwarf_build_subprogram_type(ElfDwarfDieType *die)
 		case DW_AT_vtable_elem_location:
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
+		case DW_AT_decl_column:
 		case DW_AT_unknown_0x2116:
 		case DW_AT_unknown_0x2117:
 #if 0

@@ -27,6 +27,7 @@ void elf_dwarf_build_enum_type(ElfDwarfDieType *die)
 		case DW_AT_sibling:
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
+		case DW_AT_decl_column:
 			break;
 		default:
 			ASSERT(0);
