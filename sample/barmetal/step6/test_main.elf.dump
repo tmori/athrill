@@ -7,249 +7,249 @@ Disassembly of section .vector:
 00000000 <__reset>:
    0:	80 07 d0 07 	jr	7d0 <__text>
 	...
-  10:	80 07 64 08 	jr	874 <_default_int_handler>
+  10:	80 07 68 08 	jr	878 <_default_int_handler>
 	...
-  20:	80 07 54 08 	jr	874 <_default_int_handler>
+  20:	80 07 58 08 	jr	878 <_default_int_handler>
 	...
-  40:	80 07 34 08 	jr	874 <_default_int_handler>
+  40:	80 07 38 08 	jr	878 <_default_int_handler>
 	...
-  50:	80 07 24 08 	jr	874 <_default_int_handler>
+  50:	80 07 28 08 	jr	878 <_default_int_handler>
 	...
-  60:	80 07 14 08 	jr	874 <_default_int_handler>
+  60:	80 07 18 08 	jr	878 <_default_int_handler>
 	...
-  80:	80 07 f4 07 	jr	874 <_default_int_handler>
+  80:	80 07 f8 07 	jr	878 <_default_int_handler>
 	...
-  90:	80 07 e4 07 	jr	874 <_default_int_handler>
+  90:	80 07 e8 07 	jr	878 <_default_int_handler>
 	...
-  a0:	80 07 d4 07 	jr	874 <_default_int_handler>
+  a0:	80 07 d8 07 	jr	878 <_default_int_handler>
 	...
-  b0:	80 07 c4 07 	jr	874 <_default_int_handler>
+  b0:	80 07 c8 07 	jr	878 <_default_int_handler>
 	...
-  c0:	80 07 b4 07 	jr	874 <_default_int_handler>
+  c0:	80 07 b8 07 	jr	878 <_default_int_handler>
 	...
-  d0:	80 07 a4 07 	jr	874 <_default_int_handler>
+  d0:	80 07 a8 07 	jr	878 <_default_int_handler>
 	...
-  e0:	80 07 94 07 	jr	874 <_default_int_handler>
+  e0:	80 07 98 07 	jr	878 <_default_int_handler>
 	...
-  f0:	80 07 84 07 	jr	874 <_default_int_handler>
+  f0:	80 07 88 07 	jr	878 <_default_int_handler>
 	...
- 100:	80 07 74 07 	jr	874 <_default_int_handler>
+ 100:	80 07 78 07 	jr	878 <_default_int_handler>
 	...
- 110:	80 07 64 07 	jr	874 <_default_int_handler>
+ 110:	80 07 68 07 	jr	878 <_default_int_handler>
 	...
- 120:	80 07 54 07 	jr	874 <_default_int_handler>
+ 120:	80 07 58 07 	jr	878 <_default_int_handler>
 	...
- 130:	80 07 44 07 	jr	874 <_default_int_handler>
+ 130:	80 07 48 07 	jr	878 <_default_int_handler>
 	...
- 140:	80 07 34 07 	jr	874 <_default_int_handler>
+ 140:	80 07 38 07 	jr	878 <_default_int_handler>
 	...
- 150:	80 07 24 07 	jr	874 <_default_int_handler>
+ 150:	80 07 28 07 	jr	878 <_default_int_handler>
 	...
- 160:	80 07 14 07 	jr	874 <_default_int_handler>
+ 160:	80 07 18 07 	jr	878 <_default_int_handler>
 	...
- 170:	80 07 04 07 	jr	874 <_default_int_handler>
+ 170:	80 07 08 07 	jr	878 <_default_int_handler>
 	...
- 180:	80 07 f4 06 	jr	874 <_default_int_handler>
+ 180:	80 07 f8 06 	jr	878 <_default_int_handler>
 	...
- 190:	80 07 e4 06 	jr	874 <_default_int_handler>
+ 190:	80 07 e8 06 	jr	878 <_default_int_handler>
 	...
- 1a0:	80 07 d4 06 	jr	874 <_default_int_handler>
+ 1a0:	80 07 d8 06 	jr	878 <_default_int_handler>
 	...
- 1b0:	80 07 c4 06 	jr	874 <_default_int_handler>
+ 1b0:	80 07 c8 06 	jr	878 <_default_int_handler>
 	...
- 1c0:	80 07 b4 06 	jr	874 <_default_int_handler>
+ 1c0:	80 07 b8 06 	jr	878 <_default_int_handler>
 	...
- 1d0:	80 07 a4 06 	jr	874 <_default_int_handler>
+ 1d0:	80 07 a8 06 	jr	878 <_default_int_handler>
 	...
- 1e0:	80 07 b0 09 	jr	b90 <_interrupt>
+ 1e0:	80 07 c0 09 	jr	ba0 <_interrupt>
 	...
- 1f0:	80 07 84 06 	jr	874 <_default_int_handler>
+ 1f0:	80 07 88 06 	jr	878 <_default_int_handler>
 	...
- 200:	80 07 74 06 	jr	874 <_default_int_handler>
+ 200:	80 07 78 06 	jr	878 <_default_int_handler>
 	...
- 210:	80 07 64 06 	jr	874 <_default_int_handler>
+ 210:	80 07 68 06 	jr	878 <_default_int_handler>
 	...
- 220:	80 07 54 06 	jr	874 <_default_int_handler>
+ 220:	80 07 58 06 	jr	878 <_default_int_handler>
 	...
- 230:	80 07 44 06 	jr	874 <_default_int_handler>
+ 230:	80 07 48 06 	jr	878 <_default_int_handler>
 	...
- 240:	80 07 34 06 	jr	874 <_default_int_handler>
+ 240:	80 07 38 06 	jr	878 <_default_int_handler>
 	...
- 250:	80 07 24 06 	jr	874 <_default_int_handler>
+ 250:	80 07 28 06 	jr	878 <_default_int_handler>
 	...
- 260:	80 07 14 06 	jr	874 <_default_int_handler>
+ 260:	80 07 18 06 	jr	878 <_default_int_handler>
 	...
- 270:	80 07 04 06 	jr	874 <_default_int_handler>
+ 270:	80 07 08 06 	jr	878 <_default_int_handler>
 	...
- 280:	80 07 f4 05 	jr	874 <_default_int_handler>
+ 280:	80 07 f8 05 	jr	878 <_default_int_handler>
 	...
- 290:	80 07 e4 05 	jr	874 <_default_int_handler>
+ 290:	80 07 e8 05 	jr	878 <_default_int_handler>
 	...
- 2a0:	80 07 d4 05 	jr	874 <_default_int_handler>
+ 2a0:	80 07 d8 05 	jr	878 <_default_int_handler>
 	...
- 2b0:	80 07 c4 05 	jr	874 <_default_int_handler>
+ 2b0:	80 07 c8 05 	jr	878 <_default_int_handler>
 	...
- 2c0:	80 07 b4 05 	jr	874 <_default_int_handler>
+ 2c0:	80 07 b8 05 	jr	878 <_default_int_handler>
 	...
- 2d0:	80 07 a4 05 	jr	874 <_default_int_handler>
+ 2d0:	80 07 a8 05 	jr	878 <_default_int_handler>
 	...
- 2e0:	80 07 94 05 	jr	874 <_default_int_handler>
+ 2e0:	80 07 98 05 	jr	878 <_default_int_handler>
 	...
- 2f0:	80 07 84 05 	jr	874 <_default_int_handler>
+ 2f0:	80 07 88 05 	jr	878 <_default_int_handler>
 	...
- 300:	80 07 74 05 	jr	874 <_default_int_handler>
+ 300:	80 07 78 05 	jr	878 <_default_int_handler>
 	...
- 310:	80 07 64 05 	jr	874 <_default_int_handler>
+ 310:	80 07 68 05 	jr	878 <_default_int_handler>
 	...
- 320:	80 07 54 05 	jr	874 <_default_int_handler>
+ 320:	80 07 58 05 	jr	878 <_default_int_handler>
 	...
- 330:	80 07 44 05 	jr	874 <_default_int_handler>
+ 330:	80 07 48 05 	jr	878 <_default_int_handler>
 	...
- 340:	80 07 34 05 	jr	874 <_default_int_handler>
+ 340:	80 07 38 05 	jr	878 <_default_int_handler>
 	...
- 350:	80 07 24 05 	jr	874 <_default_int_handler>
+ 350:	80 07 28 05 	jr	878 <_default_int_handler>
 	...
- 360:	80 07 14 05 	jr	874 <_default_int_handler>
+ 360:	80 07 18 05 	jr	878 <_default_int_handler>
 	...
- 370:	80 07 04 05 	jr	874 <_default_int_handler>
+ 370:	80 07 08 05 	jr	878 <_default_int_handler>
 	...
- 380:	80 07 f4 04 	jr	874 <_default_int_handler>
+ 380:	80 07 f8 04 	jr	878 <_default_int_handler>
 	...
- 390:	80 07 e4 04 	jr	874 <_default_int_handler>
+ 390:	80 07 e8 04 	jr	878 <_default_int_handler>
 	...
- 3a0:	80 07 d4 04 	jr	874 <_default_int_handler>
+ 3a0:	80 07 d8 04 	jr	878 <_default_int_handler>
 	...
- 3b0:	80 07 c4 04 	jr	874 <_default_int_handler>
+ 3b0:	80 07 c8 04 	jr	878 <_default_int_handler>
 	...
- 3c0:	80 07 b4 04 	jr	874 <_default_int_handler>
+ 3c0:	80 07 b8 04 	jr	878 <_default_int_handler>
 	...
- 3d0:	80 07 a4 04 	jr	874 <_default_int_handler>
+ 3d0:	80 07 a8 04 	jr	878 <_default_int_handler>
 	...
- 3e0:	80 07 94 04 	jr	874 <_default_int_handler>
+ 3e0:	80 07 98 04 	jr	878 <_default_int_handler>
 	...
- 3f0:	80 07 84 04 	jr	874 <_default_int_handler>
+ 3f0:	80 07 88 04 	jr	878 <_default_int_handler>
 	...
- 400:	80 07 74 04 	jr	874 <_default_int_handler>
+ 400:	80 07 78 04 	jr	878 <_default_int_handler>
 	...
- 410:	80 07 64 04 	jr	874 <_default_int_handler>
+ 410:	80 07 68 04 	jr	878 <_default_int_handler>
 	...
- 420:	80 07 54 04 	jr	874 <_default_int_handler>
+ 420:	80 07 58 04 	jr	878 <_default_int_handler>
 	...
- 430:	80 07 44 04 	jr	874 <_default_int_handler>
+ 430:	80 07 48 04 	jr	878 <_default_int_handler>
 	...
- 440:	80 07 34 04 	jr	874 <_default_int_handler>
+ 440:	80 07 38 04 	jr	878 <_default_int_handler>
 	...
- 450:	80 07 24 04 	jr	874 <_default_int_handler>
+ 450:	80 07 28 04 	jr	878 <_default_int_handler>
 	...
- 460:	80 07 14 04 	jr	874 <_default_int_handler>
+ 460:	80 07 18 04 	jr	878 <_default_int_handler>
 	...
- 470:	80 07 04 04 	jr	874 <_default_int_handler>
+ 470:	80 07 08 04 	jr	878 <_default_int_handler>
 	...
- 480:	80 07 f4 03 	jr	874 <_default_int_handler>
+ 480:	80 07 f8 03 	jr	878 <_default_int_handler>
 	...
- 490:	80 07 e4 03 	jr	874 <_default_int_handler>
+ 490:	80 07 e8 03 	jr	878 <_default_int_handler>
 	...
- 4a0:	80 07 d4 03 	jr	874 <_default_int_handler>
+ 4a0:	80 07 d8 03 	jr	878 <_default_int_handler>
 	...
- 4b0:	80 07 c4 03 	jr	874 <_default_int_handler>
+ 4b0:	80 07 c8 03 	jr	878 <_default_int_handler>
 	...
- 4c0:	80 07 b4 03 	jr	874 <_default_int_handler>
+ 4c0:	80 07 b8 03 	jr	878 <_default_int_handler>
 	...
- 4d0:	80 07 a4 03 	jr	874 <_default_int_handler>
+ 4d0:	80 07 a8 03 	jr	878 <_default_int_handler>
 	...
- 4e0:	80 07 94 03 	jr	874 <_default_int_handler>
+ 4e0:	80 07 98 03 	jr	878 <_default_int_handler>
 	...
- 4f0:	80 07 84 03 	jr	874 <_default_int_handler>
+ 4f0:	80 07 88 03 	jr	878 <_default_int_handler>
 	...
- 500:	80 07 74 03 	jr	874 <_default_int_handler>
+ 500:	80 07 78 03 	jr	878 <_default_int_handler>
 	...
- 510:	80 07 64 03 	jr	874 <_default_int_handler>
+ 510:	80 07 68 03 	jr	878 <_default_int_handler>
 	...
- 520:	80 07 54 03 	jr	874 <_default_int_handler>
+ 520:	80 07 58 03 	jr	878 <_default_int_handler>
 	...
- 530:	80 07 44 03 	jr	874 <_default_int_handler>
+ 530:	80 07 48 03 	jr	878 <_default_int_handler>
 	...
- 540:	80 07 34 03 	jr	874 <_default_int_handler>
+ 540:	80 07 38 03 	jr	878 <_default_int_handler>
 	...
- 550:	80 07 24 03 	jr	874 <_default_int_handler>
+ 550:	80 07 28 03 	jr	878 <_default_int_handler>
 	...
- 560:	80 07 14 03 	jr	874 <_default_int_handler>
+ 560:	80 07 18 03 	jr	878 <_default_int_handler>
 	...
- 570:	80 07 04 03 	jr	874 <_default_int_handler>
+ 570:	80 07 08 03 	jr	878 <_default_int_handler>
 	...
- 580:	80 07 f4 02 	jr	874 <_default_int_handler>
+ 580:	80 07 f8 02 	jr	878 <_default_int_handler>
 	...
- 590:	80 07 e4 02 	jr	874 <_default_int_handler>
+ 590:	80 07 e8 02 	jr	878 <_default_int_handler>
 	...
- 5a0:	80 07 d4 02 	jr	874 <_default_int_handler>
+ 5a0:	80 07 d8 02 	jr	878 <_default_int_handler>
 	...
- 5b0:	80 07 c4 02 	jr	874 <_default_int_handler>
+ 5b0:	80 07 c8 02 	jr	878 <_default_int_handler>
 	...
- 5c0:	80 07 b4 02 	jr	874 <_default_int_handler>
+ 5c0:	80 07 b8 02 	jr	878 <_default_int_handler>
 	...
- 5d0:	80 07 a4 02 	jr	874 <_default_int_handler>
+ 5d0:	80 07 a8 02 	jr	878 <_default_int_handler>
 	...
- 5e0:	80 07 94 02 	jr	874 <_default_int_handler>
+ 5e0:	80 07 98 02 	jr	878 <_default_int_handler>
 	...
- 5f0:	80 07 84 02 	jr	874 <_default_int_handler>
+ 5f0:	80 07 88 02 	jr	878 <_default_int_handler>
 	...
- 600:	80 07 74 02 	jr	874 <_default_int_handler>
+ 600:	80 07 78 02 	jr	878 <_default_int_handler>
 	...
- 610:	80 07 64 02 	jr	874 <_default_int_handler>
+ 610:	80 07 68 02 	jr	878 <_default_int_handler>
 	...
- 620:	80 07 54 02 	jr	874 <_default_int_handler>
+ 620:	80 07 58 02 	jr	878 <_default_int_handler>
 	...
- 630:	80 07 44 02 	jr	874 <_default_int_handler>
+ 630:	80 07 48 02 	jr	878 <_default_int_handler>
 	...
- 640:	80 07 34 02 	jr	874 <_default_int_handler>
+ 640:	80 07 38 02 	jr	878 <_default_int_handler>
 	...
- 650:	80 07 24 02 	jr	874 <_default_int_handler>
+ 650:	80 07 28 02 	jr	878 <_default_int_handler>
 	...
- 660:	80 07 14 02 	jr	874 <_default_int_handler>
+ 660:	80 07 18 02 	jr	878 <_default_int_handler>
 	...
- 670:	80 07 04 02 	jr	874 <_default_int_handler>
+ 670:	80 07 08 02 	jr	878 <_default_int_handler>
 	...
- 680:	80 07 f4 01 	jr	874 <_default_int_handler>
+ 680:	80 07 f8 01 	jr	878 <_default_int_handler>
 	...
- 690:	80 07 e4 01 	jr	874 <_default_int_handler>
+ 690:	80 07 e8 01 	jr	878 <_default_int_handler>
 	...
- 6a0:	80 07 d4 01 	jr	874 <_default_int_handler>
+ 6a0:	80 07 d8 01 	jr	878 <_default_int_handler>
 	...
- 6b0:	80 07 c4 01 	jr	874 <_default_int_handler>
+ 6b0:	80 07 c8 01 	jr	878 <_default_int_handler>
 	...
- 6c0:	80 07 b4 01 	jr	874 <_default_int_handler>
+ 6c0:	80 07 b8 01 	jr	878 <_default_int_handler>
 	...
- 6d0:	80 07 a4 01 	jr	874 <_default_int_handler>
+ 6d0:	80 07 a8 01 	jr	878 <_default_int_handler>
 	...
- 6e0:	80 07 94 01 	jr	874 <_default_int_handler>
+ 6e0:	80 07 98 01 	jr	878 <_default_int_handler>
 	...
- 6f0:	80 07 84 01 	jr	874 <_default_int_handler>
+ 6f0:	80 07 88 01 	jr	878 <_default_int_handler>
 	...
- 700:	80 07 74 01 	jr	874 <_default_int_handler>
+ 700:	80 07 78 01 	jr	878 <_default_int_handler>
 	...
- 710:	80 07 64 01 	jr	874 <_default_int_handler>
+ 710:	80 07 68 01 	jr	878 <_default_int_handler>
 	...
- 720:	80 07 54 01 	jr	874 <_default_int_handler>
+ 720:	80 07 58 01 	jr	878 <_default_int_handler>
 	...
- 730:	80 07 44 01 	jr	874 <_default_int_handler>
+ 730:	80 07 48 01 	jr	878 <_default_int_handler>
 	...
- 740:	80 07 34 01 	jr	874 <_default_int_handler>
+ 740:	80 07 38 01 	jr	878 <_default_int_handler>
 	...
- 750:	80 07 24 01 	jr	874 <_default_int_handler>
+ 750:	80 07 28 01 	jr	878 <_default_int_handler>
 	...
- 760:	80 07 14 01 	jr	874 <_default_int_handler>
+ 760:	80 07 18 01 	jr	878 <_default_int_handler>
 	...
- 770:	80 07 04 01 	jr	874 <_default_int_handler>
+ 770:	80 07 08 01 	jr	878 <_default_int_handler>
 	...
- 780:	80 07 f4 00 	jr	874 <_default_int_handler>
+ 780:	80 07 f8 00 	jr	878 <_default_int_handler>
 	...
- 790:	80 07 e4 00 	jr	874 <_default_int_handler>
+ 790:	80 07 e8 00 	jr	878 <_default_int_handler>
 	...
- 7a0:	80 07 d4 00 	jr	874 <_default_int_handler>
+ 7a0:	80 07 d8 00 	jr	878 <_default_int_handler>
 	...
- 7b0:	80 07 c4 00 	jr	874 <_default_int_handler>
+ 7b0:	80 07 c8 00 	jr	878 <_default_int_handler>
 	...
- 7c0:	80 07 b4 00 	jr	874 <_default_int_handler>
+ 7c0:	80 07 b8 00 	jr	878 <_default_int_handler>
 	...
 
 Disassembly of section .text:
@@ -259,10 +259,10 @@ Disassembly of section .text:
  7d4:	40 1e ff 06 	movhi	1791, r0, sp
  7d8:	23 1e 8c 70 	movea	28812, sp, sp
  7dc:	03 1e 00 04 	addi	1024, sp, sp
- 7e0:	80 ff dc 05 	jarl	dbc <_bss_clear>, lp
- 7e4:	80 ff 20 06 	jarl	e04 <_data_init>, lp
+ 7e0:	80 ff f2 05 	jarl	dd2 <_bss_clear>, lp
+ 7e4:	80 ff 38 06 	jarl	e1c <_data_init>, lp
  7e8:	e0 87 60 01 	ei	
- 7ec:	80 ff b8 04 	jarl	ca4 <_main>, lp
+ 7ec:	80 ff cc 04 	jarl	cb8 <_main>, lp
  7f0:	e0 07 20 01 	halt	
 	...
 
@@ -287,571 +287,589 @@ Disassembly of section .text:
  82a:	7f 00       	jmp	[lp]
 
 0000082c <_sil_wrb_mem>:
- 82c:	54 1a       	add	-12, sp
- 82e:	63 ef 09 00 	st.w	r29, 8[sp]
- 832:	03 e8       	mov	sp, r29
- 834:	7d 37 05 00 	st.w	r6, 4[r29]
- 838:	07 50       	mov	r7, r10
- 83a:	5d 57 00 00 	st.b	r10, 0[r29]
- 83e:	3d 57 05 00 	ld.w	4[r29], r10
- 842:	1d 5f 00 00 	ld.b	0[r29], r11
- 846:	4a 5f 00 00 	st.b	r11, 0[r10]
- 84a:	00 00       	nop	
- 84c:	1d 18       	mov	r29, sp
- 84e:	23 ef 09 00 	ld.w	8[sp], r29
- 852:	4c 1a       	add	12, sp
- 854:	7f 00       	jmp	[lp]
+ 82c:	5c 1a       	add	-4, sp
+ 82e:	63 ef 01 00 	st.w	r29, 0[sp]
+ 832:	58 1a       	add	-8, sp
+ 834:	03 e8       	mov	sp, r29
+ 836:	7d 37 05 00 	st.w	r6, 4[r29]
+ 83a:	07 50       	mov	r7, r10
+ 83c:	5d 57 00 00 	st.b	r10, 0[r29]
+ 840:	3d 57 05 00 	ld.w	4[r29], r10
+ 844:	1d 5f 00 00 	ld.b	0[r29], r11
+ 848:	4a 5f 00 00 	st.b	r11, 0[r10]
+ 84c:	00 00       	nop	
+ 84e:	1d 18       	mov	r29, sp
+ 850:	23 ef 09 00 	ld.w	8[sp], r29
+ 854:	4c 1a       	add	12, sp
+ 856:	7f 00       	jmp	[lp]
 
-00000856 <_sil_reb_mem>:
- 856:	58 1a       	add	-8, sp
- 858:	63 ef 05 00 	st.w	r29, 4[sp]
- 85c:	03 e8       	mov	sp, r29
- 85e:	7d 37 01 00 	st.w	r6, 0[r29]
- 862:	3d 57 01 00 	ld.w	0[r29], r10
- 866:	8a 57 01 00 	ld.bu	0[r10], r10
- 86a:	1d 18       	mov	r29, sp
- 86c:	23 ef 05 00 	ld.w	4[sp], r29
- 870:	48 1a       	add	8, sp
- 872:	7f 00       	jmp	[lp]
+00000858 <_sil_reb_mem>:
+ 858:	5c 1a       	add	-4, sp
+ 85a:	63 ef 01 00 	st.w	r29, 0[sp]
+ 85e:	5c 1a       	add	-4, sp
+ 860:	03 e8       	mov	sp, r29
+ 862:	7d 37 01 00 	st.w	r6, 0[r29]
+ 866:	3d 57 01 00 	ld.w	0[r29], r10
+ 86a:	8a 57 01 00 	ld.bu	0[r10], r10
+ 86e:	1d 18       	mov	r29, sp
+ 870:	23 ef 05 00 	ld.w	4[sp], r29
+ 874:	48 1a       	add	8, sp
+ 876:	7f 00       	jmp	[lp]
 
-00000874 <_default_int_handler>:
- 874:	5c 1a       	add	-4, sp
- 876:	63 ef 01 00 	st.w	r29, 0[sp]
- 87a:	03 e8       	mov	sp, r29
- 87c:	00 00       	nop	
- 87e:	1d 18       	mov	r29, sp
- 880:	23 ef 01 00 	ld.w	0[sp], r29
- 884:	44 1a       	add	4, sp
- 886:	7f 00       	jmp	[lp]
+00000878 <_default_int_handler>:
+ 878:	5c 1a       	add	-4, sp
+ 87a:	63 ef 01 00 	st.w	r29, 0[sp]
+ 87e:	03 e8       	mov	sp, r29
+ 880:	00 00       	nop	
+ 882:	1d 18       	mov	r29, sp
+ 884:	23 ef 01 00 	ld.w	0[sp], r29
+ 888:	44 1a       	add	4, sp
+ 88a:	7f 00       	jmp	[lp]
 
-00000888 <_x_enable_int>:
- 888:	03 1e ec ff 	addi	-20, sp, sp
- 88c:	63 ff 11 00 	st.w	lp, 16[sp]
- 890:	63 e7 0d 00 	st.w	r28, 12[sp]
- 894:	63 ef 09 00 	st.w	r29, 8[sp]
- 898:	03 e8       	mov	sp, r29
- 89a:	7d 37 01 00 	st.w	r6, 0[r29]
- 89e:	3d 57 01 00 	ld.w	0[r29], r10
- 8a2:	ca 51       	add	r10, r10
- 8a4:	0a 56 10 f1 	addi	-3824, r10, r10
- 8a8:	7d 57 05 00 	st.w	r10, 4[r29]
- 8ac:	3d e7 05 00 	ld.w	4[r29], r28
- 8b0:	3d 57 05 00 	ld.w	4[r29], r10
- 8b4:	0a 30       	mov	r10, r6
- 8b6:	2a 06 56 08 	mov	0x856, r10
- 8ba:	00 00 
- 8bc:	80 ff 04 00 	jarl	8c0 <_x_enable_int+0x38>, lp
- 8c0:	44 fa       	add	4, lp
- 8c2:	6a 00       	jmp	[r10]
- 8c4:	8a 00       	zxb	r10
- 8c6:	ca 56 bf 00 	andi	191, r10, r10
- 8ca:	1c 30       	mov	r28, r6
- 8cc:	0a 38       	mov	r10, r7
- 8ce:	2a 06 2c 08 	mov	0x82c, r10
- 8d2:	00 00 
- 8d4:	80 ff 04 00 	jarl	8d8 <_x_enable_int+0x50>, lp
- 8d8:	44 fa       	add	4, lp
- 8da:	6a 00       	jmp	[r10]
- 8dc:	00 00       	nop	
- 8de:	1d 18       	mov	r29, sp
- 8e0:	23 ff 11 00 	ld.w	16[sp], lp
- 8e4:	23 e7 0d 00 	ld.w	12[sp], r28
- 8e8:	23 ef 09 00 	ld.w	8[sp], r29
- 8ec:	03 1e 14 00 	addi	20, sp, sp
- 8f0:	7f 00       	jmp	[lp]
+0000088c <_x_enable_int>:
+ 88c:	54 1a       	add	-12, sp
+ 88e:	63 ff 09 00 	st.w	lp, 8[sp]
+ 892:	63 e7 05 00 	st.w	r28, 4[sp]
+ 896:	63 ef 01 00 	st.w	r29, 0[sp]
+ 89a:	58 1a       	add	-8, sp
+ 89c:	03 e8       	mov	sp, r29
+ 89e:	7d 37 01 00 	st.w	r6, 0[r29]
+ 8a2:	3d 57 01 00 	ld.w	0[r29], r10
+ 8a6:	2b 06 88 f8 	mov	0x7ffff888, r11
+ 8aa:	ff 7f 
+ 8ac:	cb 51       	add	r11, r10
+ 8ae:	ca 51       	add	r10, r10
+ 8b0:	7d 57 05 00 	st.w	r10, 4[r29]
+ 8b4:	3d e7 05 00 	ld.w	4[r29], r28
+ 8b8:	3d 57 05 00 	ld.w	4[r29], r10
+ 8bc:	0a 30       	mov	r10, r6
+ 8be:	2a 06 58 08 	mov	0x858, r10
+ 8c2:	00 00 
+ 8c4:	80 ff 04 00 	jarl	8c8 <_x_enable_int+0x3c>, lp
+ 8c8:	44 fa       	add	4, lp
+ 8ca:	6a 00       	jmp	[r10]
+ 8cc:	8a 00       	zxb	r10
+ 8ce:	ca 56 bf 00 	andi	191, r10, r10
+ 8d2:	1c 30       	mov	r28, r6
+ 8d4:	0a 38       	mov	r10, r7
+ 8d6:	2a 06 2c 08 	mov	0x82c, r10
+ 8da:	00 00 
+ 8dc:	80 ff 04 00 	jarl	8e0 <_x_enable_int+0x54>, lp
+ 8e0:	44 fa       	add	4, lp
+ 8e2:	6a 00       	jmp	[r10]
+ 8e4:	00 00       	nop	
+ 8e6:	1d 18       	mov	r29, sp
+ 8e8:	23 ff 11 00 	ld.w	16[sp], lp
+ 8ec:	23 e7 0d 00 	ld.w	12[sp], r28
+ 8f0:	23 ef 09 00 	ld.w	8[sp], r29
+ 8f4:	03 1e 14 00 	addi	20, sp, sp
+ 8f8:	7f 00       	jmp	[lp]
 
-000008f2 <_x_clear_int>:
- 8f2:	03 1e ec ff 	addi	-20, sp, sp
- 8f6:	63 ff 11 00 	st.w	lp, 16[sp]
- 8fa:	63 e7 0d 00 	st.w	r28, 12[sp]
- 8fe:	63 ef 09 00 	st.w	r29, 8[sp]
- 902:	03 e8       	mov	sp, r29
- 904:	7d 37 01 00 	st.w	r6, 0[r29]
- 908:	3d 57 01 00 	ld.w	0[r29], r10
- 90c:	ca 51       	add	r10, r10
- 90e:	0a 56 10 f1 	addi	-3824, r10, r10
- 912:	7d 57 05 00 	st.w	r10, 4[r29]
- 916:	3d e7 05 00 	ld.w	4[r29], r28
- 91a:	3d 57 05 00 	ld.w	4[r29], r10
- 91e:	0a 30       	mov	r10, r6
- 920:	2a 06 56 08 	mov	0x856, r10
- 924:	00 00 
- 926:	80 ff 04 00 	jarl	92a <_x_clear_int+0x38>, lp
- 92a:	44 fa       	add	4, lp
- 92c:	6a 00       	jmp	[r10]
- 92e:	8a 00       	zxb	r10
- 930:	ca 56 7f 00 	andi	127, r10, r10
- 934:	1c 30       	mov	r28, r6
- 936:	0a 38       	mov	r10, r7
- 938:	2a 06 2c 08 	mov	0x82c, r10
- 93c:	00 00 
- 93e:	80 ff 04 00 	jarl	942 <_x_clear_int+0x50>, lp
- 942:	44 fa       	add	4, lp
- 944:	6a 00       	jmp	[r10]
- 946:	1d 18       	mov	r29, sp
- 948:	23 ff 11 00 	ld.w	16[sp], lp
- 94c:	23 e7 0d 00 	ld.w	12[sp], r28
- 950:	23 ef 09 00 	ld.w	8[sp], r29
- 954:	03 1e 14 00 	addi	20, sp, sp
- 958:	7f 00       	jmp	[lp]
+000008fa <_x_clear_int>:
+ 8fa:	54 1a       	add	-12, sp
+ 8fc:	63 ff 09 00 	st.w	lp, 8[sp]
+ 900:	63 e7 05 00 	st.w	r28, 4[sp]
+ 904:	63 ef 01 00 	st.w	r29, 0[sp]
+ 908:	58 1a       	add	-8, sp
+ 90a:	03 e8       	mov	sp, r29
+ 90c:	7d 37 01 00 	st.w	r6, 0[r29]
+ 910:	3d 57 01 00 	ld.w	0[r29], r10
+ 914:	2b 06 88 f8 	mov	0x7ffff888, r11
+ 918:	ff 7f 
+ 91a:	cb 51       	add	r11, r10
+ 91c:	ca 51       	add	r10, r10
+ 91e:	7d 57 05 00 	st.w	r10, 4[r29]
+ 922:	3d e7 05 00 	ld.w	4[r29], r28
+ 926:	3d 57 05 00 	ld.w	4[r29], r10
+ 92a:	0a 30       	mov	r10, r6
+ 92c:	2a 06 58 08 	mov	0x858, r10
+ 930:	00 00 
+ 932:	80 ff 04 00 	jarl	936 <_x_clear_int+0x3c>, lp
+ 936:	44 fa       	add	4, lp
+ 938:	6a 00       	jmp	[r10]
+ 93a:	8a 00       	zxb	r10
+ 93c:	ca 56 7f 00 	andi	127, r10, r10
+ 940:	1c 30       	mov	r28, r6
+ 942:	0a 38       	mov	r10, r7
+ 944:	2a 06 2c 08 	mov	0x82c, r10
+ 948:	00 00 
+ 94a:	80 ff 04 00 	jarl	94e <_x_clear_int+0x54>, lp
+ 94e:	44 fa       	add	4, lp
+ 950:	6a 00       	jmp	[r10]
+ 952:	1d 18       	mov	r29, sp
+ 954:	23 ff 11 00 	ld.w	16[sp], lp
+ 958:	23 e7 0d 00 	ld.w	12[sp], r28
+ 95c:	23 ef 09 00 	ld.w	8[sp], r29
+ 960:	03 1e 14 00 	addi	20, sp, sp
+ 964:	7f 00       	jmp	[lp]
 
-0000095a <_interrupt_handler>:
- 95a:	50 1a       	add	-16, sp
- 95c:	63 ff 0d 00 	st.w	lp, 12[sp]
- 960:	63 ef 09 00 	st.w	r29, 8[sp]
- 964:	03 e8       	mov	sp, r29
- 966:	7d 37 01 00 	st.w	r6, 0[r29]
- 96a:	3d 57 01 00 	ld.w	0[r29], r10
- 96e:	ca 56 ff ff 	andi	65535, r10, r10
- 972:	0a 56 80 ff 	addi	-128, r10, r10
- 976:	84 52       	shr	4, r10
- 978:	7d 57 05 00 	st.w	r10, 4[r29]
- 97c:	3d 57 05 00 	ld.w	4[r29], r10
- 980:	0a 30       	mov	r10, r6
- 982:	2a 06 f2 08 	mov	0x8f2, r10
- 986:	00 00 
- 988:	80 ff 04 00 	jarl	98c <_interrupt_handler+0x32>, lp
- 98c:	44 fa       	add	4, lp
- 98e:	6a 00       	jmp	[r10]
- 990:	2a 06 16 08 	mov	0x816, r10
+00000966 <_interrupt_handler>:
+ 966:	58 1a       	add	-8, sp
+ 968:	63 ff 05 00 	st.w	lp, 4[sp]
+ 96c:	63 ef 01 00 	st.w	r29, 0[sp]
+ 970:	58 1a       	add	-8, sp
+ 972:	03 e8       	mov	sp, r29
+ 974:	7d 37 01 00 	st.w	r6, 0[r29]
+ 978:	3d 57 01 00 	ld.w	0[r29], r10
+ 97c:	ca 56 ff ff 	andi	65535, r10, r10
+ 980:	0a 56 80 ff 	addi	-128, r10, r10
+ 984:	84 52       	shr	4, r10
+ 986:	7d 57 05 00 	st.w	r10, 4[r29]
+ 98a:	3d 57 05 00 	ld.w	4[r29], r10
+ 98e:	0a 30       	mov	r10, r6
+ 990:	2a 06 fa 08 	mov	0x8fa, r10
  994:	00 00 
- 996:	80 ff 04 00 	jarl	99a <_interrupt_handler+0x40>, lp
+ 996:	80 ff 04 00 	jarl	99a <_interrupt_handler+0x34>, lp
  99a:	44 fa       	add	4, lp
  99c:	6a 00       	jmp	[r10]
- 99e:	3d 37 05 00 	ld.w	4[r29], r6
- 9a2:	2a 06 74 0a 	mov	0xa74, r10
- 9a6:	00 00 
- 9a8:	80 ff 04 00 	jarl	9ac <_interrupt_handler+0x52>, lp
- 9ac:	44 fa       	add	4, lp
- 9ae:	6a 00       	jmp	[r10]
- 9b0:	2a 06 00 08 	mov	0x800, r10
+ 99e:	2a 06 16 08 	mov	0x816, r10
+ 9a2:	00 00 
+ 9a4:	80 ff 04 00 	jarl	9a8 <_interrupt_handler+0x42>, lp
+ 9a8:	44 fa       	add	4, lp
+ 9aa:	6a 00       	jmp	[r10]
+ 9ac:	3d 37 05 00 	ld.w	4[r29], r6
+ 9b0:	2a 06 84 0a 	mov	0xa84, r10
  9b4:	00 00 
- 9b6:	80 ff 04 00 	jarl	9ba <_interrupt_handler+0x60>, lp
+ 9b6:	80 ff 04 00 	jarl	9ba <_interrupt_handler+0x54>, lp
  9ba:	44 fa       	add	4, lp
  9bc:	6a 00       	jmp	[r10]
- 9be:	00 00       	nop	
- 9c0:	1d 18       	mov	r29, sp
- 9c2:	23 ff 0d 00 	ld.w	12[sp], lp
- 9c6:	23 ef 09 00 	ld.w	8[sp], r29
- 9ca:	03 1e 10 00 	addi	16, sp, sp
- 9ce:	7f 00       	jmp	[lp]
+ 9be:	2a 06 00 08 	mov	0x800, r10
+ 9c2:	00 00 
+ 9c4:	80 ff 04 00 	jarl	9c8 <_interrupt_handler+0x62>, lp
+ 9c8:	44 fa       	add	4, lp
+ 9ca:	6a 00       	jmp	[r10]
+ 9cc:	00 00       	nop	
+ 9ce:	1d 18       	mov	r29, sp
+ 9d0:	23 ff 0d 00 	ld.w	12[sp], lp
+ 9d4:	23 ef 09 00 	ld.w	8[sp], r29
+ 9d8:	03 1e 10 00 	addi	16, sp, sp
+ 9dc:	7f 00       	jmp	[lp]
 
-000009d0 <_disable_int_all>:
- 9d0:	5c 1a       	add	-4, sp
- 9d2:	63 ef 01 00 	st.w	r29, 0[sp]
- 9d6:	03 e8       	mov	sp, r29
- 9d8:	e0 07 60 01 	di	
- 9dc:	1d 18       	mov	r29, sp
- 9de:	23 ef 01 00 	ld.w	0[sp], r29
- 9e2:	44 1a       	add	4, sp
- 9e4:	7f 00       	jmp	[lp]
+000009de <_disable_int_all>:
+ 9de:	5c 1a       	add	-4, sp
+ 9e0:	63 ef 01 00 	st.w	r29, 0[sp]
+ 9e4:	03 e8       	mov	sp, r29
+ 9e6:	e0 07 60 01 	di	
+ 9ea:	1d 18       	mov	r29, sp
+ 9ec:	23 ef 01 00 	ld.w	0[sp], r29
+ 9f0:	44 1a       	add	4, sp
+ 9f2:	7f 00       	jmp	[lp]
 
-000009e6 <_enable_int_all>:
- 9e6:	5c 1a       	add	-4, sp
- 9e8:	63 ef 01 00 	st.w	r29, 0[sp]
- 9ec:	03 e8       	mov	sp, r29
- 9ee:	e0 87 60 01 	ei	
- 9f2:	1d 18       	mov	r29, sp
- 9f4:	23 ef 01 00 	ld.w	0[sp], r29
- 9f8:	44 1a       	add	4, sp
- 9fa:	7f 00       	jmp	[lp]
+000009f4 <_enable_int_all>:
+ 9f4:	5c 1a       	add	-4, sp
+ 9f6:	63 ef 01 00 	st.w	r29, 0[sp]
+ 9fa:	03 e8       	mov	sp, r29
+ 9fc:	e0 87 60 01 	ei	
+ a00:	1d 18       	mov	r29, sp
+ a02:	23 ef 01 00 	ld.w	0[sp], r29
+ a06:	44 1a       	add	4, sp
+ a08:	7f 00       	jmp	[lp]
 
-000009fc <_register_interrupt_handler>:
- 9fc:	50 1a       	add	-16, sp
- 9fe:	63 ff 0d 00 	st.w	lp, 12[sp]
- a02:	63 ef 09 00 	st.w	r29, 8[sp]
- a06:	03 e8       	mov	sp, r29
- a08:	7d 37 05 00 	st.w	r6, 4[r29]
- a0c:	7d 3f 01 00 	st.w	r7, 0[r29]
- a10:	3d 5f 05 00 	ld.w	4[r29], r11
- a14:	20 56 1d 00 	movea	29, r0, r10
- a18:	ea 59       	cmp	r10, r11
- a1a:	cb 25       	bh	a62 <_register_interrupt_handler+0x66>
- a1c:	2a 06 d0 09 	mov	0x9d0, r10
- a20:	00 00 
- a22:	80 ff 04 00 	jarl	a26 <_register_interrupt_handler+0x2a>, lp
- a26:	44 fa       	add	4, lp
- a28:	6a 00       	jmp	[r10]
- a2a:	3d 57 05 00 	ld.w	4[r29], r10
- a2e:	0a 30       	mov	r10, r6
- a30:	2a 06 88 08 	mov	0x888, r10
- a34:	00 00 
- a36:	80 ff 04 00 	jarl	a3a <_register_interrupt_handler+0x3e>, lp
- a3a:	44 fa       	add	4, lp
- a3c:	6a 00       	jmp	[r10]
- a3e:	2b 06 00 70 	mov	0x6ff7000, r11
- a42:	ff 06 
- a44:	3d 57 05 00 	ld.w	4[r29], r10
- a48:	c2 52       	shl	2, r10
- a4a:	cb 51       	add	r11, r10
- a4c:	3d 5f 01 00 	ld.w	0[r29], r11
- a50:	6a 5f 01 00 	st.w	r11, 0[r10]
- a54:	2a 06 e6 09 	mov	0x9e6, r10
- a58:	00 00 
- a5a:	80 ff 04 00 	jarl	a5e <_register_interrupt_handler+0x62>, lp
- a5e:	44 fa       	add	4, lp
- a60:	6a 00       	jmp	[r10]
- a62:	00 00       	nop	
- a64:	1d 18       	mov	r29, sp
- a66:	23 ff 0d 00 	ld.w	12[sp], lp
- a6a:	23 ef 09 00 	ld.w	8[sp], r29
- a6e:	03 1e 10 00 	addi	16, sp, sp
- a72:	7f 00       	jmp	[lp]
+00000a0a <_register_interrupt_handler>:
+ a0a:	58 1a       	add	-8, sp
+ a0c:	63 ff 05 00 	st.w	lp, 4[sp]
+ a10:	63 ef 01 00 	st.w	r29, 0[sp]
+ a14:	58 1a       	add	-8, sp
+ a16:	03 e8       	mov	sp, r29
+ a18:	7d 37 05 00 	st.w	r6, 4[r29]
+ a1c:	7d 3f 01 00 	st.w	r7, 0[r29]
+ a20:	3d 5f 05 00 	ld.w	4[r29], r11
+ a24:	20 56 1d 00 	movea	29, r0, r10
+ a28:	ea 59       	cmp	r10, r11
+ a2a:	cb 25       	bh	a72 <_register_interrupt_handler+0x68>
+ a2c:	2a 06 de 09 	mov	0x9de, r10
+ a30:	00 00 
+ a32:	80 ff 04 00 	jarl	a36 <_register_interrupt_handler+0x2c>, lp
+ a36:	44 fa       	add	4, lp
+ a38:	6a 00       	jmp	[r10]
+ a3a:	3d 57 05 00 	ld.w	4[r29], r10
+ a3e:	0a 30       	mov	r10, r6
+ a40:	2a 06 8c 08 	mov	0x88c, r10
+ a44:	00 00 
+ a46:	80 ff 04 00 	jarl	a4a <_register_interrupt_handler+0x40>, lp
+ a4a:	44 fa       	add	4, lp
+ a4c:	6a 00       	jmp	[r10]
+ a4e:	2b 06 00 70 	mov	0x6ff7000, r11
+ a52:	ff 06 
+ a54:	3d 57 05 00 	ld.w	4[r29], r10
+ a58:	c2 52       	shl	2, r10
+ a5a:	cb 51       	add	r11, r10
+ a5c:	3d 5f 01 00 	ld.w	0[r29], r11
+ a60:	6a 5f 01 00 	st.w	r11, 0[r10]
+ a64:	2a 06 f4 09 	mov	0x9f4, r10
+ a68:	00 00 
+ a6a:	80 ff 04 00 	jarl	a6e <_register_interrupt_handler+0x64>, lp
+ a6e:	44 fa       	add	4, lp
+ a70:	6a 00       	jmp	[r10]
+ a72:	00 00       	nop	
+ a74:	1d 18       	mov	r29, sp
+ a76:	23 ff 0d 00 	ld.w	12[sp], lp
+ a7a:	23 ef 09 00 	ld.w	8[sp], r29
+ a7e:	03 1e 10 00 	addi	16, sp, sp
+ a82:	7f 00       	jmp	[lp]
 
-00000a74 <_do_interrupt_handler>:
- a74:	54 1a       	add	-12, sp
- a76:	63 ff 09 00 	st.w	lp, 8[sp]
- a7a:	63 ef 05 00 	st.w	r29, 4[sp]
- a7e:	03 e8       	mov	sp, r29
- a80:	7d 37 01 00 	st.w	r6, 0[r29]
- a84:	3d 5f 01 00 	ld.w	0[r29], r11
- a88:	20 56 1d 00 	movea	29, r0, r10
- a8c:	ea 59       	cmp	r10, r11
- a8e:	9b 1d       	bh	ac0 <_do_interrupt_handler+0x4c>
- a90:	2b 06 00 70 	mov	0x6ff7000, r11
- a94:	ff 06 
- a96:	3d 57 01 00 	ld.w	0[r29], r10
- a9a:	c2 52       	shl	2, r10
- a9c:	cb 51       	add	r11, r10
- a9e:	2a 57 01 00 	ld.w	0[r10], r10
- aa2:	60 52       	cmp	0, r10
- aa4:	e2 0d       	be	ac0 <_do_interrupt_handler+0x4c>
- aa6:	2b 06 00 70 	mov	0x6ff7000, r11
- aaa:	ff 06 
- aac:	3d 57 01 00 	ld.w	0[r29], r10
- ab0:	c2 52       	shl	2, r10
- ab2:	cb 51       	add	r11, r10
- ab4:	2a 57 01 00 	ld.w	0[r10], r10
- ab8:	80 ff 04 00 	jarl	abc <_do_interrupt_handler+0x48>, lp
- abc:	44 fa       	add	4, lp
- abe:	6a 00       	jmp	[r10]
- ac0:	1d 18       	mov	r29, sp
- ac2:	23 ff 09 00 	ld.w	8[sp], lp
- ac6:	23 ef 05 00 	ld.w	4[sp], r29
- aca:	4c 1a       	add	12, sp
- acc:	7f 00       	jmp	[lp]
+00000a84 <_do_interrupt_handler>:
+ a84:	58 1a       	add	-8, sp
+ a86:	63 ff 05 00 	st.w	lp, 4[sp]
+ a8a:	63 ef 01 00 	st.w	r29, 0[sp]
+ a8e:	5c 1a       	add	-4, sp
+ a90:	03 e8       	mov	sp, r29
+ a92:	7d 37 01 00 	st.w	r6, 0[r29]
+ a96:	3d 5f 01 00 	ld.w	0[r29], r11
+ a9a:	20 56 1d 00 	movea	29, r0, r10
+ a9e:	ea 59       	cmp	r10, r11
+ aa0:	9b 1d       	bh	ad2 <_do_interrupt_handler+0x4e>
+ aa2:	2b 06 00 70 	mov	0x6ff7000, r11
+ aa6:	ff 06 
+ aa8:	3d 57 01 00 	ld.w	0[r29], r10
+ aac:	c2 52       	shl	2, r10
+ aae:	cb 51       	add	r11, r10
+ ab0:	2a 57 01 00 	ld.w	0[r10], r10
+ ab4:	60 52       	cmp	0, r10
+ ab6:	e2 0d       	be	ad2 <_do_interrupt_handler+0x4e>
+ ab8:	2b 06 00 70 	mov	0x6ff7000, r11
+ abc:	ff 06 
+ abe:	3d 57 01 00 	ld.w	0[r29], r10
+ ac2:	c2 52       	shl	2, r10
+ ac4:	cb 51       	add	r11, r10
+ ac6:	2a 57 01 00 	ld.w	0[r10], r10
+ aca:	80 ff 04 00 	jarl	ace <_do_interrupt_handler+0x4a>, lp
+ ace:	44 fa       	add	4, lp
+ ad0:	6a 00       	jmp	[r10]
+ ad2:	1d 18       	mov	r29, sp
+ ad4:	23 ff 09 00 	ld.w	8[sp], lp
+ ad8:	23 ef 05 00 	ld.w	4[sp], r29
+ adc:	4c 1a       	add	12, sp
+ ade:	7f 00       	jmp	[lp]
 
-00000ace <_test_print>:
- ace:	54 1a       	add	-12, sp
- ad0:	63 ef 09 00 	st.w	r29, 8[sp]
- ad4:	03 e8       	mov	sp, r29
- ad6:	7d 37 01 00 	st.w	r6, 0[r29]
- ada:	7d 07 05 00 	st.w	r0, 4[r29]
- ade:	c5 15       	br	b06 <_test_print+0x38>
- ae0:	20 56 07 fa 	movea	-1529, r0, r10
- ae4:	3d 5f 05 00 	ld.w	4[r29], r11
- ae8:	3d 67 01 00 	ld.w	0[r29], r12
- aec:	cc 59       	add	r12, r11
- aee:	0b 5f 00 00 	ld.b	0[r11], r11
- af2:	d8 5a       	shl	24, r11
- af4:	b8 5a       	sar	24, r11
- af6:	8b 00       	zxb	r11
- af8:	4a 5f 00 00 	st.b	r11, 0[r10]
- afc:	3d 57 05 00 	ld.w	4[r29], r10
- b00:	41 52       	add	1, r10
- b02:	7d 57 05 00 	st.w	r10, 4[r29]
- b06:	3d 57 05 00 	ld.w	4[r29], r10
- b0a:	3d 5f 01 00 	ld.w	0[r29], r11
- b0e:	cb 51       	add	r11, r10
- b10:	0a 57 00 00 	ld.b	0[r10], r10
- b14:	d8 52       	shl	24, r10
- b16:	b8 52       	sar	24, r10
- b18:	60 52       	cmp	0, r10
- b1a:	ba e5       	bne	ae0 <_test_print+0x12>
- b1c:	1d 18       	mov	r29, sp
- b1e:	23 ef 09 00 	ld.w	8[sp], r29
- b22:	4c 1a       	add	12, sp
- b24:	7f 00       	jmp	[lp]
+00000ae0 <_test_print>:
+ ae0:	5c 1a       	add	-4, sp
+ ae2:	63 ef 01 00 	st.w	r29, 0[sp]
+ ae6:	58 1a       	add	-8, sp
+ ae8:	03 e8       	mov	sp, r29
+ aea:	7d 37 01 00 	st.w	r6, 0[r29]
+ aee:	7d 07 05 00 	st.w	r0, 4[r29]
+ af2:	c5 15       	br	b1a <_test_print+0x3a>
+ af4:	20 56 07 fa 	movea	-1529, r0, r10
+ af8:	3d 5f 05 00 	ld.w	4[r29], r11
+ afc:	3d 67 01 00 	ld.w	0[r29], r12
+ b00:	cc 59       	add	r12, r11
+ b02:	0b 5f 00 00 	ld.b	0[r11], r11
+ b06:	d8 5a       	shl	24, r11
+ b08:	b8 5a       	sar	24, r11
+ b0a:	8b 00       	zxb	r11
+ b0c:	4a 5f 00 00 	st.b	r11, 0[r10]
+ b10:	3d 57 05 00 	ld.w	4[r29], r10
+ b14:	41 52       	add	1, r10
+ b16:	7d 57 05 00 	st.w	r10, 4[r29]
+ b1a:	3d 57 05 00 	ld.w	4[r29], r10
+ b1e:	3d 5f 01 00 	ld.w	0[r29], r11
+ b22:	cb 51       	add	r11, r10
+ b24:	0a 57 00 00 	ld.b	0[r10], r10
+ b28:	d8 52       	shl	24, r10
+ b2a:	b8 52       	sar	24, r10
+ b2c:	60 52       	cmp	0, r10
+ b2e:	ba e5       	bne	af4 <_test_print+0x14>
+ b30:	1d 18       	mov	r29, sp
+ b32:	23 ef 09 00 	ld.w	8[sp], r29
+ b36:	4c 1a       	add	12, sp
+ b38:	7f 00       	jmp	[lp]
 
-00000b26 <_timer_interrupt_handler>:
- b26:	58 1a       	add	-8, sp
- b28:	63 ff 05 00 	st.w	lp, 4[sp]
- b2c:	63 ef 01 00 	st.w	r29, 0[sp]
- b30:	03 e8       	mov	sp, r29
- b32:	26 06 7c 0e 	mov	0xe7c, r6
- b36:	00 00 
- b38:	2a 06 ce 0a 	mov	0xace, r10
- b3c:	00 00 
- b3e:	80 ff 04 00 	jarl	b42 <_timer_interrupt_handler+0x1c>, lp
- b42:	44 fa       	add	4, lp
- b44:	6a 00       	jmp	[r10]
- b46:	00 00       	nop	
- b48:	1d 18       	mov	r29, sp
- b4a:	23 ff 05 00 	ld.w	4[sp], lp
- b4e:	23 ef 01 00 	ld.w	0[sp], r29
- b52:	48 1a       	add	8, sp
- b54:	7f 00       	jmp	[lp]
+00000b3a <_timer_interrupt_handler>:
+ b3a:	58 1a       	add	-8, sp
+ b3c:	63 ff 05 00 	st.w	lp, 4[sp]
+ b40:	63 ef 01 00 	st.w	r29, 0[sp]
+ b44:	03 e8       	mov	sp, r29
+ b46:	26 06 98 0e 	mov	0xe98, r6
+ b4a:	00 00 
+ b4c:	2a 06 e0 0a 	mov	0xae0, r10
+ b50:	00 00 
+ b52:	80 ff 04 00 	jarl	b56 <_timer_interrupt_handler+0x1c>, lp
+ b56:	44 fa       	add	4, lp
+ b58:	6a 00       	jmp	[r10]
+ b5a:	00 00       	nop	
+ b5c:	1d 18       	mov	r29, sp
+ b5e:	23 ff 05 00 	ld.w	4[sp], lp
+ b62:	23 ef 01 00 	ld.w	0[sp], r29
+ b66:	48 1a       	add	8, sp
+ b68:	7f 00       	jmp	[lp]
 
-00000b56 <_timer_init>:
- b56:	58 1a       	add	-8, sp
- b58:	63 ff 05 00 	st.w	lp, 4[sp]
- b5c:	63 ef 01 00 	st.w	r29, 0[sp]
- b60:	03 e8       	mov	sp, r29
- b62:	20 36 16 00 	movea	22, r0, r6
- b66:	27 06 26 0b 	mov	0xb26, r7
- b6a:	00 00 
- b6c:	2a 06 fc 09 	mov	0x9fc, r10
- b70:	00 00 
- b72:	80 ff 04 00 	jarl	b76 <_timer_init+0x20>, lp
- b76:	44 fa       	add	4, lp
- b78:	6a 00       	jmp	[r10]
- b7a:	1d 18       	mov	r29, sp
- b7c:	23 ff 05 00 	ld.w	4[sp], lp
- b80:	23 ef 01 00 	ld.w	0[sp], r29
- b84:	48 1a       	add	8, sp
- b86:	7f 00       	jmp	[lp]
+00000b6a <_timer_init>:
+ b6a:	58 1a       	add	-8, sp
+ b6c:	63 ff 05 00 	st.w	lp, 4[sp]
+ b70:	63 ef 01 00 	st.w	r29, 0[sp]
+ b74:	03 e8       	mov	sp, r29
+ b76:	20 36 16 00 	movea	22, r0, r6
+ b7a:	27 06 3a 0b 	mov	0xb3a, r7
+ b7e:	00 00 
+ b80:	2a 06 0a 0a 	mov	0xa0a, r10
+ b84:	00 00 
+ b86:	80 ff 04 00 	jarl	b8a <_timer_init+0x20>, lp
+ b8a:	44 fa       	add	4, lp
+ b8c:	6a 00       	jmp	[r10]
+ b8e:	1d 18       	mov	r29, sp
+ b90:	23 ff 05 00 	ld.w	4[sp], lp
+ b94:	23 ef 01 00 	ld.w	0[sp], r29
+ b98:	48 1a       	add	8, sp
+ b9a:	7f 00       	jmp	[lp]
+ b9c:	00 00       	nop	
 	...
 
-00000b90 <_interrupt>:
- b90:	03 1e b0 ff 	addi	-80, sp, sp
- b94:	63 f7 0d 00 	st.w	ep, 12[sp]
- b98:	03 f0       	mov	sp, ep
- b9a:	25 0d       	sst.w	r1, 72[ep]
- b9c:	23 35       	sst.w	r6, 68[ep]
- b9e:	21 3d       	sst.w	r7, 64[ep]
- ba0:	1f 45       	sst.w	r8, 60[ep]
- ba2:	1d 4d       	sst.w	r9, 56[ep]
- ba4:	1b 55       	sst.w	r10, 52[ep]
- ba6:	19 5d       	sst.w	r11, 48[ep]
- ba8:	17 65       	sst.w	r12, 44[ep]
- baa:	15 6d       	sst.w	r13, 40[ep]
- bac:	13 75       	sst.w	r14, 36[ep]
- bae:	11 7d       	sst.w	r15, 32[ep]
- bb0:	0f 85       	sst.w	r16, 28[ep]
- bb2:	0d 8d       	sst.w	r17, 24[ep]
- bb4:	0b 95       	sst.w	r18, 20[ep]
- bb6:	09 9d       	sst.w	r19, 16[ep]
- bb8:	05 fd       	sst.w	lp, 8[ep]
- bba:	e0 5f 40 00 	stsr	eipc/vip/mpm, r11
- bbe:	03 5d       	sst.w	r11, 4[ep]
- bc0:	e1 5f 40 00 	stsr	eipsw/mpc, r11
- bc4:	01 5d       	sst.w	r11, 0[ep]
- bc6:	e4 37 40 00 	stsr	ecr/vmecr, r6
- bca:	40 56 00 00 	movhi	0, r0, r10
- bce:	2a 56 5a 09 	movea	2394, r10, r10
- bd2:	40 fe 00 00 	movhi	0, r0, lp
- bd6:	3f fe dc 0b 	movea	3036, lp, lp
- bda:	6a 00       	jmp	[r10]
+00000ba0 <_interrupt>:
+ ba0:	03 1e b0 ff 	addi	-80, sp, sp
+ ba4:	63 f7 0d 00 	st.w	ep, 12[sp]
+ ba8:	03 f0       	mov	sp, ep
+ baa:	25 0d       	sst.w	r1, 72[ep]
+ bac:	23 35       	sst.w	r6, 68[ep]
+ bae:	21 3d       	sst.w	r7, 64[ep]
+ bb0:	1f 45       	sst.w	r8, 60[ep]
+ bb2:	1d 4d       	sst.w	r9, 56[ep]
+ bb4:	1b 55       	sst.w	r10, 52[ep]
+ bb6:	19 5d       	sst.w	r11, 48[ep]
+ bb8:	17 65       	sst.w	r12, 44[ep]
+ bba:	15 6d       	sst.w	r13, 40[ep]
+ bbc:	13 75       	sst.w	r14, 36[ep]
+ bbe:	11 7d       	sst.w	r15, 32[ep]
+ bc0:	0f 85       	sst.w	r16, 28[ep]
+ bc2:	0d 8d       	sst.w	r17, 24[ep]
+ bc4:	0b 95       	sst.w	r18, 20[ep]
+ bc6:	09 9d       	sst.w	r19, 16[ep]
+ bc8:	05 fd       	sst.w	lp, 8[ep]
+ bca:	e0 5f 40 00 	stsr	eipc/vip/mpm, r11
+ bce:	03 5d       	sst.w	r11, 4[ep]
+ bd0:	e1 5f 40 00 	stsr	eipsw/mpc, r11
+ bd4:	01 5d       	sst.w	r11, 0[ep]
+ bd6:	e4 37 40 00 	stsr	ecr/vmecr, r6
+ bda:	40 56 00 00 	movhi	0, r0, r10
+ bde:	2a 56 66 09 	movea	2406, r10, r10
+ be2:	40 fe 00 00 	movhi	0, r0, lp
+ be6:	3f fe ec 0b 	movea	3052, lp, lp
+ bea:	6a 00       	jmp	[r10]
 
-00000bdc <end_int_handler>:
- bdc:	03 f0       	mov	sp, ep
- bde:	02 5d       	sld.w	4[ep], r11
- be0:	eb 07 20 00 	ldsr	r11, eipc/vip/mpm
- be4:	00 5d       	sld.w	0[ep], r11
- be6:	eb 0f 20 00 	ldsr	r11, eipsw/mpc
- bea:	24 0d       	sld.w	72[ep], r1
- bec:	22 35       	sld.w	68[ep], r6
- bee:	20 3d       	sld.w	64[ep], r7
- bf0:	1e 45       	sld.w	60[ep], r8
- bf2:	1c 4d       	sld.w	56[ep], r9
- bf4:	1a 55       	sld.w	52[ep], r10
- bf6:	18 5d       	sld.w	48[ep], r11
- bf8:	16 65       	sld.w	44[ep], r12
- bfa:	14 6d       	sld.w	40[ep], r13
- bfc:	12 75       	sld.w	36[ep], r14
- bfe:	10 7d       	sld.w	32[ep], r15
- c00:	0e 85       	sld.w	28[ep], r16
- c02:	0c 8d       	sld.w	24[ep], r17
- c04:	0a 95       	sld.w	20[ep], r18
- c06:	08 9d       	sld.w	16[ep], r19
- c08:	04 fd       	sld.w	8[ep], lp
- c0a:	1e 1e 50 00 	addi	80, ep, sp
- c0e:	06 f5       	sld.w	12[ep], ep
- c10:	e0 07 40 01 	reti	
+00000bec <end_int_handler>:
+ bec:	03 f0       	mov	sp, ep
+ bee:	02 5d       	sld.w	4[ep], r11
+ bf0:	eb 07 20 00 	ldsr	r11, eipc/vip/mpm
+ bf4:	00 5d       	sld.w	0[ep], r11
+ bf6:	eb 0f 20 00 	ldsr	r11, eipsw/mpc
+ bfa:	24 0d       	sld.w	72[ep], r1
+ bfc:	22 35       	sld.w	68[ep], r6
+ bfe:	20 3d       	sld.w	64[ep], r7
+ c00:	1e 45       	sld.w	60[ep], r8
+ c02:	1c 4d       	sld.w	56[ep], r9
+ c04:	1a 55       	sld.w	52[ep], r10
+ c06:	18 5d       	sld.w	48[ep], r11
+ c08:	16 65       	sld.w	44[ep], r12
+ c0a:	14 6d       	sld.w	40[ep], r13
+ c0c:	12 75       	sld.w	36[ep], r14
+ c0e:	10 7d       	sld.w	32[ep], r15
+ c10:	0e 85       	sld.w	28[ep], r16
+ c12:	0c 8d       	sld.w	24[ep], r17
+ c14:	0a 95       	sld.w	20[ep], r18
+ c16:	08 9d       	sld.w	16[ep], r19
+ c18:	04 fd       	sld.w	8[ep], lp
+ c1a:	1e 1e 50 00 	addi	80, ep, sp
+ c1e:	06 f5       	sld.w	12[ep], ep
+ c20:	e0 07 40 01 	reti	
 	...
 
-00000c20 <_test_print>:
- c20:	54 1a       	add	-12, sp
- c22:	63 ef 09 00 	st.w	r29, 8[sp]
- c26:	03 e8       	mov	sp, r29
- c28:	7d 37 01 00 	st.w	r6, 0[r29]
- c2c:	7d 07 05 00 	st.w	r0, 4[r29]
- c30:	c5 15       	br	c58 <_test_print+0x38>
- c32:	20 56 07 fa 	movea	-1529, r0, r10
- c36:	3d 5f 05 00 	ld.w	4[r29], r11
- c3a:	3d 67 01 00 	ld.w	0[r29], r12
- c3e:	cc 59       	add	r12, r11
- c40:	0b 5f 00 00 	ld.b	0[r11], r11
- c44:	d8 5a       	shl	24, r11
- c46:	b8 5a       	sar	24, r11
- c48:	8b 00       	zxb	r11
- c4a:	4a 5f 00 00 	st.b	r11, 0[r10]
- c4e:	3d 57 05 00 	ld.w	4[r29], r10
- c52:	41 52       	add	1, r10
- c54:	7d 57 05 00 	st.w	r10, 4[r29]
- c58:	3d 57 05 00 	ld.w	4[r29], r10
- c5c:	3d 5f 01 00 	ld.w	0[r29], r11
- c60:	cb 51       	add	r11, r10
- c62:	0a 57 00 00 	ld.b	0[r10], r10
- c66:	d8 52       	shl	24, r10
- c68:	b8 52       	sar	24, r10
- c6a:	60 52       	cmp	0, r10
- c6c:	ba e5       	bne	c32 <_test_print+0x12>
- c6e:	1d 18       	mov	r29, sp
- c70:	23 ef 09 00 	ld.w	8[sp], r29
- c74:	4c 1a       	add	12, sp
- c76:	7f 00       	jmp	[lp]
+00000c30 <_test_print>:
+ c30:	5c 1a       	add	-4, sp
+ c32:	63 ef 01 00 	st.w	r29, 0[sp]
+ c36:	58 1a       	add	-8, sp
+ c38:	03 e8       	mov	sp, r29
+ c3a:	7d 37 01 00 	st.w	r6, 0[r29]
+ c3e:	7d 07 05 00 	st.w	r0, 4[r29]
+ c42:	c5 15       	br	c6a <_test_print+0x3a>
+ c44:	20 56 07 fa 	movea	-1529, r0, r10
+ c48:	3d 5f 05 00 	ld.w	4[r29], r11
+ c4c:	3d 67 01 00 	ld.w	0[r29], r12
+ c50:	cc 59       	add	r12, r11
+ c52:	0b 5f 00 00 	ld.b	0[r11], r11
+ c56:	d8 5a       	shl	24, r11
+ c58:	b8 5a       	sar	24, r11
+ c5a:	8b 00       	zxb	r11
+ c5c:	4a 5f 00 00 	st.b	r11, 0[r10]
+ c60:	3d 57 05 00 	ld.w	4[r29], r10
+ c64:	41 52       	add	1, r10
+ c66:	7d 57 05 00 	st.w	r10, 4[r29]
+ c6a:	3d 57 05 00 	ld.w	4[r29], r10
+ c6e:	3d 5f 01 00 	ld.w	0[r29], r11
+ c72:	cb 51       	add	r11, r10
+ c74:	0a 57 00 00 	ld.b	0[r10], r10
+ c78:	d8 52       	shl	24, r10
+ c7a:	b8 52       	sar	24, r10
+ c7c:	60 52       	cmp	0, r10
+ c7e:	ba e5       	bne	c44 <_test_print+0x14>
+ c80:	1d 18       	mov	r29, sp
+ c82:	23 ef 09 00 	ld.w	8[sp], r29
+ c86:	4c 1a       	add	12, sp
+ c88:	7f 00       	jmp	[lp]
 
-00000c78 <_test_print_one>:
- c78:	58 1a       	add	-8, sp
- c7a:	63 ef 05 00 	st.w	r29, 4[sp]
- c7e:	03 e8       	mov	sp, r29
- c80:	7d 37 01 00 	st.w	r6, 0[r29]
- c84:	20 56 07 fa 	movea	-1529, r0, r10
- c88:	3d 5f 01 00 	ld.w	0[r29], r11
- c8c:	0b 5f 00 00 	ld.b	0[r11], r11
- c90:	d8 5a       	shl	24, r11
- c92:	b8 5a       	sar	24, r11
- c94:	8b 00       	zxb	r11
- c96:	4a 5f 00 00 	st.b	r11, 0[r10]
- c9a:	1d 18       	mov	r29, sp
- c9c:	23 ef 05 00 	ld.w	4[sp], r29
- ca0:	48 1a       	add	8, sp
- ca2:	7f 00       	jmp	[lp]
+00000c8a <_test_print_one>:
+ c8a:	5c 1a       	add	-4, sp
+ c8c:	63 ef 01 00 	st.w	r29, 0[sp]
+ c90:	5c 1a       	add	-4, sp
+ c92:	03 e8       	mov	sp, r29
+ c94:	7d 37 01 00 	st.w	r6, 0[r29]
+ c98:	20 56 07 fa 	movea	-1529, r0, r10
+ c9c:	3d 5f 01 00 	ld.w	0[r29], r11
+ ca0:	0b 5f 00 00 	ld.b	0[r11], r11
+ ca4:	d8 5a       	shl	24, r11
+ ca6:	b8 5a       	sar	24, r11
+ ca8:	8b 00       	zxb	r11
+ caa:	4a 5f 00 00 	st.b	r11, 0[r10]
+ cae:	1d 18       	mov	r29, sp
+ cb0:	23 ef 05 00 	ld.w	4[sp], r29
+ cb4:	48 1a       	add	8, sp
+ cb6:	7f 00       	jmp	[lp]
 
-00000ca4 <_main>:
- ca4:	54 1a       	add	-12, sp
- ca6:	63 ff 09 00 	st.w	lp, 8[sp]
- caa:	63 ef 05 00 	st.w	r29, 4[sp]
- cae:	03 e8       	mov	sp, r29
- cb0:	2a 06 ac 0e 	mov	0xeac, r10
- cb4:	00 00 
- cb6:	7d 57 01 00 	st.w	r10, 0[r29]
- cba:	3d 37 01 00 	ld.w	0[r29], r6
- cbe:	2a 06 78 0c 	mov	0xc78, r10
- cc2:	00 00 
- cc4:	80 ff 04 00 	jarl	cc8 <_main+0x24>, lp
- cc8:	44 fa       	add	4, lp
- cca:	6a 00       	jmp	[r10]
- ccc:	2a 06 56 0b 	mov	0xb56, r10
- cd0:	00 00 
- cd2:	80 ff 04 00 	jarl	cd6 <_main+0x32>, lp
- cd6:	44 fa       	add	4, lp
- cd8:	6a 00       	jmp	[r10]
- cda:	26 06 af 0e 	mov	0xeaf, r6
- cde:	00 00 
- ce0:	2a 06 20 0c 	mov	0xc20, r10
- ce4:	00 00 
- ce6:	80 ff 04 00 	jarl	cea <_main+0x46>, lp
- cea:	44 fa       	add	4, lp
- cec:	6a 00       	jmp	[r10]
- cee:	2a 06 88 70 	mov	0x6ff7088, r10
- cf2:	ff 06 
- cf4:	0a 5a       	mov	10, r11
- cf6:	6a 5f 01 00 	st.w	r11, 0[r10]
- cfa:	2a 06 00 00 	mov	0x7ff0000, r10
- cfe:	ff 07 
- d00:	20 5e 48 00 	movea	72, r0, r11
- d04:	4a 5f 00 00 	st.b	r11, 0[r10]
- d08:	2a 06 00 00 	mov	0x7ff0000, r10
- d0c:	ff 07 
- d0e:	20 5e 65 00 	movea	101, r0, r11
- d12:	4a 5f 01 00 	st.b	r11, 1[r10]
- d16:	2a 06 00 00 	mov	0x7ff0000, r10
- d1a:	ff 07 
- d1c:	20 5e 6c 00 	movea	108, r0, r11
- d20:	4a 5f 02 00 	st.b	r11, 2[r10]
- d24:	2a 06 00 00 	mov	0x7ff0000, r10
- d28:	ff 07 
- d2a:	20 5e 6c 00 	movea	108, r0, r11
- d2e:	4a 5f 03 00 	st.b	r11, 3[r10]
- d32:	2a 06 00 00 	mov	0x7ff0000, r10
- d36:	ff 07 
- d38:	20 5e 6f 00 	movea	111, r0, r11
- d3c:	4a 5f 04 00 	st.b	r11, 4[r10]
- d40:	2a 06 00 00 	mov	0x7ff0000, r10
- d44:	ff 07 
- d46:	20 5e 20 00 	movea	32, r0, r11
- d4a:	4a 5f 05 00 	st.b	r11, 5[r10]
- d4e:	2a 06 00 00 	mov	0x7ff0000, r10
- d52:	ff 07 
- d54:	20 5e 4d 00 	movea	77, r0, r11
- d58:	4a 5f 06 00 	st.b	r11, 6[r10]
- d5c:	2a 06 00 00 	mov	0x7ff0000, r10
- d60:	ff 07 
- d62:	20 5e 4d 00 	movea	77, r0, r11
- d66:	4a 5f 07 00 	st.b	r11, 7[r10]
- d6a:	2a 06 00 00 	mov	0x7ff0000, r10
- d6e:	ff 07 
- d70:	20 5e 41 00 	movea	65, r0, r11
- d74:	4a 5f 08 00 	st.b	r11, 8[r10]
- d78:	2a 06 00 00 	mov	0x7ff0000, r10
- d7c:	ff 07 
- d7e:	20 5e 50 00 	movea	80, r0, r11
- d82:	4a 5f 09 00 	st.b	r11, 9[r10]
- d86:	2a 06 00 00 	mov	0x7ff0000, r10
- d8a:	ff 07 
- d8c:	20 5e 21 00 	movea	33, r0, r11
- d90:	4a 5f 0a 00 	st.b	r11, 10[r10]
- d94:	2a 06 00 00 	mov	0x7ff0000, r10
- d98:	ff 07 
- d9a:	20 5e 21 00 	movea	33, r0, r11
- d9e:	4a 5f 0b 00 	st.b	r11, 11[r10]
- da2:	2a 06 00 00 	mov	0x7ff0000, r10
- da6:	ff 07 
- da8:	0a 5a       	mov	10, r11
- daa:	4a 5f 0c 00 	st.b	r11, 12[r10]
- dae:	2a 06 00 00 	mov	0xdead0000, r10
- db2:	ad de 
- db4:	0a 5a       	mov	10, r11
- db6:	6a 5f 01 00 	st.w	r11, 0[r10]
- dba:	85 05       	br	dba <_main+0x116>
+00000cb8 <_main>:
+ cb8:	58 1a       	add	-8, sp
+ cba:	63 ff 05 00 	st.w	lp, 4[sp]
+ cbe:	63 ef 01 00 	st.w	r29, 0[sp]
+ cc2:	5c 1a       	add	-4, sp
+ cc4:	03 e8       	mov	sp, r29
+ cc6:	2a 06 c8 0e 	mov	0xec8, r10
+ cca:	00 00 
+ ccc:	7d 57 01 00 	st.w	r10, 0[r29]
+ cd0:	3d 37 01 00 	ld.w	0[r29], r6
+ cd4:	2a 06 8a 0c 	mov	0xc8a, r10
+ cd8:	00 00 
+ cda:	80 ff 04 00 	jarl	cde <_main+0x26>, lp
+ cde:	44 fa       	add	4, lp
+ ce0:	6a 00       	jmp	[r10]
+ ce2:	2a 06 6a 0b 	mov	0xb6a, r10
+ ce6:	00 00 
+ ce8:	80 ff 04 00 	jarl	cec <_main+0x34>, lp
+ cec:	44 fa       	add	4, lp
+ cee:	6a 00       	jmp	[r10]
+ cf0:	26 06 cb 0e 	mov	0xecb, r6
+ cf4:	00 00 
+ cf6:	2a 06 30 0c 	mov	0xc30, r10
+ cfa:	00 00 
+ cfc:	80 ff 04 00 	jarl	d00 <_main+0x48>, lp
+ d00:	44 fa       	add	4, lp
+ d02:	6a 00       	jmp	[r10]
+ d04:	2a 06 88 70 	mov	0x6ff7088, r10
+ d08:	ff 06 
+ d0a:	0a 5a       	mov	10, r11
+ d0c:	6a 5f 01 00 	st.w	r11, 0[r10]
+ d10:	2a 06 00 00 	mov	0x7ff0000, r10
+ d14:	ff 07 
+ d16:	20 5e 48 00 	movea	72, r0, r11
+ d1a:	4a 5f 00 00 	st.b	r11, 0[r10]
+ d1e:	2a 06 00 00 	mov	0x7ff0000, r10
+ d22:	ff 07 
+ d24:	20 5e 65 00 	movea	101, r0, r11
+ d28:	4a 5f 01 00 	st.b	r11, 1[r10]
+ d2c:	2a 06 00 00 	mov	0x7ff0000, r10
+ d30:	ff 07 
+ d32:	20 5e 6c 00 	movea	108, r0, r11
+ d36:	4a 5f 02 00 	st.b	r11, 2[r10]
+ d3a:	2a 06 00 00 	mov	0x7ff0000, r10
+ d3e:	ff 07 
+ d40:	20 5e 6c 00 	movea	108, r0, r11
+ d44:	4a 5f 03 00 	st.b	r11, 3[r10]
+ d48:	2a 06 00 00 	mov	0x7ff0000, r10
+ d4c:	ff 07 
+ d4e:	20 5e 6f 00 	movea	111, r0, r11
+ d52:	4a 5f 04 00 	st.b	r11, 4[r10]
+ d56:	2a 06 00 00 	mov	0x7ff0000, r10
+ d5a:	ff 07 
+ d5c:	20 5e 20 00 	movea	32, r0, r11
+ d60:	4a 5f 05 00 	st.b	r11, 5[r10]
+ d64:	2a 06 00 00 	mov	0x7ff0000, r10
+ d68:	ff 07 
+ d6a:	20 5e 4d 00 	movea	77, r0, r11
+ d6e:	4a 5f 06 00 	st.b	r11, 6[r10]
+ d72:	2a 06 00 00 	mov	0x7ff0000, r10
+ d76:	ff 07 
+ d78:	20 5e 4d 00 	movea	77, r0, r11
+ d7c:	4a 5f 07 00 	st.b	r11, 7[r10]
+ d80:	2a 06 00 00 	mov	0x7ff0000, r10
+ d84:	ff 07 
+ d86:	20 5e 41 00 	movea	65, r0, r11
+ d8a:	4a 5f 08 00 	st.b	r11, 8[r10]
+ d8e:	2a 06 00 00 	mov	0x7ff0000, r10
+ d92:	ff 07 
+ d94:	20 5e 50 00 	movea	80, r0, r11
+ d98:	4a 5f 09 00 	st.b	r11, 9[r10]
+ d9c:	2a 06 00 00 	mov	0x7ff0000, r10
+ da0:	ff 07 
+ da2:	20 5e 21 00 	movea	33, r0, r11
+ da6:	4a 5f 0a 00 	st.b	r11, 10[r10]
+ daa:	2a 06 00 00 	mov	0x7ff0000, r10
+ dae:	ff 07 
+ db0:	20 5e 21 00 	movea	33, r0, r11
+ db4:	4a 5f 0b 00 	st.b	r11, 11[r10]
+ db8:	2a 06 00 00 	mov	0x7ff0000, r10
+ dbc:	ff 07 
+ dbe:	0a 5a       	mov	10, r11
+ dc0:	4a 5f 0c 00 	st.b	r11, 12[r10]
+ dc4:	2a 06 00 00 	mov	0xdead0000, r10
+ dc8:	ad de 
+ dca:	0a 5a       	mov	10, r11
+ dcc:	6a 5f 01 00 	st.w	r11, 0[r10]
+ dd0:	85 05       	br	dd0 <_main+0x118>
 
-00000dbc <_bss_clear>:
- dbc:	54 1a       	add	-12, sp
- dbe:	63 ef 09 00 	st.w	r29, 8[sp]
- dc2:	03 e8       	mov	sp, r29
- dc4:	2a 06 00 70 	mov	0x6ff7000, r10
- dc8:	ff 06 
- dca:	7d 57 05 00 	st.w	r10, 4[r29]
- dce:	2a 06 8c 70 	mov	0x6ff708c, r10
- dd2:	ff 06 
- dd4:	7d 57 01 00 	st.w	r10, 0[r29]
- dd8:	a5 0d       	br	dec <_bss_clear+0x30>
- dda:	3d 57 05 00 	ld.w	4[r29], r10
- dde:	4a 07 00 00 	st.b	r0, 0[r10]
- de2:	3d 57 05 00 	ld.w	4[r29], r10
- de6:	41 52       	add	1, r10
- de8:	7d 57 05 00 	st.w	r10, 4[r29]
- dec:	3d 5f 05 00 	ld.w	4[r29], r11
- df0:	3d 57 01 00 	ld.w	0[r29], r10
- df4:	ea 59       	cmp	r10, r11
- df6:	a1 f5       	bl	dda <_bss_clear+0x1e>
- df8:	00 00       	nop	
- dfa:	1d 18       	mov	r29, sp
- dfc:	23 ef 09 00 	ld.w	8[sp], r29
- e00:	4c 1a       	add	12, sp
- e02:	7f 00       	jmp	[lp]
+00000dd2 <_bss_clear>:
+ dd2:	5c 1a       	add	-4, sp
+ dd4:	63 ef 01 00 	st.w	r29, 0[sp]
+ dd8:	58 1a       	add	-8, sp
+ dda:	03 e8       	mov	sp, r29
+ ddc:	2a 06 00 70 	mov	0x6ff7000, r10
+ de0:	ff 06 
+ de2:	7d 57 05 00 	st.w	r10, 4[r29]
+ de6:	2a 06 8c 70 	mov	0x6ff708c, r10
+ dea:	ff 06 
+ dec:	7d 57 01 00 	st.w	r10, 0[r29]
+ df0:	a5 0d       	br	e04 <_bss_clear+0x32>
+ df2:	3d 57 05 00 	ld.w	4[r29], r10
+ df6:	4a 07 00 00 	st.b	r0, 0[r10]
+ dfa:	3d 57 05 00 	ld.w	4[r29], r10
+ dfe:	41 52       	add	1, r10
+ e00:	7d 57 05 00 	st.w	r10, 4[r29]
+ e04:	3d 5f 05 00 	ld.w	4[r29], r11
+ e08:	3d 57 01 00 	ld.w	0[r29], r10
+ e0c:	ea 59       	cmp	r10, r11
+ e0e:	a1 f5       	bl	df2 <_bss_clear+0x20>
+ e10:	00 00       	nop	
+ e12:	1d 18       	mov	r29, sp
+ e14:	23 ef 09 00 	ld.w	8[sp], r29
+ e18:	4c 1a       	add	12, sp
+ e1a:	7f 00       	jmp	[lp]
 
-00000e04 <_data_init>:
- e04:	50 1a       	add	-16, sp
- e06:	63 ef 0d 00 	st.w	r29, 12[sp]
- e0a:	03 e8       	mov	sp, r29
- e0c:	2a 06 c0 0e 	mov	0xec0, r10
- e10:	00 00 
- e12:	7d 57 09 00 	st.w	r10, 8[r29]
- e16:	2a 06 c0 0e 	mov	0xec0, r10
- e1a:	00 00 
- e1c:	7d 57 01 00 	st.w	r10, 0[r29]
- e20:	2a 06 00 70 	mov	0x6ff7000, r10
- e24:	ff 06 
- e26:	7d 57 05 00 	st.w	r10, 4[r29]
- e2a:	b5 15       	br	e50 <_data_init+0x4c>
- e2c:	3d 57 09 00 	ld.w	8[r29], r10
- e30:	8a 5f 01 00 	ld.bu	0[r10], r11
- e34:	3d 57 05 00 	ld.w	4[r29], r10
- e38:	4a 5f 00 00 	st.b	r11, 0[r10]
- e3c:	3d 57 05 00 	ld.w	4[r29], r10
- e40:	41 52       	add	1, r10
- e42:	7d 57 05 00 	st.w	r10, 4[r29]
+00000e1c <_data_init>:
+ e1c:	5c 1a       	add	-4, sp
+ e1e:	63 ef 01 00 	st.w	r29, 0[sp]
+ e22:	54 1a       	add	-12, sp
+ e24:	03 e8       	mov	sp, r29
+ e26:	2a 06 dc 0e 	mov	0xedc, r10
+ e2a:	00 00 
+ e2c:	7d 57 09 00 	st.w	r10, 8[r29]
+ e30:	2a 06 dc 0e 	mov	0xedc, r10
+ e34:	00 00 
+ e36:	7d 57 01 00 	st.w	r10, 0[r29]
+ e3a:	2a 06 00 70 	mov	0x6ff7000, r10
+ e3e:	ff 06 
+ e40:	7d 57 05 00 	st.w	r10, 4[r29]
+ e44:	b5 15       	br	e6a <_data_init+0x4e>
  e46:	3d 57 09 00 	ld.w	8[r29], r10
- e4a:	41 52       	add	1, r10
- e4c:	7d 57 09 00 	st.w	r10, 8[r29]
- e50:	3d 5f 09 00 	ld.w	8[r29], r11
- e54:	3d 57 01 00 	ld.w	0[r29], r10
- e58:	ea 59       	cmp	r10, r11
- e5a:	91 ed       	bl	e2c <_data_init+0x28>
- e5c:	1d 18       	mov	r29, sp
- e5e:	23 ef 0d 00 	ld.w	12[sp], r29
- e62:	03 1e 10 00 	addi	16, sp, sp
- e66:	7f 00       	jmp	[lp]
+ e4a:	8a 5f 01 00 	ld.bu	0[r10], r11
+ e4e:	3d 57 05 00 	ld.w	4[r29], r10
+ e52:	4a 5f 00 00 	st.b	r11, 0[r10]
+ e56:	3d 57 05 00 	ld.w	4[r29], r10
+ e5a:	41 52       	add	1, r10
+ e5c:	7d 57 05 00 	st.w	r10, 4[r29]
+ e60:	3d 57 09 00 	ld.w	8[r29], r10
+ e64:	41 52       	add	1, r10
+ e66:	7d 57 09 00 	st.w	r10, 8[r29]
+ e6a:	3d 5f 09 00 	ld.w	8[r29], r11
+ e6e:	3d 57 01 00 	ld.w	0[r29], r10
+ e72:	ea 59       	cmp	r10, r11
+ e74:	91 ed       	bl	e46 <_data_init+0x2a>
+ e76:	1d 18       	mov	r29, sp
+ e78:	23 ef 0d 00 	ld.w	12[sp], r29
+ e7c:	03 1e 10 00 	addi	16, sp, sp
+ e80:	7f 00       	jmp	[lp]
