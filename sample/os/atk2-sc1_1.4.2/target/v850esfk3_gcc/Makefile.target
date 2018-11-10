@@ -84,7 +84,8 @@ INCLUDES := $(INCLUDES) -I$(TARGETDIR)
 #
 #  サポート命令毎のコンパイルオプション
 #
-COPTS := $(COPTS) -msoft-float 
+#COPTS := $(COPTS) -msoft-float 
+COPTS := $(COPTS) 
 
 #
 #  カーネルに関する定義

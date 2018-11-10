@@ -86,7 +86,8 @@ KERNEL_ASMOBJS := $(KERNEL_ASMOBJS) Os_Lcfg_asm.o
 #
 #  コアタイプ(実装)による切り替え
 #
-COPTS := $(COPTS) -msoft-float
+#COPTS := $(COPTS) -msoft-float
+COPTS := $(COPTS) 
 
 #
 #  カーネルに関する定義
