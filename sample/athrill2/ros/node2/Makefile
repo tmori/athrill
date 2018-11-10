@@ -24,7 +24,8 @@ OBJS	+= athrill_comm_generated_config.o
 
 
 CFLAGS	:= -O0 -mdisable-callt -mno-app-regs -mtda=0
-CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e2 -Wa,-mno-bcond17 -msoft-float -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
+#CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e2 -Wa,-mno-bcond17 -msoft-float -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
+CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e2 -Wa,-mno-bcond17  -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
 
 
 LDSCRIPT = $(BUILD_PATH)/v850esfk3.ld
