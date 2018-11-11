@@ -122,6 +122,8 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
    src/logger.cpp
+   src/log_message.cpp
+   src/log_file.cpp
 )
 
 ## Add cmake target dependencies of the library
