@@ -187,10 +187,12 @@ static void file_pathset(SerialFileType *file, const char* filename, int filenam
 		memcpy(file->path, path, pathlen);
 		file->path[pathlen] = '/';
 		memcpy(&file->path[pathlen + 1], filename, filenamelen);
+#ifndef OS_LINUX
 		if (file->path[0] == '/') {
 			file->path[0] = file->path[1];
 			file->path[1] = ':';
 		}
+#endif /* OS_LINUX */
 	}
 	else {
 		memcpy(&file->path, filename, filenamelen);
