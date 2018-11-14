@@ -16,6 +16,12 @@ cd ${CURDIR}
 TARGET_NAME=virtual_ecu_proxy
 SRC_FILES=${GENERATED_DIR}/${TARGET_NAME}*
 DST_DIR=${ROSWORK_VECU_PROXY_SRC_DIR}
+if [ -d ${DST_DIR} ]
+then
+	:
+else
+	mkdir -p ${DST_DIR}
+fi
 rm -f ${DST_DIR}/${TARGET_NAME}*
 cp ${SRC_FILES} ${DST_DIR}/
 

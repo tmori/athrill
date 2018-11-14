@@ -54,7 +54,8 @@ TOOL = gcc
 #  コンパイルフラグ
 #
 COPTS := $(COPTS)
-LDFLAGS := $(LDFLAGS) -msoft-float -Wl,-Map=v850es_fk3.map
+#LDFLAGS := $(LDFLAGS) -msoft-float -Wl,-Map=v850es_fk3.map
+LDFLAGS := $(LDFLAGS)  -Wl,-Map=v850es_fk3.map
 INCLUDES := $(INCLUDES) -I$(SRCDIR)/target/v850_gcc
 
 #

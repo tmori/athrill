@@ -69,6 +69,9 @@ void device_init(CpuType *cpu, DeviceClockType *dev_clock)
 	if (cpuemu_get_devcfg_string("SERIAL_FILE_PATH", &path) == STD_E_OK) {
 		device_ex_serial_register_ops(1U, &device_ex_serial_file_op);
 	}
+	else {
+		device_ex_serial_register_ops(1U, &device_ex_serial_op);
+	}
 
 	return;
 }
