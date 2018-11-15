@@ -10,6 +10,7 @@ typedef struct {
 	uint32 					last_raised_counter;
 	uint16 					id;
 	uint16 					intno;
+	uint32					flush_count;
 	bool   					is_send_data;
 	uint8 					send_data;
 	DeviceExSerialOpType 	*ops;
@@ -54,6 +55,7 @@ void device_init_serial(MpuAddressRegionType *region)
 		SerialDevice[i].intno = -1;
 		SerialDevice[i].is_send_data = FALSE;
 		SerialDevice[i].start_clock = 0;
+		SerialDevice[i].flush_count = 0;
 		SerialDevice[i].ops = NULL;
 		SerialDevice[i].last_raised_counter = 0;
 	}
@@ -105,6 +107,15 @@ void device_do_serial(SerialDeviceType *serial)
 		//送信割込みを上げる
 		serial_set_str(FALSE, serial->id);
 		serial->is_send_data = FALSE;
+	}
+	if (serial->ops->flush != NULL) {
+		if (serial->flush_count >= 100) {
+			serial->ops->flush(serial->id);
+			serial->flush_count = 0;
+		}
+		else {
+			serial->flush_count++;
+		}
 	}
 	return;
 }

@@ -200,7 +200,7 @@ static void file_pathset(SerialFileType *file, const char* filename, int filenam
 	return;
 }
 
-static void file_wopen(SerialFileWriterType *wfile)
+static void my_file_wopen(SerialFileWriterType *wfile)
 {
 	int err;
 	struct stat buf;
@@ -223,7 +223,7 @@ static void file_wopen(SerialFileWriterType *wfile)
 
 	return;
 }
-static void file_ropen(SerialFileReaderType *rfile)
+static void my_file_ropen(SerialFileReaderType *rfile)
 {
 	int err;
 	struct stat buf;
@@ -344,7 +344,7 @@ static void file_cache_flush(uint8 channel, SerialFileWriterType *wfile)
 		}
 	}
 
-	file_wopen(wfile);
+	my_file_wopen(wfile);
 
 	err = fstat(wfile->file.fd, &buf);
 	if (err < 0) {
@@ -397,7 +397,7 @@ static Std_ReturnType file_cache_load(uint8 channel, SerialFileReaderType *rfile
 		}
 	}
 
-	file_ropen(rfile);
+	my_file_ropen(rfile);
 
 	err = fstat(rfile->file.fd, &buf);
 	if (err < 0) {
