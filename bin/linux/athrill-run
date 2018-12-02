@@ -2,7 +2,7 @@
 
 if [ -f device_config.txt ]
 then
-    :
+    echo "OK: found device_config.txt"
 else
     echo "ERROR: not found device_config.txt"
     exit 1
@@ -10,7 +10,7 @@ fi
 
 if [ -f memory.txt ]
 then
-    :
+    echo "OK: found memory.txt"
 else
     echo "ERROR: not found memory.txt"
     exit 1
@@ -24,6 +24,7 @@ then
 fi
 
 ELF_FILE=`ls  | grep -v "\.o" | grep -v "\.exe" | xargs file | grep ELF | awk -F\: '{print $1}'`
+echo "OK: found ${ELF_FILE}"
 
 athrill2 -c1 -i -m memory.txt -d device_config.txt ${ELF_FILE}
 
