@@ -103,12 +103,12 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-#catkin_package(
+catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES virtual_ecu_proxy
-#  CATKIN_DEPENDS roscpp std_msgs virtual_can_bus
+  CATKIN_DEPENDS roscpp std_msgs virtual_can_bus
 #  DEPENDS system_lib
-#)
+)
 
 ###########
 ## Build ##
