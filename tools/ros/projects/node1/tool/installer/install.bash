@@ -18,9 +18,9 @@ SRC_FILES=${GENERATED_DIR}/${TARGET_NAME}*
 DST_DIR=${ROSWORK_VECU_PROXY_SRC_DIR}
 if [ -d ${DST_DIR} ]
 then
-	:
+    :
 else
-	mkdir -p ${DST_DIR}
+    mkdir -p ${DST_DIR}
 fi
 rm -f ${DST_DIR}/${TARGET_NAME}*
 cp ${SRC_FILES} ${DST_DIR}/
@@ -32,6 +32,7 @@ rm -rf build
 
 catkin_make --pkg virtual_can_bus
 catkin_make --pkg virtual_ecu_proxy
+catkin_make --pkg logger
 
 #DONE
 cd ${CURDIR}
