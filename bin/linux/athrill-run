@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ -f device_config.txt ]
+then
+    :
+else
+    echo "ERROR: not found device_config.txt"
+    exit 1
+fi
+
+if [ -f memory.txt ]
+then
+    :
+else
+    echo "ERROR: not found memory.txt"
+    exit 1
+fi
+
+ls  | grep -v "\.o" | grep -v "\.exe" | xargs file | grep ELF > /dev/null
+if [ $? -ne 0 ]
+then
+    echo "ERROR: not found elf file for execution"
+    exit 1
+fi
+
+ELF_FILE=`ls  | grep -v "\.o" | grep -v "\.exe" | xargs file | grep ELF | awk -F\: '{print $1}'`
+
+athrill2 -c1 -i -m memory.txt -d device_config.txt ${ELF_FILE}
+
+exit 0
