@@ -1,0 +1,12 @@
+0. mbed周りの実装をathrill用に置き換える
+　0. mROSのmbed依存APIを調べる
+　　- Ethernet Interface
+　　- TCPSocketConnection
+　1. athrill向けのmbedデバイスを設計する
+　2. athrill向けのmbedデバイス実装を作る
+　3. athrill向けのmbed実装を作る
+
+1. mROSのメインストリームを探す
+2. mROSのビルド環境を作る
+3. aspのビルド環境を作る
+4. sampleプログラムを作る
