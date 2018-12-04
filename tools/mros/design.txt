@@ -4,7 +4,7 @@
 　※１命令で実行されるので，仮想的にはオーバーヘッドは低い．
 
 ■システムコール引数，戻り値
-　専用変数 AthrillSyscallArgType athrill_syscall_args[core_id] を用意する
+　スタック変数 AthrillSyscallArgType api_args を用意する
 　ここにAPI引数と戻り値格納メモリ領域へのアドレスを設定する．
 
 　汎用領域は以下とする．
