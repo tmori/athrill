@@ -1,12 +1,11 @@
 ■システムコール呼び出し方法
-　専用変数 uint32 athrill_syscall[core_id] を用意する
+　専用変数 uint32 athrill_syscallを用意する
 　ここにAPI番号を書き込むと，athrill内のシステムコール処理が実行される
 　※１命令で実行されるので，仮想的にはオーバーヘッドは低い．
 
 ■システムコール引数，戻り値
 　専用変数 AthrillSyscallArgType athrill_syscall_args[core_id] を用意する
 　ここにAPI引数と戻り値格納メモリ領域へのアドレスを設定する．
-　排他は，全割り込み禁止フラグでやる．例外処理からはアクセスさせない想定．
 
 　汎用領域は以下とする．
 
@@ -17,5 +16,17 @@ typdef struct {
         /*
          * api 毎の引数型を並べておく
          */
-    } args;
+    } body;
 } AthrillSyscallArgType;
+
+■使い方イメージ
+#define ATHRILL_SYSCALL(api_args)    athrill_syscall = (api_args);
+{
+    AthrillSyscallArgType api_args;
+    
+    api_args.api_id = 10;
+    api_args.ret_value = 0;
+    api_args.body.api_10.portno = 1000;
+
+    ATHRILL_SYSCALL(&api_args);
+}
