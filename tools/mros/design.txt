@@ -30,3 +30,14 @@ typdef struct {
 
     ATHRILL_SYSCALL(&api_args);
 }
+
+■POSIX api
+ mROSを実現する上で必要なPOSIX API.
+  - socket
+  - connect
+  - listen
+  - bind
+  - send
+  - recv
+  - close
+  
