@@ -46,4 +46,20 @@ athrill内でブロックされるとまずいので、非同期APIとする。
 
 wait_queueを作る案もあるが、OS資源を新たに定義しないといけなくなるので、
 手軽に使うにはすこし面倒なので、今回は見送る。
-  
+
+
+■ファイル構成
+　- mROS
+　 　<0>-> EthernetInterface.c
+　 　      <1>-> athrill_posix_socket.h
+　 　            <2>-> athrill_posix_socket_user.c
+　 　                  <3>-> athrill_syscall.h
+　 　                        <4>-> athrill_syscall_user.c
+
+　- athrill
+　 　<0>-> athrill_device.c
+           <1>-> athrill_syscall.h
+                 <2>-> athrill_syscall_device.c
+                       <3>-> athrill_posix_socket.h
+                　 　         <4>-> athrill_posix_socket_device.c
+
