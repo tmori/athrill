@@ -52,9 +52,9 @@ wait_queueを作る案もあるが、OS資源を新たに定義しないとい�
 　- mROS
 　 　<0>-> EthernetInterface.c
 　 　      <1>-> athrill_posix_socket.h
-　 　            <2>-> athrill_posix_socket_user.c
+　 　            <2>-> athrill_posix_socket_apl.c
 　 　                  <3>-> athrill_syscall.h
-　 　                        <4>-> athrill_syscall_user.c
+　 　                        <4>-> athrill_syscall_apl.c
 
 　- athrill
 　 　<0>-> athrill_device.c
@@ -63,3 +63,29 @@ wait_queueを作る案もあるが、OS資源を新たに定義しないとい�
                        <3>-> athrill_posix_socket.h
                 　 　         <4>-> athrill_posix_socket_device.c
 
+■ファイル配置場所
+　- アプリ/athrill共通ヘッダファイル
+    - trunk/apl/include
+       - athrill_syscall.h
+       - athrill_posix_socket.h
+
+　- アプリ向けファイル
+    - trunk/apl/src
+       - athrill_syscall_apl.c
+       - athrill_posix_socket_apl.c
+
+　- athrill向けファイル
+    - trunk/src/device/syscall
+       - athrill_syscall_device.c
+       - athrill_posix_socket_device.c
+
+■mROSファイル配置場所
+　- mros_athrill(新規リポジトリで管理)
+    - app
+    - mros-lib
+    - athrill_mbed
+    - athrill_asp
+
+■その他気づいたこと
+　- linux版64bit-gcc には，g++およびvector等のライブラリがない・・
+　　⇒コンパイルし直しする．
