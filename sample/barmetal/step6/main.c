@@ -60,6 +60,13 @@ int main(void)
 		printf("OK:send\n");
 	}
 
+	err = athrill_posix_shutdown(sockfd, ATHRILL_POSIX_SHUT_RDWR);
+	if (err < 0) {
+		test_print_line("close error=", -err);
+	}
+	else {
+		printf("OK:close\n");
+	}
 
 
 	while (1) {
