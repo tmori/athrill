@@ -155,13 +155,26 @@ static void athrill_syscall_send(AthrillSyscallArgType *arg)
 
 static void athrill_syscall_rev(AthrillSyscallArgType *arg)
 {
-    //TODO
+    Std_ReturnType err;
+    char *bufp;
+    ssize_t ret;
+
+    err = mpu_get_pointer(0U, arg->body.api_recv.buf, (uint8 **)&bufp);
+    if (err != 0) {
+        return;
+    }
+    ret = send(arg->body.api_recv.sockfd, bufp, arg->body.api_recv.len, MSG_DONTWAIT);
+    if (ret < 0) {
+        arg->ret_value = -errno;
+    }
+    arg->ret_value = ret;
     return;
 }
 
 static void athrill_syscall_shutdown(AthrillSyscallArgType *arg)
 {
-    //TODO
+    arg->ret_value = SYS_API_ERR_OK;
+    (void)close(arg->body.api_shutdown.sockfd);
     return;
 }
 
