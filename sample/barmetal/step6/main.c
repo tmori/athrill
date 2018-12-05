@@ -53,7 +53,7 @@ int main(void)
 		}
 	} while (err != 0);
 
-	err = athrill_posix_send(sockfd, (sys_addr)"test data sended", sizeof("test data sended"), ATHRILL_POSIX_MSG_DONTWAIT);
+	err = athrill_posix_send(sockfd, (sys_addr)"Now test data was sended\n", sizeof("Now test data was sended\n"), ATHRILL_POSIX_MSG_DONTWAIT);
 	if (err < 0) {
 		test_print_line("send error=", -err);
 	}
