@@ -53,7 +53,6 @@ wait_queueを作る案もあるが、OS資源を新たに定義しないとい�
 　 　      <1>-> athrill_posix_socket.h
 　 　            <2>-> athrill_posix_socket_apl.c
 　 　                  <3>-> athrill_syscall.h
-　 　                        <4>-> athrill_syscall_apl.c
 
 　- athrill
 　 　<0>-> athrill_device.c
