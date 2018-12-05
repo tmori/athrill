@@ -74,7 +74,6 @@ static void do_athrill_device_func_call(void)
 {
     Std_ReturnType err;
     uint32 data;
-	char cmd[256];
 
     if (athrill_device_func_call_addr == 0x0) {
         return;
@@ -90,10 +89,7 @@ static void do_athrill_device_func_call(void)
 
     AthrillDeviceMmapInfoTableEntryType *mmapInfo = getMmapInfo(CAST_UINT32_TO_ADDR(data));
     if (mmapInfo == NULL) {
-    	snprintf(cmd, sizeof(cmd), "athrill_extfunc.sh %u", data);
-    	if (system(cmd) < 0) {
-    		printf("can not execute athrill_extfunc.sh\n");
-    	}
+        athrill_syscall_device(data);
     }
     else {
     	int err;
