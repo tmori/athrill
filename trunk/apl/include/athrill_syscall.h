@@ -33,13 +33,13 @@ struct api_arg_send {
 };
 struct api_arg_recv {
     sys_int32 sockfd;
-    sys_int32 how;
-};
-struct api_arg_shutdown {
-    sys_int32 sockfd;
     sys_addr buf;
     sys_uint32 len;
     sys_int32 flags;
+};
+struct api_arg_shutdown {
+    sys_int32 sockfd;
+    sys_int32 how;
 };
 
 typedef enum {
@@ -53,15 +53,15 @@ typedef enum {
 } AthrillSyscallApiIdType;
 
 #define SYS_API_ERR_OK      0
-#define SYS_API_ERR_PERM    1
-#define SYS_API_ERR_NOENT   2
-#define SYS_API_ERR_AGAIN   11
-#define SYS_API_ERR_NOMEM   12
-#define SYS_API_ERR_ACCESS  13
-#define SYS_API_ERR_FAULT   14
-#define SYS_API_ERR_EXSIT   17
-#define SYS_API_ERR_INVAL   22
-#define SYS_API_ERR_BADFD   77
+#define SYS_API_ERR_PERM    -1
+#define SYS_API_ERR_NOENT   -2
+#define SYS_API_ERR_AGAIN   -11
+#define SYS_API_ERR_NOMEM   -12
+#define SYS_API_ERR_ACCESS  -13
+#define SYS_API_ERR_FAULT   -14
+#define SYS_API_ERR_EXSIT   -17
+#define SYS_API_ERR_INVAL   -22
+#define SYS_API_ERR_BADFD   -77
 
 #ifndef ATHRILL_SYSCALL_DEVICE
 extern sys_addr athrill_device_func_call __attribute__ ((section(".athrill_device_section")));
