@@ -42,6 +42,15 @@ int main(void)
 	else {
 		printf("OK:connect\n");
 	}
+	do {
+		err = athrill_posix_sense(sockfd, ATHRILL_SYSCALL_SENSE_DIR_WRITE);
+		if (err < 0) {
+			test_print_line("sense error=", -err);
+		}
+		else {
+			printf("OK:sense\n");
+		}
+	} while (err != 0);
 
 	while (1) {
 		;
