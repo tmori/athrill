@@ -13,4 +13,6 @@ typedef struct {
 } AthrillDeviceMmapInfoType;
 extern void athrill_device_set_mmap_info(AthrillDeviceMmapInfoType *info);
 
+extern void athrill_syscall_device(uint32 addr);
+
 #endif /* _ATHRILL_DEVICE_H_ */
