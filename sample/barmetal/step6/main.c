@@ -15,6 +15,7 @@ sys_addr athrill_device_func_call __attribute__ ((section(".athrill_device_secti
 
 int main(void)
 {
+	char buffer[128];
 	timer_init();
 
 	printf("Hello World!!\n");
@@ -59,6 +60,13 @@ int main(void)
 	else {
 		printf("OK:send\n");
 	}
+
+	do {
+		err = athrill_posix_recv(sockfd, (sys_addr)buffer, sizeof(buffer), ATHRILL_POSIX_MSG_DONTWAIT);
+	} while (err < 0);
+	printf("OK:recv:");
+	printf(buffer);
+	printf("\n");
 
 	err = athrill_posix_shutdown(sockfd, ATHRILL_POSIX_SHUT_RDWR);
 	if (err < 0) {
