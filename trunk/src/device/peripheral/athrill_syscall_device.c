@@ -83,15 +83,9 @@ static void athrill_syscall_sense(AthrillSyscallArgType *arg)
     tv.tv_sec = 0;
     tv.tv_usec = 0;
 
-    switch (arg->body.api_sense.dir) {
-    case ATHRILL_SYSCALL_SENSE_DIR_READ:
-        retval = select(arg->body.api_sense.sockfd + 1, &fds, NULL, NULL, &tv);
-        break;
-    case ATHRILL_SYSCALL_SENSE_DIR_WRITE:
+    switch (arg->body.api_sense.api_id) {
+    case SYS_API_ID_CONNECT:
         retval = select(arg->body.api_sense.sockfd + 1, NULL, &fds, NULL, &tv);
-        break;
-    case ATHRILL_SYSCALL_SENSE_DIR_EXCEPT:
-        retval = select(arg->body.api_sense.sockfd + 1, NULL, NULL, &fds, &tv);
         break;
     default:
         return;;
@@ -106,12 +100,12 @@ static void athrill_syscall_sense(AthrillSyscallArgType *arg)
         retval = getsockopt(arg->body.api_sense.sockfd, SOL_SOCKET, SO_ERROR, &val, &len);
         if (retval < 0) {
             arg->ret_value = -errno;
+            return;
         }
         else {
             arg->ret_value = -val;
         }
     }
-
     return;
 }
 
@@ -143,7 +137,19 @@ static void athrill_syscall_connect(AthrillSyscallArgType *arg)
 
 static void athrill_syscall_send(AthrillSyscallArgType *arg)
 {
-    //TODO
+    Std_ReturnType err;
+    char *bufp;
+    ssize_t ret;
+
+    err = mpu_get_pointer(0U, arg->body.api_send.buf, (uint8 **)&bufp);
+    if (err != 0) {
+        return;
+    }
+    ret = send(arg->body.api_send.sockfd, bufp, arg->body.api_send.len, MSG_DONTWAIT);
+    if (ret < 0) {
+        arg->ret_value = -errno;
+    }
+    arg->ret_value = ret;
     return;
 }
 
