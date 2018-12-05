@@ -23,7 +23,7 @@ static void athrill_syscall_socket(AthrillSyscallArgType *arg);
 static void athrill_syscall_sense(AthrillSyscallArgType *arg);
 static void athrill_syscall_connect(AthrillSyscallArgType *arg);
 static void athrill_syscall_send(AthrillSyscallArgType *arg);
-static void athrill_syscall_rev(AthrillSyscallArgType *arg);
+static void athrill_syscall_recv(AthrillSyscallArgType *arg);
 static void athrill_syscall_shutdown(AthrillSyscallArgType *arg);
 static void athrill_syscall_system(AthrillSyscallArgType *arg);
 
@@ -33,7 +33,7 @@ static struct athrill_syscall_functable syscall_table[SYS_API_ID_NUM] = {
     { athrill_syscall_sense },
     { athrill_syscall_connect },
     { athrill_syscall_send },
-    { athrill_syscall_rev },
+    { athrill_syscall_recv },
     { athrill_syscall_shutdown },
     { athrill_syscall_system },
 };
@@ -153,7 +153,7 @@ static void athrill_syscall_send(AthrillSyscallArgType *arg)
     return;
 }
 
-static void athrill_syscall_rev(AthrillSyscallArgType *arg)
+static void athrill_syscall_recv(AthrillSyscallArgType *arg)
 {
     Std_ReturnType err;
     char *bufp;
@@ -163,7 +163,7 @@ static void athrill_syscall_rev(AthrillSyscallArgType *arg)
     if (err != 0) {
         return;
     }
-    ret = send(arg->body.api_recv.sockfd, bufp, arg->body.api_recv.len, MSG_DONTWAIT);
+    ret = recv(arg->body.api_recv.sockfd, bufp, arg->body.api_recv.len, MSG_DONTWAIT);
     if (ret < 0) {
         arg->ret_value = -errno;
     }
