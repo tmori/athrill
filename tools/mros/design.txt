@@ -36,7 +36,6 @@ typdef struct {
   - socket
   - connect
   - listen
-  - bind
   - send
   - recv
   - shutdown
