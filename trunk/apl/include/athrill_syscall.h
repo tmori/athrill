@@ -27,12 +27,10 @@ struct api_arg_socket {
     sys_int32 type;
     sys_int32 protocol;
 };
-#define ATHRILL_SYSCALL_SENSE_DIR_READ     0
-#define ATHRILL_SYSCALL_SENSE_DIR_WRITE    1
-#define ATHRILL_SYSCALL_SENSE_DIR_EXCEPT   2
+
 struct api_arg_sense {
     sys_int32   sockfd;
-    sys_int32   dir;
+    sys_int32   api_id;
 };
 
 struct api_arg_connect {
@@ -124,14 +122,14 @@ static inline sys_int32 athrill_posix_socket(sys_int32 domain, sys_int32 type, s
     return args.ret_value;
 }
 
-static inline sys_int32 athrill_posix_sense(sys_int32 sockfd, sys_int32 dir)
+static inline sys_int32 athrill_posix_sense(sys_int32 sockfd, AthrillSyscallApiIdType api_id)
 {
     AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_SENSE;
     args.ret_value = SYS_API_ERR_INVAL;
     args.body.api_sense.sockfd = sockfd;
-    args.body.api_sense.dir = dir;
+    args.body.api_sense.api_id = api_id;
 
     ATHRILL_SYSCALL(&args);
 
