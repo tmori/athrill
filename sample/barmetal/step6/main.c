@@ -43,7 +43,7 @@ int main(void)
 		printf("OK:connect\n");
 	}
 	do {
-		err = athrill_posix_sense(sockfd, ATHRILL_SYSCALL_SENSE_DIR_WRITE);
+		err = athrill_posix_sense(sockfd, SYS_API_ID_CONNECT);
 		if (err < 0) {
 			test_print_line("sense error=", -err);
 		}
@@ -51,6 +51,16 @@ int main(void)
 			printf("OK:sense\n");
 		}
 	} while (err != 0);
+
+	err = athrill_posix_send(sockfd, (sys_addr)"test data sended", sizeof("test data sended"), ATHRILL_POSIX_MSG_DONTWAIT);
+	if (err < 0) {
+		test_print_line("send error=", -err);
+	}
+	else {
+		printf("OK:send\n");
+	}
+
+
 
 	while (1) {
 		;
