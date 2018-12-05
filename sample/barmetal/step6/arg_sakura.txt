@@ -1,2 +1,2 @@
--l 45 ./main.c
+-l 9 ./vector.S
 

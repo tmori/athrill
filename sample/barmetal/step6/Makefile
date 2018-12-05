@@ -1,4 +1,5 @@
 ROOT_PATH 		:= ..
+APL_DIR		:= ../../../trunk/apl
 ATHRILL_ROOT	:= $(ROOT_PATH)/../../trunk/src
 BUILD_PATH		:= .
 CPU_CONFIG_PATH	:= $(ATHRILL_ROOT)/config/target/v850esfk3
@@ -32,6 +33,7 @@ IFLAGS	:= -I.
 IFLAGS	+= -I./list
 IFLAGS	+= -I$(ROOT_PATH)/common
 IFLAGS	+= -I$(CPU_CONFIG_PATH)
+IFLAGS	+= -I$(APL_DIR)/include
 
 VPATH	:= $(ROOT_PATH)/common
 VPATH	+= $(TEST_PATH)

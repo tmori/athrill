@@ -4,6 +4,7 @@
 #include "interrupt.h"
 #include <string.h>
 #include "timer.h"
+#include "athrill_syscall.h"
 
 unsigned char stack_data[STACK_SIZE] __attribute__ ((section(".bss_noclr")));
 
@@ -11,7 +12,7 @@ unsigned char mmap_data[1024] __attribute__ ((section(".mmap_section")));
 
 static int gl_variable;
 
-static unsigned int athrill_device_func_call __attribute__ ((section(".athrill_device_section")));
+sys_addr athrill_device_func_call __attribute__ ((section(".athrill_device_section")));
 
 
 int main(void)
@@ -25,21 +26,8 @@ int main(void)
 
 	gl_variable = 10;
 
-	mmap_data[0] = 'H';
-	mmap_data[1] = 'e';
-	mmap_data[2] = 'l';
-	mmap_data[3] = 'l';
-	mmap_data[4] = 'o';
-	mmap_data[5] = ' ';
-	mmap_data[6] = 'M';
-	mmap_data[7] = 'M';
-	mmap_data[8] = 'A';
-	mmap_data[9] = 'P';
-	mmap_data[10] = '!';
-	mmap_data[11] = '!';
-	mmap_data[12] = '\n';
+	(void)athrill_posix_system(100);
 
-	athrill_device_func_call = 10;
 	while (1) {
 		;
 	}
