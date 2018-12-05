@@ -88,6 +88,9 @@ do {    \
     athrill_device_func_call = (sys_addr)(api_argp);    \
 } while (0) \
 
+#define ATHRILL_SYSCALL_SOCKET_DOMAIN_AF_INET   0
+#define ATHRILL_SYSCALL_SOCKET_TYPE_STREAM   0
+#define ATHRILL_SYSCALL_SOCKET_PROTOCOL_ZERO   0
 static inline sys_int32 athrill_posix_socket(sys_int32 domain, sys_int32 type, sys_int32 protocol)
 {
     AthrillSyscallArgType args;
@@ -102,6 +105,17 @@ static inline sys_int32 athrill_posix_socket(sys_int32 domain, sys_int32 type, s
     
     return args.ret_value;
 }
+
+#define ATHRILL_SYSCALL_SOCKADDR_FAMILIY_PF_INET 0
+#define ATHRILL_SYSCALL_IPADDR(arg3, arg2, arg1, arg0)  \
+    ( \
+        ((arg3) << 24) | \
+        ((arg2) << 16) | \
+        ((arg1) << 8) | \
+        ((arg0) << 0) \
+    )
+
+
 static inline sys_int32 athrill_posix_connect(sys_int32 sockfd, const struct sys_sockaddr_in *addr, sys_uint32 addrlen)
 {
     AthrillSyscallArgType args;
@@ -169,6 +183,7 @@ static inline sys_int32 athrill_posix_system(sys_uint32 id)
     AthrillSyscallArgType args;
     args.api_id = SYS_API_ID_SYSTEM;
     args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_system.id = id;
 
     ATHRILL_SYSCALL(&args);
 
