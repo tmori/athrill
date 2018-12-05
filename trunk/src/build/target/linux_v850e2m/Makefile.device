@@ -1,5 +1,5 @@
 ROOTDIR		:= ../../..
-
+APLDIR		:= ../../../../apl
 include Makefile.env
 
 LIBTARGET	:= libdevice.a
@@ -18,6 +18,7 @@ IFLAGS	+= -I$(ROOTDIR)/config
 IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/debugger/executor
 IFLAGS	+= -I$(ROOTDIR)/lib
+IFLAGS	+= -I$(APLDIR)/include
 
 VPATH	:=	$(ROOTDIR)/device/intc/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)
@@ -38,6 +39,7 @@ OBJS	+=	dbg_target_serial.o
 OBJS	+=	dbg_target_cpu.o
 OBJS	+=	intc.o
 OBJS	+=	athrill_device.o
+OBJS	+=	athrill_syscall_device.o
 
 all:	$(LIBTARGET)
 

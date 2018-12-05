@@ -1,4 +1,5 @@
 ROOTDIR		:= ../../..
+APLDIR		:= ../../../../apl
 ARCH		:= v850esfk3
 
 include Makefile.env
@@ -20,6 +21,7 @@ IFLAGS	+= -I$(ROOTDIR)/config/target/$(ARCH)
 IFLAGS	+= -I$(ROOTDIR)/debugger/executor
 IFLAGS	+= -I$(ROOTDIR)/lib
 IFLAGS  += -I$(CAN_DBG_INCLUDE)
+IFLAGS	+= -I$(APLDIR)/include
 
 VPATH	:=	$(ROOTDIR)/device/intc/target/$(ARCH)
 VPATH	+=	$(ROOTDIR)/device/peripheral/target/$(ARCH)
@@ -50,6 +52,7 @@ OBJS	+=	dbg_target_cpu.o
 OBJS	+=	dbg_can.o
 OBJS	+=	intc.o
 OBJS	+=	athrill_device.o
+OBJS	+=	athrill_syscall_device.o
 
 all:	$(LIBTARGET)
 
