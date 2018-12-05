@@ -8,6 +8,13 @@ typedef signed int sys_int32;
 typedef signed short sys_int16;
 typedef signed char sys_int8;
 typedef unsigned int sys_addr;
+typedef int sys_bool;
+
+typedef enum {
+    sys_false = 0,
+    sys_true,
+} SysBoolType;
+typedef sys_int32 sys_bool; 
 
 struct sys_sockaddr_in {
     sys_uint8  sin_family;
@@ -20,6 +27,14 @@ struct api_arg_socket {
     sys_int32 type;
     sys_int32 protocol;
 };
+#define ATHRILL_SYSCALL_SENSE_DIR_READ     0
+#define ATHRILL_SYSCALL_SENSE_DIR_WRITE    1
+#define ATHRILL_SYSCALL_SENSE_DIR_EXCEPT   2
+struct api_arg_sense {
+    sys_int32   sockfd;
+    sys_int32   dir;
+};
+
 struct api_arg_connect {
     sys_int32 sockfd;
     sys_addr sockaddr;
@@ -48,6 +63,7 @@ struct api_arg_system {
 typedef enum {
     SYS_API_ID_NONE = 0,
     SYS_API_ID_SOCKET,
+    SYS_API_ID_SENSE,
     SYS_API_ID_CONNECT,
     SYS_API_ID_SEND,
     SYS_API_ID_RECV,
@@ -56,9 +72,10 @@ typedef enum {
     SYS_API_ID_NUM,
 } AthrillSyscallApiIdType;
 
-#define SYS_API_ERR_OK      0
-#define SYS_API_ERR_PERM    -1
-#define SYS_API_ERR_NOENT   -2
+#define SYS_API_ERR_OK       0
+#define SYS_API_ERR_PERM     -1
+#define SYS_API_ERR_NOENT    -2
+#define SYS_API_ERR_IO       -5
 #define SYS_API_ERR_AGAIN   -11
 #define SYS_API_ERR_NOMEM   -12
 #define SYS_API_ERR_ACCESS  -13
@@ -72,6 +89,7 @@ typedef struct {
     sys_int32 ret_value;
     union {
         struct api_arg_socket api_socket;
+        struct api_arg_sense api_sense;
         struct api_arg_connect api_connect;
         struct api_arg_send api_send;
         struct api_arg_recv api_recv;
@@ -103,6 +121,20 @@ static inline sys_int32 athrill_posix_socket(sys_int32 domain, sys_int32 type, s
 
     ATHRILL_SYSCALL(&args);
     
+    return args.ret_value;
+}
+
+static inline sys_int32 athrill_posix_sense(sys_int32 sockfd, sys_int32 dir)
+{
+    AthrillSyscallArgType args;
+
+    args.api_id = SYS_API_ID_SENSE;
+    args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_sense.sockfd = sockfd;
+    args.body.api_sense.dir = dir;
+
+    ATHRILL_SYSCALL(&args);
+
     return args.ret_value;
 }
 
