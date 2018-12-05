@@ -3,6 +3,13 @@
 #define ATHRILL_SYSCALL_DEVICE
 #include "athrill_syscall.h"
 #include <stdio.h>
+#include <sys/fcntl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <errno.h>
+#include <string.h>
 
 struct athrill_syscall_functable {
     void (*func) (AthrillSyscallArgType *arg);
@@ -49,13 +56,37 @@ static void athrill_syscall_none(AthrillSyscallArgType *arg)
 }
 static void athrill_syscall_socket(AthrillSyscallArgType *arg)
 {
-    //TODO
+    int sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    if (sockfd < 0) {
+        return;
+    }
+    arg->ret_value = sockfd;
     return;
 }
 
 static void athrill_syscall_connect(AthrillSyscallArgType *arg)
 {
-    //TODO
+    Std_ReturnType err;
+    struct sockaddr_in client_addr;
+    struct sys_sockaddr_in *sockaddrp;
+
+    err = mpu_get_pointer(0U, arg->body.api_connect.sockaddr, (uint8 **)&sockaddrp);
+    if (err != 0) {
+        return;
+    }
+    memset(&client_addr, 0, sizeof(client_addr));
+    client_addr.sin_family = PF_INET;
+    client_addr.sin_addr.s_addr = htonl(sockaddrp->sin_addr);
+    client_addr.sin_port = htons(sockaddrp->sin_port);
+
+    int ret = connect(arg->body.api_connect.sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
+    if (ret < 0) {
+        arg->ret_value = -errno;
+    }
+    else {
+        arg->ret_value = SYS_API_ERR_OK;
+    }
+
     return;
 }
 
