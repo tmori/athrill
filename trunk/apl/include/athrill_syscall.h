@@ -102,6 +102,7 @@ typedef enum {
 #define SYS_API_ERR_EXSIT   -17
 #define SYS_API_ERR_INVAL   -22
 #define SYS_API_ERR_BADFD   -77
+#define SYS_API_ERR_CONNREFUSED   -111
 
 typedef struct {
     sys_uint32 api_id;
@@ -202,10 +203,10 @@ static inline sys_int32 athrill_posix_accept(sys_int32 sockfd, struct sys_sockad
 {
     AthrillSyscallArgType args;
 
-    args.api_id = SYS_API_ID_BIND;
+    args.api_id = SYS_API_ID_ACCEPT;
     args.ret_value = SYS_API_ERR_INVAL;
     args.body.api_accept.sockfd = sockfd;
-    args.body.api_accept.addr = (sys_addr)addr;
+    args.body.api_accept.sockaddr = (sys_addr)addr;
     args.body.api_accept.addrlen = (sys_addr)addrlen;
 
     ATHRILL_SYSCALL(&args);
