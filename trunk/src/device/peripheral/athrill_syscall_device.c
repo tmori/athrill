@@ -21,6 +21,9 @@ struct athrill_syscall_functable {
 static void athrill_syscall_none(AthrillSyscallArgType *arg);
 static void athrill_syscall_socket(AthrillSyscallArgType *arg);
 static void athrill_syscall_sense(AthrillSyscallArgType *arg);
+static void athrill_syscall_bind(AthrillSyscallArgType *arg);
+static void athrill_syscall_listen(AthrillSyscallArgType *arg);
+static void athrill_syscall_accept(AthrillSyscallArgType *arg);
 static void athrill_syscall_connect(AthrillSyscallArgType *arg);
 static void athrill_syscall_send(AthrillSyscallArgType *arg);
 static void athrill_syscall_recv(AthrillSyscallArgType *arg);
@@ -31,6 +34,9 @@ static struct athrill_syscall_functable syscall_table[SYS_API_ID_NUM] = {
     { athrill_syscall_none },
     { athrill_syscall_socket },
     { athrill_syscall_sense },
+    { athrill_syscall_bind },
+    { athrill_syscall_listen },
+    { athrill_syscall_accept },
     { athrill_syscall_connect },
     { athrill_syscall_send },
     { athrill_syscall_recv },
@@ -105,6 +111,78 @@ static void athrill_syscall_sense(AthrillSyscallArgType *arg)
         else {
             arg->ret_value = -val;
         }
+    }
+    return;
+}
+
+
+static void athrill_syscall_bind(AthrillSyscallArgType *arg)
+{
+    Std_ReturnType err;
+    struct sockaddr_in server_addr;
+    struct sys_sockaddr_in *sockaddrp;
+
+    err = mpu_get_pointer(0U, arg->body.api_bind.sockaddr, (uint8 **)&sockaddrp);
+    if (err != 0) {
+        return;
+    }
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = PF_INET;
+    server_addr.sin_addr.s_addr = htonl(sockaddrp->sin_addr);
+    server_addr.sin_port = htons(sockaddrp->sin_port);
+
+    int ret = bind(arg->body.api_bind.sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+    if (ret < 0) {
+        arg->ret_value = -errno;
+    }
+    else {
+        arg->ret_value = SYS_API_ERR_OK;
+    }
+
+    return;
+}
+
+
+static void athrill_syscall_listen(AthrillSyscallArgType *arg)
+{
+    int ret = listen(arg->body.api_listen.sockfd, arg->body.api_listen.backlog);
+    if (ret < 0) {
+        arg->ret_value = -errno;
+    }
+    else {
+        arg->ret_value = SYS_API_ERR_OK;
+    }
+    return;
+}
+
+static void athrill_syscall_accept(AthrillSyscallArgType *arg)
+{
+    Std_ReturnType err;
+    struct sockaddr_in client_addr;
+    struct sys_sockaddr_in *sockaddrp;
+    socklen_t addrlen;
+    sys_uint32 *addrlenp;
+
+    err = mpu_get_pointer(0U, arg->body.api_accept.sockaddr, (uint8 **)&sockaddrp);
+    if (err != 0) {
+        return;
+    }
+    err = mpu_get_pointer(0U, arg->body.api_accept.addrlen, (uint8 **)&addrlenp);
+    if (err != 0) {
+        return;
+    }
+
+    memset(&client_addr, 0, sizeof(client_addr));
+    addrlen = sizeof(client_addr);
+    int ret = accept(arg->body.api_accept.sockfd, (struct sockaddr *)&client_addr, &addrlen);
+    if (ret < 0) {
+        arg->ret_value = -errno;
+    }
+    else {
+        sockaddrp->sin_family = PF_INET;
+        sockaddrp->sin_port = ntohs(client_addr.sin_port);
+        sockaddrp->sin_addr = ntohl(client_addr.sin_addr.s_addr);
+        arg->ret_value = SYS_API_ERR_OK;
     }
     return;
 }
