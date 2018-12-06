@@ -38,6 +38,24 @@ struct api_arg_connect {
     sys_addr sockaddr;
     sys_uint32 addrlen;
 };
+
+struct api_arg_bind {
+    sys_int32 sockfd;
+    sys_addr sockaddr;
+    sys_uint32 addrlen;
+};
+
+struct api_arg_listen {
+    sys_int32 sockfd;
+    sys_int32 backlog;
+};
+
+struct api_arg_accept {
+    sys_int32 sockfd;
+    sys_addr sockaddr;
+    sys_addr addrlen;
+};
+
 struct api_arg_send {
     sys_int32 sockfd;
     sys_addr buf;
@@ -62,6 +80,9 @@ typedef enum {
     SYS_API_ID_NONE = 0,
     SYS_API_ID_SOCKET,
     SYS_API_ID_SENSE,
+    SYS_API_ID_BIND,
+    SYS_API_ID_LISTEN,
+    SYS_API_ID_ACCEPT,
     SYS_API_ID_CONNECT,
     SYS_API_ID_SEND,
     SYS_API_ID_RECV,
@@ -88,6 +109,9 @@ typedef struct {
     union {
         struct api_arg_socket api_socket;
         struct api_arg_sense api_sense;
+        struct api_arg_bind api_bind;
+        struct api_arg_listen api_listen;
+        struct api_arg_accept api_accept;
         struct api_arg_connect api_connect;
         struct api_arg_send api_send;
         struct api_arg_recv api_recv;
@@ -145,6 +169,49 @@ static inline sys_int32 athrill_posix_sense(sys_int32 sockfd, AthrillSyscallApiI
         ((arg0) << 0) \
     )
 
+static inline sys_int32 athrill_posix_bind(sys_int32 sockfd, const struct sys_sockaddr_in *addr, sys_uint32 addrlen)
+{
+    AthrillSyscallArgType args;
+
+    args.api_id = SYS_API_ID_BIND;
+    args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_bind.sockfd = sockfd;
+    args.body.api_bind.sockaddr = (sys_addr)addr;
+    args.body.api_bind.addrlen = addrlen;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.ret_value;
+}
+
+static inline sys_int32 athrill_posix_listen(sys_int32 sockfd, sys_int32 backlog)
+{
+    AthrillSyscallArgType args;
+
+    args.api_id = SYS_API_ID_LISTEN;
+    args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_listen.sockfd = sockfd;
+    args.body.api_listen.backlog = backlog;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.ret_value;
+}
+
+static inline sys_int32 athrill_posix_accept(sys_int32 sockfd, struct sys_sockaddr_in *addr, sys_uint32 *addrlen)
+{
+    AthrillSyscallArgType args;
+
+    args.api_id = SYS_API_ID_BIND;
+    args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_accept.sockfd = sockfd;
+    args.body.api_accept.addr = (sys_addr)addr;
+    args.body.api_accept.addrlen = (sys_addr)addrlen;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.ret_value;
+}
 
 static inline sys_int32 athrill_posix_connect(sys_int32 sockfd, const struct sys_sockaddr_in *addr, sys_uint32 addrlen)
 {
