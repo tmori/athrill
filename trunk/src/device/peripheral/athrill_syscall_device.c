@@ -182,7 +182,8 @@ static void athrill_syscall_accept(AthrillSyscallArgType *arg)
         sockaddrp->sin_family = PF_INET;
         sockaddrp->sin_port = ntohs(client_addr.sin_port);
         sockaddrp->sin_addr = ntohl(client_addr.sin_addr.s_addr);
-        arg->ret_value = SYS_API_ERR_OK;
+        *addrlenp = addrlen;
+        arg->ret_value = ret;
     }
     return;
 }
