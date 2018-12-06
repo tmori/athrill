@@ -35,6 +35,10 @@ typdef struct {
  mROSを実現する上で必要なPOSIX API.
   - socket
   - connect
+  - bind
+  - accept
+  - listen
+  - sense
   - listen
   - send
   - recv
