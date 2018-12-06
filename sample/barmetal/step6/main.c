@@ -19,6 +19,7 @@ static void socket_client_test(void)
 	sys_int32 err;
 	struct sys_sockaddr_in sockaddr;
 	
+retry:
 	sockfd = athrill_posix_socket(ATHRILL_SYSCALL_SOCKET_DOMAIN_AF_INET, ATHRILL_SYSCALL_SOCKET_TYPE_STREAM, ATHRILL_SYSCALL_SOCKET_PROTOCOL_ZERO);
 	if (sockfd < 0) {
 		printf("socket error\n");
@@ -42,11 +43,15 @@ static void socket_client_test(void)
 		err = athrill_posix_sense(sockfd, SYS_API_ID_CONNECT);
 		if (err < 0) {
 			test_print_line("sense error=", -err);
+			if (err == SYS_API_ERR_CONNREFUSED) {
+				athrill_posix_shutdown(sockfd, ATHRILL_POSIX_SHUT_RDWR);
+				goto retry;
+			}
 		}
 		else {
-			printf("OK:sense\n");
+			test_print_line("OK:sense error=", err);
 		}
-	} while (err != 0);
+	} while (err < 0);
 
 	err = athrill_posix_send(sockfd, (sys_addr)"Now test data was sended\n", sizeof("Now test data was sended\n"), ATHRILL_POSIX_MSG_DONTWAIT);
 	if (err < 0) {
