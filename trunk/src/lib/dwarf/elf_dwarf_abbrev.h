@@ -117,7 +117,44 @@ typedef enum {
 	DW_AT_variable_parameter = 0x4b, //flag
 	DW_AT_virtuality = 0x4c, //constant
 	DW_AT_vtable_elem_location = 0x4d, //block, reference
+
+	DW_AT_allocated = 0x4e, //constant, exprloc, reference
+	DW_AT_associated = 0x4f, // constant, exprloc, reference
+	DW_AT_data_location = 0x50, // exprloc
+	DW_AT_byte_stride = 0x51, // constant, exprloc, reference
+	DW_AT_entry_pc = 0x52, // address
+	DW_AT_use_UTF8 = 0x53, // flag
+	DW_AT_extension = 0x54, // reference
+	DW_AT_ranges = 0x55, // rangelistptr
+	DW_AT_trampoline = 0x56, // address, flag, reference, string
+	DW_AT_call_column = 0x57, // constant
+	DW_AT_call_file = 0x58, // constant
+	DW_AT_call_line = 0x59, // constant
+	DW_AT_description = 0x5a, // string
+	DW_AT_binary_scale = 0x5b, // constant
+	DW_AT_decimal_scale = 0x5c, // constant
+	DW_AT_small = 0x5d, // reference
+	DW_AT_decimal_sign = 0x5e, // constant
+	DW_AT_digit_count = 0x5f, // constant
+	DW_AT_picture_string = 0x60, // string
+	DW_AT_mutable = 0x61, // flag
+
+	DW_AT_threads_scaled = 0x62, // flag
+	DW_AT_explicit = 0x63, // flag
+	DW_AT_object_pointer = 0x64, // reference
+	DW_AT_endianity = 0x65, // constant
+	DW_AT_elemental = 0x66, // flag
+	DW_AT_pure = 0x67, // flag
+	DW_AT_recursive = 0x68, // flag
+	DW_AT_signature = 0x69, // reference
+	DW_AT_main_subprogram = 0x6a, // flag
+	DW_AT_data_bit_offset = 0x6b, // constant
+	DW_AT_const_expr = 0x6c, // flag
+	DW_AT_enum_class = 0x6d, // flag
+	DW_AT_linkage_name = 0x6e, // string
+
 	DW_AT_lo_user = 0x2000,
+	DW_AT_unknown_0x2007 = 0x2007,
 	DW_AT_unknown_0x2116 = 0x2116,
 	DW_AT_unknown_0x2117 = 0x2117,
 	DW_AT_hi_user = 0x3fff,

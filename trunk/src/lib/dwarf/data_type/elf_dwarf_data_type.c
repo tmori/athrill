@@ -21,6 +21,7 @@ static ElfPointerArrayType	*dwarf_data_type_set[DATA_TYPE_NUM] = {
 		NULL,
 		NULL,
 		NULL,
+		NULL,
 };
 ElfPointerArrayType	*dwarf_get_data_types(DwarfDataEnumType type)
 {
@@ -40,6 +41,7 @@ static parse_func_table_t parse_func_table[DATA_TYPE_NUM] = {
 		elf_dwarf_build_enum_type,
 		elf_dwarf_build_variable_type,
 		elf_dwarf_build_subprogram_type,
+		NULL,
 };
 
 static DwarfDataEnumType get_dataType(DwTagType tag)
@@ -73,6 +75,9 @@ static DwarfDataEnumType get_dataType(DwTagType tag)
 	case DW_TAG_subprogram:
 		ret = DATA_TYPE_SUBPROGRAM;
 		break;
+	case DW_TAG_class_type:
+		ret = DATA_TYPE_CLASS;
+		break;
 	default:
 		break;
 	}
@@ -89,7 +94,7 @@ static void dwarf_search_die_recursive(ElfDwarfDieType *die)
 		return;
 	}
 	type = get_dataType(die->abbrev_info->tag);
-	if (type != DATA_TYPE_NUM) {
+	if ((type != DATA_TYPE_NUM) && (parse_func_table[type] != NULL)) {
 		//printf("die(%u)=0x%x\n", die->level, die->abbrev_info->tag);
 		parse_func_table[type](die);
 	}
