@@ -34,14 +34,14 @@ SECTIONS
         KEEP (*(EXCLUDE_FILE (*crtend.o ) .ctors))
         KEEP (*(SORT(.ctors.*)))
         KEEP (*(.ctors))
-    }
+    } > INTROM
     .dtors :
     {
         KEEP (*crtbegin.o(.dtors))
         KEEP (*(EXCLUDE_FILE (*crtend.o ) .dtors))
         KEEP (*(SORT(.dtors.*)))
         KEEP (*(.dtors))
-    }
+    } > INTROM
 
 	.rodata : { *(.rodata) } > INTROM
 	. = ALIGN(4);

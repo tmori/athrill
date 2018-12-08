@@ -13,6 +13,7 @@ _start:
 
 	jarl _bss_clear, lp
 	jarl _data_init, lp
+	jarl _ctors_init, lp
 
 	ei
 	jarl	 _main, r31

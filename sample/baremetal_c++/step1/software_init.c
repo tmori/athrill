@@ -21,3 +21,17 @@ void data_init(void)
 		*p_ram = *p_rom;
 	}
 }
+
+typedef void (*constructor)(void);
+
+void ctors_init()
+{
+#if 0
+	unsigned char *p = (void*)&_ctors_start;
+	for(;p < &_ctors_end; p += sizeof(constructor))
+	{
+		void (*func)(void) = (void*)p;
+		(*func)();
+	}
+#endif
+}

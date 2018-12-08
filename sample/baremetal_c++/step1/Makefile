@@ -23,9 +23,9 @@ OBJS	+= main.o
 OBJS	+= TestClass.o
 
 
-CXXFLAGS := -fno-use-cxa-atexit -fno-exceptions
+CXXFLAGS := -fno-use-cxa-atexit -fno-exceptions -fno-rtti 
 CFLAGS	:= -O0 -mdisable-callt -mno-app-regs -mtda=0
-CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e2 -Wa,-mno-bcond17 -msoft-float -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
+CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e2v3 -Wa,-mno-bcond17 -msoft-float -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
 
 
 LDSCRIPT = $(BUILD_PATH)/v850esfk3.ld

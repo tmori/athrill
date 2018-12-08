@@ -257,13 +257,14 @@ Disassembly of section .text:
 000007d0 <__text>:
  7d0:	e0 07 60 01 	di	
  7d4:	40 1e ff 06 	movhi	1791, r0, sp
- 7d8:	23 1e 94 70 	movea	28820, sp, sp
+ 7d8:	23 1e 90 70 	movea	28816, sp, sp
  7dc:	03 1e 00 04 	addi	1024, sp, sp
  7e0:	80 ff 50 04 	jarl	c30 <_bss_clear>, lp
  7e4:	80 ff 96 04 	jarl	c7a <_data_init>, lp
- 7e8:	e0 87 60 01 	ei	
- 7ec:	80 ff 22 05 	jarl	d0e <_main>, lp
- 7f0:	e0 07 20 01 	halt	
+ 7e8:	80 ff f8 04 	jarl	ce0 <_ctors_init>, lp
+ 7ec:	e0 87 60 01 	ei	
+ 7f0:	80 ff 8c 05 	jarl	d7c <_main>, lp
+ 7f4:	e0 07 20 01 	halt	
 	...
 
 00000800 <_disable_int_all>:
@@ -580,7 +581,7 @@ Disassembly of section .text:
  b3c:	63 ff 05 00 	st.w	lp, 4[sp]
  b40:	63 ef 01 00 	st.w	r29, 0[sp]
  b44:	03 e8       	mov	sp, r29
- b46:	26 06 18 0f 	mov	0xf18, r6
+ b46:	26 06 a4 0e 	mov	0xea4, r6
  b4a:	00 00 
  b4c:	2a 06 e0 0a 	mov	0xae0, r10
  b50:	00 00 
@@ -681,7 +682,7 @@ Disassembly of section .text:
  c3a:	2a 06 00 70 	mov	0x6ff7000, r10
  c3e:	ff 06 
  c40:	7d 57 05 00 	st.w	r10, 4[r29]
- c44:	2a 06 94 70 	mov	0x6ff7094, r10
+ c44:	2a 06 90 70 	mov	0x6ff7090, r10
  c48:	ff 06 
  c4a:	7d 57 01 00 	st.w	r10, 0[r29]
  c4e:	a5 0d       	br	c62 <_bss_clear+0x32>
@@ -705,10 +706,10 @@ Disassembly of section .text:
  c7c:	63 ef 01 00 	st.w	r29, 0[sp]
  c80:	54 1a       	add	-12, sp
  c82:	03 e8       	mov	sp, r29
- c84:	2a 06 b0 0f 	mov	0xfb0, r10
+ c84:	2a 06 3c 0f 	mov	0xf3c, r10
  c88:	00 00 
  c8a:	7d 57 09 00 	st.w	r10, 8[r29]
- c8e:	2a 06 b0 0f 	mov	0xfb0, r10
+ c8e:	2a 06 3c 0f 	mov	0xf3c, r10
  c92:	00 00 
  c94:	7d 57 01 00 	st.w	r10, 0[r29]
  c98:	2a 06 00 70 	mov	0x6ff7000, r10
@@ -734,207 +735,168 @@ Disassembly of section .text:
  cda:	03 1e 10 00 	addi	16, sp, sp
  cde:	7f 00       	jmp	[lp]
 
-00000ce0 <__ZL11doTestClassv>:
- ce0:	58 1a       	add	-8, sp
- ce2:	63 ff 05 00 	st.w	lp, 4[sp]
- ce6:	63 ef 01 00 	st.w	r29, 0[sp]
- cea:	03 e8       	mov	sp, r29
- cec:	26 06 80 70 	mov	0x6ff7080, r6
- cf0:	ff 06 
- cf2:	2a 06 c6 0e 	mov	0xec6, r10
- cf6:	00 00 
- cf8:	80 ff 04 00 	jarl	cfc <__ZL11doTestClassv+0x1c>, lp
- cfc:	44 fa       	add	4, lp
- cfe:	6a 00       	jmp	[r10]
- d00:	1d 18       	mov	r29, sp
- d02:	23 ff 05 00 	ld.w	4[sp], lp
- d06:	23 ef 01 00 	ld.w	0[sp], r29
- d0a:	48 1a       	add	8, sp
- d0c:	7f 00       	jmp	[lp]
+00000ce0 <_ctors_init>:
+ ce0:	5c 1a       	add	-4, sp
+ ce2:	63 ef 01 00 	st.w	r29, 0[sp]
+ ce6:	03 e8       	mov	sp, r29
+ ce8:	1d 18       	mov	r29, sp
+ cea:	23 ef 01 00 	ld.w	0[sp], r29
+ cee:	44 1a       	add	4, sp
+ cf0:	7f 00       	jmp	[lp]
 
-00000d0e <_main>:
- d0e:	58 1a       	add	-8, sp
- d10:	63 ff 05 00 	st.w	lp, 4[sp]
- d14:	63 ef 01 00 	st.w	r29, 0[sp]
- d18:	03 e8       	mov	sp, r29
- d1a:	2a 06 e0 0c 	mov	0xce0, r10
- d1e:	00 00 
- d20:	80 ff 04 00 	jarl	d24 <_main+0x16>, lp
- d24:	44 fa       	add	4, lp
- d26:	6a 00       	jmp	[r10]
- d28:	85 05       	br	d28 <_main+0x1a>
+00000cf2 <__ZL13doTestClassOpRN9Baremetal9TestClassE>:
+ cf2:	58 1a       	add	-8, sp
+ cf4:	63 ff 05 00 	st.w	lp, 4[sp]
+ cf8:	63 ef 01 00 	st.w	r29, 0[sp]
+ cfc:	5c 1a       	add	-4, sp
+ cfe:	03 e8       	mov	sp, r29
+ d00:	7d 37 01 00 	st.w	r6, 0[r29]
+ d04:	3d 37 01 00 	ld.w	0[r29], r6
+ d08:	2a 06 5a 0e 	mov	0xe5a, r10
+ d0c:	00 00 
+ d0e:	80 ff 04 00 	jarl	d12 <__ZL13doTestClassOpRN9Baremetal9TestClassE+0x20>, lp
+ d12:	44 fa       	add	4, lp
+ d14:	6a 00       	jmp	[r10]
+ d16:	1d 18       	mov	r29, sp
+ d18:	23 ff 09 00 	ld.w	8[sp], lp
+ d1c:	23 ef 05 00 	ld.w	4[sp], r29
+ d20:	4c 1a       	add	12, sp
+ d22:	7f 00       	jmp	[lp]
 
-00000d2a <__Z41__static_initialization_and_destruction_0ii>:
- d2a:	58 1a       	add	-8, sp
- d2c:	63 ff 05 00 	st.w	lp, 4[sp]
- d30:	63 ef 01 00 	st.w	r29, 0[sp]
- d34:	58 1a       	add	-8, sp
- d36:	03 e8       	mov	sp, r29
- d38:	7d 37 05 00 	st.w	r6, 4[r29]
- d3c:	7d 3f 01 00 	st.w	r7, 0[r29]
- d40:	3d 57 05 00 	ld.w	4[r29], r10
- d44:	61 52       	cmp	1, r10
- d46:	aa 15       	bne	d6a <__Z41__static_initialization_and_destruction_0ii+0x40>
- d48:	3d 5f 01 00 	ld.w	0[r29], r11
- d4c:	2a 06 ff ff 	mov	0xffff, r10
+00000d24 <__ZL11doTestClassv>:
+ d24:	58 1a       	add	-8, sp
+ d26:	63 ff 05 00 	st.w	lp, 4[sp]
+ d2a:	63 ef 01 00 	st.w	r29, 0[sp]
+ d2e:	5c 1a       	add	-4, sp
+ d30:	03 e8       	mov	sp, r29
+ d32:	1d 56 03 00 	addi	3, r29, r10
+ d36:	0a 30       	mov	r10, r6
+ d38:	2a 06 f2 0d 	mov	0xdf2, r10
+ d3c:	00 00 
+ d3e:	80 ff 04 00 	jarl	d42 <__ZL11doTestClassv+0x1e>, lp
+ d42:	44 fa       	add	4, lp
+ d44:	6a 00       	jmp	[r10]
+ d46:	1d 56 03 00 	addi	3, r29, r10
+ d4a:	0a 30       	mov	r10, r6
+ d4c:	2a 06 f2 0c 	mov	0xcf2, r10
  d50:	00 00 
- d52:	ea 59       	cmp	r10, r11
- d54:	ba 0d       	bne	d6a <__Z41__static_initialization_and_destruction_0ii+0x40>
- d56:	26 06 80 70 	mov	0x6ff7080, r6
- d5a:	ff 06 
- d5c:	2a 06 5e 0e 	mov	0xe5e, r10
- d60:	00 00 
- d62:	80 ff 04 00 	jarl	d66 <__Z41__static_initialization_and_destruction_0ii+0x3c>, lp
- d66:	44 fa       	add	4, lp
- d68:	6a 00       	jmp	[r10]
- d6a:	3d 57 05 00 	ld.w	4[r29], r10
- d6e:	60 52       	cmp	0, r10
- d70:	aa 15       	bne	d94 <__Z41__static_initialization_and_destruction_0ii+0x6a>
- d72:	3d 5f 01 00 	ld.w	0[r29], r11
- d76:	2a 06 ff ff 	mov	0xffff, r10
- d7a:	00 00 
- d7c:	ea 59       	cmp	r10, r11
- d7e:	ba 0d       	bne	d94 <__Z41__static_initialization_and_destruction_0ii+0x6a>
- d80:	26 06 80 70 	mov	0x6ff7080, r6
- d84:	ff 06 
- d86:	2a 06 92 0e 	mov	0xe92, r10
- d8a:	00 00 
- d8c:	80 ff 04 00 	jarl	d90 <__Z41__static_initialization_and_destruction_0ii+0x66>, lp
- d90:	44 fa       	add	4, lp
- d92:	6a 00       	jmp	[r10]
- d94:	1d 18       	mov	r29, sp
- d96:	23 ff 0d 00 	ld.w	12[sp], lp
- d9a:	23 ef 09 00 	ld.w	8[sp], r29
- d9e:	03 1e 10 00 	addi	16, sp, sp
- da2:	7f 00       	jmp	[lp]
+ d52:	80 ff 04 00 	jarl	d56 <__ZL11doTestClassv+0x32>, lp
+ d56:	44 fa       	add	4, lp
+ d58:	6a 00       	jmp	[r10]
+ d5a:	1d 56 03 00 	addi	3, r29, r10
+ d5e:	0a 30       	mov	r10, r6
+ d60:	2a 06 26 0e 	mov	0xe26, r10
+ d64:	00 00 
+ d66:	80 ff 04 00 	jarl	d6a <__ZL11doTestClassv+0x46>, lp
+ d6a:	44 fa       	add	4, lp
+ d6c:	6a 00       	jmp	[r10]
+ d6e:	1d 18       	mov	r29, sp
+ d70:	23 ff 09 00 	ld.w	8[sp], lp
+ d74:	23 ef 05 00 	ld.w	4[sp], r29
+ d78:	4c 1a       	add	12, sp
+ d7a:	7f 00       	jmp	[lp]
 
-00000da4 <__GLOBAL__sub_I_stack_data>:
- da4:	58 1a       	add	-8, sp
- da6:	63 ff 05 00 	st.w	lp, 4[sp]
- daa:	63 ef 01 00 	st.w	r29, 0[sp]
- dae:	03 e8       	mov	sp, r29
- db0:	01 32       	mov	1, r6
- db2:	27 06 ff ff 	mov	0xffff, r7
- db6:	00 00 
- db8:	2a 06 2a 0d 	mov	0xd2a, r10
- dbc:	00 00 
- dbe:	80 ff 04 00 	jarl	dc2 <__GLOBAL__sub_I_stack_data+0x1e>, lp
- dc2:	44 fa       	add	4, lp
- dc4:	6a 00       	jmp	[r10]
- dc6:	1d 18       	mov	r29, sp
- dc8:	23 ff 05 00 	ld.w	4[sp], lp
- dcc:	23 ef 01 00 	ld.w	0[sp], r29
- dd0:	48 1a       	add	8, sp
- dd2:	7f 00       	jmp	[lp]
+00000d7c <_main>:
+ d7c:	58 1a       	add	-8, sp
+ d7e:	63 ff 05 00 	st.w	lp, 4[sp]
+ d82:	63 ef 01 00 	st.w	r29, 0[sp]
+ d86:	03 e8       	mov	sp, r29
+ d88:	2a 06 24 0d 	mov	0xd24, r10
+ d8c:	00 00 
+ d8e:	80 ff 04 00 	jarl	d92 <_main+0x16>, lp
+ d92:	44 fa       	add	4, lp
+ d94:	6a 00       	jmp	[r10]
+ d96:	85 05       	br	d96 <_main+0x1a>
 
-00000dd4 <__GLOBAL__sub_D_stack_data>:
- dd4:	58 1a       	add	-8, sp
- dd6:	63 ff 05 00 	st.w	lp, 4[sp]
- dda:	63 ef 01 00 	st.w	r29, 0[sp]
- dde:	03 e8       	mov	sp, r29
- de0:	00 32       	mov	0, r6
- de2:	27 06 ff ff 	mov	0xffff, r7
- de6:	00 00 
- de8:	2a 06 2a 0d 	mov	0xd2a, r10
- dec:	00 00 
- dee:	80 ff 04 00 	jarl	df2 <__GLOBAL__sub_D_stack_data+0x1e>, lp
- df2:	44 fa       	add	4, lp
- df4:	6a 00       	jmp	[r10]
- df6:	1d 18       	mov	r29, sp
- df8:	23 ff 05 00 	ld.w	4[sp], lp
- dfc:	23 ef 01 00 	ld.w	0[sp], r29
- e00:	48 1a       	add	8, sp
- e02:	7f 00       	jmp	[lp]
+00000d98 <__ZL10test_printPKc>:
+ d98:	5c 1a       	add	-4, sp
+ d9a:	63 ef 01 00 	st.w	r29, 0[sp]
+ d9e:	58 1a       	add	-8, sp
+ da0:	03 e8       	mov	sp, r29
+ da2:	7d 37 01 00 	st.w	r6, 0[r29]
+ da6:	7d 07 05 00 	st.w	r0, 4[r29]
+ daa:	c5 15       	br	dd2 <__ZL10test_printPKc+0x3a>
+ dac:	20 56 07 fa 	movea	-1529, r0, r10
+ db0:	3d 5f 05 00 	ld.w	4[r29], r11
+ db4:	3d 67 01 00 	ld.w	0[r29], r12
+ db8:	cc 59       	add	r12, r11
+ dba:	0b 5f 00 00 	ld.b	0[r11], r11
+ dbe:	d8 5a       	shl	24, r11
+ dc0:	b8 5a       	sar	24, r11
+ dc2:	8b 00       	zxb	r11
+ dc4:	4a 5f 00 00 	st.b	r11, 0[r10]
+ dc8:	3d 57 05 00 	ld.w	4[r29], r10
+ dcc:	41 52       	add	1, r10
+ dce:	7d 57 05 00 	st.w	r10, 4[r29]
+ dd2:	3d 57 05 00 	ld.w	4[r29], r10
+ dd6:	3d 5f 01 00 	ld.w	0[r29], r11
+ dda:	cb 51       	add	r11, r10
+ ddc:	0a 57 00 00 	ld.b	0[r10], r10
+ de0:	d8 52       	shl	24, r10
+ de2:	b8 52       	sar	24, r10
+ de4:	60 52       	cmp	0, r10
+ de6:	ba e5       	bne	dac <__ZL10test_printPKc+0x14>
+ de8:	1d 18       	mov	r29, sp
+ dea:	23 ef 09 00 	ld.w	8[sp], r29
+ dee:	4c 1a       	add	12, sp
+ df0:	7f 00       	jmp	[lp]
 
-00000e04 <__ZL10test_printPKc>:
- e04:	5c 1a       	add	-4, sp
- e06:	63 ef 01 00 	st.w	r29, 0[sp]
- e0a:	58 1a       	add	-8, sp
- e0c:	03 e8       	mov	sp, r29
- e0e:	7d 37 01 00 	st.w	r6, 0[r29]
- e12:	7d 07 05 00 	st.w	r0, 4[r29]
- e16:	c5 15       	br	e3e <__ZL10test_printPKc+0x3a>
- e18:	20 56 07 fa 	movea	-1529, r0, r10
- e1c:	3d 5f 05 00 	ld.w	4[r29], r11
- e20:	3d 67 01 00 	ld.w	0[r29], r12
- e24:	cc 59       	add	r12, r11
- e26:	0b 5f 00 00 	ld.b	0[r11], r11
- e2a:	d8 5a       	shl	24, r11
- e2c:	b8 5a       	sar	24, r11
- e2e:	8b 00       	zxb	r11
- e30:	4a 5f 00 00 	st.b	r11, 0[r10]
- e34:	3d 57 05 00 	ld.w	4[r29], r10
- e38:	41 52       	add	1, r10
- e3a:	7d 57 05 00 	st.w	r10, 4[r29]
- e3e:	3d 57 05 00 	ld.w	4[r29], r10
- e42:	3d 5f 01 00 	ld.w	0[r29], r11
- e46:	cb 51       	add	r11, r10
- e48:	0a 57 00 00 	ld.b	0[r10], r10
- e4c:	d8 52       	shl	24, r10
- e4e:	b8 52       	sar	24, r10
- e50:	60 52       	cmp	0, r10
- e52:	ba e5       	bne	e18 <__ZL10test_printPKc+0x14>
- e54:	1d 18       	mov	r29, sp
- e56:	23 ef 09 00 	ld.w	8[sp], r29
- e5a:	4c 1a       	add	12, sp
- e5c:	7f 00       	jmp	[lp]
+00000df2 <__ZN9Baremetal9TestClassC1Ev>:
+ df2:	58 1a       	add	-8, sp
+ df4:	63 ff 05 00 	st.w	lp, 4[sp]
+ df8:	63 ef 01 00 	st.w	r29, 0[sp]
+ dfc:	5c 1a       	add	-4, sp
+ dfe:	03 e8       	mov	sp, r29
+ e00:	7d 37 01 00 	st.w	r6, 0[r29]
+ e04:	26 06 d4 0e 	mov	0xed4, r6
+ e08:	00 00 
+ e0a:	2a 06 98 0d 	mov	0xd98, r10
+ e0e:	00 00 
+ e10:	80 ff 04 00 	jarl	e14 <__ZN9Baremetal9TestClassC1Ev+0x22>, lp
+ e14:	44 fa       	add	4, lp
+ e16:	6a 00       	jmp	[r10]
+ e18:	1d 18       	mov	r29, sp
+ e1a:	23 ff 09 00 	ld.w	8[sp], lp
+ e1e:	23 ef 05 00 	ld.w	4[sp], r29
+ e22:	4c 1a       	add	12, sp
+ e24:	7f 00       	jmp	[lp]
 
-00000e5e <__ZN9Baremetal9TestClassC1Ev>:
- e5e:	58 1a       	add	-8, sp
- e60:	63 ff 05 00 	st.w	lp, 4[sp]
- e64:	63 ef 01 00 	st.w	r29, 0[sp]
- e68:	5c 1a       	add	-4, sp
- e6a:	03 e8       	mov	sp, r29
- e6c:	7d 37 01 00 	st.w	r6, 0[r29]
- e70:	26 06 48 0f 	mov	0xf48, r6
- e74:	00 00 
- e76:	2a 06 04 0e 	mov	0xe04, r10
- e7a:	00 00 
- e7c:	80 ff 04 00 	jarl	e80 <__ZN9Baremetal9TestClassC1Ev+0x22>, lp
- e80:	44 fa       	add	4, lp
- e82:	6a 00       	jmp	[r10]
- e84:	1d 18       	mov	r29, sp
- e86:	23 ff 09 00 	ld.w	8[sp], lp
- e8a:	23 ef 05 00 	ld.w	4[sp], r29
- e8e:	4c 1a       	add	12, sp
- e90:	7f 00       	jmp	[lp]
+00000e26 <__ZN9Baremetal9TestClassD1Ev>:
+ e26:	58 1a       	add	-8, sp
+ e28:	63 ff 05 00 	st.w	lp, 4[sp]
+ e2c:	63 ef 01 00 	st.w	r29, 0[sp]
+ e30:	5c 1a       	add	-4, sp
+ e32:	03 e8       	mov	sp, r29
+ e34:	7d 37 01 00 	st.w	r6, 0[r29]
+ e38:	26 06 f2 0e 	mov	0xef2, r6
+ e3c:	00 00 
+ e3e:	2a 06 98 0d 	mov	0xd98, r10
+ e42:	00 00 
+ e44:	80 ff 04 00 	jarl	e48 <__ZN9Baremetal9TestClassD1Ev+0x22>, lp
+ e48:	44 fa       	add	4, lp
+ e4a:	6a 00       	jmp	[r10]
+ e4c:	1d 18       	mov	r29, sp
+ e4e:	23 ff 09 00 	ld.w	8[sp], lp
+ e52:	23 ef 05 00 	ld.w	4[sp], r29
+ e56:	4c 1a       	add	12, sp
+ e58:	7f 00       	jmp	[lp]
 
-00000e92 <__ZN9Baremetal9TestClassD1Ev>:
- e92:	58 1a       	add	-8, sp
- e94:	63 ff 05 00 	st.w	lp, 4[sp]
- e98:	63 ef 01 00 	st.w	r29, 0[sp]
- e9c:	5c 1a       	add	-4, sp
- e9e:	03 e8       	mov	sp, r29
- ea0:	7d 37 01 00 	st.w	r6, 0[r29]
- ea4:	26 06 66 0f 	mov	0xf66, r6
- ea8:	00 00 
- eaa:	2a 06 04 0e 	mov	0xe04, r10
- eae:	00 00 
- eb0:	80 ff 04 00 	jarl	eb4 <__ZN9Baremetal9TestClassD1Ev+0x22>, lp
- eb4:	44 fa       	add	4, lp
- eb6:	6a 00       	jmp	[r10]
- eb8:	1d 18       	mov	r29, sp
- eba:	23 ff 09 00 	ld.w	8[sp], lp
- ebe:	23 ef 05 00 	ld.w	4[sp], r29
- ec2:	4c 1a       	add	12, sp
- ec4:	7f 00       	jmp	[lp]
-
-00000ec6 <__ZN9Baremetal9TestClass6doTestEv>:
- ec6:	58 1a       	add	-8, sp
- ec8:	63 ff 05 00 	st.w	lp, 4[sp]
- ecc:	63 ef 01 00 	st.w	r29, 0[sp]
- ed0:	5c 1a       	add	-4, sp
- ed2:	03 e8       	mov	sp, r29
- ed4:	7d 37 01 00 	st.w	r6, 0[r29]
- ed8:	26 06 83 0f 	mov	0xf83, r6
- edc:	00 00 
- ede:	2a 06 04 0e 	mov	0xe04, r10
- ee2:	00 00 
- ee4:	80 ff 04 00 	jarl	ee8 <__ZN9Baremetal9TestClass6doTestEv+0x22>, lp
- ee8:	44 fa       	add	4, lp
- eea:	6a 00       	jmp	[r10]
- eec:	1d 18       	mov	r29, sp
- eee:	23 ff 09 00 	ld.w	8[sp], lp
- ef2:	23 ef 05 00 	ld.w	4[sp], r29
- ef6:	4c 1a       	add	12, sp
- ef8:	7f 00       	jmp	[lp]
+00000e5a <__ZN9Baremetal9TestClass6doTestEv>:
+ e5a:	58 1a       	add	-8, sp
+ e5c:	63 ff 05 00 	st.w	lp, 4[sp]
+ e60:	63 ef 01 00 	st.w	r29, 0[sp]
+ e64:	5c 1a       	add	-4, sp
+ e66:	03 e8       	mov	sp, r29
+ e68:	7d 37 01 00 	st.w	r6, 0[r29]
+ e6c:	26 06 0f 0f 	mov	0xf0f, r6
+ e70:	00 00 
+ e72:	2a 06 98 0d 	mov	0xd98, r10
+ e76:	00 00 
+ e78:	80 ff 04 00 	jarl	e7c <__ZN9Baremetal9TestClass6doTestEv+0x22>, lp
+ e7c:	44 fa       	add	4, lp
+ e7e:	6a 00       	jmp	[r10]
+ e80:	1d 18       	mov	r29, sp
+ e82:	23 ff 09 00 	ld.w	8[sp], lp
+ e86:	23 ef 05 00 	ld.w	4[sp], r29
+ e8a:	4c 1a       	add	12, sp
+ e8c:	7f 00       	jmp	[lp]
