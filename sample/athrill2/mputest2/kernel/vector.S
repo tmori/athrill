@@ -37,7 +37,6 @@ __reset:
 	nop
 	nop
 	nop
-	nop
 	// Exception(TRAP0) 0x4 
 	jr _default_int_handler
 	nop
