@@ -816,6 +816,38 @@ Std_ReturnType cpuemu_get_devcfg_value(const char* key, uint32 *value)
 	}
 	return STD_E_NOENT;
 }
+
+static void cpuemu_env_parse_devcfg_string(TokenStringType* strp)
+{
+	static char env_name[TOKEN_STRING_MAX_SIZE];
+	static char out_name[TOKEN_STRING_MAX_SIZE];
+	char *start = strchr((const char*)strp->str, '{');
+	char *end = strchr((const char*)strp->str, '}');
+	if ((start == NULL) || (end == NULL)) {
+		return;
+	}
+	int len = ((int)(end - start) - 1);
+	if (len == 0) {
+		return;
+	}
+	memset(env_name, 0, TOKEN_STRING_MAX_SIZE);
+	memcpy(env_name, (start + 1), len);
+
+	//printf("%s\n", env_name);
+	char *ep = getenv(env_name);
+	if (ep == NULL) {
+		return;
+	}
+	//printf("ep = %s\n", ep);
+	memset(out_name, 0, TOKEN_STRING_MAX_SIZE);
+	len = snprintf(out_name, TOKEN_STRING_MAX_SIZE, "%s%s", ep, (end + 1));
+	//printf("out_name=%s\n", out_name);
+	memcpy(strp->str, out_name, len);
+	strp->len = len;
+
+	return;
+}
+
 Std_ReturnType cpuemu_get_devcfg_string(const char* key, char **value)
 {
 	int i;
@@ -832,7 +864,9 @@ Std_ReturnType cpuemu_get_devcfg_string(const char* key, char **value)
 		if (token_strcmp(&cpuemu_devcfg.param[i].key.body.str, &token) == FALSE) {
 			continue;
 		}
+		cpuemu_env_parse_devcfg_string(&cpuemu_devcfg.param[i].value.body.str);
 		*value = (char*)cpuemu_devcfg.param[i].value.body.str.str;
+		printf("%s = %s\n", key, *value);
 		return STD_E_OK;
 	}
 	return STD_E_NOENT;
