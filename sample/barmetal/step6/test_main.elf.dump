@@ -259,10 +259,10 @@ Disassembly of section .text:
      7d4:	40 1e ff 06 	movhi	1791, r0, sp
      7d8:	23 1e 88 70 	movea	28808, sp, sp
      7dc:	03 1e 00 04 	addi	1024, sp, sp
-     7e0:	80 ff 90 0e 	jarl	1670 <_bss_clear>, lp
-     7e4:	80 ff d6 0e 	jarl	16ba <_data_init>, lp
+     7e0:	80 ff f4 0e 	jarl	16d4 <_bss_clear>, lp
+     7e4:	80 ff 3a 0f 	jarl	171e <_data_init>, lp
      7e8:	e0 87 60 01 	ei	
-     7ec:	80 ff 46 0e 	jarl	1632 <_main>, lp
+     7ec:	80 ff 8c 0e 	jarl	1678 <_main>, lp
      7f0:	e0 07 20 01 	halt	
 	...
 
@@ -580,7 +580,7 @@ Disassembly of section .text:
      b3c:	63 ff 05 00 	st.w	lp, 4[sp]
      b40:	63 ef 01 00 	st.w	r29, 0[sp]
      b44:	03 e8       	mov	sp, r29
-     b46:	26 06 34 17 	mov	0x1734, r6
+     b46:	26 06 98 17 	mov	0x1798, r6
      b4a:	00 00 
      b4c:	2a 06 e0 0a 	mov	0xae0, r10
      b50:	00 00 
@@ -732,7 +732,7 @@ Disassembly of section .text:
      cd2:	04 52       	mov	4, r10
      cd4:	7d 57 11 00 	st.w	r10, 16[r29]
      cd8:	f5 45       	br	d66 <_get_lineno+0xdc>
-     cda:	2b 06 50 17 	mov	0x1750, r11
+     cda:	2b 06 b4 17 	mov	0x17b4, r11
      cde:	00 00 
      ce0:	3d 57 11 00 	ld.w	16[r29], r10
      ce4:	c2 52       	shl	2, r10
@@ -764,7 +764,7 @@ Disassembly of section .text:
      d2e:	3d 57 0d 00 	ld.w	12[r29], r10
      d32:	41 52       	add	1, r10
      d34:	7d 57 0d 00 	st.w	r10, 12[r29]
-     d38:	2b 06 50 17 	mov	0x1750, r11
+     d38:	2b 06 b4 17 	mov	0x17b4, r11
      d3c:	00 00 
      d3e:	3d 57 11 00 	ld.w	16[r29], r10
      d42:	c2 52       	shl	2, r10
@@ -1076,541 +1076,575 @@ Disassembly of section .text:
     1114:	58 1a       	add	-8, sp
     1116:	63 ff 05 00 	st.w	lp, 4[sp]
     111a:	63 ef 01 00 	st.w	r29, 0[sp]
-    111e:	03 1e 68 ff 	addi	-152, sp, sp
+    111e:	03 1e 60 ff 	addi	-160, sp, sp
     1122:	03 e8       	mov	sp, r29
-    1124:	00 32       	mov	0, r6
-    1126:	00 3a       	mov	0, r7
-    1128:	00 42       	mov	0, r8
-    112a:	2a 06 e4 0d 	mov	0xde4, r10
-    112e:	00 00 
-    1130:	80 ff 04 00 	jarl	1134 <_socket_client_test+0x20>, lp
-    1134:	44 fa       	add	4, lp
-    1136:	6a 00       	jmp	[r10]
-    1138:	7d 57 95 00 	st.w	r10, 148[r29]
-    113c:	3d 57 95 00 	ld.w	148[r29], r10
+    1124:	7d 07 9d 00 	st.w	r0, 156[r29]
+    1128:	26 06 c8 17 	mov	0x17c8, r6
+    112c:	00 00 
+    112e:	2a 06 30 0c 	mov	0xc30, r10
+    1132:	00 00 
+    1134:	80 ff 04 00 	jarl	1138 <_socket_client_test+0x24>, lp
+    1138:	44 fa       	add	4, lp
+    113a:	6a 00       	jmp	[r10]
+    113c:	3d 57 9d 00 	ld.w	156[r29], r10
     1140:	60 52       	cmp	0, r10
-    1142:	ce 0d       	bge	115a <_socket_client_test+0x46>
-    1144:	26 06 64 17 	mov	0x1764, r6
+    1142:	ba 0d       	bne	1158 <_socket_client_test+0x44>
+    1144:	26 06 f3 17 	mov	0x17f3, r6
     1148:	00 00 
     114a:	2a 06 30 0c 	mov	0xc30, r10
     114e:	00 00 
     1150:	80 ff 04 00 	jarl	1154 <_socket_client_test+0x40>, lp
     1154:	44 fa       	add	4, lp
     1156:	6a 00       	jmp	[r10]
-    1158:	d5 0d       	br	1172 <_socket_client_test+0x5e>
-    115a:	26 06 72 17 	mov	0x1772, r6
-    115e:	00 00 
-    1160:	3d 3f 95 00 	ld.w	148[r29], r7
-    1164:	2a 06 80 0d 	mov	0xd80, r10
-    1168:	00 00 
-    116a:	80 ff 04 00 	jarl	116e <_socket_client_test+0x5a>, lp
-    116e:	44 fa       	add	4, lp
-    1170:	6a 00       	jmp	[r10]
-    1172:	5d 07 00 00 	st.b	r0, 0[r29]
-    1176:	2a 06 01 00 	mov	0x7f000001, r10
-    117a:	00 7f 
-    117c:	7d 57 05 00 	st.w	r10, 4[r29]
-    1180:	20 56 55 c3 	movea	-15531, r0, r10
-    1184:	7d 57 02 00 	st.h	r10, 2[r29]
-    1188:	1d 50       	mov	r29, r10
-    118a:	3d 37 95 00 	ld.w	148[r29], r6
-    118e:	0a 38       	mov	r10, r7
-    1190:	20 46 10 00 	movea	16, r0, r8
-    1194:	2a 06 98 0f 	mov	0xf98, r10
-    1198:	00 00 
-    119a:	80 ff 04 00 	jarl	119e <_socket_client_test+0x8a>, lp
-    119e:	44 fa       	add	4, lp
-    11a0:	6a 00       	jmp	[r10]
-    11a2:	7d 57 91 00 	st.w	r10, 144[r29]
-    11a6:	3d 57 91 00 	ld.w	144[r29], r10
-    11aa:	60 52       	cmp	0, r10
-    11ac:	8e 15       	bge	11cc <_socket_client_test+0xb8>
-    11ae:	3d 57 91 00 	ld.w	144[r29], r10
-    11b2:	80 51       	subr	r0, r10
-    11b4:	26 06 7d 17 	mov	0x177d, r6
-    11b8:	00 00 
-    11ba:	0a 38       	mov	r10, r7
-    11bc:	2a 06 80 0d 	mov	0xd80, r10
-    11c0:	00 00 
-    11c2:	80 ff 04 00 	jarl	11c6 <_socket_client_test+0xb2>, lp
-    11c6:	44 fa       	add	4, lp
-    11c8:	6a 00       	jmp	[r10]
-    11ca:	b5 0d       	br	11e0 <_socket_client_test+0xcc>
-    11cc:	26 06 8c 17 	mov	0x178c, r6
+    1158:	00 32       	mov	0, r6
+    115a:	00 3a       	mov	0, r7
+    115c:	00 42       	mov	0, r8
+    115e:	2a 06 e4 0d 	mov	0xde4, r10
+    1162:	00 00 
+    1164:	80 ff 04 00 	jarl	1168 <_socket_client_test+0x54>, lp
+    1168:	44 fa       	add	4, lp
+    116a:	6a 00       	jmp	[r10]
+    116c:	7d 57 99 00 	st.w	r10, 152[r29]
+    1170:	3d 57 99 00 	ld.w	152[r29], r10
+    1174:	60 52       	cmp	0, r10
+    1176:	ce 0d       	bge	118e <_socket_client_test+0x7a>
+    1178:	26 06 02 18 	mov	0x1802, r6
+    117c:	00 00 
+    117e:	2a 06 30 0c 	mov	0xc30, r10
+    1182:	00 00 
+    1184:	80 ff 04 00 	jarl	1188 <_socket_client_test+0x74>, lp
+    1188:	44 fa       	add	4, lp
+    118a:	6a 00       	jmp	[r10]
+    118c:	95 15       	br	11ae <_socket_client_test+0x9a>
+    118e:	3d 57 9d 00 	ld.w	156[r29], r10
+    1192:	60 52       	cmp	0, r10
+    1194:	da 0d       	bne	11ae <_socket_client_test+0x9a>
+    1196:	26 06 10 18 	mov	0x1810, r6
+    119a:	00 00 
+    119c:	3d 3f 99 00 	ld.w	152[r29], r7
+    11a0:	2a 06 80 0d 	mov	0xd80, r10
+    11a4:	00 00 
+    11a6:	80 ff 04 00 	jarl	11aa <_socket_client_test+0x96>, lp
+    11aa:	44 fa       	add	4, lp
+    11ac:	6a 00       	jmp	[r10]
+    11ae:	5d 07 00 00 	st.b	r0, 0[r29]
+    11b2:	2a 06 01 00 	mov	0x7f000001, r10
+    11b6:	00 7f 
+    11b8:	7d 57 05 00 	st.w	r10, 4[r29]
+    11bc:	20 56 55 c3 	movea	-15531, r0, r10
+    11c0:	7d 57 02 00 	st.h	r10, 2[r29]
+    11c4:	3d 57 9d 00 	ld.w	156[r29], r10
+    11c8:	60 52       	cmp	0, r10
+    11ca:	ba 0d       	bne	11e0 <_socket_client_test+0xcc>
+    11cc:	26 06 1b 18 	mov	0x181b, r6
     11d0:	00 00 
     11d2:	2a 06 30 0c 	mov	0xc30, r10
     11d6:	00 00 
     11d8:	80 ff 04 00 	jarl	11dc <_socket_client_test+0xc8>, lp
     11dc:	44 fa       	add	4, lp
     11de:	6a 00       	jmp	[r10]
-    11e0:	3d 37 95 00 	ld.w	148[r29], r6
-    11e4:	06 3a       	mov	6, r7
-    11e6:	2a 06 40 0e 	mov	0xe40, r10
-    11ea:	00 00 
-    11ec:	80 ff 04 00 	jarl	11f0 <_socket_client_test+0xdc>, lp
-    11f0:	44 fa       	add	4, lp
-    11f2:	6a 00       	jmp	[r10]
-    11f4:	7d 57 91 00 	st.w	r10, 144[r29]
-    11f8:	3d 57 91 00 	ld.w	144[r29], r10
-    11fc:	60 52       	cmp	0, r10
-    11fe:	9e 25       	bge	1240 <_socket_client_test+0x12c>
-    1200:	3d 57 91 00 	ld.w	144[r29], r10
-    1204:	80 51       	subr	r0, r10
-    1206:	26 06 98 17 	mov	0x1798, r6
-    120a:	00 00 
-    120c:	0a 38       	mov	r10, r7
-    120e:	2a 06 80 0d 	mov	0xd80, r10
-    1212:	00 00 
-    1214:	80 ff 04 00 	jarl	1218 <_socket_client_test+0x104>, lp
-    1218:	44 fa       	add	4, lp
-    121a:	6a 00       	jmp	[r10]
-    121c:	3d 5f 91 00 	ld.w	144[r29], r11
-    1220:	20 56 91 ff 	movea	-111, r0, r10
-    1224:	ea 59       	cmp	r10, r11
-    1226:	9a 1d       	bne	1258 <_socket_client_test+0x144>
-    1228:	3d 37 95 00 	ld.w	148[r29], r6
-    122c:	00 3a       	mov	0, r7
-    122e:	2a 06 c4 10 	mov	0x10c4, r10
-    1232:	00 00 
-    1234:	80 ff 04 00 	jarl	1238 <_socket_client_test+0x124>, lp
-    1238:	44 fa       	add	4, lp
-    123a:	6a 00       	jmp	[r10]
-    123c:	bf 07 e8 fe 	jr	1124 <_socket_client_test+0x10>
-    1240:	26 06 a5 17 	mov	0x17a5, r6
-    1244:	00 00 
-    1246:	3d 3f 91 00 	ld.w	144[r29], r7
-    124a:	2a 06 80 0d 	mov	0xd80, r10
-    124e:	00 00 
-    1250:	80 ff 04 00 	jarl	1254 <_socket_client_test+0x140>, lp
-    1254:	44 fa       	add	4, lp
-    1256:	6a 00       	jmp	[r10]
-    1258:	3d 57 91 00 	ld.w	144[r29], r10
-    125c:	60 52       	cmp	0, r10
-    125e:	96 c5       	blt	11e0 <_socket_client_test+0xcc>
-    1260:	2a 06 b5 17 	mov	0x17b5, r10
-    1264:	00 00 
-    1266:	3d 37 95 00 	ld.w	148[r29], r6
-    126a:	0a 38       	mov	r10, r7
-    126c:	20 46 1a 00 	movea	26, r0, r8
-    1270:	00 4a       	mov	0, r9
-    1272:	2a 06 f4 0f 	mov	0xff4, r10
-    1276:	00 00 
-    1278:	80 ff 04 00 	jarl	127c <_socket_client_test+0x168>, lp
-    127c:	44 fa       	add	4, lp
-    127e:	6a 00       	jmp	[r10]
-    1280:	7d 57 91 00 	st.w	r10, 144[r29]
-    1284:	3d 57 91 00 	ld.w	144[r29], r10
-    1288:	60 52       	cmp	0, r10
-    128a:	8e 15       	bge	12aa <_socket_client_test+0x196>
-    128c:	3d 57 91 00 	ld.w	144[r29], r10
-    1290:	80 51       	subr	r0, r10
-    1292:	26 06 cf 17 	mov	0x17cf, r6
-    1296:	00 00 
-    1298:	0a 38       	mov	r10, r7
-    129a:	2a 06 80 0d 	mov	0xd80, r10
-    129e:	00 00 
-    12a0:	80 ff 04 00 	jarl	12a4 <_socket_client_test+0x190>, lp
-    12a4:	44 fa       	add	4, lp
-    12a6:	6a 00       	jmp	[r10]
-    12a8:	b5 0d       	br	12be <_socket_client_test+0x1aa>
-    12aa:	26 06 db 17 	mov	0x17db, r6
-    12ae:	00 00 
-    12b0:	2a 06 30 0c 	mov	0xc30, r10
-    12b4:	00 00 
-    12b6:	80 ff 04 00 	jarl	12ba <_socket_client_test+0x1a6>, lp
-    12ba:	44 fa       	add	4, lp
-    12bc:	6a 00       	jmp	[r10]
-    12be:	1d 56 10 00 	addi	16, r29, r10
-    12c2:	3d 37 95 00 	ld.w	148[r29], r6
-    12c6:	0a 38       	mov	r10, r7
-    12c8:	20 46 80 00 	movea	128, r0, r8
-    12cc:	00 4a       	mov	0, r9
-    12ce:	2a 06 5c 10 	mov	0x105c, r10
-    12d2:	00 00 
-    12d4:	80 ff 04 00 	jarl	12d8 <_socket_client_test+0x1c4>, lp
-    12d8:	44 fa       	add	4, lp
-    12da:	6a 00       	jmp	[r10]
-    12dc:	7d 57 91 00 	st.w	r10, 144[r29]
-    12e0:	3d 57 91 00 	ld.w	144[r29], r10
-    12e4:	60 52       	cmp	0, r10
-    12e6:	c6 ed       	blt	12be <_socket_client_test+0x1aa>
-    12e8:	26 06 e4 17 	mov	0x17e4, r6
-    12ec:	00 00 
-    12ee:	2a 06 30 0c 	mov	0xc30, r10
-    12f2:	00 00 
-    12f4:	80 ff 04 00 	jarl	12f8 <_socket_client_test+0x1e4>, lp
-    12f8:	44 fa       	add	4, lp
-    12fa:	6a 00       	jmp	[r10]
-    12fc:	1d 56 10 00 	addi	16, r29, r10
-    1300:	0a 30       	mov	r10, r6
-    1302:	2a 06 30 0c 	mov	0xc30, r10
-    1306:	00 00 
-    1308:	80 ff 04 00 	jarl	130c <_socket_client_test+0x1f8>, lp
-    130c:	44 fa       	add	4, lp
-    130e:	6a 00       	jmp	[r10]
-    1310:	26 06 ed 17 	mov	0x17ed, r6
+    11e0:	1d 50       	mov	r29, r10
+    11e2:	3d 37 99 00 	ld.w	152[r29], r6
+    11e6:	0a 38       	mov	r10, r7
+    11e8:	20 46 10 00 	movea	16, r0, r8
+    11ec:	2a 06 98 0f 	mov	0xf98, r10
+    11f0:	00 00 
+    11f2:	80 ff 04 00 	jarl	11f6 <_socket_client_test+0xe2>, lp
+    11f6:	44 fa       	add	4, lp
+    11f8:	6a 00       	jmp	[r10]
+    11fa:	7d 57 95 00 	st.w	r10, 148[r29]
+    11fe:	3d 37 99 00 	ld.w	152[r29], r6
+    1202:	06 3a       	mov	6, r7
+    1204:	2a 06 40 0e 	mov	0xe40, r10
+    1208:	00 00 
+    120a:	80 ff 04 00 	jarl	120e <_socket_client_test+0xfa>, lp
+    120e:	44 fa       	add	4, lp
+    1210:	6a 00       	jmp	[r10]
+    1212:	7d 57 95 00 	st.w	r10, 148[r29]
+    1216:	3d 57 95 00 	ld.w	148[r29], r10
+    121a:	60 52       	cmp	0, r10
+    121c:	ae 1d       	bge	1250 <_socket_client_test+0x13c>
+    121e:	3d 5f 95 00 	ld.w	148[r29], r11
+    1222:	20 56 91 ff 	movea	-111, r0, r10
+    1226:	ea 59       	cmp	r10, r11
+    1228:	ca 15       	bne	1250 <_socket_client_test+0x13c>
+    122a:	3d 37 99 00 	ld.w	152[r29], r6
+    122e:	00 3a       	mov	0, r7
+    1230:	2a 06 c4 10 	mov	0x10c4, r10
+    1234:	00 00 
+    1236:	80 ff 04 00 	jarl	123a <_socket_client_test+0x126>, lp
+    123a:	44 fa       	add	4, lp
+    123c:	6a 00       	jmp	[r10]
+    123e:	3d 57 9d 00 	ld.w	156[r29], r10
+    1242:	60 52       	cmp	0, r10
+    1244:	ca 05       	bne	124c <_socket_client_test+0x138>
+    1246:	01 52       	mov	1, r10
+    1248:	7d 57 9d 00 	st.w	r10, 156[r29]
+    124c:	bf 07 f0 fe 	jr	113c <_socket_client_test+0x28>
+    1250:	3d 57 95 00 	ld.w	148[r29], r10
+    1254:	60 52       	cmp	0, r10
+    1256:	c6 d5       	blt	11fe <_socket_client_test+0xea>
+    1258:	26 06 3c 18 	mov	0x183c, r6
+    125c:	00 00 
+    125e:	2a 06 30 0c 	mov	0xc30, r10
+    1262:	00 00 
+    1264:	80 ff 04 00 	jarl	1268 <_socket_client_test+0x154>, lp
+    1268:	44 fa       	add	4, lp
+    126a:	6a 00       	jmp	[r10]
+    126c:	2a 06 48 18 	mov	0x1848, r10
+    1270:	00 00 
+    1272:	7d 57 91 00 	st.w	r10, 144[r29]
+    1276:	3d 57 91 00 	ld.w	144[r29], r10
+    127a:	3d 37 99 00 	ld.w	152[r29], r6
+    127e:	0a 38       	mov	r10, r7
+    1280:	20 46 21 00 	movea	33, r0, r8
+    1284:	00 4a       	mov	0, r9
+    1286:	2a 06 f4 0f 	mov	0xff4, r10
+    128a:	00 00 
+    128c:	80 ff 04 00 	jarl	1290 <_socket_client_test+0x17c>, lp
+    1290:	44 fa       	add	4, lp
+    1292:	6a 00       	jmp	[r10]
+    1294:	7d 57 95 00 	st.w	r10, 148[r29]
+    1298:	3d 57 95 00 	ld.w	148[r29], r10
+    129c:	60 52       	cmp	0, r10
+    129e:	8e 15       	bge	12be <_socket_client_test+0x1aa>
+    12a0:	3d 57 95 00 	ld.w	148[r29], r10
+    12a4:	80 51       	subr	r0, r10
+    12a6:	26 06 69 18 	mov	0x1869, r6
+    12aa:	00 00 
+    12ac:	0a 38       	mov	r10, r7
+    12ae:	2a 06 80 0d 	mov	0xd80, r10
+    12b2:	00 00 
+    12b4:	80 ff 04 00 	jarl	12b8 <_socket_client_test+0x1a4>, lp
+    12b8:	44 fa       	add	4, lp
+    12ba:	6a 00       	jmp	[r10]
+    12bc:	b5 0d       	br	12d2 <_socket_client_test+0x1be>
+    12be:	26 06 75 18 	mov	0x1875, r6
+    12c2:	00 00 
+    12c4:	2a 06 30 0c 	mov	0xc30, r10
+    12c8:	00 00 
+    12ca:	80 ff 04 00 	jarl	12ce <_socket_client_test+0x1ba>, lp
+    12ce:	44 fa       	add	4, lp
+    12d0:	6a 00       	jmp	[r10]
+    12d2:	26 06 83 18 	mov	0x1883, r6
+    12d6:	00 00 
+    12d8:	2a 06 30 0c 	mov	0xc30, r10
+    12dc:	00 00 
+    12de:	80 ff 04 00 	jarl	12e2 <_socket_client_test+0x1ce>, lp
+    12e2:	44 fa       	add	4, lp
+    12e4:	6a 00       	jmp	[r10]
+    12e6:	1d 56 10 00 	addi	16, r29, r10
+    12ea:	3d 37 99 00 	ld.w	152[r29], r6
+    12ee:	0a 38       	mov	r10, r7
+    12f0:	20 46 80 00 	movea	128, r0, r8
+    12f4:	00 4a       	mov	0, r9
+    12f6:	2a 06 5c 10 	mov	0x105c, r10
+    12fa:	00 00 
+    12fc:	80 ff 04 00 	jarl	1300 <_socket_client_test+0x1ec>, lp
+    1300:	44 fa       	add	4, lp
+    1302:	6a 00       	jmp	[r10]
+    1304:	7d 57 95 00 	st.w	r10, 148[r29]
+    1308:	3d 57 95 00 	ld.w	148[r29], r10
+    130c:	60 52       	cmp	0, r10
+    130e:	c6 ed       	blt	12e6 <_socket_client_test+0x1d2>
+    1310:	26 06 9a 18 	mov	0x189a, r6
     1314:	00 00 
     1316:	2a 06 30 0c 	mov	0xc30, r10
     131a:	00 00 
     131c:	80 ff 04 00 	jarl	1320 <_socket_client_test+0x20c>, lp
     1320:	44 fa       	add	4, lp
     1322:	6a 00       	jmp	[r10]
-    1324:	3d 37 95 00 	ld.w	148[r29], r6
-    1328:	00 3a       	mov	0, r7
-    132a:	2a 06 c4 10 	mov	0x10c4, r10
+    1324:	1d 56 10 00 	addi	16, r29, r10
+    1328:	0a 30       	mov	r10, r6
+    132a:	2a 06 30 0c 	mov	0xc30, r10
     132e:	00 00 
     1330:	80 ff 04 00 	jarl	1334 <_socket_client_test+0x220>, lp
     1334:	44 fa       	add	4, lp
     1336:	6a 00       	jmp	[r10]
-    1338:	7d 57 91 00 	st.w	r10, 144[r29]
-    133c:	3d 57 91 00 	ld.w	144[r29], r10
-    1340:	60 52       	cmp	0, r10
-    1342:	8e 15       	bge	1362 <_socket_client_test+0x24e>
-    1344:	3d 57 91 00 	ld.w	144[r29], r10
-    1348:	80 51       	subr	r0, r10
-    134a:	26 06 ef 17 	mov	0x17ef, r6
-    134e:	00 00 
-    1350:	0a 38       	mov	r10, r7
-    1352:	2a 06 80 0d 	mov	0xd80, r10
+    1338:	26 06 a3 18 	mov	0x18a3, r6
+    133c:	00 00 
+    133e:	2a 06 30 0c 	mov	0xc30, r10
+    1342:	00 00 
+    1344:	80 ff 04 00 	jarl	1348 <_socket_client_test+0x234>, lp
+    1348:	44 fa       	add	4, lp
+    134a:	6a 00       	jmp	[r10]
+    134c:	3d 37 99 00 	ld.w	152[r29], r6
+    1350:	00 3a       	mov	0, r7
+    1352:	2a 06 c4 10 	mov	0x10c4, r10
     1356:	00 00 
     1358:	80 ff 04 00 	jarl	135c <_socket_client_test+0x248>, lp
     135c:	44 fa       	add	4, lp
     135e:	6a 00       	jmp	[r10]
-    1360:	b5 0d       	br	1376 <_socket_client_test+0x262>
-    1362:	26 06 fc 17 	mov	0x17fc, r6
-    1366:	00 00 
-    1368:	2a 06 30 0c 	mov	0xc30, r10
-    136c:	00 00 
-    136e:	80 ff 04 00 	jarl	1372 <_socket_client_test+0x25e>, lp
-    1372:	44 fa       	add	4, lp
-    1374:	6a 00       	jmp	[r10]
-    1376:	00 00       	nop	
-    1378:	1d 18       	mov	r29, sp
-    137a:	23 ff 9d 00 	ld.w	156[sp], lp
-    137e:	23 ef 99 00 	ld.w	152[sp], r29
-    1382:	03 1e a0 00 	addi	160, sp, sp
-    1386:	7f 00       	jmp	[lp]
-
-00001388 <_socket_server_test>:
-    1388:	58 1a       	add	-8, sp
-    138a:	63 ff 05 00 	st.w	lp, 4[sp]
-    138e:	63 ef 01 00 	st.w	r29, 0[sp]
-    1392:	03 1e 50 ff 	addi	-176, sp, sp
-    1396:	03 e8       	mov	sp, r29
-    1398:	00 32       	mov	0, r6
-    139a:	00 3a       	mov	0, r7
-    139c:	00 42       	mov	0, r8
-    139e:	2a 06 e4 0d 	mov	0xde4, r10
+    1360:	7d 57 95 00 	st.w	r10, 148[r29]
+    1364:	3d 57 95 00 	ld.w	148[r29], r10
+    1368:	60 52       	cmp	0, r10
+    136a:	8e 15       	bge	138a <_socket_client_test+0x276>
+    136c:	3d 57 95 00 	ld.w	148[r29], r10
+    1370:	80 51       	subr	r0, r10
+    1372:	26 06 a5 18 	mov	0x18a5, r6
+    1376:	00 00 
+    1378:	0a 38       	mov	r10, r7
+    137a:	2a 06 80 0d 	mov	0xd80, r10
+    137e:	00 00 
+    1380:	80 ff 04 00 	jarl	1384 <_socket_client_test+0x270>, lp
+    1384:	44 fa       	add	4, lp
+    1386:	6a 00       	jmp	[r10]
+    1388:	b5 0d       	br	139e <_socket_client_test+0x28a>
+    138a:	26 06 b2 18 	mov	0x18b2, r6
+    138e:	00 00 
+    1390:	2a 06 30 0c 	mov	0xc30, r10
+    1394:	00 00 
+    1396:	80 ff 04 00 	jarl	139a <_socket_client_test+0x286>, lp
+    139a:	44 fa       	add	4, lp
+    139c:	6a 00       	jmp	[r10]
+    139e:	26 06 bc 18 	mov	0x18bc, r6
     13a2:	00 00 
-    13a4:	80 ff 04 00 	jarl	13a8 <_socket_server_test+0x20>, lp
-    13a8:	44 fa       	add	4, lp
-    13aa:	6a 00       	jmp	[r10]
-    13ac:	7d 57 ad 00 	st.w	r10, 172[r29]
-    13b0:	3d 57 ad 00 	ld.w	172[r29], r10
-    13b4:	60 52       	cmp	0, r10
-    13b6:	ce 0d       	bge	13ce <_socket_server_test+0x46>
-    13b8:	26 06 64 17 	mov	0x1764, r6
-    13bc:	00 00 
-    13be:	2a 06 30 0c 	mov	0xc30, r10
-    13c2:	00 00 
-    13c4:	80 ff 04 00 	jarl	13c8 <_socket_server_test+0x40>, lp
-    13c8:	44 fa       	add	4, lp
-    13ca:	6a 00       	jmp	[r10]
-    13cc:	d5 0d       	br	13e6 <_socket_server_test+0x5e>
-    13ce:	26 06 72 17 	mov	0x1772, r6
-    13d2:	00 00 
-    13d4:	3d 3f ad 00 	ld.w	172[r29], r7
-    13d8:	2a 06 80 0d 	mov	0xd80, r10
-    13dc:	00 00 
-    13de:	80 ff 04 00 	jarl	13e2 <_socket_server_test+0x5a>, lp
-    13e2:	44 fa       	add	4, lp
-    13e4:	6a 00       	jmp	[r10]
-    13e6:	5d 07 14 00 	st.b	r0, 20[r29]
-    13ea:	2a 06 01 00 	mov	0x7f000001, r10
-    13ee:	00 7f 
-    13f0:	7d 57 19 00 	st.w	r10, 24[r29]
-    13f4:	20 56 55 c3 	movea	-15531, r0, r10
-    13f8:	7d 57 16 00 	st.h	r10, 22[r29]
-    13fc:	1d 56 14 00 	addi	20, r29, r10
-    1400:	3d 37 ad 00 	ld.w	172[r29], r6
-    1404:	0a 38       	mov	r10, r7
-    1406:	20 46 10 00 	movea	16, r0, r8
-    140a:	2a 06 90 0e 	mov	0xe90, r10
-    140e:	00 00 
-    1410:	80 ff 04 00 	jarl	1414 <_socket_server_test+0x8c>, lp
-    1414:	44 fa       	add	4, lp
-    1416:	6a 00       	jmp	[r10]
-    1418:	7d 57 a9 00 	st.w	r10, 168[r29]
-    141c:	3d 57 a9 00 	ld.w	168[r29], r10
-    1420:	60 52       	cmp	0, r10
-    1422:	8e 15       	bge	1442 <_socket_server_test+0xba>
-    1424:	3d 57 a9 00 	ld.w	168[r29], r10
-    1428:	80 51       	subr	r0, r10
-    142a:	26 06 06 18 	mov	0x1806, r6
-    142e:	00 00 
-    1430:	0a 38       	mov	r10, r7
-    1432:	2a 06 80 0d 	mov	0xd80, r10
-    1436:	00 00 
-    1438:	80 ff 04 00 	jarl	143c <_socket_server_test+0xb4>, lp
-    143c:	44 fa       	add	4, lp
-    143e:	6a 00       	jmp	[r10]
-    1440:	b5 0d       	br	1456 <_socket_server_test+0xce>
-    1442:	26 06 12 18 	mov	0x1812, r6
-    1446:	00 00 
-    1448:	2a 06 30 0c 	mov	0xc30, r10
-    144c:	00 00 
-    144e:	80 ff 04 00 	jarl	1452 <_socket_server_test+0xca>, lp
-    1452:	44 fa       	add	4, lp
-    1454:	6a 00       	jmp	[r10]
-    1456:	3d 37 ad 00 	ld.w	172[r29], r6
-    145a:	05 3a       	mov	5, r7
-    145c:	2a 06 ec 0e 	mov	0xeec, r10
-    1460:	00 00 
-    1462:	80 ff 04 00 	jarl	1466 <_socket_server_test+0xde>, lp
-    1466:	44 fa       	add	4, lp
-    1468:	6a 00       	jmp	[r10]
-    146a:	7d 57 a9 00 	st.w	r10, 168[r29]
-    146e:	3d 57 a9 00 	ld.w	168[r29], r10
-    1472:	60 52       	cmp	0, r10
-    1474:	8e 15       	bge	1494 <_socket_server_test+0x10c>
-    1476:	3d 57 a9 00 	ld.w	168[r29], r10
-    147a:	80 51       	subr	r0, r10
-    147c:	26 06 1b 18 	mov	0x181b, r6
-    1480:	00 00 
-    1482:	0a 38       	mov	r10, r7
-    1484:	2a 06 80 0d 	mov	0xd80, r10
-    1488:	00 00 
-    148a:	80 ff 04 00 	jarl	148e <_socket_server_test+0x106>, lp
-    148e:	44 fa       	add	4, lp
-    1490:	6a 00       	jmp	[r10]
-    1492:	b5 0d       	br	14a8 <_socket_server_test+0x120>
-    1494:	26 06 29 18 	mov	0x1829, r6
-    1498:	00 00 
-    149a:	2a 06 30 0c 	mov	0xc30, r10
-    149e:	00 00 
-    14a0:	80 ff 04 00 	jarl	14a4 <_socket_server_test+0x11c>, lp
-    14a4:	44 fa       	add	4, lp
-    14a6:	6a 00       	jmp	[r10]
-    14a8:	1d 5e 04 00 	addi	4, r29, r11
-    14ac:	1d 50       	mov	r29, r10
-    14ae:	3d 37 ad 00 	ld.w	172[r29], r6
-    14b2:	0b 38       	mov	r11, r7
-    14b4:	0a 40       	mov	r10, r8
-    14b6:	2a 06 3c 0f 	mov	0xf3c, r10
-    14ba:	00 00 
-    14bc:	80 ff 04 00 	jarl	14c0 <_socket_server_test+0x138>, lp
-    14c0:	44 fa       	add	4, lp
-    14c2:	6a 00       	jmp	[r10]
-    14c4:	7d 57 a5 00 	st.w	r10, 164[r29]
-    14c8:	3d 57 a5 00 	ld.w	164[r29], r10
-    14cc:	60 52       	cmp	0, r10
-    14ce:	8e 15       	bge	14ee <_socket_server_test+0x166>
-    14d0:	3d 57 a5 00 	ld.w	164[r29], r10
-    14d4:	80 51       	subr	r0, r10
-    14d6:	26 06 34 18 	mov	0x1834, r6
-    14da:	00 00 
-    14dc:	0a 38       	mov	r10, r7
-    14de:	2a 06 80 0d 	mov	0xd80, r10
-    14e2:	00 00 
-    14e4:	80 ff 04 00 	jarl	14e8 <_socket_server_test+0x160>, lp
-    14e8:	44 fa       	add	4, lp
-    14ea:	6a 00       	jmp	[r10]
-    14ec:	b5 0d       	br	1502 <_socket_server_test+0x17a>
-    14ee:	26 06 42 18 	mov	0x1842, r6
-    14f2:	00 00 
-    14f4:	2a 06 30 0c 	mov	0xc30, r10
-    14f8:	00 00 
-    14fa:	80 ff 04 00 	jarl	14fe <_socket_server_test+0x176>, lp
-    14fe:	44 fa       	add	4, lp
-    1500:	6a 00       	jmp	[r10]
-    1502:	3d 57 a5 00 	ld.w	164[r29], r10
-    1506:	60 52       	cmp	0, r10
-    1508:	86 d5       	blt	14a8 <_socket_server_test+0x120>
-    150a:	1d 56 24 00 	addi	36, r29, r10
-    150e:	3d 37 a5 00 	ld.w	164[r29], r6
-    1512:	0a 38       	mov	r10, r7
-    1514:	20 46 80 00 	movea	128, r0, r8
-    1518:	00 4a       	mov	0, r9
-    151a:	2a 06 5c 10 	mov	0x105c, r10
-    151e:	00 00 
-    1520:	80 ff 04 00 	jarl	1524 <_socket_server_test+0x19c>, lp
-    1524:	44 fa       	add	4, lp
-    1526:	6a 00       	jmp	[r10]
-    1528:	7d 57 a9 00 	st.w	r10, 168[r29]
-    152c:	3d 57 a9 00 	ld.w	168[r29], r10
-    1530:	60 52       	cmp	0, r10
-    1532:	c6 ed       	blt	150a <_socket_server_test+0x182>
-    1534:	26 06 e4 17 	mov	0x17e4, r6
-    1538:	00 00 
-    153a:	2a 06 30 0c 	mov	0xc30, r10
-    153e:	00 00 
-    1540:	80 ff 04 00 	jarl	1544 <_socket_server_test+0x1bc>, lp
-    1544:	44 fa       	add	4, lp
-    1546:	6a 00       	jmp	[r10]
-    1548:	1d 56 24 00 	addi	36, r29, r10
-    154c:	0a 30       	mov	r10, r6
-    154e:	2a 06 30 0c 	mov	0xc30, r10
-    1552:	00 00 
-    1554:	80 ff 04 00 	jarl	1558 <_socket_server_test+0x1d0>, lp
-    1558:	44 fa       	add	4, lp
-    155a:	6a 00       	jmp	[r10]
-    155c:	26 06 ed 17 	mov	0x17ed, r6
-    1560:	00 00 
-    1562:	2a 06 30 0c 	mov	0xc30, r10
-    1566:	00 00 
-    1568:	80 ff 04 00 	jarl	156c <_socket_server_test+0x1e4>, lp
-    156c:	44 fa       	add	4, lp
-    156e:	6a 00       	jmp	[r10]
-    1570:	2a 06 4d 18 	mov	0x184d, r10
-    1574:	00 00 
-    1576:	3d 37 a5 00 	ld.w	164[r29], r6
-    157a:	0a 38       	mov	r10, r7
-    157c:	20 46 21 00 	movea	33, r0, r8
-    1580:	00 4a       	mov	0, r9
-    1582:	2a 06 f4 0f 	mov	0xff4, r10
-    1586:	00 00 
-    1588:	80 ff 04 00 	jarl	158c <_socket_server_test+0x204>, lp
-    158c:	44 fa       	add	4, lp
-    158e:	6a 00       	jmp	[r10]
-    1590:	7d 57 a9 00 	st.w	r10, 168[r29]
-    1594:	3d 57 a9 00 	ld.w	168[r29], r10
-    1598:	60 52       	cmp	0, r10
-    159a:	8e 15       	bge	15ba <_socket_server_test+0x232>
-    159c:	3d 57 a9 00 	ld.w	168[r29], r10
-    15a0:	80 51       	subr	r0, r10
-    15a2:	26 06 cf 17 	mov	0x17cf, r6
+    13a4:	2a 06 30 0c 	mov	0xc30, r10
+    13a8:	00 00 
+    13aa:	80 ff 04 00 	jarl	13ae <_socket_client_test+0x29a>, lp
+    13ae:	44 fa       	add	4, lp
+    13b0:	6a 00       	jmp	[r10]
+    13b2:	00 00       	nop	
+    13b4:	1d 18       	mov	r29, sp
+    13b6:	23 ff a5 00 	ld.w	164[sp], lp
+    13ba:	23 ef a1 00 	ld.w	160[sp], r29
+    13be:	03 1e a8 00 	addi	168, sp, sp
+    13c2:	7f 00       	jmp	[lp]
+
+000013c4 <_socket_server_test>:
+    13c4:	58 1a       	add	-8, sp
+    13c6:	63 ff 05 00 	st.w	lp, 4[sp]
+    13ca:	63 ef 01 00 	st.w	r29, 0[sp]
+    13ce:	03 1e 50 ff 	addi	-176, sp, sp
+    13d2:	03 e8       	mov	sp, r29
+    13d4:	26 06 e5 18 	mov	0x18e5, r6
+    13d8:	00 00 
+    13da:	2a 06 30 0c 	mov	0xc30, r10
+    13de:	00 00 
+    13e0:	80 ff 04 00 	jarl	13e4 <_socket_server_test+0x20>, lp
+    13e4:	44 fa       	add	4, lp
+    13e6:	6a 00       	jmp	[r10]
+    13e8:	00 32       	mov	0, r6
+    13ea:	00 3a       	mov	0, r7
+    13ec:	00 42       	mov	0, r8
+    13ee:	2a 06 e4 0d 	mov	0xde4, r10
+    13f2:	00 00 
+    13f4:	80 ff 04 00 	jarl	13f8 <_socket_server_test+0x34>, lp
+    13f8:	44 fa       	add	4, lp
+    13fa:	6a 00       	jmp	[r10]
+    13fc:	7d 57 ad 00 	st.w	r10, 172[r29]
+    1400:	3d 57 ad 00 	ld.w	172[r29], r10
+    1404:	60 52       	cmp	0, r10
+    1406:	ce 0d       	bge	141e <_socket_server_test+0x5a>
+    1408:	26 06 02 18 	mov	0x1802, r6
+    140c:	00 00 
+    140e:	2a 06 30 0c 	mov	0xc30, r10
+    1412:	00 00 
+    1414:	80 ff 04 00 	jarl	1418 <_socket_server_test+0x54>, lp
+    1418:	44 fa       	add	4, lp
+    141a:	6a 00       	jmp	[r10]
+    141c:	d5 0d       	br	1436 <_socket_server_test+0x72>
+    141e:	26 06 10 18 	mov	0x1810, r6
+    1422:	00 00 
+    1424:	3d 3f ad 00 	ld.w	172[r29], r7
+    1428:	2a 06 80 0d 	mov	0xd80, r10
+    142c:	00 00 
+    142e:	80 ff 04 00 	jarl	1432 <_socket_server_test+0x6e>, lp
+    1432:	44 fa       	add	4, lp
+    1434:	6a 00       	jmp	[r10]
+    1436:	5d 07 14 00 	st.b	r0, 20[r29]
+    143a:	2a 06 01 00 	mov	0x7f000001, r10
+    143e:	00 7f 
+    1440:	7d 57 19 00 	st.w	r10, 24[r29]
+    1444:	20 56 55 c3 	movea	-15531, r0, r10
+    1448:	7d 57 16 00 	st.h	r10, 22[r29]
+    144c:	1d 56 14 00 	addi	20, r29, r10
+    1450:	3d 37 ad 00 	ld.w	172[r29], r6
+    1454:	0a 38       	mov	r10, r7
+    1456:	20 46 10 00 	movea	16, r0, r8
+    145a:	2a 06 90 0e 	mov	0xe90, r10
+    145e:	00 00 
+    1460:	80 ff 04 00 	jarl	1464 <_socket_server_test+0xa0>, lp
+    1464:	44 fa       	add	4, lp
+    1466:	6a 00       	jmp	[r10]
+    1468:	7d 57 a9 00 	st.w	r10, 168[r29]
+    146c:	3d 57 a9 00 	ld.w	168[r29], r10
+    1470:	60 52       	cmp	0, r10
+    1472:	8e 15       	bge	1492 <_socket_server_test+0xce>
+    1474:	3d 57 a9 00 	ld.w	168[r29], r10
+    1478:	80 51       	subr	r0, r10
+    147a:	26 06 10 19 	mov	0x1910, r6
+    147e:	00 00 
+    1480:	0a 38       	mov	r10, r7
+    1482:	2a 06 80 0d 	mov	0xd80, r10
+    1486:	00 00 
+    1488:	80 ff 04 00 	jarl	148c <_socket_server_test+0xc8>, lp
+    148c:	44 fa       	add	4, lp
+    148e:	6a 00       	jmp	[r10]
+    1490:	b5 0d       	br	14a6 <_socket_server_test+0xe2>
+    1492:	26 06 1c 19 	mov	0x191c, r6
+    1496:	00 00 
+    1498:	2a 06 30 0c 	mov	0xc30, r10
+    149c:	00 00 
+    149e:	80 ff 04 00 	jarl	14a2 <_socket_server_test+0xde>, lp
+    14a2:	44 fa       	add	4, lp
+    14a4:	6a 00       	jmp	[r10]
+    14a6:	3d 37 ad 00 	ld.w	172[r29], r6
+    14aa:	05 3a       	mov	5, r7
+    14ac:	2a 06 ec 0e 	mov	0xeec, r10
+    14b0:	00 00 
+    14b2:	80 ff 04 00 	jarl	14b6 <_socket_server_test+0xf2>, lp
+    14b6:	44 fa       	add	4, lp
+    14b8:	6a 00       	jmp	[r10]
+    14ba:	7d 57 a9 00 	st.w	r10, 168[r29]
+    14be:	3d 57 a9 00 	ld.w	168[r29], r10
+    14c2:	60 52       	cmp	0, r10
+    14c4:	8e 15       	bge	14e4 <_socket_server_test+0x120>
+    14c6:	3d 57 a9 00 	ld.w	168[r29], r10
+    14ca:	80 51       	subr	r0, r10
+    14cc:	26 06 25 19 	mov	0x1925, r6
+    14d0:	00 00 
+    14d2:	0a 38       	mov	r10, r7
+    14d4:	2a 06 80 0d 	mov	0xd80, r10
+    14d8:	00 00 
+    14da:	80 ff 04 00 	jarl	14de <_socket_server_test+0x11a>, lp
+    14de:	44 fa       	add	4, lp
+    14e0:	6a 00       	jmp	[r10]
+    14e2:	b5 0d       	br	14f8 <_socket_server_test+0x134>
+    14e4:	26 06 33 19 	mov	0x1933, r6
+    14e8:	00 00 
+    14ea:	2a 06 30 0c 	mov	0xc30, r10
+    14ee:	00 00 
+    14f0:	80 ff 04 00 	jarl	14f4 <_socket_server_test+0x130>, lp
+    14f4:	44 fa       	add	4, lp
+    14f6:	6a 00       	jmp	[r10]
+    14f8:	1d 5e 04 00 	addi	4, r29, r11
+    14fc:	1d 50       	mov	r29, r10
+    14fe:	3d 37 ad 00 	ld.w	172[r29], r6
+    1502:	0b 38       	mov	r11, r7
+    1504:	0a 40       	mov	r10, r8
+    1506:	2a 06 3c 0f 	mov	0xf3c, r10
+    150a:	00 00 
+    150c:	80 ff 04 00 	jarl	1510 <_socket_server_test+0x14c>, lp
+    1510:	44 fa       	add	4, lp
+    1512:	6a 00       	jmp	[r10]
+    1514:	7d 57 a5 00 	st.w	r10, 164[r29]
+    1518:	3d 57 a5 00 	ld.w	164[r29], r10
+    151c:	60 52       	cmp	0, r10
+    151e:	b6 0d       	blt	1534 <_socket_server_test+0x170>
+    1520:	26 06 3e 19 	mov	0x193e, r6
+    1524:	00 00 
+    1526:	2a 06 30 0c 	mov	0xc30, r10
+    152a:	00 00 
+    152c:	80 ff 04 00 	jarl	1530 <_socket_server_test+0x16c>, lp
+    1530:	44 fa       	add	4, lp
+    1532:	6a 00       	jmp	[r10]
+    1534:	3d 57 a5 00 	ld.w	164[r29], r10
+    1538:	60 52       	cmp	0, r10
+    153a:	f6 dd       	blt	14f8 <_socket_server_test+0x134>
+    153c:	1d 56 24 00 	addi	36, r29, r10
+    1540:	3d 37 a5 00 	ld.w	164[r29], r6
+    1544:	0a 38       	mov	r10, r7
+    1546:	20 46 80 00 	movea	128, r0, r8
+    154a:	00 4a       	mov	0, r9
+    154c:	2a 06 5c 10 	mov	0x105c, r10
+    1550:	00 00 
+    1552:	80 ff 04 00 	jarl	1556 <_socket_server_test+0x192>, lp
+    1556:	44 fa       	add	4, lp
+    1558:	6a 00       	jmp	[r10]
+    155a:	7d 57 a9 00 	st.w	r10, 168[r29]
+    155e:	3d 57 a9 00 	ld.w	168[r29], r10
+    1562:	60 52       	cmp	0, r10
+    1564:	c6 ed       	blt	153c <_socket_server_test+0x178>
+    1566:	26 06 9a 18 	mov	0x189a, r6
+    156a:	00 00 
+    156c:	2a 06 30 0c 	mov	0xc30, r10
+    1570:	00 00 
+    1572:	80 ff 04 00 	jarl	1576 <_socket_server_test+0x1b2>, lp
+    1576:	44 fa       	add	4, lp
+    1578:	6a 00       	jmp	[r10]
+    157a:	1d 56 24 00 	addi	36, r29, r10
+    157e:	0a 30       	mov	r10, r6
+    1580:	2a 06 30 0c 	mov	0xc30, r10
+    1584:	00 00 
+    1586:	80 ff 04 00 	jarl	158a <_socket_server_test+0x1c6>, lp
+    158a:	44 fa       	add	4, lp
+    158c:	6a 00       	jmp	[r10]
+    158e:	26 06 a3 18 	mov	0x18a3, r6
+    1592:	00 00 
+    1594:	2a 06 30 0c 	mov	0xc30, r10
+    1598:	00 00 
+    159a:	80 ff 04 00 	jarl	159e <_socket_server_test+0x1da>, lp
+    159e:	44 fa       	add	4, lp
+    15a0:	6a 00       	jmp	[r10]
+    15a2:	2a 06 49 19 	mov	0x1949, r10
     15a6:	00 00 
-    15a8:	0a 38       	mov	r10, r7
-    15aa:	2a 06 80 0d 	mov	0xd80, r10
-    15ae:	00 00 
-    15b0:	80 ff 04 00 	jarl	15b4 <_socket_server_test+0x22c>, lp
-    15b4:	44 fa       	add	4, lp
-    15b6:	6a 00       	jmp	[r10]
-    15b8:	b5 0d       	br	15ce <_socket_server_test+0x246>
-    15ba:	26 06 db 17 	mov	0x17db, r6
-    15be:	00 00 
-    15c0:	2a 06 30 0c 	mov	0xc30, r10
-    15c4:	00 00 
-    15c6:	80 ff 04 00 	jarl	15ca <_socket_server_test+0x242>, lp
-    15ca:	44 fa       	add	4, lp
-    15cc:	6a 00       	jmp	[r10]
-    15ce:	3d 37 a5 00 	ld.w	164[r29], r6
-    15d2:	00 3a       	mov	0, r7
-    15d4:	2a 06 c4 10 	mov	0x10c4, r10
+    15a8:	3d 37 a5 00 	ld.w	164[r29], r6
+    15ac:	0a 38       	mov	r10, r7
+    15ae:	20 46 21 00 	movea	33, r0, r8
+    15b2:	00 4a       	mov	0, r9
+    15b4:	2a 06 f4 0f 	mov	0xff4, r10
+    15b8:	00 00 
+    15ba:	80 ff 04 00 	jarl	15be <_socket_server_test+0x1fa>, lp
+    15be:	44 fa       	add	4, lp
+    15c0:	6a 00       	jmp	[r10]
+    15c2:	7d 57 a9 00 	st.w	r10, 168[r29]
+    15c6:	3d 57 a9 00 	ld.w	168[r29], r10
+    15ca:	60 52       	cmp	0, r10
+    15cc:	8e 15       	bge	15ec <_socket_server_test+0x228>
+    15ce:	3d 57 a9 00 	ld.w	168[r29], r10
+    15d2:	80 51       	subr	r0, r10
+    15d4:	26 06 69 18 	mov	0x1869, r6
     15d8:	00 00 
-    15da:	80 ff 04 00 	jarl	15de <_socket_server_test+0x256>, lp
-    15de:	44 fa       	add	4, lp
-    15e0:	6a 00       	jmp	[r10]
-    15e2:	7d 57 a9 00 	st.w	r10, 168[r29]
-    15e6:	3d 57 a9 00 	ld.w	168[r29], r10
-    15ea:	60 52       	cmp	0, r10
-    15ec:	8e 15       	bge	160c <_socket_server_test+0x284>
-    15ee:	3d 57 a9 00 	ld.w	168[r29], r10
-    15f2:	80 51       	subr	r0, r10
-    15f4:	26 06 ef 17 	mov	0x17ef, r6
-    15f8:	00 00 
-    15fa:	0a 38       	mov	r10, r7
-    15fc:	2a 06 80 0d 	mov	0xd80, r10
-    1600:	00 00 
-    1602:	80 ff 04 00 	jarl	1606 <_socket_server_test+0x27e>, lp
-    1606:	44 fa       	add	4, lp
-    1608:	6a 00       	jmp	[r10]
-    160a:	b5 0d       	br	1620 <_socket_server_test+0x298>
-    160c:	26 06 fc 17 	mov	0x17fc, r6
-    1610:	00 00 
-    1612:	2a 06 30 0c 	mov	0xc30, r10
-    1616:	00 00 
-    1618:	80 ff 04 00 	jarl	161c <_socket_server_test+0x294>, lp
-    161c:	44 fa       	add	4, lp
-    161e:	6a 00       	jmp	[r10]
-    1620:	00 00       	nop	
-    1622:	1d 18       	mov	r29, sp
-    1624:	23 ff b5 00 	ld.w	180[sp], lp
-    1628:	23 ef b1 00 	ld.w	176[sp], r29
-    162c:	03 1e b8 00 	addi	184, sp, sp
-    1630:	7f 00       	jmp	[lp]
-
-00001632 <_main>:
-    1632:	58 1a       	add	-8, sp
-    1634:	63 ff 05 00 	st.w	lp, 4[sp]
-    1638:	63 ef 01 00 	st.w	r29, 0[sp]
-    163c:	03 e8       	mov	sp, r29
-    163e:	2a 06 6a 0b 	mov	0xb6a, r10
+    15da:	0a 38       	mov	r10, r7
+    15dc:	2a 06 80 0d 	mov	0xd80, r10
+    15e0:	00 00 
+    15e2:	80 ff 04 00 	jarl	15e6 <_socket_server_test+0x222>, lp
+    15e6:	44 fa       	add	4, lp
+    15e8:	6a 00       	jmp	[r10]
+    15ea:	b5 0d       	br	1600 <_socket_server_test+0x23c>
+    15ec:	26 06 6a 19 	mov	0x196a, r6
+    15f0:	00 00 
+    15f2:	2a 06 30 0c 	mov	0xc30, r10
+    15f6:	00 00 
+    15f8:	80 ff 04 00 	jarl	15fc <_socket_server_test+0x238>, lp
+    15fc:	44 fa       	add	4, lp
+    15fe:	6a 00       	jmp	[r10]
+    1600:	3d 37 a5 00 	ld.w	164[r29], r6
+    1604:	00 3a       	mov	0, r7
+    1606:	2a 06 c4 10 	mov	0x10c4, r10
+    160a:	00 00 
+    160c:	80 ff 04 00 	jarl	1610 <_socket_server_test+0x24c>, lp
+    1610:	44 fa       	add	4, lp
+    1612:	6a 00       	jmp	[r10]
+    1614:	7d 57 a9 00 	st.w	r10, 168[r29]
+    1618:	3d 57 a9 00 	ld.w	168[r29], r10
+    161c:	60 52       	cmp	0, r10
+    161e:	8e 15       	bge	163e <_socket_server_test+0x27a>
+    1620:	3d 57 a9 00 	ld.w	168[r29], r10
+    1624:	80 51       	subr	r0, r10
+    1626:	26 06 a5 18 	mov	0x18a5, r6
+    162a:	00 00 
+    162c:	0a 38       	mov	r10, r7
+    162e:	2a 06 80 0d 	mov	0xd80, r10
+    1632:	00 00 
+    1634:	80 ff 04 00 	jarl	1638 <_socket_server_test+0x274>, lp
+    1638:	44 fa       	add	4, lp
+    163a:	6a 00       	jmp	[r10]
+    163c:	b5 0d       	br	1652 <_socket_server_test+0x28e>
+    163e:	26 06 b2 18 	mov	0x18b2, r6
     1642:	00 00 
-    1644:	80 ff 04 00 	jarl	1648 <_main+0x16>, lp
-    1648:	44 fa       	add	4, lp
-    164a:	6a 00       	jmp	[r10]
-    164c:	26 06 6e 18 	mov	0x186e, r6
-    1650:	00 00 
-    1652:	2a 06 30 0c 	mov	0xc30, r10
+    1644:	2a 06 30 0c 	mov	0xc30, r10
+    1648:	00 00 
+    164a:	80 ff 04 00 	jarl	164e <_socket_server_test+0x28a>, lp
+    164e:	44 fa       	add	4, lp
+    1650:	6a 00       	jmp	[r10]
+    1652:	26 06 73 19 	mov	0x1973, r6
     1656:	00 00 
-    1658:	80 ff 04 00 	jarl	165c <_main+0x2a>, lp
-    165c:	44 fa       	add	4, lp
-    165e:	6a 00       	jmp	[r10]
-    1660:	2a 06 14 11 	mov	0x1114, r10
-    1664:	00 00 
-    1666:	80 ff 04 00 	jarl	166a <_main+0x38>, lp
-    166a:	44 fa       	add	4, lp
-    166c:	6a 00       	jmp	[r10]
-    166e:	85 05       	br	166e <_main+0x3c>
+    1658:	2a 06 30 0c 	mov	0xc30, r10
+    165c:	00 00 
+    165e:	80 ff 04 00 	jarl	1662 <_socket_server_test+0x29e>, lp
+    1662:	44 fa       	add	4, lp
+    1664:	6a 00       	jmp	[r10]
+    1666:	00 00       	nop	
+    1668:	1d 18       	mov	r29, sp
+    166a:	23 ff b5 00 	ld.w	180[sp], lp
+    166e:	23 ef b1 00 	ld.w	176[sp], r29
+    1672:	03 1e b8 00 	addi	184, sp, sp
+    1676:	7f 00       	jmp	[lp]
 
-00001670 <_bss_clear>:
-    1670:	5c 1a       	add	-4, sp
-    1672:	63 ef 01 00 	st.w	r29, 0[sp]
-    1676:	58 1a       	add	-8, sp
-    1678:	03 e8       	mov	sp, r29
-    167a:	2a 06 00 70 	mov	0x6ff7000, r10
-    167e:	ff 06 
-    1680:	7d 57 05 00 	st.w	r10, 4[r29]
-    1684:	2a 06 88 70 	mov	0x6ff7088, r10
-    1688:	ff 06 
-    168a:	7d 57 01 00 	st.w	r10, 0[r29]
-    168e:	a5 0d       	br	16a2 <_bss_clear+0x32>
-    1690:	3d 57 05 00 	ld.w	4[r29], r10
-    1694:	4a 07 00 00 	st.b	r0, 0[r10]
-    1698:	3d 57 05 00 	ld.w	4[r29], r10
-    169c:	41 52       	add	1, r10
-    169e:	7d 57 05 00 	st.w	r10, 4[r29]
-    16a2:	3d 5f 05 00 	ld.w	4[r29], r11
-    16a6:	3d 57 01 00 	ld.w	0[r29], r10
-    16aa:	ea 59       	cmp	r10, r11
-    16ac:	a1 f5       	bl	1690 <_bss_clear+0x20>
-    16ae:	00 00       	nop	
-    16b0:	1d 18       	mov	r29, sp
-    16b2:	23 ef 09 00 	ld.w	8[sp], r29
-    16b6:	4c 1a       	add	12, sp
-    16b8:	7f 00       	jmp	[lp]
-
-000016ba <_data_init>:
-    16ba:	5c 1a       	add	-4, sp
-    16bc:	63 ef 01 00 	st.w	r29, 0[sp]
-    16c0:	54 1a       	add	-12, sp
-    16c2:	03 e8       	mov	sp, r29
-    16c4:	2a 06 80 18 	mov	0x1880, r10
+00001678 <_main>:
+    1678:	58 1a       	add	-8, sp
+    167a:	63 ff 05 00 	st.w	lp, 4[sp]
+    167e:	63 ef 01 00 	st.w	r29, 0[sp]
+    1682:	03 e8       	mov	sp, r29
+    1684:	2a 06 6a 0b 	mov	0xb6a, r10
+    1688:	00 00 
+    168a:	80 ff 04 00 	jarl	168e <_main+0x16>, lp
+    168e:	44 fa       	add	4, lp
+    1690:	6a 00       	jmp	[r10]
+    1692:	26 06 9c 19 	mov	0x199c, r6
+    1696:	00 00 
+    1698:	2a 06 30 0c 	mov	0xc30, r10
+    169c:	00 00 
+    169e:	80 ff 04 00 	jarl	16a2 <_main+0x2a>, lp
+    16a2:	44 fa       	add	4, lp
+    16a4:	6a 00       	jmp	[r10]
+    16a6:	2a 06 88 74 	mov	0x6ff7488, r10
+    16aa:	ff 06 
+    16ac:	2a 57 01 00 	ld.w	0[r10], r10
+    16b0:	60 52       	cmp	0, r10
+    16b2:	9a 0d       	bne	16c4 <_main+0x4c>
+    16b4:	2a 06 14 11 	mov	0x1114, r10
+    16b8:	00 00 
+    16ba:	80 ff 04 00 	jarl	16be <_main+0x46>, lp
+    16be:	44 fa       	add	4, lp
+    16c0:	6a 00       	jmp	[r10]
+    16c2:	85 0d       	br	16d2 <_main+0x5a>
+    16c4:	2a 06 c4 13 	mov	0x13c4, r10
     16c8:	00 00 
-    16ca:	7d 57 09 00 	st.w	r10, 8[r29]
-    16ce:	2a 06 80 18 	mov	0x1880, r10
-    16d2:	00 00 
-    16d4:	7d 57 01 00 	st.w	r10, 0[r29]
-    16d8:	2a 06 00 70 	mov	0x6ff7000, r10
-    16dc:	ff 06 
-    16de:	7d 57 05 00 	st.w	r10, 4[r29]
-    16e2:	b5 15       	br	1708 <_data_init+0x4e>
-    16e4:	3d 57 09 00 	ld.w	8[r29], r10
-    16e8:	8a 5f 01 00 	ld.bu	0[r10], r11
-    16ec:	3d 57 05 00 	ld.w	4[r29], r10
-    16f0:	4a 5f 00 00 	st.b	r11, 0[r10]
+    16ca:	80 ff 04 00 	jarl	16ce <_main+0x56>, lp
+    16ce:	44 fa       	add	4, lp
+    16d0:	6a 00       	jmp	[r10]
+    16d2:	85 05       	br	16d2 <_main+0x5a>
+
+000016d4 <_bss_clear>:
+    16d4:	5c 1a       	add	-4, sp
+    16d6:	63 ef 01 00 	st.w	r29, 0[sp]
+    16da:	58 1a       	add	-8, sp
+    16dc:	03 e8       	mov	sp, r29
+    16de:	2a 06 00 70 	mov	0x6ff7000, r10
+    16e2:	ff 06 
+    16e4:	7d 57 05 00 	st.w	r10, 4[r29]
+    16e8:	2a 06 88 70 	mov	0x6ff7088, r10
+    16ec:	ff 06 
+    16ee:	7d 57 01 00 	st.w	r10, 0[r29]
+    16f2:	a5 0d       	br	1706 <_bss_clear+0x32>
     16f4:	3d 57 05 00 	ld.w	4[r29], r10
-    16f8:	41 52       	add	1, r10
-    16fa:	7d 57 05 00 	st.w	r10, 4[r29]
-    16fe:	3d 57 09 00 	ld.w	8[r29], r10
-    1702:	41 52       	add	1, r10
-    1704:	7d 57 09 00 	st.w	r10, 8[r29]
-    1708:	3d 5f 09 00 	ld.w	8[r29], r11
-    170c:	3d 57 01 00 	ld.w	0[r29], r10
-    1710:	ea 59       	cmp	r10, r11
-    1712:	91 ed       	bl	16e4 <_data_init+0x2a>
+    16f8:	4a 07 00 00 	st.b	r0, 0[r10]
+    16fc:	3d 57 05 00 	ld.w	4[r29], r10
+    1700:	41 52       	add	1, r10
+    1702:	7d 57 05 00 	st.w	r10, 4[r29]
+    1706:	3d 5f 05 00 	ld.w	4[r29], r11
+    170a:	3d 57 01 00 	ld.w	0[r29], r10
+    170e:	ea 59       	cmp	r10, r11
+    1710:	a1 f5       	bl	16f4 <_bss_clear+0x20>
+    1712:	00 00       	nop	
     1714:	1d 18       	mov	r29, sp
-    1716:	23 ef 0d 00 	ld.w	12[sp], r29
-    171a:	03 1e 10 00 	addi	16, sp, sp
-    171e:	7f 00       	jmp	[lp]
+    1716:	23 ef 09 00 	ld.w	8[sp], r29
+    171a:	4c 1a       	add	12, sp
+    171c:	7f 00       	jmp	[lp]
+
+0000171e <_data_init>:
+    171e:	5c 1a       	add	-4, sp
+    1720:	63 ef 01 00 	st.w	r29, 0[sp]
+    1724:	54 1a       	add	-12, sp
+    1726:	03 e8       	mov	sp, r29
+    1728:	2a 06 ac 19 	mov	0x19ac, r10
+    172c:	00 00 
+    172e:	7d 57 09 00 	st.w	r10, 8[r29]
+    1732:	2a 06 ac 19 	mov	0x19ac, r10
+    1736:	00 00 
+    1738:	7d 57 01 00 	st.w	r10, 0[r29]
+    173c:	2a 06 00 70 	mov	0x6ff7000, r10
+    1740:	ff 06 
+    1742:	7d 57 05 00 	st.w	r10, 4[r29]
+    1746:	b5 15       	br	176c <_data_init+0x4e>
+    1748:	3d 57 09 00 	ld.w	8[r29], r10
+    174c:	8a 5f 01 00 	ld.bu	0[r10], r11
+    1750:	3d 57 05 00 	ld.w	4[r29], r10
+    1754:	4a 5f 00 00 	st.b	r11, 0[r10]
+    1758:	3d 57 05 00 	ld.w	4[r29], r10
+    175c:	41 52       	add	1, r10
+    175e:	7d 57 05 00 	st.w	r10, 4[r29]
+    1762:	3d 57 09 00 	ld.w	8[r29], r10
+    1766:	41 52       	add	1, r10
+    1768:	7d 57 09 00 	st.w	r10, 8[r29]
+    176c:	3d 5f 09 00 	ld.w	8[r29], r11
+    1770:	3d 57 01 00 	ld.w	0[r29], r10
+    1774:	ea 59       	cmp	r10, r11
+    1776:	91 ed       	bl	1748 <_data_init+0x2a>
+    1778:	1d 18       	mov	r29, sp
+    177a:	23 ef 0d 00 	ld.w	12[sp], r29
+    177e:	03 1e 10 00 	addi	16, sp, sp
+    1782:	7f 00       	jmp	[lp]
