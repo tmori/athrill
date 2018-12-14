@@ -29,7 +29,7 @@ __reset:
 	nop
 	nop
 	nop
-	// Exception(NOP) 0x3
+	// Exception(memory protection) 0x3
 	jr _exception
 	nop
 	nop
