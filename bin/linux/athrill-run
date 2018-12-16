@@ -1,5 +1,11 @@
 #!/bin/bash
 
+CORE_NUM=1
+if [ $# -eq 1 ]
+then
+	CORE_NUM=2
+fi
+
 if [ -f device_config.txt ]
 then
     echo "OK: found device_config.txt"
@@ -26,6 +32,6 @@ fi
 ELF_FILE=`ls  | grep -v "\.o" | grep -v "\.exe" | xargs file | grep ELF | awk -F\: '{print $1}'`
 echo "OK: found ${ELF_FILE}"
 
-athrill2 -c1 -i -m memory.txt -d device_config.txt ${ELF_FILE}
+athrill2 -c${CORE_NUM} -i -m memory.txt -d device_config.txt ${ELF_FILE}
 
 exit 0
