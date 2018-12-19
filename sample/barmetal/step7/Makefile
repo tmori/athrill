@@ -1,6 +1,7 @@
 ROOT_PATH 		:= ..
+APL_DIR		:= ../../../trunk/apl
 ATHRILL_ROOT	:= $(ROOT_PATH)/../../trunk/src
-BUILD_PATH		:= $(ROOT_PATH)/build/v850esfk3
+BUILD_PATH		:= .
 CPU_CONFIG_PATH	:= $(ATHRILL_ROOT)/config/target/v850esfk3
 
 
@@ -11,22 +12,21 @@ LINK	:= v850-elf-gcc
 
 OBJS	:= start.o
 OBJS	+= vector.o
-#OBJS	+= training.o
+OBJS	+= interrupt.o
+OBJS	+= interrupt_table.o
+OBJS	+= timer.o
+OBJS	+= serial.o
+OBJS	+= interrupt_asm.o
 OBJS	+= main.o
-OBJS	+= list.o
-OBJS	+= list_private.o
-OBJS	+= list_test.o
-OBJS	+= test_suite.o
-OBJS	+= test_instruction.o
 
 
-CFLAGS	:= -O0 -mdisable-callt -mno-app-regs -mtda=0 
+CFLAGS	:= -O0 -mdisable-callt -mno-app-regs -mtda=0
 #CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e2 -Wa,-mno-bcond17 -msoft-float -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
-CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e3v5 -Wa,-mno-bcond17 -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
+CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e2 -Wa,-mno-bcond17 -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
 
 
-LDSCRIPT = ./v850esfk3.ld
-LDFLAGS	:= -L/usr/local/athrill-gcc/v850-elf/lib/v850e3v5 -nostdlib -T $(LDSCRIPT)
+LDSCRIPT = $(BUILD_PATH)/v850esfk3.ld
+LDFLAGS	:= -nostdlib -T $(LDSCRIPT)
 
 TEST_PATH := .
 
@@ -34,10 +34,10 @@ IFLAGS	:= -I.
 IFLAGS	+= -I./list
 IFLAGS	+= -I$(ROOT_PATH)/common
 IFLAGS	+= -I$(CPU_CONFIG_PATH)
+IFLAGS	+= -I$(APL_DIR)/include
 
 VPATH	:= $(ROOT_PATH)/common
 VPATH	+= $(TEST_PATH)
-VPATH	+= $(TEST_PATH)/list
 
 LIBS := -lm -lgcc -lc
 

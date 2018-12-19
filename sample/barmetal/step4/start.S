@@ -15,7 +15,7 @@ _start:
 	jarl _data_init, lp
 
 	ei
-	br	 _main
+	jarl _main, lp
 .size		_start, .-_start
 
 .align	4

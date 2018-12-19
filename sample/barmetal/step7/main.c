@@ -1,24 +1,29 @@
 #include "test_serial.h"
 #include "test_reg.h"
 #include "section.h"
-#include "list_test.h"
-#include "list.h"
+#include "interrupt.h"
 #include <string.h>
+#include "timer.h"
+#include "v850_ins.h"
+#include "serial.h"
 
-unsigned char stack_data[STACK_SIZE] __attribute__ ((section("bss_noclr")));
+unsigned char stack_data[STACK_SIZE] __attribute__ ((section(".bss_noclr")));
+
 
 
 int main(void)
 {
-	list_test_ERR_1();
-	list_test_ERR_2();
-	list_test_ERR_3();
-	list_test_OK_1();
-	list_test_OK_2();
-	list_test_OK_3();
-	printf("Hello World!!\n");
+	serial_init();
+
 	while (1) {
-		;
+		char c;
+		int ret = serial_get(&c);
+		if (ret == 0) {
+			do_halt();
+		}
+		else {
+			serial_put(c);
+		}
 	}
 }
 
@@ -41,10 +46,5 @@ void data_init(void)
 	for (;p_rom < e_rom; p_ram++, p_rom++) {
 		*p_ram = *p_rom;
 	}
-	float x = 123.1 * 11.5;
-	float y = sinf(x);
-	float z = 11.5 / y;
-	if (z == 0.0) {
-		return;
-	}
 }
+
