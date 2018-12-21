@@ -17,15 +17,23 @@ SECTIONS
 	{
 		*(.vectors)
 	} > INTROM
-
+    .init :
+    {
+        KEEP (*(.init))
+    }
 	.text :	
 	{
 		__text = . ;
 		__tp = . ;
-		*(.text)
+		*(.text .stub .text.* .gnu.linkonce.t.*)
 		_etext = . ;
 	} > INTROM
-
+    .fini :
+    {
+        KEEP (*(.fini))
+    }
+    _etext = . ;
+    PROVIDE (etext = .) ;
 
     .gcc_except_table : { *(.gcc_except_table) }
     .ctors :
@@ -35,6 +43,8 @@ SECTIONS
         KEEP (*(SORT(.ctors.*)))
         KEEP (*(.ctors))
     } > INTROM
+	___ctors_end = .;
+	___dtors = .;
     .dtors :
     {
         KEEP (*crtbegin.o(.dtors))
@@ -42,11 +52,12 @@ SECTIONS
         KEEP (*(SORT(.dtors.*)))
         KEEP (*(.dtors))
     } > INTROM
+	___dtors_end = .;
 
 	.rodata : { *(.rodata) } > INTROM
 	. = ALIGN(4);
 	__idata_start = . ;
-	
+
 	.data	:  AT(__idata_start) 
 	{
 		. = ALIGN(4);
@@ -57,7 +68,10 @@ SECTIONS
 	} > INTRAM
 
 	__idata_end = __idata_start + SIZEOF(.data);
-	
+
+
+
+
 	.bss	   :
 	{
 	  . = ALIGN(4);
@@ -74,6 +88,8 @@ SECTIONS
 		*(.bss_noclr)
 		. = ALIGN(4);
 	} > INTRAM
+    _end = . ;
+    __bss_end = . ;
 
 	.mmap_section	: 
 	{

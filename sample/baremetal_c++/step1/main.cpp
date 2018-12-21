@@ -4,6 +4,7 @@
 #include "athrill_syscall.h"
 #include "TestClass.h"
 #include <math.h>
+#include <string>
 
 using namespace Baremetal;
 
@@ -13,13 +14,16 @@ sys_addr athrill_device_func_call __attribute__ ((section(".athrill_device_secti
 
 static void doTestClassOp(TestClass &p)
 {
+	std::string a = "aa";
+	a += "bb";
 	p.doTest();
 }
 
 static void doTestClass(void)
 {
-	TestClass obj;
-	doTestClassOp(obj);
+	TestClass *obj = new TestClass();
+	doTestClassOp(*obj);
+	delete obj;
 }
 
 int main(void)
@@ -29,4 +33,3 @@ int main(void)
 		;
 	}
 }
-

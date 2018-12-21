@@ -22,7 +22,6 @@ OBJS	+= software_init.o
 OBJS	+= main.o
 OBJS	+= TestClass.o
 
-
 CXXFLAGS := -fno-use-cxa-atexit -fno-exceptions -fno-rtti 
 CFLAGS	:= -O0 -mdisable-callt -mno-app-regs -mtda=0
 CFLAGS	+= -gdwarf-2 -Wall -Wno-unused-label -Wpointer-arith  -mv850e2v3 -Wa,-mno-bcond17 -msoft-float -Wa,-mwarn-signed-overflow -Wa,-mwarn-unsigned-overflow
@@ -42,7 +41,7 @@ IFLAGS	+= -I$(APL_DIR)/include
 VPATH	:= $(ROOT_PATH)/common
 VPATH	+= $(TEST_PATH)
 
-LIBS := -lm -lgcc -lc 
+LIBS := -lsupc++  -lstdc++  -lm -lc -lgcc  libathrillc.o
 
 
 %.o: %.S
