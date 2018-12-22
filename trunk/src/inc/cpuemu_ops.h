@@ -44,6 +44,7 @@ typedef enum {
 	MemoryAddressImplType_ROM = 0,
 	MemoryAddressImplType_RAM,
 	MemoryAddressImplType_MMAP,
+	MemoryAddressImplType_MALLOC,
 } MemoryAddressImplType;
 
 typedef struct {
