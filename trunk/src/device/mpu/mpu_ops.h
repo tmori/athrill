@@ -18,7 +18,11 @@ typedef enum {
     MpuAddressGetType_ROM = 0,
     MpuAddressGetType_RAM,
     MpuAddressGetType_MMAP,
+    MpuAddressGetType_MALLOC,
 } MpuAddressGetType;
+#define MPU_MALLOC_REGION_UNIT_SIZE         1024    /* KB */
+#define MPU_MALLOC_REGION_UNIT_GROUP_NUM    10      /* 10MB */
+
 extern uint8 *mpu_address_set_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 size, void *mmap_addr);
 extern uint8 *mpu_address_get_rom(uint32 addr, uint32 size);
 

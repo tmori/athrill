@@ -154,13 +154,24 @@ uint8 *mpu_address_set_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 si
 		}
 		else {
 #ifdef OS_LINUX
-			/* MMAP */
 			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = GLOBAL_MEMORY;
 			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].size = size;
-			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = mmap_addr;
+			if (getType == MpuAddressGetType_MMAP) {
+				/* MMAP */
+				mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = mmap_addr;
+			}
+			else if (getType == MpuAddressGetType_MALLOC) {
+				/* MALLOC */
+				mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = NULL;
+			}
 #endif /* OS_LINUX */
 		}
-		ASSERT(mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data != NULL);
+		if (getType == MpuAddressGetType_MALLOC) {
+			ASSERT(mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data == NULL);
+		}
+		else {
+			ASSERT(mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data != NULL);
+		}
 		return mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data;
 	}
 	else {
