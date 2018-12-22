@@ -44,8 +44,10 @@ static void elf_dwarf_build_struct_member(DwarfDataStructType *obj, ElfDwarfDieT
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
 		case DW_AT_decl_column:
+		case DW_AT_external:
 			break;
 		default:
+			printf("attr_type=0x%x\n", attr_type);
 			ASSERT(0);
 		}
 	}
@@ -95,6 +97,8 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 		case DW_AT_decl_line:
 		case DW_AT_decl_column:
 		case DW_AT_declaration:
+		case DW_AT_accessibility:
+		case DW_AT_unknown_0x2007:
 			break;
 		default:
 			printf("attr_type=0x%x\n", attr_type);
@@ -124,6 +128,9 @@ static void elf_dwarf_resolve_struct_union_member(DwarfDataStructType *struct_ob
 	DwarfDataStructMember *obj;
 
 	//printf("struct or union:%s\n", struct_obj->info.typename);
+	if (struct_obj->members == NULL) {
+		return;
+	}
 	for (i = 0; i < struct_obj->members->current_array_size; i++) {
 		obj = (DwarfDataStructMember *)struct_obj->members->data[i];
 		//printf("member %s ref=%p flag=%u;\n", obj->name, obj->ref, obj->is_valid_ref_debug_info_offset);

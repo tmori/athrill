@@ -161,6 +161,7 @@ static Std_ReturnType get_DW_AT_type_value(ElfDwarfDieType *die, uint32 *retp)
 			*retp = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
 			return STD_E_OK;
 		case DW_AT_prototyped:
+		case DW_AT_byte_size:
 			//printf("Not Supported:get_DW_AT_type_value:off=0x%x 0x%x\n", die->offset, attr_type);
 			return STD_E_NOENT;
 		default:
