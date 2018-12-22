@@ -132,7 +132,7 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 
 			for (j = 0; j < unit_num; j++) {
 				(void)mpu_address_set_rom_ram(memap->ram[i].type, start, MPU_MALLOC_REGION_UNIT_SIZE * 1024, NULL);
-				start += MPU_MALLOC_REGION_UNIT_SIZE;
+				start += (MPU_MALLOC_REGION_UNIT_SIZE * 1024);
 			}
 		}
 	}
