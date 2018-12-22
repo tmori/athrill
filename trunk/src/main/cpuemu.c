@@ -778,6 +778,21 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 				athrill_device_set_mmap_info(&info);
 			}
 		}
+		else if (!strcmp("MALLOC", (char*)memcfg_token_container.array[0].body.str.str)) {
+			map->ram_num++;
+			map->ram = realloc(map->ram, map->ram_num * sizeof(MemoryAddressType));
+			ASSERT(map->ram != NULL);
+			memp = &map->ram[map->ram_num - 1];
+			memp->type = MemoryAddressImplType_MALLOC;
+			memp->size = memcfg_token_container.array[2].body.dec.value;
+			memp->mmap_addr = NULL;
+			if ((memp->size % (MPU_MALLOC_REGION_UNIT_SIZE * MPU_MALLOC_REGION_UNIT_GROUP_NUM)) != 0) {
+				err = STD_E_INVALID;
+				printf("ERROR: Invalid MALLOC size(%u). The size must be multiples of 10MB.\n", memp->size);
+				goto errdone;
+			}
+			printf("MALLOC");
+		}
 #endif /* OS_LINUX */
 		else {
 			printf("WARNING: unknown memory type=%s\n", (char*)memcfg_token_container.array[0].body.str.str);
