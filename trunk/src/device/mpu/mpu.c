@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "assert.h"
+#include "mpu_malloc.h"
 
 static Std_ReturnType memory_get_data8(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint8 *data);
 static Std_ReturnType memory_get_data16(MpuAddressRegionType *region, CoreIdType core_id, uint32 addr, uint16 *data);
@@ -181,6 +182,15 @@ uint8 *mpu_address_set_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 si
 	else {
 		return region->data;
 	}
+}
+void mpu_address_set_malloc_region(uint32 addr, uint32 size)
+{
+	MpuAddressRegionType *region = NULL;
+
+	region = mpu_address_search_region(addr, size);
+
+	mpu_malloc_add_region(region);
+	return;
 }
 
 MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr)

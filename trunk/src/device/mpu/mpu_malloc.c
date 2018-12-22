@@ -20,13 +20,13 @@ typedef enum {
 } MallocSIzeType;
 
 typedef struct {
-    uint32	memsize;
+    uint32	memsize; /* byte */
     uint32	bitmaxnum;
-    uint32	bitmapsize;
+    uint32	bitmapsize; /* byte */
 } MallocDataInfoType;
 
 #define SIZE_TO_BITMAXNUM(size) ( ( MPU_MALLOC_REGION_UNIT_SIZE * 1024 ) / (size) )
-#define SIZE_TO_BITMAPSIZE(size) ( (SIZE_TO_BITMAXNUM(32) + 63) / 64 )
+#define SIZE_TO_BITMAPSIZE(size) ( ( (SIZE_TO_BITMAXNUM(size) + 63) / 64 ) * 8 )
 static const MallocDataInfoType malloc_data_info_table[MallocSize_Num] = {
     { 32,    SIZE_TO_BITMAXNUM(32),    SIZE_TO_BITMAPSIZE(32) },
     { 64,    SIZE_TO_BITMAXNUM(64),    SIZE_TO_BITMAPSIZE(64) },
@@ -187,6 +187,7 @@ static void group_add_region(MallocRegionGroupType* group, MpuAddressRegionType 
 
     group->unit[index].region = region;
     group->unit[index].bitmap = malloc(malloc_data_info_table[index].bitmapsize);
+    memset(group->unit[index].bitmap, 0, malloc_data_info_table[index].bitmapsize);
     ASSERT(group->unit[index].bitmap != NULL);
 
     group->unit_num++;
@@ -196,6 +197,9 @@ static void group_add_region(MallocRegionGroupType* group, MpuAddressRegionType 
 static bool group_has_free_unit(MallocRegionGroupType *group)
 {
     int i;
+    if (group->unit_num < MallocSize_Num) {
+        return TRUE;
+    }
     for (i = 0; i < group->unit_num; i++) {
         if (group->unit[i].region == NULL) {
             return TRUE;

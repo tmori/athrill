@@ -136,7 +136,19 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 			}
 		}
 	}
+	for (i = 0; i < memap->ram_num; i++) {
+		if (memap->ram[i].type == MemoryAddressImplType_MALLOC) {
+			int j;
+			uint32 start = memap->ram[i].start;
+			uint32 unit_num = memap->ram[i].size / MPU_MALLOC_REGION_UNIT_SIZE;
 
+			for (j = 0; j < unit_num; j++) {
+				mpu_address_set_malloc_region(memap->ram[i].start, MPU_MALLOC_REGION_UNIT_SIZE * 1024);
+				start += (MPU_MALLOC_REGION_UNIT_SIZE * 1024);
+			}
+		}
+	}
+	
 	for (i = 0; i < elf_image->e_phnum; i++) {
 		phdr = (Elf32_Phdr*) (
 				((uint8_t*)elf_image)
