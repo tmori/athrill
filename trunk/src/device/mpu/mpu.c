@@ -59,6 +59,10 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 				return NULL;
 			}
 #endif
+			if (mpu_address_map.dynamic_map[i].data == NULL) {
+				//MALLOC not malloced region
+				return NULL;
+			}
 			//printf("2:passed1:%u:0x%p\n", i,  &mpu_address_map.map[i]);
 			return &mpu_address_map.dynamic_map[i];
 		}
