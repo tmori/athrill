@@ -75,6 +75,23 @@ struct api_arg_shutdown {
 struct api_arg_system {
     sys_uint32 id;
 };
+struct api_arg_malloc {
+    sys_uint32 size;
+    sys_addr    rptr;
+};
+struct api_arg_calloc {
+    sys_uint32 nmemb;
+    sys_uint32 size;
+    sys_addr    rptr;
+};
+struct api_arg_realloc {
+    sys_addr ptr;
+    sys_uint32 size;
+    sys_addr    rptr;
+};
+struct api_arg_free {
+    sys_addr ptr;
+};
 
 typedef enum {
     SYS_API_ID_NONE = 0,
@@ -88,6 +105,10 @@ typedef enum {
     SYS_API_ID_RECV,
     SYS_API_ID_SHUTDOWN,
     SYS_API_ID_SYSTEM,
+    SYS_API_ID_MALLOC,
+    SYS_API_ID_CALLOC,
+    SYS_API_ID_REALLOC,
+    SYS_API_ID_FREE,
     SYS_API_ID_NUM,
 } AthrillSyscallApiIdType;
 
@@ -118,6 +139,10 @@ typedef struct {
         struct api_arg_recv api_recv;
         struct api_arg_shutdown api_shutdown;
         struct api_arg_system api_system;
+        struct api_arg_malloc api_malloc;
+        struct api_arg_calloc api_calloc;
+        struct api_arg_realloc api_realloc;
+        struct api_arg_free api_free;
     } body;
 } AthrillSyscallArgType;
 
@@ -286,6 +311,53 @@ static inline sys_int32 athrill_posix_system(sys_uint32 id)
     ATHRILL_SYSCALL(&args);
 
     return args.ret_value;
+}
+
+static inline sys_addr athrill_posix_malloc(sys_uint32 size)
+{
+    AthrillSyscallArgType args;
+    args.api_id = SYS_API_ID_MALLOC;
+    args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_malloc.size = size;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.body.api_malloc.rptr;
+}
+static inline sys_addr athrill_posix_calloc(sys_uint32 nmemb, sys_uint32 size)
+{
+    AthrillSyscallArgType args;
+    args.api_id = SYS_API_ID_CALLOC;
+    args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_calloc.nmemb = nmemb;
+    args.body.api_calloc.size = size;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.body.api_calloc.rptr;
+}
+static inline sys_addr athrill_posix_realloc(sys_addr ptr, sys_uint32 size)
+{
+    AthrillSyscallArgType args;
+    args.api_id = SYS_API_ID_REALLOC;
+    args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_realloc.ptr = ptr;
+    args.body.api_realloc.size = size;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.body.api_realloc.rptr;
+}
+static inline void athrill_posix_free(sys_addr ptr)
+{
+    AthrillSyscallArgType args;
+    args.api_id = SYS_API_ID_FREE;
+    args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_free.ptr = ptr;
+
+    ATHRILL_SYSCALL(&args);
+
+    return;
 }
 
 #endif /* ATHRILL_SYSCALL_DEVICE */
