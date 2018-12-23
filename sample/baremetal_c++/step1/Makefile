@@ -54,10 +54,11 @@ LIBS := -lsupc++  -lstdc++  -lm -lc -lgcc  libathrillc.o
 	$(CXX) -c $(IFLAGS) $(CFLAGS) $(CXXFLAGS) $<
 
 all: $(OBJS)
+	v850-elf-gcc -c $(IFLAGS) $(CFLAGS) libathrillc.c
 	$(LINK) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJS) -Wl,-Map,$(TARGET).map $(LIBS)
 	v850-elf-objdump -d $(TARGET) > $(TARGET).dump
 
 
 
 clean:
-	rm -f $(OBJS) $(TARGET) *.map
+	rm -f $(OBJS) $(TARGET) libathrillc.o *.map

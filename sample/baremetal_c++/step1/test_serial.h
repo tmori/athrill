@@ -49,8 +49,6 @@ static inline void test_print_line(const char *str, int lineno)
 	*(SERIAL_OUT_ADDR) = '\n';
 }
 
-#define printf test_print
-
 static inline void test_print_one(const char *ch)
 {
 	*(SERIAL_OUT_ADDR) = *ch;

@@ -1,42 +1,44 @@
 #include <string.h>
+#include <stdlib.h>
+#include "athrill_syscall.h"
 
 void *__dso_handle=0;
 
-void *malloc(unsigned int size)
+void *malloc(size_t size)
 {
-	return NULL;
+	return (void*)athrill_posix_malloc((sys_uint32)size);
 }
 void free(void *addr)
 {
-	return;
+	athrill_posix_free((sys_addr)addr);
 }
 
 void *calloc(size_t nmemb, size_t size)
 {
-	return NULL;
+	return (void*)athrill_posix_calloc((sys_uint32)nmemb, (sys_uint32)size);
 }
 
 void *realloc(void *ptr, size_t size)
 {
-	return NULL;
+	return (void*)athrill_posix_realloc((sys_addr)ptr, (sys_uint32)size);
 }
 
-void *_malloc_r(void *reent, unsigned int size)
+void *_malloc_r(struct _reent *reent, unsigned int size)
 {
-	return NULL;
+	return malloc(size);
 }
-void *_calloc_r(void *reent, size_t nmemb, size_t size)
+void *_calloc_r(struct _reent *reent, size_t nmemb, size_t size)
 {
-	return NULL;
+	return calloc(nmemb, size);
 }
-void *_realloc_r(void *reent, void *ptr, size_t size)
+void *_realloc_r(struct _reent *reent, void *ptr, size_t size)
 {
-	return NULL;
+	return realloc(ptr, size);
 }
 
-void _free_r(void *reent, void *addr)
+void _free_r(struct _reent *reent, void *addr)
 {
-	return;
+	free(addr);
 }
 int raise(int sig)
 {
