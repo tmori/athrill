@@ -42,5 +42,5 @@ void _free_r(struct _reent *reent, void *addr)
 }
 int raise(int sig)
 {
-	return;
+	return 0;
 }

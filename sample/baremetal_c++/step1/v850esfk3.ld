@@ -55,6 +55,8 @@ SECTIONS
 	___dtors_end = .;
 
 	.rodata : { *(.rodata) } > INTROM
+	.rosdata : { *(.rosdata) } > INTRAM
+	__gp = .;
 	. = ALIGN(4);
 	__idata_start = . ;
 

@@ -3,7 +3,7 @@
 
 static void timer_interrupt_handler(void)
 {
-	printf("timer_interrupt_handler!!\n");
+	test_print("timer_interrupt_handler!!\n");
 	return;
 }
 

@@ -32,7 +32,7 @@ static void doTestClassOp(TestClass &p)
 	v.push_back(a);
 	v.push_back(b);
 
-    for (int i = 0; i < v.size(); i++)
+    for (size_t i = 0; i < v.size(); i++)
     {
 		test_print((char*)v[i].c_str());
     }

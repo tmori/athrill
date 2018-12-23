@@ -5,14 +5,14 @@ using namespace Baremetal;
 
 TestClass::TestClass(void)
 {
-    printf("TestClass:constructor :enter\n");
+    test_print("TestClass:constructor :enter\n");
 }
 TestClass::~TestClass(void)
 {
-    printf("TestClass:destructor :enter\n");
+    test_print("TestClass:destructor :enter\n");
 }
 
 void TestClass::doTest(void)
 {
-    printf("TestClass:doTest :enter\n");
+    test_print("TestClass:doTest :enter\n");
 }
