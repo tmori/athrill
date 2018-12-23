@@ -527,9 +527,10 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 	 * invalid region access detection
 	 */
 	if ((found == FALSE) && (access_type == ACCESS_TYPE_WRITE)) {
-		MpuAddressRegionEnumType type = mpu_address_region_type_get(access_addr);
+		bool is_malloc;
+		MpuAddressRegionEnumType type = mpu_address_region_type_get(access_addr, &is_malloc);
 
-		if (type != DEVICE) {
+		if ((type != DEVICE) && (is_malloc == FALSE)) {
 			uint32 gladdr;
 			int stack_glid = symbol_addr2glid(current_sp, &gladdr);
 
@@ -764,7 +765,7 @@ void cpuctrl_init(void)
 
 	data_access_info_table_gl = malloc(gl_num * sizeof(DataAccessInfoType *));
 	for (i = 0; i < gl_num; i++) {
-		data_access_info[i].region_type = mpu_address_region_type_get(symbol_glid2gladdr(i));
+		data_access_info[i].region_type = mpu_address_region_type_get(symbol_glid2gladdr(i), NULL);
 		data_access_info_table_gl[i] = &data_access_info[i];
 	}
 

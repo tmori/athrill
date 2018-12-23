@@ -289,25 +289,3 @@ void  mpu_malloc_add_region(MpuAddressRegionType *region)
     group_add_region(group, region);
     return;
 }
-
-#if 0
-void mpu_malloc_test_get(void)
-{
-    uint32 addr[20];
-    
-    addr[0] = mpu_malloc_get_memory(31);
-    addr[1] = mpu_malloc_get_memory(32);
-    addr[2] = mpu_malloc_get_memory(33);
-    addr[3] = mpu_malloc_get_memory(34);
-    printf("31:0x%x\n", addr[0]);
-    printf("32:0x%x\n", addr[1]);
-    printf("33:0x%x\n", addr[2]);
-    printf("34:0x%x\n", addr[3]);
-
-    mpu_malloc_rel_memory(addr[0]);
-    addr[4] = mpu_malloc_get_memory(10);
-    printf("10:0x%x\n", addr[4]);
-
-    return;
-}
-#endif

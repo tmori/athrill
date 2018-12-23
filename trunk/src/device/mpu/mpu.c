@@ -142,6 +142,7 @@ uint8 *mpu_address_set_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 si
 		mpu_address_map.dynamic_map = realloc(mpu_address_map.dynamic_map, (sizeof(MpuAddressRegionType)) * mpu_address_map.dynamic_map_num);
 		ASSERT(mpu_address_map.dynamic_map != NULL);
 		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].start = addr;
+		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].is_malloc = FALSE;
 
 		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].permission	= MPU_ADDRESS_REGION_PERM_ALL;
 		mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].mask		= MPU_ADDRESS_REGION_MASK_ALL;
@@ -159,14 +160,16 @@ uint8 *mpu_address_set_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 si
 		}
 		else {
 #ifdef OS_LINUX
-			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = GLOBAL_MEMORY;
 			mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].size = size;
 			if (getType == MpuAddressGetType_MMAP) {
 				/* MMAP */
+				mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = GLOBAL_MEMORY;
 				mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = mmap_addr;
 			}
 			else if (getType == MpuAddressGetType_MALLOC) {
 				/* MALLOC */
+				mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].type = GLOBAL_MEMORY;
+				mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].is_malloc = TRUE;
 				mpu_address_map.dynamic_map[mpu_address_map.dynamic_map_num -1].data = NULL;
 			}
 #endif /* OS_LINUX */
@@ -193,7 +196,7 @@ void mpu_address_set_malloc_region(uint32 addr, uint32 size)
 	return;
 }
 
-MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr)
+MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr, bool *is_malloc)
 {
 	uint32 i;
 
@@ -203,6 +206,9 @@ MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr)
 		uint32 paddr_str = (addr & mpu_address_map.dynamic_map[i].mask);
 
 		if ((start <= paddr_str) && (paddr_str < end)) {
+			if (is_malloc != NULL) {
+				*is_malloc = mpu_address_map.dynamic_map[i].is_malloc;
+			}
 			return mpu_address_map.dynamic_map[i].type;
 		}
 	}
@@ -213,6 +219,9 @@ MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr)
 		uint32 paddr_str = (addr & mpu_address_map.map[i].mask);
 
 		if ((start <= paddr_str) && (paddr_str < end)) {
+			if (is_malloc != NULL) {
+				*is_malloc = FALSE;
+			}
 			return mpu_address_map.map[i].type;
 		}
 	}

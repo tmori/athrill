@@ -32,6 +32,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
+						.is_malloc	= FALSE,
 						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FFF100,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_INTC,
@@ -44,6 +45,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
+						.is_malloc	= FALSE,
 						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FFF590,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_TIMER,
@@ -57,6 +59,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
+						.is_malloc	= FALSE,
 						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FFFA00,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_SERIAL,
@@ -70,6 +73,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
+						.is_malloc	= FALSE,
 						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FFF000,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_PH0,
@@ -82,6 +86,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
+						.is_malloc	= FALSE,
 						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= 0x03FEC000,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_PH1,
@@ -96,6 +101,7 @@ MpuAddressMapType mpu_address_map = {
 				 */
 				{
 						.type		= DEVICE,
+						.is_malloc	= FALSE,
 						.permission	= MPU_ADDRESS_REGION_PERM_ALL,
 						.start		= CPU_CONFIG_DEBUG_REGISTER_ADDR,
 						.size		= MPU_ADDRESS_REGION_SIZE_INX_CPU,

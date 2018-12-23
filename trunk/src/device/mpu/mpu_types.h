@@ -12,7 +12,7 @@ typedef enum {
 	REGION_UNKNOWN,
 } MpuAddressRegionEnumType;
 
-extern MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr);
+extern MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr, bool *is_malloc);
 
 #define MPU_ADDRESS_REGION_MASK_ALL				0xFFFFFFFF
 #define MPU_ADDRESS_REGION_PERM_ALL				0xFFFFFFFF
@@ -20,6 +20,7 @@ extern MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr);
 struct mpu_address_region_operation_type;
 typedef struct {
 	MpuAddressRegionEnumType					type;
+	bool										is_malloc;
 	/*
 	 * 本メモリ領域にアクセスできるcore_idのビットマップ
 	 * ビット位置がCPUのコアIDに対応する
