@@ -102,9 +102,7 @@ static Std_ReturnType Elf_Check(const Elf32_Ehdr *elf_image)
 	}
 	return STD_E_OK;
 }
-#if 1
-extern void mpu_malloc_test_get(void);
-#endif
+
 static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddressMapType *memap)
 {
 	Std_ReturnType err;
@@ -151,9 +149,6 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 			}
 		}
 	}
-
-	//for test...
-	//mpu_malloc_test_get();
 
 	for (i = 0; i < elf_image->e_phnum; i++) {
 		phdr = (Elf32_Phdr*) (

@@ -162,7 +162,7 @@ done:
     return ( unit->region->start + (index * malloc_data_info_table[i].memsize));
 }
 
-void mpu_malloc_rel_memory(uint32 addr)
+static MallocRegionUnitType* search_unit(uint32 addr, int* indexp)
 {
     int i;
     int j;
@@ -172,16 +172,25 @@ void mpu_malloc_rel_memory(uint32 addr)
             unit = &malloc_region.groups[j]->unit[i];
             if ((unit->region->start <= addr) &&
                                         (addr < (unit->region->start + unit->region->size))) {
-                goto done;
+                *indexp = i;
+                return unit;
             }
         }
     }
-done:
+    return NULL;
+}
+
+void mpu_malloc_rel_memory(uint32 addr)
+{
+    MallocRegionUnitType* unit;
+    int index;
+    
+    unit = search_unit(addr, &index);
     if (unit == NULL) {
         return;
     }
 
-    uint32 bits = ( (addr - unit->region->start) / malloc_data_info_table[i].memsize );
+    uint32 bits = ( (addr - unit->region->start) / malloc_data_info_table[index].memsize );
     uint32 bit64_off = bits / 64;
     uint32 bit64_mod = bits % 64;
     uint32 bit8_off  = bit64_mod / 8;
@@ -193,6 +202,17 @@ done:
     *bimtap8 = BIT_CLR(*bimtap8, bit8_mod);
     unit->bitfreenum++;
     return;
+}
+
+uint32 mpu_malloc_ref_size(uint32 addr)
+{
+    MallocRegionUnitType* unit;
+    int index;
+    
+    unit = search_unit(addr, &index);
+    ASSERT(unit != NULL);
+
+    return malloc_data_info_table[index].memsize;
 }
 
 static void group_init(MallocRegionGroupType* group)

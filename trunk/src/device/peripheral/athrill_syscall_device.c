@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include "mpu_malloc.h"
+#include "assert.h"
 
 struct athrill_syscall_functable {
     void (*func) (AthrillSyscallArgType *arg);
@@ -29,6 +31,10 @@ static void athrill_syscall_send(AthrillSyscallArgType *arg);
 static void athrill_syscall_recv(AthrillSyscallArgType *arg);
 static void athrill_syscall_shutdown(AthrillSyscallArgType *arg);
 static void athrill_syscall_system(AthrillSyscallArgType *arg);
+static void athrill_syscall_malloc(AthrillSyscallArgType *arg);
+static void athrill_syscall_calloc(AthrillSyscallArgType *arg);
+static void athrill_syscall_realloc(AthrillSyscallArgType *arg);
+static void athrill_syscall_free(AthrillSyscallArgType *arg);
 
 static struct athrill_syscall_functable syscall_table[SYS_API_ID_NUM] = {
     { athrill_syscall_none },
@@ -42,6 +48,10 @@ static struct athrill_syscall_functable syscall_table[SYS_API_ID_NUM] = {
     { athrill_syscall_recv },
     { athrill_syscall_shutdown },
     { athrill_syscall_system },
+    { athrill_syscall_malloc },
+    { athrill_syscall_calloc },
+    { athrill_syscall_realloc },
+    { athrill_syscall_free },
 };
 
 void athrill_syscall_device(uint32 addr)
@@ -269,3 +279,63 @@ static void athrill_syscall_system(AthrillSyscallArgType *arg)
     return;
 }
 
+static void athrill_syscall_malloc(AthrillSyscallArgType *arg)
+{
+    if (arg->body.api_malloc.size == 0) {
+        arg->body.api_malloc.rptr = 0;
+    }
+    else {
+        arg->body.api_malloc.rptr = mpu_malloc_get_memory(arg->body.api_malloc.size);
+    }
+    return;
+}
+
+static void athrill_syscall_calloc(AthrillSyscallArgType *arg)
+{
+    Std_ReturnType err;
+    uint32 size;
+    uint8 *addrp;
+
+    if ((arg->body.api_calloc.size == 0) || (arg->body.api_calloc.nmemb == 0)) {
+        arg->body.api_calloc.rptr = 0;
+        return;
+    }
+    size = arg->body.api_calloc.size * arg->body.api_calloc.nmemb;
+
+    arg->body.api_calloc.rptr = mpu_malloc_get_memory(size);
+
+    err = mpu_get_pointer(0U, arg->body.api_calloc.rptr, (uint8 **)&addrp);
+    ASSERT(err == 0);
+
+    memset((void*)addrp, 0, size);
+    return;
+}
+
+static void athrill_syscall_realloc(AthrillSyscallArgType *arg)
+{
+    Std_ReturnType err;
+    uint8 *src_addrp;
+    uint8 *dest_addrp;
+
+    arg->body.api_realloc.rptr = mpu_malloc_get_memory(arg->body.api_realloc.size);
+
+    err = mpu_get_pointer(0U, arg->body.api_realloc.ptr, (uint8 **)&src_addrp);
+    ASSERT(err == 0);
+
+    err = mpu_get_pointer(0U, arg->body.api_realloc.rptr, (uint8 **)&dest_addrp);
+    ASSERT(err == 0);
+
+    uint32 size = mpu_malloc_ref_size(arg->body.api_realloc.ptr);
+ 
+    memcpy((void*)dest_addrp, (void*)src_addrp, size);
+
+    mpu_malloc_rel_memory(arg->body.api_realloc.ptr);
+    return;
+}
+
+static void athrill_syscall_free(AthrillSyscallArgType *arg)
+{
+    mpu_malloc_rel_memory(arg->body.api_free.ptr);
+
+    return;
+}
