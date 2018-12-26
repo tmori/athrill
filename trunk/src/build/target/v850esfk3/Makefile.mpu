@@ -24,6 +24,7 @@ CFLAGS	+= $(IFLAGS)
 
 OBJS	:=	mpu.o
 OBJS	+=	mpu_config.o
+OBJS	+=	mpu_malloc.o
 OBJS	+=	loader.o
 
 all:	$(LIBTARGET)
