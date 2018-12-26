@@ -124,6 +124,7 @@ typedef enum {
 #define SYS_API_ERR_INVAL   -22
 #define SYS_API_ERR_BADFD   -77
 #define SYS_API_ERR_CONNREFUSED   -111
+#define SYS_API_ERR_INPROGRESS    -115
 
 typedef struct {
     sys_uint32 api_id;
