@@ -1,10 +1,10 @@
 #!/bin/bash
 
-export ATHRILL_HOME=${HOME}/build/tmori/athrill
+export ATHRILL_HOME=$(cd $(dirname $BASH_SOURCE);cd ..; pwd)
 export PATH=${PATH}:${ATHRILL_HOME}/bin/linux
-export CONFIG_MEMORY=${HOME}/build/tmori/athrill/test/config/memory.txt
-export CONFIG_DEBUG=${HOME}/build/tmori/athrill/test/config/device_config.txt
-export TEST_LOG=${HOME}/build/tmori/athrill/test/scripts/log
+export CONFIG_MEMORY=${ATHRILL_HOME}/test/config/memory.txt
+export CONFIG_DEBUG=${ATHRILL_HOME}/test/config/device_config.txt
+export TEST_LOG=${ATHRILL_HOME}/test/scripts/log
 
 CMD_NAME=
 function util_set_cmdname() {
