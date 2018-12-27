@@ -30,6 +30,7 @@ void elf_dwarf_build_typedef_type(ElfDwarfDieType *die)
 				 obj->is_valid_ref_debug_info_offset = TRUE;
 			 }
 			break;
+		case DW_AT_accessibility:
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
 		case DW_AT_decl_column:

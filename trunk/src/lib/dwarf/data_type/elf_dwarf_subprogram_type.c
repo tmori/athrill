@@ -47,8 +47,11 @@ static void elf_dwarf_build_subprogram_variable(DwarfDataSubprogramType *obj, El
 		case DW_AT_declaration:
 		case DW_AT_const_value:
 		case DW_AT_artificial:
+		case DW_AT_specification:
+		case DW_AT_unknown_0x2007:
 			break;
 		default:
+			printf("attr_type=0x%x\n", attr_type);
 			ASSERT(0);
 		}
 	}
@@ -114,9 +117,11 @@ void elf_dwarf_build_subprogram_type(ElfDwarfDieType *die)
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
 		case DW_AT_decl_column:
+		case DW_AT_linkage_name:
 		case DW_AT_object_pointer:
 		case DW_AT_explicit:
 		case DW_AT_pure:
+		case DW_AT_containing_type:
 		case DW_AT_unknown_0x2007:
 		case DW_AT_unknown_0x2116:
 		case DW_AT_unknown_0x2117:

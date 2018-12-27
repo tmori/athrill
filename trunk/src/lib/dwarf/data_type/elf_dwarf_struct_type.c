@@ -98,6 +98,7 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 		case DW_AT_decl_column:
 		case DW_AT_declaration:
 		case DW_AT_accessibility:
+		case DW_AT_linkage_name:
 		case DW_AT_unknown_0x2007:
 			break;
 		default:

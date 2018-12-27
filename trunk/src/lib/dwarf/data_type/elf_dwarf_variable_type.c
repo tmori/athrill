@@ -41,6 +41,7 @@ void elf_dwarf_build_variable_type(ElfDwarfDieType *die)
 		case DW_AT_const_value:
 		case DW_AT_artificial:
 		case DW_AT_specification:
+		case DW_AT_linkage_name:
 		case DW_AT_unknown_0x2007:
 			break;
 		default:
