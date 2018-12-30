@@ -44,3 +44,14 @@ int raise(int sig)
 {
 	return 0;
 }
+
+void _fflush_r(void)
+{
+}
+
+void __sinit(void)
+{
+}
+
+void _cleanup_r(void){}
+void __register_exitproc(void){}
