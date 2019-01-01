@@ -1,0 +1,36 @@
+include Makefile.env
+
+LIBTARGET	:= libmpu.a
+
+IFLAGS	:= -I$(CORE_DIR)/inc
+IFLAGS	+= -I$(CORE_DIR)/device/mpu
+IFLAGS	+= -I$(CORE_DIR)/lib
+IFLAGS	+= -I$(CORE_DIR)/lib/dwarf
+IFLAGS	+= -I$(CORE_DIR)/lib/dwarf/data_type
+IFLAGS	+= -I$(CORE_DIR)/cpu
+IFLAGS	+= -I$(TARGET_DIR)/cpu
+IFLAGS	+= -I$(TARGET_DIR)/cpu/config
+
+VPATH	:=	$(CORE_DIR)/device/mpu
+VPATH	+=	$(CORE_DIR)/device/mpu/loader
+VPATH	+=	$(TARGET_DIR)/cpu/config
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+OBJS	:=	mpu.o
+OBJS	+=	mpu_config.o
+OBJS	+=	mpu_malloc.o
+OBJS	+=	loader.o
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+

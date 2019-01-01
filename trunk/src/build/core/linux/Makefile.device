@@ -1,0 +1,49 @@
+include Makefile.env
+
+LIBTARGET	:= libdevice.a
+
+IFLAGS	:= -I$(CORE_DIR)/inc
+IFLAGS	+= -I$(CORE_DIR)/cpu
+IFLAGS	+= -I$(CORE_DIR)/device/mpu
+IFLAGS	+= -I$(CORE_DIR)/debugger/executor
+IFLAGS	+= -I$(CORE_DIR)/lib
+IFLAGS	+= -I$(CORE_DIR)/device/peripheral/target
+IFLAGS	+= -I$(APLDIR)/include
+IFLAGS	+= -I$(TARGET_DIR)/cpu
+IFLAGS	+= -I$(TARGET_DIR)/device
+IFLAGS	+= -I$(TARGET_DIR)/device/intc
+IFLAGS	+= -I$(TARGET_DIR)/device/peripheral
+IFLAGS	+= -I$(TARGET_DIR)/device/peripheral/inc
+IFLAGS	+= -I$(TARGET_DIR)/cpu/config
+
+VPATH	:=	$(CORE_DIR)/device/peripheral
+VPATH	+=	$(TARGET_DIR)/device
+VPATH	+=	$(TARGET_DIR)/device/intc
+VPATH	+=	$(TARGET_DIR)/device/peripheral
+VPATH	+=	$(TARGET_DIR)/device/peripheral/timer
+VPATH	+=	$(TARGET_DIR)/device/peripheral/serial
+VPATH	+=	$(TARGET_DIR)/debugger/executor/concrete_executor
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+OBJS	:=	device.o
+OBJS	+=	timer.o
+OBJS	+=	serial.o
+OBJS	+=	dbg_target_serial.o
+OBJS	+=	dbg_target_cpu.o
+OBJS	+=	intc.o
+OBJS	+=	athrill_device.o
+OBJS	+=	athrill_syscall_device.o
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+

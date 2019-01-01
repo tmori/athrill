@@ -1,0 +1,51 @@
+include Makefile.env
+
+LIBTARGET	:= libcpu.a
+
+IFLAGS	:= -I$(CORE_DIR)/inc
+IFLAGS	+= -I$(CORE_DIR)/cpu
+IFLAGS	+= -I$(CORE_DIR)/bus
+IFLAGS	+= -I$(CORE_DIR)/device/mpu
+IFLAGS	+= -I$(CORE_DIR)/lib
+IFLAGS	+= -I$(TARGET_DIR)/cpu
+IFLAGS	+= -I$(TARGET_DIR)/device
+IFLAGS	+= -I$(TARGET_DIR)/cpu/config
+
+VPATH	:=	$(TARGET_DIR)/cpu/cpu_common
+VPATH	+=	$(TARGET_DIR)/cpu/cpu_dec
+VPATH	+=	$(TARGET_DIR)/cpu/cpu_exec
+VPATH	+=	$(TARGET_DIR)/cpu/config
+VPATH	+=	$(CORE_DIR)/lib
+
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+
+OBJS	:=	op_exec.o
+OBJS	+=	op_dec.o
+OBJS	+=	op_parse.o
+OBJS	+=	op_parse_private.o
+OBJS	+=	op_exec_bit.o
+OBJS	+=	op_exec_branch.o
+OBJS	+=	op_exec_dbg.o
+OBJS	+=	op_exec_div.o
+OBJS	+=	op_exec_logic.o
+OBJS	+=	op_exec_sat.o
+OBJS	+=	op_exec_arithm.o
+OBJS	+=	op_exec_store.o
+OBJS	+=	op_exec_load.o
+OBJS	+=	op_exec_spec.o
+OBJS	+=	cpu_config.o
+OBJS	+=	dbg_log.o
+
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+
