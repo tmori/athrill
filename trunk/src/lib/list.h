@@ -119,5 +119,10 @@ do { \
 	(headp)->entry_num--;	\
 } while (0)
 
+#define ListEntry_Foreach(headp, var)	\
+	int _i = 0;	\
+	for ((var) = (headp)->entries; \
+		_i < (headp)->entry_num; \
+		(var) = (var)->next, _i++)
 
 #endif /* _LIST_H_ */
