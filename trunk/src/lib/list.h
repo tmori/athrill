@@ -119,6 +119,14 @@ do { \
 	(headp)->entry_num--;	\
 } while (0)
 
+#define ListEntry_RemoveAll(headp, entry_type) \
+do { \
+	while ((headp)->entry_num > 0) {	\
+		entry_type _tmp = ListEntry_First((headp)->entries);	\
+		ListEntry_RemoveEntry(headp, _tmp);	\
+	}	\
+} while (0)
+
 #define ListEntry_Foreach(headp, var)	\
 	int _i = 0;	\
 	for ((var) = (headp)->entries; \
