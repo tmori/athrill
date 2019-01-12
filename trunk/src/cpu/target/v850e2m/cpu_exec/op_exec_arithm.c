@@ -850,11 +850,11 @@ int op_exec_divqu_11(TargetCoreType *cpu)
 	}
 	else {
 		CPU_CLR_OV(&cpu->reg);
-		cpu->reg.r[reg2] = ( (uint32)reg2_data / ((uint32)((uint16)reg1_data)) );
+		cpu->reg.r[reg2] = ( (uint32)reg2_data / ((uint32)(reg1_data)) );
 		/*
 		 * GR [reg3] ← GR [reg2] % GR [reg1]
 		 */
-		cpu->reg.r[reg3] = ( (uint32)reg2_data % ((uint32)((uint16)reg1_data)) );
+		cpu->reg.r[reg3] = ( (uint32)reg2_data % ((uint32)(reg1_data)) );
 	}
 
 	/*
