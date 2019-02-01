@@ -16,6 +16,7 @@ typedef struct {
 	 */
 	uint32 enable_sync_time;
 	uint32 show_skip_time;
+	uint32 reset_pc;
 } DbgCpuCallbackFuncEnableType;
 
 extern void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core);

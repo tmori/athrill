@@ -79,6 +79,7 @@ extern uint32 cpu_get_ep(const TargetCoreType *core);
 
 extern uint32 cpu_get_current_core_register(uint32 inx);
 extern uint32 cpu_get_current_core_pc(void);
+extern void cpu_set_core_pc(CoreIdType core_id, uint32 pc);
 extern uint32 cpu_get_current_core_sp(void);
 extern uint32 cpu_get_current_core_ep(void);
 extern uint32 cpu_get_return_addr(const TargetCoreType *core);

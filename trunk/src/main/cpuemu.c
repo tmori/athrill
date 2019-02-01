@@ -393,12 +393,14 @@ void *cpuemu_thread_run(void* arg)
 	bool is_halt;
 	int core_id_num = cpu_config_get_core_id_num();
 	static bool (*do_cpu_run) (int);
+	int core_id;
 
 	enable_dbg.enable_bt = TRUE;
 	enable_dbg.enable_ft = TRUE;
 	enable_dbg.enable_watch = TRUE;
 	enable_dbg.enable_prof = TRUE;
 	enable_dbg.enable_sync_time = FALSE;
+	enable_dbg.reset_pc = 0x0;
 	cpuemu_dev_clock.enable_skip = FALSE;
 
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_BT", &enable_dbg.enable_bt);
@@ -407,6 +409,10 @@ void *cpuemu_thread_run(void* arg)
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_WATCH", &enable_dbg.enable_prof);
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_ENABLE_SYNC_TIME", &enable_dbg.enable_sync_time);
 	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_SHOW_SKIP_TIME", &enable_dbg.show_skip_time);
+	(void)cpuemu_get_devcfg_value_hex("DEBUG_FUNC_RESET_PC", &enable_dbg.reset_pc);
+	for (core_id = 0; core_id < core_id_num; core_id++) {
+		cpu_set_core_pc(core_id, enable_dbg.reset_pc);
+	}
 
 	virtual_cpu.cpu_freq = DEFAULT_CPU_FREQ; /* 100MHz */
 	(void)cpuemu_get_devcfg_value("DEVICE_CPU_FREQ", &virtual_cpu.cpu_freq);
@@ -827,6 +833,28 @@ Std_ReturnType cpuemu_get_devcfg_value(const char* key, uint32 *value)
 			continue;
 		}
 		*value = cpuemu_devcfg.param[i].value.body.dec.value;
+		return STD_E_OK;
+	}
+	return STD_E_NOENT;
+}
+
+Std_ReturnType cpuemu_get_devcfg_value_hex(const char* key, uint32 *value)
+{
+	int i;
+	TokenStringType token;
+
+	token.len = strlen(key);
+	memcpy(token.str, key, token.len);
+	token.str[token.len] = '\0';
+
+	for (i = 0; i < cpuemu_devcfg.param_num; i++) {
+		if (cpuemu_devcfg.param[i].value.type != TOKEN_TYPE_VALUE_HEX) {
+			continue;
+		}
+		if (token_strcmp(&cpuemu_devcfg.param[i].key.body.str, &token) == FALSE) {
+			continue;
+		}
+		*value = cpuemu_devcfg.param[i].value.body.hex.value;
 		return STD_E_OK;
 	}
 	return STD_E_NOENT;

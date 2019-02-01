@@ -782,6 +782,11 @@ uint32 cpu_get_current_core_pc(void)
 {
 	return cpu_get_pc((const TargetCoreType *)virtual_cpu.current_core);
 }
+void cpu_set_core_pc(CoreIdType core_id, uint32 pc)
+{
+	virtual_cpu.cores[core_id].core.reg.pc = pc;
+	return;
+}
 
 uint32 cpu_get_current_core_register(uint32 inx)
 {
