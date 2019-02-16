@@ -189,6 +189,7 @@ static void do_ext_build(ElfDwarfLineParsedOpCodeType *op, ElfDwarfLineStateMach
 	//printf("do_ext_build:op->subtype=%d\n", op->subtype);
 	switch (op->subtype) {
 	case DW_LNE_end_sequence:
+		elf_dwarf_line_machine_init(machine);
 		break;
 	case DW_LNE_set_address:
 		machine->address = op->args.extSetAddress.addr;
@@ -212,6 +213,8 @@ static void do_std_build(ElfDwarfLineParsedOpCodeType *op, ElfDwarfLineStateMach
 			KeyValueMappingType map;
 			map.key.addr = machine->address;
 			map.value.line = machine->line;
+			//printf("std:%u	", map.value.line);
+			//printf("0x%x\n", map.key.addr);
 			add_map(&map, op, machine);
 		}
 		break;
@@ -269,6 +272,7 @@ static void add_map(KeyValueMappingType *map, ElfDwarfLineParsedOpCodeType *op, 
 
 	map->value.file = file;
 	map->value.dir = dir;
+	//printf("file=%s		", file);
 
 	file_address_mapping_add(&map->key, &map->value);
 
@@ -285,7 +289,10 @@ static void do_spc_build(ElfDwarfLineParsedOpCodeType *op, ElfDwarfLineStateMach
 		map.key.addr = machine->address;
 		map.value.line = machine->line;
 
+
 		add_map(&map, op, machine);
+		//printf("%u	", map.value.line);
+		//printf("0x%x\n", map.key.addr);
 	//}
 
 	return;

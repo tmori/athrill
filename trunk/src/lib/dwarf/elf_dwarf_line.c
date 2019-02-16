@@ -18,15 +18,25 @@ ElfDwarfLineType *elf_dwarf_line_get_ElfDwarfLine(void)
 {
 	return elf_dwarf_line;
 }
+/*
+ * 
+ * address 0
+ * op_index 0
+ * file 1
+ * line 1
+ * column 0
+ * is_stmt determined by default_is_stmt in the line number program header
+ * basic_block “false”
+ * end_sequence “false”
+ * prologue_end “false”
+ * epilogue_begin “false”
+ * isa 0
+ * discriminator 0
+ */
 void elf_dwarf_line_init_ElfDwarfLineStateMachineRegister(ElfDwarfLineStateMachineRegisterType *machine, ElfDwarfLineEntryHeaderType *hdr)
 {
-	machine->address = 0;
-	machine->file = 1;
-	machine->line = 1;
-	machine->column = 0;
+	elf_dwarf_line_machine_init(machine);
 	machine->is_stmt = hdr->default_is_stmt;
-	machine->basic_block = FALSE;
-	machine->end_sequence = FALSE;
 	return;
 }
 
@@ -48,6 +58,7 @@ static uint32 parse_entry_header(ElfDwarfLineEntryHeaderType *header, uint8 *sec
 	off += 1;
 	if (header->version == ELF_DWARF_VERSION_4) {
 		/* maximum_operations_per_instruction (ubyte) */
+		header->maximum_operations_per_instruction = elf_get_data8(section_data, off);
 		off += 1;
 	}
 	header->default_is_stmt = elf_get_data8(section_data, off);
@@ -63,6 +74,7 @@ static uint32 parse_entry_header(ElfDwarfLineEntryHeaderType *header, uint8 *sec
 	DBG_PRINTF(("version=%u\n", header->version));
 	DBG_PRINTF(("prologue_length=%u\n", header->prologue_length));
 	DBG_PRINTF(("minimum_instruction_length=%u\n", header->minimum_instruction_length));
+	DBG_PRINTF(("maximum_operations_per_instruction=%u\n", header->maximum_operations_per_instruction));
 	DBG_PRINTF(("default_is_stmt=%u\n", header->default_is_stmt));
 	DBG_PRINTF(("line_base=%d\n", header->line_base));
 	DBG_PRINTF(("line_range=%u\n", header->line_range));
