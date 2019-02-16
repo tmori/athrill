@@ -1111,7 +1111,7 @@ static const DbgCmdHelpType help_list = {
 									.description = "show memory information from <addr> to (<addr> + <size>)",
 							},
 							{
-									.semantics = "print <addr(hex)> <type(s|t)> <typename>",
+									.semantics = "print <addr(hex)> <type(s|c|t)> <typename>",
 									.description = "show memory information from <addr> by <typename>)",
 							},
 					},

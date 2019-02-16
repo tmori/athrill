@@ -153,6 +153,26 @@ static void print_struct_type_data(PrintControlType *ctrl, DwarfDataStructType *
 	printf("}\n");
 	return;
 }
+static void print_class_type_data(PrintControlType *ctrl, DwarfDataStructType *type, uint8 *top_addr, uint32 off)
+{
+	int i;
+
+	printf("class %s { \n", type->info.typename);
+	if (type->members == NULL) {
+		goto done;
+	}
+	for (i = 0; i < type->members->current_array_size; i++) {
+		DwarfDataStructMember *memp = (DwarfDataStructMember *)type->members->data[i];
+		print_space(ctrl);
+		printf("%s = ", memp->name);
+		(void)print_any_data_type(ctrl, memp->ref, top_addr, off + memp->off);
+	}
+done:
+	print_space(ctrl);
+	printf("}\n");
+	return;
+}
+
 static void print_typedef_type_data(PrintControlType *ctrl, DwarfDataTypedefType *type, uint8 *top_addr, uint32 off)
 {
 	if (type->ref == NULL) {
@@ -408,6 +428,7 @@ static void print_array_type_data(PrintControlType *ctrl, DwarfDataArrayType *ty
 static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint8 *top_addr, uint32 off)
 {
 	bool ret = FALSE;
+	//printf("print_any_data_type:obj=0x%p\n", obj);
 
 	switch (obj->type) {
 	case DATA_TYPE_BASE:
@@ -428,6 +449,12 @@ static bool print_any_data_type(PrintControlType *ctrl, DwarfDataType *obj, uint
 	case DATA_TYPE_STRUCT:
 		ctrl->level++;
 		print_struct_type_data(ctrl, (DwarfDataStructType *)obj, top_addr, off);
+		ctrl->level--;
+		ret = TRUE;
+		break;
+	case DATA_TYPE_CLASS:
+		ctrl->level++;
+		print_class_type_data(ctrl, (DwarfDataStructType *)obj, top_addr, off);
 		ctrl->level--;
 		ret = TRUE;
 		break;
@@ -502,7 +529,7 @@ bool print_variable_with_data_type(char *variable_name, uint32 vaddr, uint8 *top
 	if (variable == NULL || variable->ref == NULL) {
 		return FALSE;
 	}
-	//printf("%s 0x%x ref=0x%x\n", variable->info.typename, variable->info.die->offset, variable->ref->die->offset);
+	//printf("%s(%p) 0x%x ref=0x%x type=0x%x\n", variable->info.typename, variable, variable->info.die->offset, variable->ref->die->offset, variable->ref->type);
 	type = (DwarfDataType *)dwarf_search_data_type_from_die(variable->ref->type, variable->ref->die->offset);
 	if (type == NULL) {
 		return FALSE;
@@ -522,6 +549,9 @@ bool print_addr_with_data_type(uint32 vaddr, uint8 *top_addr, char* dataType, ch
 
 	if (dataType[0] == 's') {
 		type = (DwarfDataType *)dwarf_search_data_type(DATA_TYPE_STRUCT, NULL, NULL, dataTypeName);
+	}
+	else if (dataType[0] == 'c') {
+		type = (DwarfDataType *)dwarf_search_data_type(DATA_TYPE_CLASS, NULL, NULL, dataTypeName);
 	}
 	else {
 		type = (DwarfDataType *)dwarf_search_data_type(DATA_TYPE_TYPEDEF, NULL, NULL, dataTypeName);

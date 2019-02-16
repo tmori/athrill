@@ -41,7 +41,7 @@ static parse_func_table_t parse_func_table[DATA_TYPE_NUM] = {
 		elf_dwarf_build_enum_type,
 		elf_dwarf_build_variable_type,
 		elf_dwarf_build_subprogram_type,
-		NULL,
+		elf_dwarf_build_struct_type,
 };
 
 static DwarfDataEnumType get_dataType(DwTagType tag)
@@ -78,6 +78,9 @@ static DwarfDataEnumType get_dataType(DwTagType tag)
 	case DW_TAG_class_type:
 		ret = DATA_TYPE_CLASS;
 		break;
+	//case DW_TAG_const_type:
+	//	printf("Unknown DW_TAG_const_type\n");
+	//	break;
 	default:
 		break;
 	}
@@ -205,8 +208,10 @@ retry:
 			}
 			type = get_dataType(die->abbrev_info->tag);
 			if (type == DATA_TYPE_NUM) {
+				//printf("tag=0x%x\n", die->abbrev_info->tag);
 				err = get_DW_AT_type_value(die, &ret_offset);
 				if (err != STD_E_OK) {
+					//printf("err = %d\n", err);
 					return err;
 				}
 				offset = ret_offset;
@@ -232,6 +237,8 @@ DwarfDataType *elf_dwarf_get_data_type(uint32 debug_info_offset)
 		for (j = 0; j < dwarf_data_type_set[i]->current_array_size; j++) {
 			DwarfDataType *dtype = (DwarfDataType*)dwarf_data_type_set[i]->data[j];
 			if (dtype->die->offset == debug_info_offset) {
+				//printf("debug_info_offset=0x%x\n", debug_info_offset);
+				//printf("type=0x%x %s\n", dtype->type, dtype->typename);
 				return dtype;
 			}
 		}
@@ -270,6 +277,9 @@ void *dwarf_alloc_data_type(DwarfDataEnumType type)
 		size = sizeof(DwarfDataBaseType);
 		break;
 	case DATA_TYPE_STRUCT:
+		size = sizeof(DwarfDataStructType);
+		break;
+	case DATA_TYPE_CLASS:
 		size = sizeof(DwarfDataStructType);
 		break;
 	case DATA_TYPE_UNION:

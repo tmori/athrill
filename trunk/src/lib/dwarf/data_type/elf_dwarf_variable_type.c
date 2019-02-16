@@ -78,7 +78,8 @@ void elf_dwarf_resolve_variable_type(void)
 			//printf("Not supported:unknown typeref(%s) debug_offset=0x%x\n", obj->info.typename, obj->ref_debug_info_offset);
 		}
 		else {
-			//printf("variable %s %s\n", obj->ref->typename, obj->info.typename);
+			//if (strcmp("test_class_data", obj->info.typename) == 0)
+			//	printf("variable(0x%p) %s %s\n", obj, obj->ref->typename, obj->info.typename);
 		}
 	}
 

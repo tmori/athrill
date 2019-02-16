@@ -22,6 +22,7 @@ static void elf_dwarf_build_struct_member(DwarfDataStructType *obj, ElfDwarfDieT
 		switch (attr_type) {
 		case DW_AT_name:
 			mem.name = attr->encoded.string;
+			//printf("mem.name=%s\n", mem.name);
 			break;
 		case DW_AT_type:
 			//value = elf_dwarf_info_get_value(abbrev->attribute_form->data[j], attr, &size);
@@ -29,6 +30,10 @@ static void elf_dwarf_build_struct_member(DwarfDataStructType *obj, ElfDwarfDieT
 			err = dwarf_get_real_type_offset(offset, &mem.ref_debug_info_offset);
 			if (err == STD_E_OK) {
 				mem.is_valid_ref_debug_info_offset = TRUE;
+				//printf("struct location off=0x%x\n", mem.ref_debug_info_offset);
+			}
+			else {
+				//printf("struct location type not found err=%u\n", err);
 			}
 			break;
 		case DW_AT_data_member_location:
@@ -73,6 +78,9 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 	if (die->abbrev_info->tag == DW_TAG_structure_type) {
 		obj = dwarf_alloc_data_type(DATA_TYPE_STRUCT);
 	}
+	else if (die->abbrev_info->tag == DW_TAG_class_type) {
+		obj = dwarf_alloc_data_type(DATA_TYPE_CLASS);
+	}
 	else {
 		obj = dwarf_alloc_data_type(DATA_TYPE_UNION);
 	}
@@ -91,6 +99,7 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 			break;
 		case DW_AT_byte_size:
 			obj->info.size = elf_dwarf_info_get_value(abbrev->attribute_form->data[i], attr, &size);
+			//printf("0x%p struct size=%u\n", obj, obj->info.size);
 			break;
 		case DW_AT_sibling:
 		case DW_AT_decl_file:
@@ -185,10 +194,28 @@ static void elf_dwarf_resolve_struct(void)
 	return;
 }
 
+static void elf_dwarf_resolve_class(void)
+{
+	int i;
+	ElfPointerArrayType	*my_types = dwarf_get_data_types(DATA_TYPE_CLASS);
+	DwarfDataStructType *obj;
+
+	if (my_types == NULL) {
+		return;
+	}
+
+	for (i = 0; i < my_types->current_array_size; i++) {
+		obj = (DwarfDataStructType *)my_types->data[i];
+		elf_dwarf_resolve_struct_union_member(obj);
+	}
+	return;
+}
+
 void elf_dwarf_resolve_struct_type(void)
 {
 	elf_dwarf_resolve_struct();
 	elf_dwarf_resolve_union();
+	elf_dwarf_resolve_class();
 	return;
 }
 
