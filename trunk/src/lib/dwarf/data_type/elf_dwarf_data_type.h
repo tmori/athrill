@@ -88,6 +88,7 @@ typedef struct {
 
 typedef struct {
 	char				*name;
+	char				*linkage_name;
 	uint32				off;
 	DwarfDataType		*ref;
 	bool				is_valid_ref_debug_info_offset;
@@ -142,5 +143,7 @@ extern void dwarf_add_subprogram_variable(DwarfDataSubprogramType *obj, DwarfLoc
 
 extern DwarfDataSubprogramType *elf_dwarf_search_subprogram(char *funcname);
 extern DwarfLocalVariableType *elf_dwarf_search_local_variable(DwarfDataSubprogramType *subprogram, char *local_variable);
+
+extern ElfDwarfDieType *dwarf_get_die(uint32 offset);
 
 #endif /* _ELF_DWARF_DATA_TYPE_H_ */

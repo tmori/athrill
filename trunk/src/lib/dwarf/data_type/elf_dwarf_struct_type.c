@@ -60,6 +60,70 @@ static void elf_dwarf_build_struct_member(DwarfDataStructType *obj, ElfDwarfDieT
 	return;
 }
 
+static void elf_dwarf_build_struct_method(DwarfDataStructType *obj, ElfDwarfDieType *member)
+{
+	uint32 size;
+	int j;
+	DwarfDataStructMember mem;
+	ElfDwarfAttributeType *attr;
+	ElfDwarfAbbrevType *abbrev;
+	DwAtType attr_type;
+	uint32 offset;
+	ElfDwarfDieType *sibling = NULL;
+
+	abbrev = (ElfDwarfAbbrevType *)member->abbrev_info;
+	memset(&mem, 0, sizeof(mem));
+	for (j = 0; j < member->attribute->current_array_size; j++) {
+		attr = (ElfDwarfAttributeType*)member->attribute->data[j];
+		attr_type = abbrev->attribute_name->data[j];
+		//printf("member name=0x%x form=%s\n", attr_type, attr->typename);
+		switch (attr_type) {
+		case DW_AT_name:
+			mem.name = attr->encoded.string;
+			//printf("mem.name=%s\n", mem.name);
+			break;
+		case DW_AT_sibling:
+			offset = elf_dwarf_info_get_value(abbrev->attribute_form->data[j], attr, &size);
+			sibling = dwarf_get_die(offset);
+			//printf("sibling=%p offset=0x%x\n", sibling, offset);
+			break;
+		case DW_AT_MIPS_linkage_name:
+			mem.linkage_name = attr->encoded.string;
+			//printf("mem.linkage_name=%s\n", mem.linkage_name);
+			break;
+		case DW_AT_type:
+		case DW_AT_data_member_location:
+		case DW_AT_accessibility:
+		case DW_AT_byte_size:
+		case DW_AT_bit_offset:
+		case DW_AT_bit_size:
+		case DW_AT_declaration:
+		case DW_AT_visibility:
+		case DW_AT_decl_file:
+		case DW_AT_decl_line:
+		case DW_AT_decl_column:
+		case DW_AT_external:
+		case DW_AT_object_pointer:
+		case DW_AT_inline:
+		case DW_AT_low_pc:
+		case DW_AT_high_pc:
+		case DW_AT_frame_base:
+		case DW_AT_prototyped:
+		case DW_AT_explicit:
+		case DW_AT_unknown_0x2117:
+			break;
+		default:
+			printf("attr_type=0x%x\n", attr_type);
+			ASSERT(0);
+		}
+	}
+	dwarf_add_struct_member(obj, &mem);
+	if (sibling != NULL) {
+		elf_dwarf_build_struct_method(obj, sibling);
+	}
+	return;
+}
+
 void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 {
 	uint32 size;
@@ -108,7 +172,7 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 		case DW_AT_declaration:
 		case DW_AT_accessibility:
 		case DW_AT_linkage_name:
-		case DW_AT_unknown_0x2007:
+		case DW_AT_MIPS_linkage_name:
 			break;
 		default:
 			printf("attr_type=0x%x\n", attr_type);
@@ -121,10 +185,14 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 	 */
 	for (i = 0; i < die->children->current_array_size; i++) {
 		member = (ElfDwarfDieType*)die->children->data[i];
-		if (member->abbrev_info->tag != DW_TAG_member) {
-			continue;
+		if (member->abbrev_info->tag == DW_TAG_member) {
+			elf_dwarf_build_struct_member(obj, member);
 		}
-		elf_dwarf_build_struct_member(obj, member);
+		else if(member->abbrev_info->tag == DW_TAG_subprogram) {
+			if (die->abbrev_info->tag == DW_TAG_class_type) {
+				elf_dwarf_build_struct_method(obj, member);
+			}
+		}
 	}
 
 	obj->info.die = die;

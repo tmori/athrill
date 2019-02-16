@@ -48,7 +48,7 @@ static void elf_dwarf_build_subprogram_variable(DwarfDataSubprogramType *obj, El
 		case DW_AT_const_value:
 		case DW_AT_artificial:
 		case DW_AT_specification:
-		case DW_AT_unknown_0x2007:
+		case DW_AT_MIPS_linkage_name:
 			break;
 		default:
 			printf("attr_type=0x%x\n", attr_type);
@@ -122,7 +122,7 @@ void elf_dwarf_build_subprogram_type(ElfDwarfDieType *die)
 		case DW_AT_explicit:
 		case DW_AT_pure:
 		case DW_AT_containing_type:
-		case DW_AT_unknown_0x2007:
+		case DW_AT_MIPS_linkage_name:
 		case DW_AT_unknown_0x2116:
 		case DW_AT_unknown_0x2117:
 #if 0

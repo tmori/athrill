@@ -110,7 +110,7 @@ static void dwarf_search_die_recursive(ElfDwarfDieType *die)
 	}
 	return;
 }
-
+static ElfDwarfCompilationUnitHeaderType *current_cu = NULL;
 static void build_types(void)
 {
 	int i_cu;
@@ -123,6 +123,7 @@ static void build_types(void)
 	for (i_cu = 0; i_cu < compilation_unit_set->current_array_size; i_cu++) {
 		cu = (ElfDwarfCompilationUnitHeaderType *)compilation_unit_set->data[i_cu];
 		//printf("cu->offset=0x%x\n", cu->offset);
+		current_cu = cu;
 		if (cu->dies == NULL) {
 			continue;
 		}
@@ -136,8 +137,24 @@ static void build_types(void)
 			dwarf_search_die_recursive(die);
 		}
 	}
-
+	current_cu = NULL;
 	return;
+}
+ElfDwarfDieType *dwarf_get_die(uint32 offset)
+{
+	int i_die;
+	ElfDwarfCompilationUnitHeaderType	*cu = current_cu;
+	ElfDwarfDieType						*die;
+	if (cu == NULL) {
+		return NULL;
+	}
+	for (i_die = 0; i_die < cu->dies->current_array_size; i_die++) {
+		die = (ElfDwarfDieType *)cu->dies->data[i_die];
+		if (die->offset == offset) {
+			return die;
+		}
+	}
+	return NULL;
 }
 
 static Std_ReturnType get_DW_AT_type_value(ElfDwarfDieType *die, uint32 *retp)

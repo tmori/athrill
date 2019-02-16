@@ -164,8 +164,14 @@ static void print_class_type_data(PrintControlType *ctrl, DwarfDataStructType *t
 	for (i = 0; i < type->members->current_array_size; i++) {
 		DwarfDataStructMember *memp = (DwarfDataStructMember *)type->members->data[i];
 		print_space(ctrl);
-		printf("%s = ", memp->name);
-		(void)print_any_data_type(ctrl, memp->ref, top_addr, off + memp->off);
+		if (memp->ref != NULL) {
+			printf("%s = ", memp->name);
+			(void)print_any_data_type(ctrl, memp->ref, top_addr, off + memp->off);
+		}
+		else if (memp->linkage_name != NULL) {
+			printf("%s = ", memp->name);
+			printf("%s\n", memp->linkage_name);
+		}
 	}
 done:
 	print_space(ctrl);
