@@ -14,6 +14,7 @@
 #include "dbg_target_cpu.h"
 #include <stdio.h>
 #include "target/target_os_api.h"
+#include "dwarf/data_type/elf_dwarf_data_type.h"
 #include <string.h>
 #include "file.h"
 #ifdef OS_LINUX
@@ -32,6 +33,33 @@ void dbg_std_executor_parse_error(void *executor)
 	 return;
 }
 
+typedef struct {
+	char *classname;
+	char *methodname;
+	char *linkagename;
+} ClassMethodNameType;
+static char class_method_name_buffer[4096];
+static bool get_class_method(char *symbol, ClassMethodNameType *container)
+{
+	char *tp[2];
+
+	memcpy(class_method_name_buffer, symbol, strlen(symbol) + 1);
+
+	tp[0] = strtok(class_method_name_buffer, ".");
+	tp[1] = strtok(NULL, ".");
+
+	if (tp[1] == NULL) {
+		return FALSE;
+	}
+	container->classname = tp[0];
+	container->methodname = tp[1];
+	container->linkagename = elf_dwarf_get_class_method_linkagename(container->classname, container->methodname);
+	if (container->linkagename == NULL) {
+		return FALSE;
+	}
+	return TRUE;
+}
+
 void dbg_std_executor_break(void *executor)
 {
 	 DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
@@ -41,10 +69,20 @@ void dbg_std_executor_break(void *executor)
 	 uint32 size;
 
 	 if (parsed_args->type == DBG_CMD_BBREAK_SET_SYMBOL) {
-		 func_len = strlen((char*)parsed_args->symbol.str);
-		 if (symbol_get_func((char*)parsed_args->symbol.str, func_len, &addr, &size) < 0) {
+		 ClassMethodNameType container;
+		 char *symbol;
+		 if (get_class_method((char*)parsed_args->symbol.str, &container) == FALSE) {
+			 func_len = strlen((char*)parsed_args->symbol.str);
+			 symbol = (char*)parsed_args->symbol.str;
+		 }
+		 else {
+			 func_len = strlen(container.linkagename);
+			 symbol = container.linkagename;
+			 printf("linkagename=%s\n", symbol);
+		 }
+		 if (symbol_get_func(symbol, func_len, &addr, &size) < 0) {
 			 printf("ERROR: not found symbol %s\n", parsed_args->symbol.str);
-			 symbol_print_func((char*)parsed_args->symbol.str, SYMBOL_CANDIATE_NUM);
+			 symbol_print_func(symbol, SYMBOL_CANDIATE_NUM);
 			 CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "NG\n"));
 		 }
 		 else {

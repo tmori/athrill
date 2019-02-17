@@ -202,6 +202,34 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 	return;
 }
 
+char *elf_dwarf_get_class_method_linkagename(char *classname, char *methodname)
+{
+	int i;
+	int j;
+	ElfPointerArrayType	*my_types = dwarf_get_data_types(DATA_TYPE_CLASS);
+	DwarfDataStructType *obj;
+	DwarfDataStructMember *member;
+
+	if (my_types == NULL) {
+		return NULL;
+	}
+
+	for (i = 0; i < my_types->current_array_size; i++) {
+		obj = (DwarfDataStructType *)my_types->data[i];
+		if (strcmp(obj->info.typename, classname) != 0) {
+			continue;
+		}
+		for (j = 0; j < obj->members->current_array_size; j++) {
+			member = (DwarfDataStructMember *)obj->members->data[j];
+			if (strcmp(member->name, methodname) != 0) {
+				continue;
+			}
+			return member->linkage_name;
+		}
+	}
+	return NULL;
+}
+
 static void elf_dwarf_resolve_struct_union_member(DwarfDataStructType *struct_obj)
 {
 	int i;
