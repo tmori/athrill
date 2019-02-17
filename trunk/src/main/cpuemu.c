@@ -455,7 +455,7 @@ void *cpuemu_thread_run(void* arg)
 					struct timeval elaps;
 					gettimeofday(&elaps, NULL);
 					cpuemu_timeval_sub(&elaps, &prev_elaps, &result);
-					printf("skip-clock = %llu : %ld sec %ld usec sync_time=%lu \n", skipc_usec, result.tv_sec, result.tv_usec, enable_dbg.enable_sync_time);
+					printf("skip-clock = %llu : %ld sec %ld usec sync_time=%u \n", skipc_usec, result.tv_sec, result.tv_usec, enable_dbg.enable_sync_time);
 					prev_elaps = elaps;
 				}
 #endif /* OS_LINUX */

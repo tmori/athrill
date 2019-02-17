@@ -423,6 +423,7 @@ void cpuctrl_del_all_break(BreakPointEumType type)
 	 }
 	 return;
 }
+#ifndef SUPRESS_DETECT_WARNING_MESSAGE
 static bool data_access_object_write_filter(const void *p)
 {
 	DataAccessContextType *dp = (DataAccessContextType *)p;
@@ -432,6 +433,7 @@ static bool data_access_object_write_filter(const void *p)
 	}
 	return FALSE;
 }
+#endif /* SUPRESS_DETECT_WARNING_MESSAGE */
 
 static void cpuctrl_access_context_add(uint8 access_type, DataAccessInfoType *access_info)
 {
