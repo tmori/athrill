@@ -110,6 +110,8 @@ static void elf_dwarf_build_struct_method(DwarfDataStructType *obj, ElfDwarfDieT
 		case DW_AT_frame_base:
 		case DW_AT_prototyped:
 		case DW_AT_explicit:
+		case DW_AT_linkage_name:
+		case DW_AT_artificial:
 		case DW_AT_unknown_0x2117:
 			break;
 		default:
