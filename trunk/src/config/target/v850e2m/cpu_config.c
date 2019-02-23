@@ -605,6 +605,7 @@ static Std_ReturnType cpu_supply_clock_not_cached(CoreIdType core_id, CachedOper
 	/*
 	 * 命令実行
 	 */
+	virtual_cpu.cores[core_id].core.real_elaps = (uint32)op_exec_table[optype.code_id].clocks;
 	ret = op_exec_table[optype.code_id].exec(&virtual_cpu.cores[core_id].core);
 	if (ret < 0) {
 		printf("Exec Error code[0]=0x%x code[1]=0x%x type_id=0x%x code_id=%u\n",
@@ -614,7 +615,7 @@ static Std_ReturnType cpu_supply_clock_not_cached(CoreIdType core_id, CachedOper
 				optype.code_id);
 		return STD_E_EXEC;
 	}
-	virtual_cpu.cores[core_id].elaps += op_exec_table[optype.code_id].clocks;
+	virtual_cpu.cores[core_id].elaps += (uint64)virtual_cpu.cores[core_id].core.real_elaps;
 
 	if (cached_code != NULL) {
 #ifdef CONFIG_STAT_PERF

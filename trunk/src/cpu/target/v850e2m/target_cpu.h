@@ -327,6 +327,7 @@ typedef struct {
 } TargetCoreMpuType;
 
 typedef struct {
+	uint32						real_elaps;
 	CoreIdType					core_id;
 	CpuRegisterType 			reg;
 	bool						is_halt;

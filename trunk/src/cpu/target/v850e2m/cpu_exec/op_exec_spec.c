@@ -615,6 +615,7 @@ int op_exec_prepare(TargetCoreType *cpu)
 		}
 		*addrp = cpu->reg.r[i];
 		*sp = addr;
+		cpu->real_elaps += 1U;
 	}
 	*sp = (*sp) - imm;
 
@@ -699,6 +700,7 @@ int op_exec_dispose(TargetCoreType *cpu)
 	uint32 *sp = (uint32*)&(cpu->reg.r[3]);	//sp:r3
 	uint32 imm = ( cpu->decoded_code->type13.imm << 2U );
 	Std_ReturnType err;
+	cpu->real_elaps = 0U;
 
 	if (has_permission_dispose(cpu, start_reg) == FALSE) {
 		return -1;
@@ -721,15 +723,18 @@ int op_exec_dispose(TargetCoreType *cpu)
 		cpu->reg.r[i] = *addrp;
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "r%u(0x%x) ", i, cpu->reg.r[i]));
 		*sp = addr + 4;
+		cpu->real_elaps += 1U;
 	}
 
 	if (reg1 != 0U) {
+		cpu->real_elaps += 6U;
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":pc=r%u(0x%x) sp=0x%x\n", reg1, cpu->reg.r[reg1], cpu->reg.r[3]));
 		cpu->reg.pc = cpu->reg.r[reg1];
 	}
 	else {
-		cpu->reg.pc += 4;
+		cpu->real_elaps += 2U;
 		DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), ":pc=r%u(0x%x) sp=0x%x\n", reg1, cpu->reg.pc, cpu->reg.r[3]));
+		cpu->reg.pc += 4;
 	}
 
 	return 0;

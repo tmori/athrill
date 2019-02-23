@@ -69,6 +69,7 @@ extern int op_exec_subr(TargetCoreType *cpu);
 extern int op_exec_setf(TargetCoreType *cpu);
 
 extern int op_exec_div(TargetCoreType *cpu);
+extern int op_exec_divq(TargetCoreType *cpu);
 extern int op_exec_divu(TargetCoreType *cpu);
 extern int op_exec_divhu(TargetCoreType *cpu);
 extern int op_exec_divqu_11(TargetCoreType *cpu);

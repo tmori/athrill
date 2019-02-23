@@ -932,7 +932,7 @@ int op_exec_divh_11(TargetCoreType *cpu)
 	cpu->reg.pc += 4;
 	return 0;
 }
-int op_exec_div(TargetCoreType *cpu)
+static int op_exec_div_common(TargetCoreType *cpu, bool isq)
 {
 	uint32 reg1 = cpu->decoded_code->type11.reg1;
 	uint32 reg2 = cpu->decoded_code->type11.reg2;
@@ -940,6 +940,14 @@ int op_exec_div(TargetCoreType *cpu)
 	sint32 reg1_data = cpu->reg.r[reg1];
 	sint32 reg2_data = cpu->reg.r[reg2];
 	sint32 reg3_data = cpu->reg.r[reg3];
+	char *opname;
+
+	if (isq == TRUE) {
+		opname = "DIVQ";
+	}
+	else {
+		opname = "DIV";
+	}
 
 	if (reg1 >= CPU_GREG_NUM) {
 		return -1;
@@ -983,8 +991,9 @@ int op_exec_div(TargetCoreType *cpu)
 	 */
 	op_chk_and_set_sign(&cpu->reg, (sint32)cpu->reg.r[reg2]);
 
-	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: DIV r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
+	DBG_PRINT((DBG_EXEC_OP_BUF(), DBG_EXEC_OP_BUF_LEN(), "0x%x: %s r%d(%d) r%d(%d) r%d(%d):r%d(0x%x), r%d(0x%x)\n",
 			cpu->reg.pc,
+			opname,
 			reg1, reg1_data,
 			reg2, reg2_data,
 			reg3, reg3_data,
@@ -994,7 +1003,18 @@ int op_exec_div(TargetCoreType *cpu)
 	cpu->reg.pc += 4;
 	return 0;
 }
-
+int op_exec_div(TargetCoreType *cpu)
+{
+	int ret;
+	ret = op_exec_div_common(cpu, FALSE);
+	return ret;
+}
+int op_exec_divq(TargetCoreType *cpu)
+{
+	int ret;
+	ret = op_exec_div_common(cpu, TRUE);
+	return ret;
+}
 int op_exec_mul(TargetCoreType *cpu)
 {
 	uint32 reg1 = cpu->decoded_code->type11.reg1;

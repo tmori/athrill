@@ -48,7 +48,7 @@ extern OpExecStringType op_exec_string_table[OP_EXEC_TABLE_NUM];
 //#define op_exec_divh_1 op_exec_divh_1
 //#define op_exec_divh_11 op_exec_divh_11
 #define op_exec_divhu_11 op_exec_divhu
-#define op_exec_divq_11 op_exec_div
+#define op_exec_divq_11 op_exec_divq
 #define op_exec_divqu_11 op_exec_divqu_11
 #define op_exec_divu_11 op_exec_divu
 #define op_exec_ei_10 op_exec_diei
