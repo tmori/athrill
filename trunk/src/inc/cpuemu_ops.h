@@ -12,6 +12,8 @@
 typedef struct {
 	uint64	total_clocks;
 	uint64	intr_clocks;
+	int     core_id_num;
+	uint64  cpu_clocks[CPU_CONFIG_CORE_NUM];
 #ifdef OS_LINUX
 	struct timeval elaps_tv;
 #endif /* OS_LINUX */

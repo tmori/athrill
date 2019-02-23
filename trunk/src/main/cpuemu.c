@@ -127,12 +127,16 @@ void cpuemu_set_cpu_end_clock(uint64 clock)
 
 void cpuemu_get_elaps(CpuEmuElapsType *elaps)
 {
+	int core_id;
+	elaps->core_id_num = cpu_config_get_core_id_num();
 	elaps->total_clocks = cpuemu_dev_clock.clock;
 	elaps->intr_clocks = cpuemu_dev_clock.intclock;
 #ifdef OS_LINUX
 	elaps->elaps_tv = cpuemu_dev_clock.elaps_tv;
 #endif /* OS_LINUX */
-
+	for (core_id = 0; core_id < elaps->core_id_num; core_id++) {
+		elaps->cpu_clocks[core_id] = virtual_cpu.cores[core_id].elaps;
+	}
 	return;
 }
 

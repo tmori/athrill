@@ -614,6 +614,7 @@ static Std_ReturnType cpu_supply_clock_not_cached(CoreIdType core_id, CachedOper
 				optype.code_id);
 		return STD_E_EXEC;
 	}
+	virtual_cpu.cores[core_id].elaps += op_exec_table[optype.code_id].clocks;
 
 	if (cached_code != NULL) {
 #ifdef CONFIG_STAT_PERF

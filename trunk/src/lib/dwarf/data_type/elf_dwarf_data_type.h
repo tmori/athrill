@@ -146,6 +146,6 @@ extern DwarfLocalVariableType *elf_dwarf_search_local_variable(DwarfDataSubprogr
 
 extern ElfDwarfDieType *dwarf_get_die(uint32 offset);
 
-char *elf_dwarf_get_class_method_linkagename(char *classname, char *methodname);
+extern char *elf_dwarf_get_class_method_linkagename(char *classname, char *methodname);
 
 #endif /* _ELF_DWARF_DATA_TYPE_H_ */

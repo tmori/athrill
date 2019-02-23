@@ -9,6 +9,7 @@
 #define OP_EXEC_TABLE_NUM		OpCodeId_Num
 
 typedef struct {
+	int clocks;
 	int (*exec) (TargetCoreType *cpu);
 } OpExecType;
 

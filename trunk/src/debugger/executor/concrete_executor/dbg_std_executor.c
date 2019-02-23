@@ -444,13 +444,19 @@ void dbg_std_executor_exit(void *executor)
 
 void dbg_std_executor_elaps(void *executor)
 {
+	int core_id;
 	CpuEmuElapsType elaps;
 	cpuemu_get_elaps(&elaps);
+
+	for (core_id = 0; core_id < elaps.core_id_num; core_id++) {
+		printf("cpu_clock[%d] = "PRINT_FMT_UINT64"\n", core_id, elaps.cpu_clocks[core_id]);
+	}
+
 #ifdef OS_LINUX
-	printf("clock = cpu "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64" real_time  %ld.%06ld\n",
+	printf("loops "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64" real_time  %ld.%06ld\n",
 			elaps.total_clocks, elaps.intr_clocks, elaps.elaps_tv.tv_sec, elaps.elaps_tv.tv_usec);
 #else
-	printf("clock = cpu "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64"\n", elaps.total_clocks, elaps.intr_clocks);
+	printf("loops "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64"\n", elaps.total_clocks, elaps.intr_clocks);
 #endif /* OS_LINUX */
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), PRINT_FMT_UINT64"  OK", elaps.total_clocks));
 	return;

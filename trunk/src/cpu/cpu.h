@@ -7,6 +7,7 @@
 #include "assert.h"
 
 typedef struct {
+	uint64				elaps;
 	TargetCoreType		core;
 } CpuCoreType;
 
