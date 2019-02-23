@@ -618,9 +618,7 @@ static Std_ReturnType cpu_supply_clock_not_cached(CoreIdType core_id, CachedOper
 	virtual_cpu.cores[core_id].elaps += (uint64)virtual_cpu.cores[core_id].core.real_elaps;
 
 	if (cached_code != NULL) {
-#ifdef CONFIG_STAT_PERF
 		cached_code->codes[inx].code_id = optype.code_id;
-#endif /* CONFIG_STAT_PERF */
 		cached_code->codes[inx].op_exec = op_exec_table[optype.code_id].exec;
 	}
 	return STD_E_OK;
@@ -650,8 +648,8 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 		virtual_cpu.cores[core_id].core.reg.r[0] = 0U;
 	}
 	else {
-#ifdef CONFIG_STAT_PERF
 		OpCodeId code_id = cached_code->codes[inx].code_id;
+#ifdef CONFIG_STAT_PERF
 		PROFSTAT_START(&op_exec_stat_table[code_id]);
 #endif /* CONFIG_STAT_PERF */
 		virtual_cpu.cores[core_id].core.decoded_code = &cached_code->codes[inx].decoded_code;
@@ -666,6 +664,7 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 			return STD_E_SEGV;
 		}
 #endif /* DISABLE_MEMPROTECT */
+		virtual_cpu.cores[core_id].core.real_elaps = (uint32)op_exec_table[code_id].clocks;
 		ret = cached_code->codes[inx].op_exec(&virtual_cpu.cores[core_id].core);
 #ifdef CONFIG_STAT_PERF
 		PROFSTAT_END(&op_exec_stat_table[code_id]);
@@ -677,6 +676,7 @@ Std_ReturnType cpu_supply_clock(CoreIdType core_id)
 					virtual_cpu.cores[core_id].core.decoded_code->type_id);
 			return STD_E_EXEC;
 		}
+		virtual_cpu.cores[core_id].elaps += (uint64)virtual_cpu.cores[core_id].core.real_elaps;
 		virtual_cpu.cores[core_id].core.reg.r[0] = 0U;
 	}
 	return STD_E_OK;

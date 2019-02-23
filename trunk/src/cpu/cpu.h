@@ -13,9 +13,7 @@ typedef struct {
 
 typedef struct {
 	OpDecodedCodeType	decoded_code;
-#ifdef CONFIG_STAT_PERF
 	OpCodeId			code_id;
-#endif /* CONFIG_STAT_PERF */
 	int (*op_exec) (TargetCoreType *cpu);
 } CpuOperationCodeType;
 
