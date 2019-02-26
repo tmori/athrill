@@ -458,7 +458,7 @@ void dbg_std_executor_elaps(void *executor)
 #else
 	printf("loops "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64"\n", elaps.total_clocks, elaps.intr_clocks);
 #endif /* OS_LINUX */
-	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), PRINT_FMT_UINT64"  OK", elaps.total_clocks));
+	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), PRINT_FMT_UINT64 " " PRINT_FMT_UINT64 "  OK", elaps.total_clocks, elaps.cpu_clocks[0]));
 	return;
 }
 void dbg_std_executor_view(void *executor)
