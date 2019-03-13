@@ -74,7 +74,8 @@ int main(int argc, const char *argv[])
 	memmap.rom = NULL;
 
 	if (argc == 1) {
-		printf("Usage:%s -m <memory config file> [OPTION]... <load_file>\n", "athrill");
+		printf("Usage:%s -c<core num> -m <memory config file> [OPTION]... <load_file>\n", "athrill");
+		printf(" %-30s : set core num. if -c is not set, core num = 2.\n", "-c");
 		printf(" %-30s : execute on the interaction mode. if -i is not set, execute on the background mode.\n", "-i");
 		printf(" %-30s : execute on the remote mode. this option is valid on the interaction mode.\n", "-r");
 		printf(" %-30s : set program end time using <timeout> clocks. this option is valid on the background mode.\n", "-t<timeout>");
