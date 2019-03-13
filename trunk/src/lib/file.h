@@ -6,7 +6,7 @@
 
 extern bool file_exist(const char *path);
 
-#define MAX_FILE_SIZE	(1024 * 1024 * 10)
+#define MAX_FILE_SIZE	((uint32)(1024 * 1024 * 10))
 typedef struct {
 	TokenStringType filepath;
 	void			*fp;

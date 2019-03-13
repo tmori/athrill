@@ -54,7 +54,7 @@ bool file_load(FileType *file)
     }
     file->size = st.st_size;
     if (file->size > MAX_FILE_SIZE) {
-		printf("ERROR file size too large %s size=%u\n", file->filepath.str, file->size);
+			printf("ERROR file size too large %s size=%u(MAX=%u)\n", file->filepath.str, file->size, MAX_FILE_SIZE);
 	    fclose(fp);
 		return FALSE;
     }
