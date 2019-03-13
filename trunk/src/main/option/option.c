@@ -109,7 +109,7 @@ CmdOptionType *parse_args(int argc, const char* argv[])
 	  cmd_option.load_file.filepath.len = strlen(argv[optind]);
       cmd_option.load_filepath = (char *)cmd_option.load_file.filepath.str;
 
-      if (file_load(&cmd_option.load_file) < 0) {
+      if (file_load(&cmd_option.load_file) == FALSE) {
     	  return NULL;
       }
 
