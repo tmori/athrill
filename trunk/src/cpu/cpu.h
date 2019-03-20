@@ -7,8 +7,12 @@
 #include "assert.h"
 
 typedef struct {
-	uint64				elaps;
+	/*
+	 * core must be top.
+	 * do not add member on this region. 
+	 */
 	TargetCoreType		core;
+	uint64				elaps;
 } CpuCoreType;
 
 typedef struct {
