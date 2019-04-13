@@ -55,5 +55,34 @@ static inline void test_print_one(const char *ch)
 {
 	*(SERIAL_OUT_ADDR) = *ch;
 }
+#define UINT_C(arg)		arg
+/*
+ * UARTDn送信データ・レジスタ（ UDnTX）
+ */
+#define UDnTX_BASE              UINT_C(0xFFFFFA07)
+#define UDnTX(CH)               (UDnTX_BASE + ((CH) * 16U))
 
+/*
+ * UARTDn受信データ・レジスタ（ UDnRX）
+ */
+#define UDnRX_BASE              UINT_C(0xFFFFFA06)
+#define UDnRX(CH)               (UDnRX_BASE + ((CH) * 16U))
+
+static inline void athrill_fputs(const char *p)
+{
+	const char *tmp = p;
+	volatile char *outreg = (char*)UDnTX(1);
+
+	while ((*tmp) != '\0') {
+		(*outreg) = (*tmp);
+		tmp++;
+	}
+	*outreg = '\n';
+	return;
+}
+static inline void athrill_fputi(int integer)
+{
+	athrill_fputs(get_lineno(integer));
+	return;
+}
 #endif /* _TEST_SERIAL_H_ */

@@ -10,6 +10,8 @@ unsigned char stack_data[STACK_SIZE] __attribute__ ((section(".bss_noclr")));
 
 int main(void)
 {
+    athrill_fputs("serial_data:");
+    athrill_fputi(123);
     while (TRUE) {
         ;
     }
