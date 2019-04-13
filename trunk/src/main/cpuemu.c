@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "errno.h"
 #endif /* OS_LINUX */
 #include "athrill_device.h"
 #include "assert.h"
@@ -31,6 +32,7 @@
 static DeviceClockType cpuemu_dev_clock;
 bool cpuemu_is_cui_mode = FALSE;
 static uint64 cpuemu_cpu_end_clock = -1LLU;
+static void cpuemu_env_parse_devcfg_string(TokenStringType* strp);
 
 Std_ReturnType cpuemu_symbol_set(void)
 {
@@ -767,13 +769,20 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 			memp = &map->ram[map->ram_num - 1];
 			memp->type = MemoryAddressImplType_MMAP;
 			{
-				char* filepath = (char*)memcfg_token_container.array[2].body.str.str;
+				char* filepath;
 				int fd;
 				int err;
 				struct stat statbuf;
 				AthrillDeviceMmapInfoType info;
+
+				cpuemu_env_parse_devcfg_string(&memcfg_token_container.array[2].body.str);
+				filepath = (char*)memcfg_token_container.array[2].body.str.str;
+				//printf("mmap path=%s\n", filepath);
 				fd = open(filepath, O_RDWR);
-				ASSERT(fd >= 0);
+				if (fd < 0) {
+					printf("can not open mmapfile:%s err=%d\n", filepath, errno);
+					ASSERT(fd >= 0);
+				}
 				err = fstat(fd, &statbuf);
 				ASSERT(err >= 0);
 				memp->size = ((statbuf.st_size + 8191) / 8192) * 8;
@@ -888,7 +897,9 @@ static void cpuemu_env_parse_devcfg_string(TokenStringType* strp)
 	//printf("ep = %s\n", ep);
 	memset(out_name, 0, TOKEN_STRING_MAX_SIZE);
 	len = snprintf(out_name, TOKEN_STRING_MAX_SIZE, "%s%s", ep, (end + 1));
-	//printf("out_name=%s\n", out_name);
+	out_name[len] = '\0';
+	len++;
+	//printf("out_name=%s len=%d\n", out_name, len);
 	memcpy(strp->str, out_name, len);
 	strp->len = len;
 
