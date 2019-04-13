@@ -1,3 +1,4 @@
 ROM, 0x00000000, 512
 RAM, 0x06FF7000, 512
 RAM, 0xDEAD0000, 1
+MMAP, 0x07FF0000,  {MY_ATHRILL_ROOT}/sample/edu/microwave/bin/digital/digital.bin
