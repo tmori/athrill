@@ -8,12 +8,22 @@
 
 unsigned char stack_data[STACK_SIZE] __attribute__ ((section(".bss_noclr")));
 
+static void timer_interrupt_handler(void)
+{
+	printf("timer_interrupt_handler!!\n");
+	return;
+}
+
 int main(void)
 {
     athrill_fputs("serial_data:");
     athrill_fputi(123);
+
+	timer_init(timer_interrupt_handler);
+	timer_start(1000);
+
     while (TRUE) {
-        ;
+        do_idle();
     }
     return 0;
 }

@@ -1,6 +1,8 @@
 #ifndef _TEST_SERIAL_H_
 #define _TEST_SERIAL_H_
 
+#include "types.h"
+
 #define SERIAL_OUT_ADDR		((volatile unsigned char*)0xFFFFFA07)
 
 static inline void test_print(const char *str)
@@ -55,7 +57,7 @@ static inline void test_print_one(const char *ch)
 {
 	*(SERIAL_OUT_ADDR) = *ch;
 }
-#define UINT_C(arg)		arg
+
 /*
  * UARTDn送信データ・レジスタ（ UDnTX）
  */
