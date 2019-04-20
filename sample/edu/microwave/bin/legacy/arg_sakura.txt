@@ -1,2 +1,2 @@
--l 12 ../../legacy/main.c
+-l 9 ../../common/vector.S
 

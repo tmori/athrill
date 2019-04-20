@@ -4,7 +4,7 @@
 /*
  * digital bits addr(uint8)
  */
-#define DIGITAL_REG_ADDR            0x07FF0000
+#define DIGITAL_REG_ADDR            ((volatile unsigned char *)0x07FF0000)
 
 #define DIGITAL_SWITCH_START        0x01
 #define DIGITAL_SWITCH_STOP         0x02

@@ -5,6 +5,7 @@
 #include <string.h>
 #include "timer.h"
 #include "v850_ins.h"
+#include "digital.h"
 
 unsigned char stack_data[STACK_SIZE] __attribute__ ((section(".bss_noclr")));
 
@@ -34,14 +35,22 @@ unsigned char stack_data[STACK_SIZE] __attribute__ ((section(".bss_noclr")));
 
 static void timer_interrupt_handler(void)
 {
-	printf("timer_interrupt_handler!!\n");
+	volatile unsigned char *p = DIGITAL_REG_ADDR;
+	//printf("timer_interrupt_handler!!\n");
+	//test_print_line("START:", (p[0] & DIGITAL_SWITCH_START));
 	return;
 }
 
 int main(void)
 {
-    athrill_fputs("serial_data:");
-    athrill_fputi(123);
+    athrill_fputs("athrill_up");
+    athrill_fputi(324);
+	athrill_fputs("heat_time");
+	athrill_fputi(100);
+	athrill_fputs("heat_method");
+	athrill_fputs("hurry_up!!");
+	athrill_fputs("last_time");
+	athrill_fputi(80);
 
 	timer_init(timer_interrupt_handler);
 	timer_start(1000);

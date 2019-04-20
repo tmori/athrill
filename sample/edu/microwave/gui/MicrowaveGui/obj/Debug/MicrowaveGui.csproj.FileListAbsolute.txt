@@ -1,0 +1,10 @@
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\bin\Debug\MicrowaveGui.exe.config
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\bin\Debug\MicrowaveGui.exe
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\bin\Debug\MicrowaveGui.pdb
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\obj\Debug\MicrowaveGui.csprojAssemblyReference.cache
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\obj\Debug\MicrowaveGui.Properties.Resources.resources
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\obj\Debug\MicrowaveGui.csproj.GenerateResource.cache
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\obj\Debug\MicrowaveGui.csproj.CoreCompileInputs.cache
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\obj\Debug\MicrowaveGui.exe
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\obj\Debug\MicrowaveGui.pdb
+C:\Users\tmori\source\repos\MicrowaveGui\MicrowaveGui\obj\Debug\MicrowaveGui.Form1.resources
