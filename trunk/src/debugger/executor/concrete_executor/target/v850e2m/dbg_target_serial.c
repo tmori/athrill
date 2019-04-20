@@ -165,12 +165,14 @@ void dbg_serial_flush_file(uint8 channel)
 #define SERIAL_IN_FILENAME		"serial_out.txt"
 #define SERIAL_OUT_FILENAME		"serial_in.txt"
 
+static bool is_serial_flush_delay = TRUE;
 
 static void file_pathset(SerialFileType *file, const char* filename, int filenamelen)
 {
 	Std_ReturnType ret;
 	char *path;
 	int pathlen = 0;
+	uint32 is_delay;
 	if (file->isset >= 0) {
 		return;
 	}
@@ -178,6 +180,10 @@ static void file_pathset(SerialFileType *file, const char* filename, int filenam
 	ret = cpuemu_get_devcfg_string("SERIAL_FILE_PATH", &path);
 	if (ret != STD_E_OK) {
 		printf("WARNING:can not find SERIAL_FILE_PATH on device_file\n");
+	}
+	ret = cpuemu_get_devcfg_value("DEBUG_FUNC_SERIAL_FLUSH_DELAY", &is_delay);
+	if (ret == STD_E_OK) {
+		is_serial_flush_delay = is_delay;
 	}
 
 	pathlen = strlen(path);
@@ -334,7 +340,7 @@ static void file_cache_flush(uint8 channel, SerialFileWriterType *wfile)
 	if (DbgSerialCacheWriteBuffer[channel].count == 0) {
 		return;
 	}
-	else if (DbgSerialCacheWriteBuffer[channel].count < 128) {
+	else if ((is_serial_flush_delay == TRUE) && (DbgSerialCacheWriteBuffer[channel].count < 128)) {
 		DbgSerialCacheWriteBuffer[channel].wcheck_count++;
 		if (DbgSerialCacheWriteBuffer[channel].wcheck_count < 10000) {
 			return;

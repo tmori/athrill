@@ -11,6 +11,7 @@ typedef struct {
 	uint16 					id;
 	uint16 					intno;
 	uint32					flush_count;
+	uint32					flush_count_max;
 	bool   					is_send_data;
 	uint8 					send_data;
 	DeviceExSerialOpType 	*ops;
@@ -49,6 +50,8 @@ static MpuAddressRegionType *serial_region;
 void device_init_serial(MpuAddressRegionType *region)
 {
 	int i = 0;
+	Std_ReturnType err;
+	uint32 count_max;
 
 	for (i = 0; i < UDnChannelNum; i++) {
 		SerialDevice[i].id = i;
@@ -56,6 +59,7 @@ void device_init_serial(MpuAddressRegionType *region)
 		SerialDevice[i].is_send_data = FALSE;
 		SerialDevice[i].start_clock = 0;
 		SerialDevice[i].flush_count = 0;
+		SerialDevice[i].flush_count_max = 100;
 		SerialDevice[i].ops = NULL;
 		SerialDevice[i].last_raised_counter = 0;
 	}
@@ -64,6 +68,10 @@ void device_init_serial(MpuAddressRegionType *region)
 	SerialDevice[UDnCH1].intno = INTNO_INTUD1R;
 	serial_region = region;
 
+	err = cpuemu_get_devcfg_value("DEBUG_FUNC_SERIAL_FLUSH_COUNT_MAX", &count_max);
+	if (err == STD_E_OK) {
+		SerialDevice[UDnCH1].flush_count_max = count_max;
+	}
 	return;
 }
 
@@ -109,7 +117,7 @@ void device_do_serial(SerialDeviceType *serial)
 		serial->is_send_data = FALSE;
 	}
 	if (serial->ops->flush != NULL) {
-		if (serial->flush_count >= 100) {
+		if (serial->flush_count >= serial->flush_count_max) {
 			serial->ops->flush(serial->id);
 			serial->flush_count = 0;
 		}
