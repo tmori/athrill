@@ -33,18 +33,23 @@ unsigned char stack_data[STACK_SIZE] __attribute__ ((section(".bss_noclr")));
  * -------------------+-------+-----------+-----------+
  */
 
+static uint32 sys_time = 0;
+
+static uint32 count = 0;
 static void timer_interrupt_handler(void)
 {
 	volatile unsigned char *p = DIGITAL_REG_ADDR;
-	//printf("timer_interrupt_handler!!\n");
-	//test_print_line("START:", (p[0] & DIGITAL_SWITCH_START));
+	count++;
+	if (count > 10) {
+		athrill_fputs("sys_time");
+		athrill_fputi(sys_time++);
+		count = 0;
+	}
 	return;
 }
 
 int main(void)
 {
-    athrill_fputs("athrill_up");
-    athrill_fputi(324);
 	athrill_fputs("heat_time");
 	athrill_fputi(100);
 	athrill_fputs("heat_method");
@@ -53,7 +58,7 @@ int main(void)
 	athrill_fputi(80);
 
 	timer_init(timer_interrupt_handler);
-	timer_start(1000);
+	timer_start(10000);
 
     while (TRUE) {
         do_idle();
