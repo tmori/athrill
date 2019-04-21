@@ -20,6 +20,7 @@ namespace MicrowaveGui
         TimerDown1Button,
         TimerUp2Button,
         TimerDown2Button,
+        TimerDoorButton,
         TimerBackGround,
         TimerNum,
     }
@@ -34,12 +35,17 @@ namespace MicrowaveGui
         public Form1()
         {
             InitializeComponent();
+
+            config.SetPath(config.GetDefaultPath());
+            serial.Open(config.GetSerialPath());
+            folderPathTextBox.Text = config.GetDefaultPath();
+
             this.timer = new Timer[(int)TimerType.TimerNum];
             for (int i = 0; i < (int)TimerType.TimerNum; i++)
             {
                 this.timer[i] = new System.Windows.Forms.Timer();
                 this.timer[i].Enabled = true;
-                this.timer[i].Interval = 500;
+                this.timer[i].Interval = 700;
                 this.timer[i].Tag = i;
                 this.timer[i].Tick += new System.EventHandler(this.timer_Tick);
                 this.timer[i].Stop();
@@ -52,6 +58,7 @@ namespace MicrowaveGui
             this.buttons[(int)TimerType.TimerDown1Button] = down1Button;
             this.buttons[(int)TimerType.TimerUp2Button] = up2Button;
             this.buttons[(int)TimerType.TimerDown2Button] = down2Button;
+            this.buttons[(int)TimerType.TimerDoorButton] = doorButton;
 
             this.timer[(int)TimerType.TimerBackGround].Start();
         }
@@ -60,13 +67,9 @@ namespace MicrowaveGui
         {
             serial.Parse();
             //TODO AthrillStatus name
-            if (serial.GetValue("athrill_up") != null)
+            if (serial.GetValue("sys_time") != null)
             {
-                athrillStatus.Text = "ON";
-            }
-            else
-            {
-                athrillStatus.Text = "OFF";
+                athrillStatus.Text = serial.GetValue("sys_time");
             }
             if (serial.GetValue("heat_time") != null)
             {
@@ -149,7 +152,11 @@ namespace MicrowaveGui
             int index = (int)TimerType.TimerDown2Button;
             Button_Click(index, sender, e);
         }
-
+        private void DoorButton_Click(object sender, EventArgs e)
+        {
+            int index = (int)TimerType.TimerDoorButton;
+            Button_Click(index, sender, e);
+        }
 
         private void FileSelect_Click(object sender, EventArgs e)
         {
@@ -169,7 +176,7 @@ namespace MicrowaveGui
             }
             else
             {
-                fbd.SelectedPath = @"C:\Windows";
+                fbd.SelectedPath = @config.GetDefaultPath();
             }
 
             //ユーザーが新しいフォルダを作成できるようにする
@@ -181,10 +188,9 @@ namespace MicrowaveGui
             {
                 //選択されたフォルダを表示する
                 Console.WriteLine(fbd.SelectedPath);
-                folderPathTextBox.Text = fbd.SelectedPath;
                 config.SetPath(fbd.SelectedPath);
                 serial.Open(config.GetSerialPath());
-
+                folderPathTextBox.Text = fbd.SelectedPath;
             }
         }
         private void GroupBox3_Enter(object sender, EventArgs e)
@@ -196,6 +202,11 @@ namespace MicrowaveGui
             Console.WriteLine(folderPathTextBox.Text);
             config.SetPath(folderPathTextBox.Text);
             serial.Open(config.GetSerialPath());
+        }
+
+        private void Label1_Click(object sender, EventArgs e)
+        {
+
         }
 
 

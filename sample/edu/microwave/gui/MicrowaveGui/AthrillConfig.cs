@@ -9,11 +9,16 @@ namespace MicrowaveGui
     class AthrillConfig
     {
         private string folderPath = null;
+        private string defaultPath = @"C:\project\esm\athrill\sample\edu\microwave";
 
         public AthrillConfig()
         {
         }
 
+        public string GetDefaultPath()
+        {
+            return defaultPath;
+        }
         public void SetPath(string path)
         {
             folderPath = path;

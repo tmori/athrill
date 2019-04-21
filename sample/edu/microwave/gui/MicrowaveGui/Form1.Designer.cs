@@ -48,6 +48,7 @@
             this.down1Button = new System.Windows.Forms.Button();
             this.up2Button = new System.Windows.Forms.Button();
             this.down2Button = new System.Windows.Forms.Button();
+            this.doorButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
@@ -74,7 +75,7 @@
             // 
             // folderPathTextBox
             // 
-            this.folderPathTextBox.Location = new System.Drawing.Point(108, 24);
+            this.folderPathTextBox.Location = new System.Drawing.Point(125, 24);
             this.folderPathTextBox.Name = "folderPathTextBox";
             this.folderPathTextBox.Size = new System.Drawing.Size(226, 19);
             this.folderPathTextBox.TabIndex = 2;
@@ -85,20 +86,19 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(19, 58);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(75, 12);
+            this.label1.Size = new System.Drawing.Size(73, 12);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Athrill Status:";
+            this.label1.Text = "起動時間(秒)";
+            this.label1.Click += new System.EventHandler(this.Label1_Click);
             // 
             // athrillStatus
             // 
-            this.athrillStatus.Enabled = false;
             this.athrillStatus.Font = new System.Drawing.Font("Impact", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.athrillStatus.Location = new System.Drawing.Point(108, 55);
+            this.athrillStatus.Location = new System.Drawing.Point(125, 55);
             this.athrillStatus.Name = "athrillStatus";
-            this.athrillStatus.Size = new System.Drawing.Size(36, 22);
+            this.athrillStatus.Size = new System.Drawing.Size(100, 22);
             this.athrillStatus.TabIndex = 4;
-            this.athrillStatus.Text = "OFF";
-            this.athrillStatus.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.athrillStatus.Text = "0";
             // 
             // label2
             // 
@@ -129,8 +129,7 @@
             // 
             // heatTime
             // 
-            this.heatTime.Enabled = false;
-            this.heatTime.Location = new System.Drawing.Point(108, 95);
+            this.heatTime.Location = new System.Drawing.Point(125, 95);
             this.heatTime.Name = "heatTime";
             this.heatTime.Size = new System.Drawing.Size(100, 19);
             this.heatTime.TabIndex = 8;
@@ -138,8 +137,7 @@
             // 
             // heatMethod
             // 
-            this.heatMethod.Enabled = false;
-            this.heatMethod.Location = new System.Drawing.Point(108, 125);
+            this.heatMethod.Location = new System.Drawing.Point(125, 125);
             this.heatMethod.Name = "heatMethod";
             this.heatMethod.Size = new System.Drawing.Size(100, 19);
             this.heatMethod.TabIndex = 9;
@@ -147,8 +145,7 @@
             // 
             // lastTime
             // 
-            this.lastTime.Enabled = false;
-            this.lastTime.Location = new System.Drawing.Point(108, 159);
+            this.lastTime.Location = new System.Drawing.Point(125, 159);
             this.lastTime.Name = "lastTime";
             this.lastTime.Size = new System.Drawing.Size(100, 19);
             this.lastTime.TabIndex = 10;
@@ -247,11 +244,22 @@
             this.down2Button.UseVisualStyleBackColor = true;
             this.down2Button.Click += new System.EventHandler(this.Down2Button_Click);
             // 
+            // doorButton
+            // 
+            this.doorButton.Location = new System.Drawing.Point(231, 55);
+            this.doorButton.Name = "doorButton";
+            this.doorButton.Size = new System.Drawing.Size(103, 123);
+            this.doorButton.TabIndex = 14;
+            this.doorButton.Text = "DOOR";
+            this.doorButton.UseVisualStyleBackColor = true;
+            this.doorButton.Click += new System.EventHandler(this.DoorButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(363, 421);
+            this.Controls.Add(this.doorButton);
             this.Controls.Add(this.stopButton);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
@@ -267,7 +275,7 @@
             this.Controls.Add(this.FileSelect);
             this.Controls.Add(this.startButton);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Microwave";
             this.groupBox1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -297,6 +305,7 @@
         private System.Windows.Forms.Button down1Button;
         private System.Windows.Forms.Button down2Button;
         private System.Windows.Forms.Button up2Button;
+        private System.Windows.Forms.Button doorButton;
     }
 }
 
