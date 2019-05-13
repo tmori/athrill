@@ -6,8 +6,8 @@
 #include <errno.h>
 
 typedef enum {
-    DIO_VALUE_ON = 0,
-    DIO_VALUE_OFF,
+    DIO_VALUE_OFF = 0,
+    DIO_VALUE_ON,
 } DioValueType;
 
 extern ToolReturnType dio_set_bit(ToolFileType *fp, DioConfigTye *config, DioValueType value);
