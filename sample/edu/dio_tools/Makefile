@@ -18,10 +18,9 @@ WFLAGS := -Wall
 IFLAGS := -I.
 
 .c.o:	$<
-	$(GCC) -O3 -c $(WFLAGS) $(IFLAGS) $(DFLAGS) $<
+	$(GCC) -O0 -c -g $(WFLAGS) $(IFLAGS) $(DFLAGS) $<
 
 all: $(OBJS) $(LED_OBJ) $(DSW_OBJ) $(PSW_OBJ)
-	$(GCC) -o do_test test.c $(OBJS)
 	$(GCC) -o $(LED) $(OBJS) $(LED_OBJ)
 	$(GCC) -o $(DSW) $(OBJS) $(DSW_OBJ)
 	$(GCC) -o $(PSW) $(OBJS) $(PSW_OBJ)

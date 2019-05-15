@@ -23,6 +23,7 @@ static int32 get_dio_config(char *linep, DioConfigTye *dio_configp)
     head = off;
     while (1) {
         switch (linep[off]) {
+        case '\0':
         case '\n':
             linep[off] = '\0';
             dio_configp->param[column] = &linep[head];
