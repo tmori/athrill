@@ -525,6 +525,7 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 		prev_glid = glid;
 	}
 
+#ifndef SUPRESS_DETECT_WARNING_MESSAGE
 	/*
 	 * invalid region access detection
 	 */
@@ -543,6 +544,7 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 					(stack_glid > 0) ? symbol_glid2glname(stack_glid) : "unknown_stack");
 		}
 	}
+#endif
 	return;
 }
 bool cpu_may_store_on_stack_overflow(uint32 start_addr, uint32 size)

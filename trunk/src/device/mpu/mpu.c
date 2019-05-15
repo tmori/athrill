@@ -94,7 +94,7 @@ static inline MpuAddressRegionType *search_region(CoreIdType core_id, uint32 add
 			return &mpu_address_map.map[i];
 		}
 	}
-	printf("search_region:not found error:addr=0x%x\n", addr);
+	printf("%s():search_region:not found error:addr=0x%x\n", __FUNCTION__, addr);
 	return NULL;
 }
 
@@ -225,7 +225,7 @@ MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr, bool *is_mallo
 			return mpu_address_map.map[i].type;
 		}
 	}
-	printf("search_region:not found error:addr=0x%x\n", addr);
+	printf("%s():search_region:not found error:addr=0x%x\n", __FUNCTION__, addr);
 	return REGION_UNKNOWN;
 }
 
@@ -234,6 +234,7 @@ Std_ReturnType mpu_get_data8(CoreIdType core_id, uint32 addr, uint8 *data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 1U);
 	if (region == NULL) {
+		printf("%s():addr=0x%x\n", __FUNCTION__, addr);
 		return STD_E_SEGV;
 	}
 	if (region->ops->get_data8 == NULL) {
@@ -249,6 +250,7 @@ Std_ReturnType mpu_get_data16(CoreIdType core_id, uint32 addr, uint16 *data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 2U);
 	if (region == NULL) {
+		printf("%s():addr=0x%x\n", __FUNCTION__, addr);
 		return STD_E_SEGV;
 	}
 	if (region->ops->get_data16 == NULL) {
@@ -265,6 +267,7 @@ Std_ReturnType mpu_get_data32(CoreIdType core_id, uint32 addr, uint32 *data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 4U);
 	if (region == NULL) {
+		printf("%s():addr=0x%x\n", __FUNCTION__, addr);
 		return STD_E_SEGV;
 	}
 	if (region->ops->get_data32 == NULL) {
@@ -309,6 +312,7 @@ Std_ReturnType mpu_put_data16(CoreIdType core_id, uint32 addr, uint16 data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 2U);
 	if (region == NULL) {
+		printf("%s():addr=0x%x\n", __FUNCTION__, addr);
 		return STD_E_SEGV;
 	}
 	if (region->ops->put_data16 == NULL) {
@@ -329,6 +333,7 @@ Std_ReturnType mpu_put_data32(CoreIdType core_id, uint32 addr, uint32 data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 4U);
 	if (region == NULL) {
+		printf("%s():addr=0x%x\n", __FUNCTION__, addr);
 		return STD_E_SEGV;
 	}
 	if (region->ops->put_data32 == NULL) {
@@ -350,6 +355,7 @@ Std_ReturnType mpu_get_pointer(CoreIdType core_id, uint32 addr, uint8 **data)
 {
 	MpuAddressRegionType *region = search_region(core_id, addr, 1U);
 	if (region == NULL) {
+		printf("%s():addr=0x%x\n", __FUNCTION__, addr);
 		return STD_E_SEGV;
 	}
 	if (region->ops->get_pointer == NULL) {
