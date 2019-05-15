@@ -508,7 +508,9 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 	sint32 glid;
 	uint32 gladdr;
 	DataAccessInfoType *access_infop;
+#ifndef SUPRESS_DETECT_WARNING_MESSAGE
 	bool found = FALSE;
+#endif
 
 	for (i = 0; i < size; i++) {
 		glid = symbol_addr2glid(access_addr + i, &gladdr);
@@ -518,7 +520,9 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 		if (glid == prev_glid) {
 			continue;
 		}
+#ifndef SUPRESS_DETECT_WARNING_MESSAGE
 		found = TRUE;
+#endif
 		current_access_glid = glid;
 		access_infop = data_access_info_table_gl[glid];
 		cpuctrl_access_context_add(access_type, access_infop);
