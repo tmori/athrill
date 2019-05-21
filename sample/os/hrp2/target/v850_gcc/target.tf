@@ -96,6 +96,147 @@ $
 $FUNCTION SECTION_USTACK$
     $RESULT = FORMAT(".user_stack.%s", ARGV[1])$
 $END$
+
+$ 
+$  固定長メモリプール領域を確保するコードを出力する
+$  ARGV[1]：固定長メモリプールID
+$  ARGV[2]：ドメインID
+$  ARGV[3]：ブロック数
+$  ARGV[4]：ブロックサイズ
+$ 
+$FUNCTION ALLOC_UMPF$
+    static MPF_T _kernel_mpf_$ARGV[1]$[($ARGV[3]$) * COUNT_MPF_T($ARGV[4]$)]
+    $SPC$__attribute__((section($FORMAT("\".mpf.%s\"", ARGV[1])$)));$NL$
+$END$
+
+$ 
+$  固定長メモリプール領域のセクション名を返す
+$  ARGV[1]：タスクID
+$ 
+$FUNCTION SECTION_UMPF$
+    $RESULT = FORMAT(".mpf.%s", ARGV[1])$
+$END$
+
+$TARGET_MEMATR_MPFAREA = TA_MEMPRSV$
+
+$ 
+$  arch/gcc/ldscript.tfのターゲット依存部
+$ 
+$FUNCTION GENERATE_OUTPUT$
+    OUTPUT_FORMAT("elf32-sh") $NL$
+    OUTPUT_ARCH(sh)           $NL$
+    STARTUP(start.o)          $NL$
+    $NL$
+$END$
+
+$FUNCTION GENERATE_PROVIDE$
+    PROVIDE(_hardware_init_hook = 0);$NL$
+    PROVIDE(_software_init_hook = 0);$NL$
+    PROVIDE(_software_term_hook = 0);$NL$
+    PROVIDE(__kernel_bsssecinib_table = 0);$NL$
+    PROVIDE(__kernel_tnum_bsssec = 0);$NL$
+    PROVIDE(__kernel_datasecinib_table = 0);$NL$
+    PROVIDE(__kernel_tnum_datasec = 0);$NL$
+    $NL$
+
+    $IF LENGTH(DOM.ID_LIST)$
+        $FOREACH domid DOM.ID_LIST$
+$   RX領域（専用）
+            PROVIDE(___start_text_$DOM.LABEL[domid]$ = 0xffffffff);$NL$
+            PROVIDE(___limit_text_$DOM.LABEL[domid]$ = 0xffffffff);$NL$
+$   R領域（専用）
+            PROVIDE(___start_rodata_$DOM.LABEL[domid]$ = 0xffffffff);$NL$
+            PROVIDE(___limit_rodata_$DOM.LABEL[domid]$ = 0xffffffff);$NL$
+$   RWX領域（専用）
+            PROVIDE(___start_ram_$DOM.LABEL[domid]$ = 0xffffffff);$NL$
+            PROVIDE(___limit_ram_$DOM.LABEL[domid]$ = 0xffffffff);$NL$
+$   共有リード専用ライト
+            PROVIDE($FORMAT("___start_ram_%s_%x_%x", DOM.LABEL[domid], +DEFAULT_ACPTN[domid], +TACP_SHARED)$ = 0xffffffff);$NL$
+            PROVIDE($FORMAT("___limit_ram_%s_%x_%x", DOM.LABEL[domid], +DEFAULT_ACPTN[domid], +TACP_SHARED)$ = 0xffffffff);$NL$
+$  共有領域
+            PROVIDE(___start_text_$DOM.LABEL[TDOM_NONE]$ = 0xffffffff);$NL$
+            PROVIDE(___limit_text_$DOM.LABEL[TDOM_NONE]$ = 0xffffffff);$NL$
+            PROVIDE(___start_rodata_$DOM.LABEL[TDOM_NONE]$ = 0xffffffff);$NL$
+            PROVIDE(___limit_rodata_$DOM.LABEL[TDOM_NONE]$ = 0xffffffff);$NL$
+            PROVIDE(___start_ram_$DOM.LABEL[TDOM_NONE]$ = 0xffffffff);$NL$
+            PROVIDE(___limit_ram_$DOM.LABEL[TDOM_NONE]$ = 0xffffffff);$NL$
+        $END$
+        $NL$
+    $END$$NL$
+$   共有リード専用ライト領域全体
+    PROVIDE(___start_srpw_all = 0xffffffff);$NL$
+    PROVIDE(___limit_srpw_all = 0xffffffff);$NL$
+$END$
+
+$FUNCTION GENERATE_SECTION_FIRST$
+    $TAB$.vector_start : {$NL$
+    $TAB$$TAB$__vector_start = .;$NL$
+    $TAB$$TAB$*(.vector)$NL$
+    $TAB$$TAB$__vector_end = .;$NL$
+    $TAB$$TAB$start.o(.text_kernel)$NL$
+    $TAB$$TAB$start.o(*.text*)$NL$
+    $TAB$} > $REG.REGNAME[STANDARD_ROM]$$NL$
+    $NL$
+    $TAB$.vector_entry : {$NL$
+    $TAB$$TAB$__vector_entry_start = .;$NL$
+    $TAB$$TAB$*(.vector_entry)$NL$
+    $TAB$$TAB$__vector_entry_end = .;$NL$
+    $TAB$}  > $REG.REGNAME[STANDARD_ROM]$$NL$
+    $NL$
+    $TAB$.bss : {$NL$
+    $TAB$} > $REG.REGNAME[STANDARD_RAM]$$NL$
+    $NL$
+$END$
+
+$TARGET_PAGE_SIZE_STR = 4$
+$TARGET_SEC_ALIGN_STR = 4$
+
+$TOPPERS_SUPPORT_ATT_MOD = 1$
+
+$ 
+$ 保護ドメイン初期化コンテキストブロックのための宣言
+$ 
+$FUNCTION PREPARE_DOMINICTXB$
+    $IF LENGTH(DOM.ID_LIST)$
+        $FOREACH domid DOM.ID_LIST$
+$   RX領域（専用）
+            extern char __start_text_$DOM.LABEL[domid]$;$NL$
+            extern char __limit_text_$DOM.LABEL[domid]$;$NL$
+$   R領域（専用）
+            extern char __start_rodata_$DOM.LABEL[domid]$;$NL$
+            extern char __limit_rodata_$DOM.LABEL[domid]$;$NL$
+$   RWX領域（専用）
+            extern char __start_ram_$DOM.LABEL[domid]$;$NL$
+            extern char __limit_ram_$DOM.LABEL[domid]$;$NL$
+$   共有リード専用ライト
+            extern char $FORMAT("__start_ram_%s_%x_%x", DOM.LABEL[domid], +DEFAULT_ACPTN[domid], +TACP_SHARED)$;$NL$
+            extern char $FORMAT("__limit_ram_%s_%x_%x", DOM.LABEL[domid], +DEFAULT_ACPTN[domid], +TACP_SHARED)$;$NL$
+        $END$
+        extern uint32_t dom_valid_map_table[];
+        $NL$
+    $END$$NL$
+
+$  共有領域
+    extern char __start_text_$DOM.LABEL[TDOM_NONE]$;$NL$
+    extern char __limit_text_$DOM.LABEL[TDOM_NONE]$;$NL$
+    extern char __start_rodata_$DOM.LABEL[TDOM_NONE]$;$NL$
+    extern char __limit_rodata_$DOM.LABEL[TDOM_NONE]$;$NL$
+    extern char __start_ram_$DOM.LABEL[TDOM_NONE]$;$NL$
+    extern char __limit_ram_$DOM.LABEL[TDOM_NONE]$;$NL$
+    extern char __start_srpw_all;$NL$
+    extern char __limit_srpw_all;$NL$
+
+    $IF LENGTH(TSK.ID_LIST)$
+        $FOREACH tskid TSK.ID_LIST$
+            $IF TSK.DOMAIN[tskid] != TDOM_KERNEL$
+                extern char $FORMAT("__start_user_stack%s", tskid)$;$NL$
+                extern char $FORMAT("__limit_user_stack%s", tskid)$;$NL$
+            $END$
+        $END$
+    $END$
+$END$
+
+$
 $  DOMINICTXBの初期化情報を生成
 $ 
 $FUNCTION GENERATE_DOMINICTXB$
@@ -137,8 +278,74 @@ $FUNCTION GENERATE_TSKINICTXB$
     $END$
 $END$
 $
+$  リンカのためのセクション記述の生成
 $
+$FUNCTION SECTION_DESCRIPTION$
+	$IF EQ(ARGV[1], ".rodata")$
+		$RESULT = ".rodata .rodata.str1.4"$
+	$ELIF EQ(ARGV[1], ".bss")$
+		$RESULT = ".bss COMMON"$
+	$ELSE$
+		$RESULT = ARGV[1]$
+	$END$
+$END$
 
+$ 
+$  ATT_MEMのターゲット依存部
+$  ATTMEM_LIST: ATT_MEMで登録されたMEMのリスト
+$  DOM.MEM_COUNT[domid]: 保護ドメインに属するMEMの数
+$                       1保護ドメインあたりに1つのMEMのみ属することができる
+$                       1つのMEMが共有であった場合には，他のMEMは登録できない
+$  SHARED_MEM_COUNT: 共有のMEMの数
+$  ALL_MEM_COUNT: MEMの数
+$  DOM.MEM_BASE[domid]: 保護ドメインに属するMEMの先頭番地
+$  DOM.MEM_SIZE[domid]: 保護ドメインに属するMEMのサイズ
+$ATTMEM_LIST = {}$
+$ALL_MEM_COUNT = 0$
+$SHARED_MEM_COUNT = 0$
+$FOREACH domid DOM.ID_LIST$
+    $DOM.MEM_COUNT[domid] = 0$
+    $DOM.MEM_BASE[domid] = 0$
+    $DOM.MEM_SIZE[domid] = 0$
+$END$
+$FUNCTION HOOK_ERRORCHECK_MEM$
+    $WARNING$$FORMAT("ATT_MEM is not supported.")$$END$
+$END$
+
+
+$ 
+$  ユーザスタックのサイズチェック
+$ 
+$FOREACH tskid TSK.ID_LIST$
+    $IF (TSK.DOMAIN[tskid] != TDOM_KERNEL) && (TSK.STKSZ[tskid] % 4)$
+        $ERROR$$FORMAT("the user stack of TASK(%1%) does not meet MPU size constraints. size = %2%", tskid, +TSK.STKSZ[tskid])$$END$
+    $END$
+$END$
+
+$ 
+$  共有領域の初期化ブロックを生成
+$ 
+$FILE "kernel_cfg.h"$
+extern const uint_t tnum_shared_mem;$NL$
+extern char * const shared_meminib_table[];$NL$
+$NL$
+
+$FILE "kernel_cfg.c"$
+#include "kernel.h"$NL$
+#include "kernel_cfg.h"$NL$
+$TNUM_SHARED_REGION = 4$
+const uint_t tnum_shared_mem = $TNUM_SHARED_REGION * 2$;$NL$
+char * const shared_meminib_table[$TNUM_SHARED_REGION * 2$] = {$NL$
+    $SPC$&__start_text_$DOM.LABEL[TDOM_NONE]$,
+    $SPC$(&__limit_text_$DOM.LABEL[TDOM_NONE]$ - 4),
+    $SPC$&__start_rodata_$DOM.LABEL[TDOM_NONE]$,
+    $SPC$(&__limit_rodata_$DOM.LABEL[TDOM_NONE]$ - 4),
+    $SPC$&__start_ram_$DOM.LABEL[TDOM_NONE]$,
+    $SPC$(&__limit_ram_$DOM.LABEL[TDOM_NONE]$ - 4),
+    $SPC$&__start_srpw_all,
+    $SPC$(&__limit_srpw_all - 4),
+};$NL$
+$NL$
 $TOPPERS_SUPPORT_ATT_MOD = 1$
 
 $INCLUDE "v850_gcc/v850es_fk3.tf"$

@@ -51,7 +51,7 @@ $INTNO_VALID = { 1,2 ; 8,9, ... ,124 }$
 
 $INHNO_VALID = INTNO_VALID$
 
-$EXCNO_VALID = { 3,4,5,6 }$
+$EXCNO_VALID = { 3,4,5,6,19,20,21 }$
 
 $INTNO_RANGE = { 8,9, ... ,124 }$
 
