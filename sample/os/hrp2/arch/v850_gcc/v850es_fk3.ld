@@ -45,76 +45,81 @@ OUTPUT_ARCH(v850-rh850)
 
 MEMORY
 {
-	INTROM(raxi) : org = 0x00000000, len = 4096k
-	INTRAM(wax)  : org = 0x03FF7000, len = 4096k
-	ADEV(wax)    : org = 0xDEAD0000, len = 1k
+	rom : org = 0x00000000, len = 768K
+	ram(wax)  : org = 0xfff80000, len = 32K
 };
 
-PROVIDE(__stack = 0);
+PROVIDE(hardware_init_hook = 0);
 PROVIDE(software_init_hook = 0);
 PROVIDE(_software_term_hook = 0);
-PROVIDE(hardware_init_hook = 0);
-PROVIDE(hardware_term_hook = 0);
-
+PROVIDE(__kernel_bsssecinib_table = 0);
+PROVIDE(__kernel_tnum_bsssec = 0);
+PROVIDE(__kernel_datasecinib_table = 0);
+PROVIDE(__kernel_tnum_datasec = 0);
 SECTIONS
 {
-	.vector : AT(0)
-	{
-		*(.vectors)
-	} > INTROM
-
-	.text :
-	{
-		__text = . ;
-		*(.text)
-		_etext = . ;
-	} > INTROM
-
+    .text :	
+    {
+        __text = . ;
+		*(.vector)
+        *(*.text*)
+	
+    } > rom
 	.call_table_data ALIGN (4) :
 	{
-	PROVIDE(__ctbp = .);
-	*(.call_table_data)
-	} > INTROM
+		PROVIDE(__ctbp = .);
+		*(.call_table_data)
+	} > rom
 
 	.call_table_text :
 	{
-	*(.call_table_text)
-	} > INTROM
-
-	. = ALIGN(4);
-	.rodata : { *(.rodata) } > INTROM
-
-	_textend = .;
-
-	. = ALIGN(4);
-	__idata_start = . ;
-
-	.data	:  AT(__idata_start)
+		*(.call_table_text)
+	} > rom
+	
+    .vector_entry :
 	{
-		. = ALIGN(4);
-		__data_start = . ;
-		*(.data)
-		. = ALIGN(4);
-		_edata	=  . ;
-	} > INTRAM
+		__vector_entry_start = .;
+		*(.vector_entry)
 
-	__idata_end = __idata_start + SIZEOF(.data);
-
-	.bss	   :
-	{
-	  . = ALIGN(4);
-	  __bss_start = .;
-	  *(.bss)
-	  *(COMMON)
-	  . = ALIGN(4);
-	  __bss_end = .;
-	} > INTRAM
-
+	} > rom
+	__vector_entry_end = .;
+    _etext = .	;
+    PROVIDE (etext = .)	;
+    
+    __rodata_start = .;
+    .rodata : {
+        *(*.rodata*)
+    } > rom
+    . = ALIGN(4);
+    __rodata_end = .;
+    
+    __idata_start = . ;
+    /*.data   :  AT(__idata_start) */
+    /*.data   :  AT(ADDR(.rodata)+SIZEOF(.rodata)) */
+    .data   :
+    {
+        __data_start = . ;
+        KEEP(*(*.data*))
+    } > ram
 	.sdata ALIGN (4) :
 	{
 		PROVIDE (__gp = . + 0x8000);
 		*(.sdata)
-	} > INTRAM
+	} > ram
+    AT > rom
+    __idata_end = __idata_start + SIZEOF(.data);
+    _edata  =  . ;
+    PROVIDE (edata = .);
+    
+    . = ALIGN(4);
+    .bss       :
+    {
+        __bss_start = .	;		
+
+      *(*.bss*)
+      *(COMMON)
+    } > ram
+    __bss_end = ADDR(.bss)+SIZEOF(.bss);		
 
 	.tdata ALIGN (4) :
 	{
@@ -124,20 +129,16 @@ SECTIONS
 		*(.tdata)
 		*(.tbss)
 		*(.tcommon)
-	} > INTRAM
-
-	.athrill_device_section	: 
-	{
-		. = ALIGN(4);
-		*(.athrill_device_section)
-		. = ALIGN(4);
-	} > ADEV
-	
-	.comment 0 : { *(.comment) }
-	.debug			0 : { *(.debug) }
-	.line			0 : { *(.line) }
-	.debug_srcinfo	0 : { *(.debug_srcinfo) }
-	.debug_sfnames	0 : { *(.debug_sfnames) }
-	.debug_aranges	0 : { *(.debug_aranges) }
-	.debug_pubnames 0 : { *(.debug_pubnames) }
-}
+	} > ram
+    _end = .		;
+    PROVIDE (end = .)	;
+    /*
+     * .comment 0 : { *(.comment) }	
+     * .debug          0 : { *(.debug) }
+     * .line           0 : { *(.line) }
+     * .debug_srcinfo  0 : { *(.debug_srcinfo) }
+     * .debug_sfnames  0 : { *(.debug_sfnames) }
+     * .debug_aranges  0 : { *(.debug_aranges) }
+     * .debug_pubnames 0 : { *(.debug_pubnames) }
+     */
+}	
