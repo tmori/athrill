@@ -331,8 +331,9 @@ extern char * const shared_meminib_table[];$NL$
 $NL$
 
 $FILE "kernel_cfg.c"$
-#include "kernel.h"$NL$
-#include "kernel_cfg.h"$NL$
+$TOPPERS_SUPPORT_ATT_MOD = 1$
+
+$INCLUDE "v850_gcc/v850es_fk3.tf"$
 $TNUM_SHARED_REGION = 4$
 const uint_t tnum_shared_mem = $TNUM_SHARED_REGION * 2$;$NL$
 char * const shared_meminib_table[$TNUM_SHARED_REGION * 2$] = {$NL$
@@ -346,9 +347,6 @@ char * const shared_meminib_table[$TNUM_SHARED_REGION * 2$] = {$NL$
     $SPC$(&__limit_srpw_all - 4),
 };$NL$
 $NL$
-$TOPPERS_SUPPORT_ATT_MOD = 1$
-
-$INCLUDE "v850_gcc/v850es_fk3.tf"$
 $IF LENGTH(TEXCNO_EMULATE_RET_TEX)$
     $TAB$.section .rodata_kernel$NL$
     $TAB$.align 4$NL$

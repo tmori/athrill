@@ -41,4 +41,8 @@
 
 #include "v850_gcc/prc_cfg1_out.h"
 
+const TCB	TCB_waifbd;
+
+const TCB	TCB_svclevel;
+
 #endif	/* TARGET_CFG1_OUT_H */

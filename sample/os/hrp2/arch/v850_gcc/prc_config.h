@@ -67,7 +67,8 @@
  *  タスクコンテキストブロックの定義
  */
 typedef struct task_context_block {
-	void	*sp;		/* スタックポインタ */
+	void	*ssp;		/* システムスタックポインタ */
+	void	*usp;		/* ユーザスタックポインタ */
 	FP		pc;			/* プログラムカウンタ */
     uint8_t priv_mode;  /* 特権モード実行中かどうかを表すフラグ */
 } TSKCTXB;
@@ -323,11 +324,12 @@ extern void call_exit_kernel(void) NoReturn;
  */
 extern void    start_r(void);
 
-#define activate_context(p_tcb)												\
-{																			\
-	(p_tcb)->tskctxb.sp = (uint32_t *)(((uint32_t)(p_tcb)->p_tinib->stk) + 	\
-								(p_tcb)->p_tinib->stksz);					\
-	(p_tcb)->tskctxb.pc = (void *) start_r;									\
+#define activate_context(p_tcb) 										\
+{\
+	(p_tcb)->tskctxb.ssp = (p_tcb)->p_tinib->tskinictxb.sstk_bottom;	\
+	(p_tcb)->tskctxb.usp = (p_tcb)->p_tinib->tskinictxb.stk_bottom;     \
+	(p_tcb)->tskctxb.pc = ((p_tcb)->p_tinib->p_dominib->domptn == TACP_KERNEL) ? (FP)start_stask_r: (FP)start_utask_r;       \
+	(p_tcb)->tskctxb.priv_mode = 1U; \
 }
 
 /*

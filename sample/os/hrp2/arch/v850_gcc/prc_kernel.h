@@ -102,4 +102,8 @@
 #define CHECK_MPF_ALIGN     (4)
 #define CHECK_MB_ALIGN      (4)
 
+
+#define	TA_LOWLEVEL		UINT_C(0x10)	/* ローレベルトリガ */
+#define	TA_HIGHLEVEL	UINT_C(0x20)	/* ハイレベルトリガ */
+
 #endif /* TOPPERS_PRC_KERNEL_H */

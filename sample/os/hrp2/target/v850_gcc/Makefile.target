@@ -10,7 +10,7 @@
 #
 #  Copyright (C) 2010 by Meika Sugimoto
 #
-#  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation
+#  上記著作権者は，以下の (1)潤ｵ(4) の条件か，Free Software Foundation
 #  によって公表されている GNU General Public License の Version 2 に記
 #  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
 #  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -60,6 +60,10 @@ INCLUDES := $(INCLUDES) -I$(SRCDIR)/target/v850_gcc
 
 #
 #  カーネルに関する定義
+# 
+#  idataセクションを複製する場合はtrueに
+#
+COPY_IDATA_SECTION = true
 #
 KERNEL_DIR	:= $(KERNEL_DIR):$(SRCDIR)/target/v850_gcc
 KERNEL_ASMOBJS	:= $(KERNEL_ASMOBJS) target_support.o v850es_fk3.o
@@ -78,6 +82,11 @@ CFG1_OUT_LDSCRIPT = $(LDSCRIPT)
 #
 include $(SRCDIR)/arch/v850_gcc/Makefile.prc
 
+# 
+#  cfgに関する定義
+#
+CFG_TABS := --cfg1-def-table $(TARGETDIR)/target_def.csv $(CFG_TABS)
+OFFSET_TF = $(TARGETDIR)/target_offset.tf
 
 #
 #  ログトレース用の定義
@@ -88,3 +97,12 @@ ifeq ($(ENABLE_TRACE),true)
 	KERNEL_DIR := $(KERNEL_DIR) $(SRCDIR)/arch/logtrace
 	KERNEL_COBJS := $(KERNEL_COBJS) trace_config.o trace_dump.o
 endif
+ifeq ($(COPY_IDATA_SECTION),true)
+	CDEFS := $(CDEFS) -D"COPY_IDATA_SECTION=1"
+else
+	CDEFS := $(CDEFS) -D"COPY_IDATA_SECTION=0" -DTOPPERS_OMIT_DATA_INIT
+endif
+# 
+#  オフセットファイル生成のための定義
+#
+OFFSET_TF = $(TARGETDIR)/target_offset.tf

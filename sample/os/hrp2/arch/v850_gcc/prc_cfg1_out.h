@@ -5,7 +5,7 @@
  * 
  *  Copyright (C) 2010 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)潤ｵ(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -38,10 +38,23 @@
 
 #ifndef PRC_CFG1_OUT_H
 #define PRC_CFG1_OUT_H
+/*
+ *		cfg1_out.cをリンクするために必要なスタブの定義
+ */
 
-void sta_ker(void)
-{
-}
-STK_T *const	_kernel_istkpt;
+void sta_ker(void){}
+STK_T *const	_kernel_istkpt = 0x00;
+
+
+/*
+ *  オフセットファイルを生成するための定義
+ */
+const uint8_t	MAGIC_1 = 0x12;
+const uint16_t	MAGIC_2 = 0x1234;
+const uint32_t	MAGIC_4 = 0x12345678;
+
+const TCB	TCB_enatex;
+
+
 
 #endif

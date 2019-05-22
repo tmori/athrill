@@ -95,6 +95,22 @@ typedef struct {
  */
 extern bool_t i_check_tex_runtsk();
 extern void target_initialize(void);
+/*
+ * CPU例外番号に関する定義
+ */
+#define TMIN_EXCNO		UINT_C(4)		/*	GENERAL_ILLEGAL_INSTRUCTION_VECTOR	*/
+#define TMAX_EXCNO		UINT_C(63)		/*	TRAPA_INST_VECTOR  */
+#define TNUM_EXC		(TMAX_EXCNO - TMIN_EXCNO + 1U)
+/*
+ * 割込みハンドラ番号に関する定義
+ */
+#define TMIN_INHNO		UINT_C(64)
+#define TMAX_INHNO		UINT_C(493)
+#define TNUM_INH		(TMAX_INHNO - TMIN_INHNO + 1U)
+/*	CFG_INTで割込み優先度が設定されていないことを示すビット  */
+#ifndef NOT_CFG_INT_BIT
+#define NOT_CFG_INT_BIT		0x80U
+#endif /* NOT_CFG_INT_BIT */
 
 
 extern void target_exit(void);

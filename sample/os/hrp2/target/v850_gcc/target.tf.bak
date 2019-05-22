@@ -314,7 +314,6 @@ $END$
 
 
 $ 
-$INCLUDE "gcc/ldscript.tf"$ 
 $  ユーザスタックのサイズチェック
 $ 
 $FOREACH tskid TSK.ID_LIST$
