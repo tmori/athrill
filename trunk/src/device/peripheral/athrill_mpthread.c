@@ -26,6 +26,8 @@ static void *mpthread_run(void *arg)
 {
     MpthrIdType id = *((MpthrIdType*)arg);
 
+    mpthread_info[id].op->do_init(id);
+
     mpthread_lock(id);
     while (TRUE) {
         if (mpthread_info[id].status != MPTHR_STATUS_RUNNING) {
@@ -57,7 +59,7 @@ Std_ReturnType mpthread_register(MpthrIdType *id, MpthrOperationType *op)
     ASSERT(p != NULL);
     mpthread_info = p;
 
-    mpthread_info[new_id].status = MPTHR_STATUS_WAITING;
+    mpthread_info[new_id].status = MPTHR_STATUS_INITIALIZING;
     mpthread_info[new_id].op = op;
 	pthread_mutex_init(&mpthread_info[new_id].mutex, NULL);
 	pthread_cond_init(&mpthread_info[new_id].cond, NULL);

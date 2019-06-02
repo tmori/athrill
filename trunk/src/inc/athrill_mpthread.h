@@ -6,6 +6,7 @@
 
 typedef uint32 MpthrIdType;
 typedef struct {
+    Std_ReturnType (*do_init) (MpthrIdType id);
     Std_ReturnType (*do_proc) (MpthrIdType id);
 } MpthrOperationType;
 
@@ -19,7 +20,7 @@ extern Std_ReturnType mpthread_register(MpthrIdType *id, MpthrOperationType *op)
  * Thread api
  */
 typedef enum {
-    MPTHR_STATUS_NONE = 0,
+    MPTHR_STATUS_INITIALIZING = 0,
     MPTHR_STATUS_RUNNING,
     MPTHR_STATUS_WAITING,
 } MpthrStatusType;
