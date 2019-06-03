@@ -11,6 +11,7 @@
 #include "assert.h"
 
 typedef struct {
+    MpthrIdType         id;
     MpthrStatusType     status;
     MpthrOperationType  *op;
 	pthread_t           thread;
@@ -19,12 +20,14 @@ typedef struct {
 } MpthrInfoType;
 
 static uint32 mpthread_num = 0;
+static pthread_mutex_t     mpthread_mutex = PTHREAD_MUTEX_INITIALIZER;
 static MpthrInfoType *mpthread_info = NULL;
 
 
 static void *mpthread_run(void *arg)
 {
-    MpthrIdType id = *((MpthrIdType*)arg);
+    MpthrInfoType *infop = ((MpthrInfoType*)arg);
+    MpthrIdType id = infop->id;
 
     mpthread_info[id].op->do_init(id);
 
@@ -53,17 +56,23 @@ Std_ReturnType mpthread_init(void)
 }
 Std_ReturnType mpthread_register(MpthrIdType *id, MpthrOperationType *op)
 {
-    MpthrIdType new_id = mpthread_num;
+    MpthrIdType new_id;
+    
+    pthread_mutex_lock(&mpthread_mutex);
+    new_id = mpthread_num;
     mpthread_num++;
     MpthrInfoType *p = realloc(mpthread_info, sizeof(MpthrInfoType) * mpthread_num);
     ASSERT(p != NULL);
     mpthread_info = p;
+    pthread_mutex_unlock(&mpthread_mutex);
 
+    mpthread_info[new_id].id = new_id;
     mpthread_info[new_id].status = MPTHR_STATUS_INITIALIZING;
     mpthread_info[new_id].op = op;
-	pthread_mutex_init(&mpthread_info[new_id].mutex, NULL);
-	pthread_cond_init(&mpthread_info[new_id].cond, NULL);
-	pthread_create(&mpthread_info[new_id].thread , NULL , mpthread_run , NULL);
+
+    pthread_mutex_init(&mpthread_info[new_id].mutex, NULL);
+    pthread_cond_init(&mpthread_info[new_id].cond, NULL);
+    pthread_create(&mpthread_info[new_id].thread , NULL , mpthread_run , (void*)&mpthread_info[new_id]);
 
     *id = new_id;
     return STD_E_OK;
