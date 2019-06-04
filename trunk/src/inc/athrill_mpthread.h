@@ -28,6 +28,7 @@ extern void mpthread_lock(MpthrIdType id);
 extern void mpthread_unlock(MpthrIdType id);
 extern MpthrStatusType mpthread_get_status(MpthrIdType id);
 extern Std_ReturnType mpthread_start_proc(MpthrIdType id);
-extern Std_ReturnType mpthread_stop_proc(MpthrIdType id);
+extern Std_ReturnType mpthread_wait_proc(MpthrIdType id);
+extern Std_ReturnType mpthread_timedwait_proc(MpthrIdType id, sint32 timeout);
 
 #endif /* _ATHRILL_MPTHREAD_H_ */
