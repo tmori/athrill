@@ -7,11 +7,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <sys/time.h>
 #include "assert.h"
+#include <time.h>
 
 typedef struct {
     MpthrIdType         id;
+    uint32              timeout;
     MpthrStatusType     status;
     MpthrOperationType  *op;
 	pthread_t           thread;
@@ -28,13 +29,21 @@ static void *mpthread_run(void *arg)
 {
     MpthrInfoType *infop = ((MpthrInfoType*)arg);
     MpthrIdType id = infop->id;
+    struct timespec abstime;
 
     mpthread_info[id].op->do_init(id);
 
     mpthread_lock(id);
     while (TRUE) {
         if (mpthread_info[id].status != MPTHR_STATUS_RUNNING) {
-            pthread_cond_wait(&mpthread_info[id].cond, &mpthread_info[id].mutex);
+            if (mpthread_info[id].timeout == 0) {
+                pthread_cond_wait(&mpthread_info[id].cond, &mpthread_info[id].mutex);
+            }
+            else {
+                abstime.tv_sec = 0;
+                abstime.tv_nsec = mpthread_info[id].timeout * 1000;
+                pthread_cond_timedwait(&mpthread_info[id].cond, &mpthread_info[id].mutex, &abstime);
+            }
             continue;
         }
         mpthread_unlock(id);
@@ -67,6 +76,7 @@ Std_ReturnType mpthread_register(MpthrIdType *id, MpthrOperationType *op)
     pthread_mutex_unlock(&mpthread_mutex);
 
     mpthread_info[new_id].id = new_id;
+    mpthread_info[new_id].timeout = 0;
     mpthread_info[new_id].status = MPTHR_STATUS_INITIALIZING;
     mpthread_info[new_id].op = op;
 
@@ -118,12 +128,24 @@ Std_ReturnType mpthread_start_proc(MpthrIdType id)
     mpthread_unlock(id);
     return STD_E_OK;
 }
-Std_ReturnType mpthread_stop_proc(MpthrIdType id)
+Std_ReturnType mpthread_wait_proc(MpthrIdType id)
 {
     if (id >= mpthread_num) {
         return STD_E_INVALID;
     }
     mpthread_lock(id);
+    mpthread_info[id].timeout = 0;
+    mpthread_info[id].status = MPTHR_STATUS_WAITING;
+    mpthread_unlock(id);
+    return STD_E_OK;
+}
+Std_ReturnType mpthread_timedwait_proc(MpthrIdType id, sint32 timeout)
+{
+    if (id >= mpthread_num) {
+        return STD_E_INVALID;
+    }
+    mpthread_lock(id);
+    mpthread_info[id].timeout = timeout;
     mpthread_info[id].status = MPTHR_STATUS_WAITING;
     mpthread_unlock(id);
     return STD_E_OK;
