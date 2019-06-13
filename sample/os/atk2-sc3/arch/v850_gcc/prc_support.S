@@ -188,7 +188,7 @@
  *  ネストあり
  */
 .macro NESTED_LOCK_OS_INT   reg12, reg13
-    .macrolocal increment_nest_lock
+    //.macrolocal increment_nest_lock
 
     /* nested_lock_os_int_cnt == 0 ? */
     Lea     _nested_lock_os_int_cnt, AMARG(reg13)
@@ -538,7 +538,7 @@ __eiintn15: /*（優先度15） 0x01f0 */
 #endif /* __v850e3v5__ */
 
 .macro FE_EXCEPTION_ENTRY
-    .macrolocal _fe_exception_macro
+    //.macrolocal _fe_exception_macro
 	/* 割込み/例外の先頭で実行する処理 */
 	PRE_INT_EXC
 
@@ -556,7 +556,7 @@ __eiintn15: /*（優先度15） 0x01f0 */
     ld.w    TCB_p_tinib[r2], r2
     ld.w    TINIB_sstk_bottom[r2], sp         /* sspを復帰 */
     ori     0x1000, r0, r2             /* r2 = 0x1000 */
-FLABEL(_fe_exception_macro)
+//FLABEL(_fe_exception_macro)
 .endm
 
 
