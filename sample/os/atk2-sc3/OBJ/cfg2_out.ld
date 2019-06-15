@@ -60,6 +60,7 @@ ENTRY(__reset);
 SECTIONS {
 	.vector : AT(0) {
 		*("*.reset.text")
+		*("*.text")
 		. += 1;
 		. = ALIGN(16);
 	} > INTROM_PE1
@@ -162,6 +163,8 @@ SECTIONS {
 	.sbss_kernel_0_ffffffff ALIGN(16) (NOLOAD) : {
 		__gp = . + 32K;
 		__tp = . + 32K;
+		PROVIDE (__ep = .);
+		PROVIDE(__ctbp = .);
 		___start_ssrpw_all = .;
 		___start_sram_kernel_0_ffffffff = .;
 		___start_sbss_kernel_0_ffffffff = .;
