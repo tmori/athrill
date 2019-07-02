@@ -8,10 +8,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <unistd.h>
 #include "mpu_malloc.h"
 #include "assert.h"
@@ -27,6 +29,7 @@ static void athrill_syscall_bind(AthrillSyscallArgType *arg);
 static void athrill_syscall_listen(AthrillSyscallArgType *arg);
 static void athrill_syscall_accept(AthrillSyscallArgType *arg);
 static void athrill_syscall_connect(AthrillSyscallArgType *arg);
+static void athrill_syscall_select(AthrillSyscallArgType *arg);
 static void athrill_syscall_send(AthrillSyscallArgType *arg);
 static void athrill_syscall_recv(AthrillSyscallArgType *arg);
 static void athrill_syscall_shutdown(AthrillSyscallArgType *arg);
@@ -44,6 +47,7 @@ static struct athrill_syscall_functable syscall_table[SYS_API_ID_NUM] = {
     { athrill_syscall_listen },
     { athrill_syscall_accept },
     { athrill_syscall_connect },
+    { athrill_syscall_select },
     { athrill_syscall_send },
     { athrill_syscall_recv },
     { athrill_syscall_shutdown },
@@ -224,6 +228,100 @@ static void athrill_syscall_connect(AthrillSyscallArgType *arg)
     return;
 }
 
+static sys_int32 fd_set_copy(unsigned char *dst, unsigned char *src)
+{
+    sys_int32 i;
+    sys_int32 j;
+    sys_int32 count = 0;
+    sys_int32 fd_size = sizeof(fd_set);
+    sys_int32 num = (fd_size < ATHRILL_FD_SETSIZE) ? fd_size: ATHRILL_FD_SETSIZE;
+
+    if ((dst == NULL) || (src == NULL)) {
+        return 0;
+    }
+
+    for (i = 0; i < num; i++) {
+        dst[i] = src[i];
+        for (j = 0; j < 8; j++) {
+            if ( (dst[i] & (1 << j)) != 0) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+static void athrill_syscall_select(AthrillSyscallArgType *arg)
+{
+    Std_ReturnType err;
+    sys_fd_set *sys_readfds;
+    sys_fd_set *sys_writefds;
+    sys_fd_set *sys_exceptfds;
+    fd_set readfds;
+    fd_set writefds;
+    fd_set exceptfds;
+    struct timeval tmo;
+    sys_int32 count = 0;
+
+    if (arg->body.api_select.readfds == 0) {
+        sys_readfds = NULL;
+    }
+    else {
+        err = mpu_get_pointer(0U, (uint32)arg->body.api_select.readfds, (uint8 **)&sys_readfds);
+        if (err != 0) {
+            return;
+        }
+    }
+    if (arg->body.api_select.writefds == 0) {
+        sys_writefds = NULL;
+    }
+    else {
+        err = mpu_get_pointer(0U, (uint32)arg->body.api_select.writefds, (uint8 **)&sys_writefds);
+        if (err != 0) {
+            return;
+        }
+    }
+    if (arg->body.api_select.exceptfds == 0) {
+        sys_exceptfds = NULL;
+    }
+    else {
+        err = mpu_get_pointer(0U, (uint32)arg->body.api_select.exceptfds, (uint8 **)&sys_exceptfds);
+        if (err != 0) {
+            return;
+        }
+    }
+    FD_ZERO(&readfds);
+    FD_ZERO(&writefds);
+    FD_ZERO(&exceptfds);
+    count = fd_set_copy((unsigned char*)&readfds, (unsigned char*)sys_readfds);
+    count += fd_set_copy((unsigned char*)&writefds, (unsigned char*)sys_writefds);
+    count += fd_set_copy((unsigned char*)&exceptfds, (unsigned char*)sys_exceptfds);
+    tmo.tv_sec = 0;
+    tmo.tv_usec = 0;
+
+    int ret = select(arg->body.api_select.nfds, &readfds, &writefds, &exceptfds, &tmo);
+    if (ret < 0) {
+        arg->ret_value = -errno;
+    }
+    else {
+        if (sys_readfds != NULL) {
+            memset((unsigned char*)sys_readfds, 0, sizeof(sys_fd_set));
+        }
+        if (sys_writefds != NULL) {
+            memset((unsigned char*)sys_writefds, 0, sizeof(sys_fd_set));
+        }
+        if (sys_exceptfds != NULL) {
+            memset((unsigned char*)sys_exceptfds, 0, sizeof(sys_fd_set));
+        }
+
+        count = fd_set_copy((unsigned char*)sys_readfds, (unsigned char*)&readfds);
+        count += fd_set_copy((unsigned char*)sys_writefds, (unsigned char*)&writefds);
+        count += fd_set_copy((unsigned char*)sys_exceptfds, (unsigned char*)&exceptfds);
+        arg->ret_value = count;
+    }
+
+    return;
+}
 static void athrill_syscall_send(AthrillSyscallArgType *arg)
 {
     Std_ReturnType err;

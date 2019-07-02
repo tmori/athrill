@@ -40,6 +40,7 @@ OBJS	+=	dbg_target_cpu.o
 OBJS	+=	intc.o
 OBJS	+=	athrill_device.o
 OBJS	+=	athrill_syscall_device.o
+OBJS	+=	athrill_mpthread.o
 
 all:	$(LIBTARGET)
 
