@@ -9,6 +9,13 @@ typedef signed short sys_int16;
 typedef signed char sys_int8;
 typedef unsigned int sys_addr;
 typedef int sys_bool;
+#ifndef ATHRILL_FD_SETSIZE
+#define ATHRILL_FD_SETSIZE      64
+#endif /* ATHRILL_FD_SETSIZE */
+typedef struct {
+    unsigned char fd_bits [(ATHRILL_FD_SETSIZE+7)/8];
+} sys_fd_set;
+#define SYS_FD_SET_SIZE     sizeof(sys_fd_set)
 
 typedef enum {
     sys_false = 0,
@@ -37,6 +44,12 @@ struct api_arg_connect {
     sys_int32 sockfd;
     sys_addr sockaddr;
     sys_uint32 addrlen;
+};
+struct api_arg_select {
+    sys_int32    nfds;
+    sys_addr     readfds;
+    sys_addr     writefds;
+    sys_addr     exceptfds;
 };
 
 struct api_arg_bind {
@@ -101,6 +114,7 @@ typedef enum {
     SYS_API_ID_LISTEN,
     SYS_API_ID_ACCEPT,
     SYS_API_ID_CONNECT,
+    SYS_API_ID_SELECT,
     SYS_API_ID_SEND,
     SYS_API_ID_RECV,
     SYS_API_ID_SHUTDOWN,
@@ -136,6 +150,7 @@ typedef struct {
         struct api_arg_listen api_listen;
         struct api_arg_accept api_accept;
         struct api_arg_connect api_connect;
+        struct api_arg_select api_select;
         struct api_arg_send api_send;
         struct api_arg_recv api_recv;
         struct api_arg_shutdown api_shutdown;
@@ -249,6 +264,22 @@ static inline sys_int32 athrill_posix_connect(sys_int32 sockfd, const struct sys
     args.body.api_connect.sockfd = sockfd;
     args.body.api_connect.sockaddr = (sys_addr)addr;
     args.body.api_connect.addrlen = addrlen;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.ret_value;
+}
+
+static inline sys_int32 athrill_posix_select(sys_int32 nfds, sys_fd_set *readfds, sys_fd_set *writefds, sys_fd_set *exceptfds)
+{
+    AthrillSyscallArgType args;
+
+    args.api_id = SYS_API_ID_CONNECT;
+    args.ret_value = SYS_API_ERR_INVAL;
+    args.body.api_select.nfds = nfds;
+    args.body.api_select.readfds = (sys_addr)readfds;
+    args.body.api_select.writefds = (sys_addr)writefds;
+    args.body.api_select.exceptfds = (sys_addr)exceptfds;
 
     ATHRILL_SYSCALL(&args);
 
