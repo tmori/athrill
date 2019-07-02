@@ -274,7 +274,7 @@ static inline sys_int32 athrill_posix_select(sys_int32 nfds, sys_fd_set *readfds
 {
     AthrillSyscallArgType args;
 
-    args.api_id = SYS_API_ID_CONNECT;
+    args.api_id = SYS_API_ID_SELECT;
     args.ret_value = SYS_API_ERR_INVAL;
     args.body.api_select.nfds = nfds;
     args.body.api_select.readfds = (sys_addr)readfds;

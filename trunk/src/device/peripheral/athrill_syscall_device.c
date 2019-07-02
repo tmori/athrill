@@ -234,7 +234,7 @@ static sys_int32 fd_set_copy(unsigned char *dst, unsigned char *src)
     sys_int32 j;
     sys_int32 count = 0;
     sys_int32 fd_size = sizeof(fd_set);
-    sys_int32 num = (fd_size < ATHRILL_FD_SETSIZE) ? fd_size: ATHRILL_FD_SETSIZE;
+    sys_int32 num = (fd_size < sizeof(sys_fd_set)) ? fd_size: sizeof(sys_fd_set);
 
     if ((dst == NULL) || (src == NULL)) {
         return 0;
@@ -242,6 +242,8 @@ static sys_int32 fd_set_copy(unsigned char *dst, unsigned char *src)
 
     for (i = 0; i < num; i++) {
         dst[i] = src[i];
+        //printf("fd_set_copy:dst[%d]=0x%x\n", i, dst[i]);
+        //printf("fd_set_copy:src[%d]=0x%x\n", i, src[i]);
         for (j = 0; j < 8; j++) {
             if ( (dst[i] & (1 << j)) != 0) {
                 count++;
@@ -298,8 +300,7 @@ static void athrill_syscall_select(AthrillSyscallArgType *arg)
     count += fd_set_copy((unsigned char*)&exceptfds, (unsigned char*)sys_exceptfds);
     tmo.tv_sec = 0;
     tmo.tv_usec = 0;
-
-    int ret = select(arg->body.api_select.nfds, &readfds, &writefds, &exceptfds, &tmo);
+    int ret = select(sizeof(sys_fd_set) * 8, &readfds, &writefds, &exceptfds, &tmo);
     if (ret < 0) {
         arg->ret_value = -errno;
     }
