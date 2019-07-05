@@ -1,0 +1,13 @@
+#!/bin/bash
+
+athrill_remote c > /dev/null
+while [ 1 ]
+do
+	echo -n "$ "
+	read str 
+	echo $str
+	athrill_remote q > /dev/null
+	athrill_remote S 0 $str > /dev/null
+	athrill_remote c > /dev/null
+done
+
