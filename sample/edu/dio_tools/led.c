@@ -50,7 +50,7 @@ int main(int argc, const char* argv[])
                 SW_STATE[value]);
             fflush(stdout);
         }
-        sleep(1);
+        usleep(2000);
     }
 
     close_file(&file);
