@@ -310,7 +310,7 @@ void dbg_std_executor_cont(void *executor)
 		cpuctrl_set_cont_clocks(TRUE, parsed_args->cont_clocks);
 		cputhr_control_dbg_wakeup_cpu_and_wait_for_cpu_stopped();
 	}
-	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+	//CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 	return;
 }
 

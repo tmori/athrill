@@ -6,6 +6,7 @@
 #include "cpuemu_ops.h"
 #include "cui/cui_ops.h"
 #include "symbol_ops.h"
+#include "file_address_mapping.h"
 
 void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 {
@@ -49,10 +50,17 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 	}
 
 	if (need_stop == TRUE) {
+		ValueFileType value;
+		Std_ReturnType err = file_address_mapping_get(pc, &value);
 		dbg_cpu_control_print_source(pc);
+		if (err == STD_E_OK) {
+			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "%s %u\n", value.file, value.line));
+		}
+		else {
+			CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
+		}
 		//fflush(stdout);
 		//CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "core[%u].pc = 0x%x\n", cpu_get_core_id(core), pc));
-		CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));
 		cpuctrl_set_current_debugged_core(cpu_get_core_id(core));
 		cpuctrl_set_debug_mode(TRUE);
 		dbg_log_sync();
