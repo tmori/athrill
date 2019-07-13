@@ -402,6 +402,9 @@ static void athrill_syscall_calloc(AthrillSyscallArgType *arg)
     size = arg->body.api_calloc.size * arg->body.api_calloc.nmemb;
 
     arg->body.api_calloc.rptr = mpu_malloc_get_memory(size);
+    if (arg->body.api_calloc.rptr == 0) {
+        return;
+    }
 
     err = mpu_get_pointer(0U, arg->body.api_calloc.rptr, (uint8 **)&addrp);
     ASSERT(err == 0);
@@ -417,6 +420,9 @@ static void athrill_syscall_realloc(AthrillSyscallArgType *arg)
     uint8 *dest_addrp;
 
     arg->body.api_realloc.rptr = mpu_malloc_get_memory(arg->body.api_realloc.size);
+    if (arg->body.api_realloc.rptr == 0) {
+        return;
+    }
 
     err = mpu_get_pointer(0U, arg->body.api_realloc.ptr, (uint8 **)&src_addrp);
     ASSERT(err == 0);
