@@ -16,6 +16,9 @@
 #include "target/target_os_api.h"
 #include <sched.h>
 #include <limits.h>
+#ifdef OS_LINUX
+#include <signal.h>
+#endif
 
 static void do_cui(void)
 {
@@ -95,6 +98,9 @@ int main(int argc, const char *argv[])
 		perror("sched_setscheduler");
 		return 1;
 	}
+#endif
+#ifdef OS_LINUX
+	signal(SIGPIPE, SIG_IGN);
 #endif
 
 	opt = parse_args(argc, argv);
