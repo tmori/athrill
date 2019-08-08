@@ -1,13 +1,19 @@
 #!/bin/bash
 
+if [ $# -ne 1 ]
+then
+	echo "Usage: $0 <serial-channel>"
+	exit 1
+fi
+CHANNEL=${1}
+
 athrill_remote c > /dev/null
 while [ 1 ]
 do
 	echo -n "$ "
 	read str 
-	echo $str
 	athrill_remote q > /dev/null
-	athrill_remote S 0 $str > /dev/null
+	athrill_remote S ${CHANNEL}  $str > /dev/null
 	athrill_remote c > /dev/null
 done
 
