@@ -8,6 +8,7 @@ IFLAGS	+= -I$(CORE_DIR)/lib
 VPATH	:=	$(CORE_DIR)/lib
 VPATH	+=	$(CORE_DIR)/lib/winsock_wrapper
 VPATH	+=	$(CORE_DIR)/lib/udp
+VPATH	+=	$(CORE_DIR)/lib/tcp
 
 
 CFLAGS	:= $(WFLAGS)
@@ -18,6 +19,10 @@ OBJS	+=	token.o
 OBJS	+=	file.o
 OBJS	+=	winsock_wrapper.o
 OBJS	+=	udp_comm.o
+OBJS	+=	tcp_socket.o
+OBJS	+=	tcp_connection.o
+OBJS	+=	tcp_server.o
+OBJS	+=	comm_buffer.o
 
 
 all:	$(LIBTARGET)

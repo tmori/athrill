@@ -10,6 +10,7 @@ IFLAGS	+= -I$(ROOTDIR)/lib
 VPATH	:=	$(ROOTDIR)/lib
 VPATH	+=	$(ROOTDIR)/lib/winsock_wrapper
 VPATH	+=	$(ROOTDIR)/lib/udp
+VPATH	+=	$(ROOTDIR)/lib/tcp
 
 
 CFLAGS	:= $(WFLAGS)
@@ -20,6 +21,10 @@ OBJS	+=	token.o
 OBJS	+=	file.o
 OBJS	+=	winsock_wrapper.o
 OBJS	+=	udp_comm.o
+OBJS	+=	tcp_socket.o
+OBJS	+=	tcp_connection.o
+OBJS	+=	tcp_server.o
+OBJS	+=	comm_buffer.o
 
 
 all:	$(LIBTARGET)
