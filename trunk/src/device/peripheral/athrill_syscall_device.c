@@ -135,11 +135,17 @@ static void athrill_syscall_bind(AthrillSyscallArgType *arg)
     Std_ReturnType err;
     struct sockaddr_in server_addr;
     struct sys_sockaddr_in *sockaddrp;
+    int yes = 1;
 
     err = mpu_get_pointer(0U, arg->body.api_bind.sockaddr, (uint8 **)&sockaddrp);
     if (err != 0) {
         return;
     }
+    err = setsockopt(arg->body.api_bind.sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&yes, sizeof(yes));
+    if (err != 0) {
+        return;
+    }
+
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = PF_INET;
     server_addr.sin_addr.s_addr = htonl(sockaddrp->sin_addr);
