@@ -7,7 +7,7 @@ $
 $   Copyright (C) 2011-2012 by Embedded and Real-Time Systems Laboratory
 $               Graduate School of Information Science, Nagoya Univ., JAPAN
 $  
-$   上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+$   上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
 $   ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
 $   変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
 $   (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -39,7 +39,7 @@ $
 $ =====================================================================
 
 $  チップ依存部のテンプレートファイルのインクルード
-$INCLUDE "sh12a_gcc/prc_offset.tf"$
+$INCLUDE "v850_gcc/prc_offset.tf"$
 
 $DEFINE("TINIB_sstksz", offsetof_TINIB_TSKINICTXB_sstksz)$
 $DEFINE("TINIB_sstk_bottom", offsetof_TINIB_TSKINICTXB_sstk_bottom)$

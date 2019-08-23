@@ -76,18 +76,6 @@ LDFLAGS := -nostartfiles -lgcc -lc $(LDFLAGS)
 CFG1_OUT_LDFLAGS := -nostdlib
 
 #
-#  スタートアップモジュールに関する定義
-#
-START_OBJS = start.o
-
-$(START_OBJS): %.o: %.S
-	$(CC) -c $(CFLAGS) $(KERNEL_CFLAGS) $<
-
-$(START_OBJS:.o=.d): %.d: %.S
-	@$(PERL) $(SRCDIR)/utils/makedep -C $(CC) \
-		-O "$(CFLAGS) $(KERNEL_CFLAGS)" $< >> Makefile.depend
-
-#
 #  kernel_cfg_asm.Sののコンパイルルールと依存関係作成ルールの定義
 #
 #  kernel_cfg_asm.Sは，アプリケーションプログラム用，システムサー
