@@ -68,6 +68,10 @@ _start:
 	Lea		__ctbp , r6
 	ldsr	r6 , 20
 	
+
+	jarl _kernel_bss_clear, lp
+	jarl _kernel_data_init, lp
+
 	/*
 	 *  hardware_init_hook の呼出し（0 でない場合）
 	 *
@@ -80,39 +84,6 @@ _start:
 	be		hardware_init_hook_end
 	jarl	hardware_init_hook, lp
 hardware_init_hook_end:
-	
-	/*
-	 *  bssセクションのクリア
-	 *   アラインされているので4ずつ行く
-	 */
-	Lea		__bss_start, ep
-	Lea		__bss_end, r6
-bss_clear_start:
-	cmp		ep, r6
-	be		bss_clear_end
-	sst.w	r0, 0[ep]
-	add		4, ep
-	br		bss_clear_start
-bss_clear_end:
-
-	/*
-	 *  dataセクションの初期化（ROM化対応）
-	 *
-	 *  __idata_start から __idata_end までを，__data_start 以降に
-	 *  コピーする．
-	 */
-	Lea		__idata_start, r6
-	Lea		__idata_end,   r7
-	Lea		__data_start,  r8
-data_init_start:
-	cmp		r6, r7
-	be		data_init_end
-	ld.w	0[r6], r9
-	st.w	r9, 0[r8]
-	add		4, r6
-	add		4, r8
-	br		data_init_start
-data_init_end:
 
 	/*
 	 *  software_init_hook を呼出し（0 でない場合）

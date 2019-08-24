@@ -260,3 +260,38 @@ default_int_handler(void *p_excinf)
 }
 #endif /* OMIT_DEFAULT_INT_HANDLER */
 
+#include "memory.h"
+
+void kernel_bss_clear(void)
+{
+	uint_t i = 0;
+	unsigned char *p;
+	unsigned char *e;
+	for (i = 0; i < tnum_bsssec; i++) {
+		p = bsssecinib_table[i].start_bss;
+		e = bsssecinib_table[i].end_bss;
+		for (;p < e; p++) {
+			*p = 0;
+		}
+	}
+	return;
+}
+
+void kernel_data_init(void)
+{
+	uint_t i = 0;
+	unsigned char *p_rom;
+	unsigned char *e_rom;
+	unsigned char *p_ram;
+
+	for (i = 0; i < tnum_datasec; i++) {
+		p_rom = datasecinib_table[i].start_data;
+		e_rom = datasecinib_table[i].end_data;
+		p_ram = datasecinib_table[i].start_idata;
+		for (;p_rom < e_rom; p_ram++, p_rom++) {
+			*p_ram = *p_rom;
+		}
+	}
+	return;
+}
+
