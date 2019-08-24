@@ -1,38 +1,135 @@
+$ ======================================================================
 $
-$ TOPPERS/ASP Kernel
-$     Toyohashi Open Platform for Embedded Real-Time Systems/
-$     Advanced Standard Profile Kernel
+$   TOPPERS/HRP Kernel
+$       Toyohashi Open Platform for Embedded Real-Time Systems/
+$       High Reliable system Profile Kernel
 $
-$ Copyright (C) 2010 by Meika Sugimoto
+$   Copyright (C) 2011-2012 by Embedded and Real-Time Systems Laboratory
+$               Graduate School of Information Science, Nagoya Univ., JAPAN
+$  
+$   上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
+$   ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
+$   変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
+$   (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
+$       権表示，この利用条件および下記の無保証規定が，そのままの形でソー
+$       スコード中に含まれていること．
+$   (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
+$       用できる形で再配布する場合には，再配布に伴うドキュメント（利用
+$       者マニュアルなど）に，上記の著作権表示，この利用条件および下記
+$       の無保証規定を掲載すること．
+$   (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
+$       用できない形で再配布する場合には，次のいずれかの条件を満たすこ
+$       と．
+$     (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
+$         作権表示，この利用条件および下記の無保証規定を掲載すること．
+$     (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
+$         報告すること．
+$   (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
+$       害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
+$       また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
+$       由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
+$       免責すること．
+$  
+$   本ソフトウェアは，無保証で提供されているものである．上記著作権者お
+$   よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
+$   に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
+$   アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
+$   の責任を負わない．
 $
-$ 上記著作権者は，以下の(1)潤ｵ(4)の条件を満たす場合に限り，本ソフトウェ
-$ ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
-$ 変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
-$ (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
-$     権表示，この利用条件および下記の無保証規定が，そのままの形でソー
-$     スコード中に含まれていること．
-$ (2) 本ソフトウェアを，ライブラリ形式など，他のソフトウェア開発に使
-$     用できる形で再配布する場合には，再配布に伴うドキュメント（利用
-$     者マニュアルなど）に，上記の著作権表示，この利用条件および下記
-$     の無保証規定を掲載すること．
-$ (3) 本ソフトウェアを，機器に組み込むなど，他のソフトウェア開発に使
-$     用できない形で再配布する場合には，次のいずれかの条件を満たすこ
-$     と．
-$   (a) 再配布に伴うドキュメント（利用者マニュアルなど）に，上記の著
-$       作権表示，この利用条件および下記の無保証規定を掲載すること．
-$   (b) 再配布の形態を，別に定める方法によって，TOPPERSプロジェクトに
-$       報告すること．
-$ (4) 本ソフトウェアの利用により直接的または間接的に生じるいかなる損
-$     害からも，上記著作権者およびTOPPERSプロジェクトを免責すること．
-$     また，本ソフトウェアのユーザまたはエンドユーザからのいかなる理
-$     由に基づく請求からも，上記著作権者およびTOPPERSプロジェクトを
-$     免責すること．
-$
-$ 本ソフトウェアは，無保証で提供されているものである．上記著作権者お
-$ よびTOPPERSプロジェクトは，本ソフトウェアに関して，特定の使用目的
-$ に対する適合性も含めて，いかなる保証も行わない．また，本ソフトウェ
-$ アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
-$ の責任を負わない．
+$ =====================================================================
+
+$ 
+$     パス2のターゲット依存テンプレート（SH2A-MG-EVB用）
+$ 
+
+
+$INTNO_VALID = { 20,21,...,101;
+                 102,103,...,114;
+                 134,135,136;
+                 142,143,144,145,148;
+                 156;
+                 312,313,...,351;
+                 353,354,...,359;
+                 403,404,407,408;
+                 411,412,415,416;
+                 427,428,...,464;
+                 478,479,...,482;
+                 487,488,...,493 }$
+
+$INHNO_VALID = INTNO_VALID$
+
+$EXCNO_VALID = { 0,1,...,19 }$
+
+$ 
+$  同じ割込み優先度を設定しなければならない割込み番号のリスト
+$  　（-1をセパレータとする。）
+$ 
+$same_intpri_list = { 108,109,-1,
+					  112,113,-1,
+					  116,117,-1,
+					  120,121,-1,
+					  124,125,-1,
+					  128,129,-1,
+					  132,133,-1,
+					  136,137,-1,
+					  156,157,158,159,-1,
+					  160,161,162,-1,
+					  164,165,-1,
+					  168,169,-1,
+					  172,173,-1,
+					  176,177,-1,
+					  180,181,182,183,-1,
+					  188,189,190,191,-1,
+					  196,197,198,-1,
+					  200,201,-1,
+					  204,205,206,207,-1,
+					  212,213,214,215,-1,
+					  220,221,222,-1,
+					  228,229,230,231,232,-1,
+					  240,241,242,243,-1,
+					  244,245,246,247,-1,
+					  248,249,250,251,-1,
+					  252,253,254,255,-1,
+					  256,257,258,-1
+					}$
+
+
+$ 
+$ IRQ割込みで使用できる割込み属性
+$ 		・ポジティブエッジ
+$ 		・ネガティブエッジ
+$ 		・両ティブエッジ
+$ 		・ローレベル
+$ 
+$valid_irq_intatr_list = {
+	0,
+	TA_POSEDGE,
+	TA_NEGEDGE,
+	TA_BOTHEDGE,
+	TA_EDGE,
+	TA_EDGE | TA_POSEDGE,
+	TA_EDGE | TA_NEGEDGE,
+	TA_EDGE | TA_BOTHEDGE,
+	TA_LOWLEVEL
+}$
+
+$ 
+$ NMIで使用できる割込み属性
+$ 		・ポジティブエッジ
+$ 		・ネガティブエッジ
+$ 
+$valid_nmi_intatr_list = {
+	TA_POSEDGE,
+	TA_NEGEDGE,
+	TA_EDGE,
+	TA_EDGE | TA_POSEDGE,
+	TA_EDGE | TA_NEGEDGE
+}$
+
+$ 
+$  kernel/kernel.tfのための定義
+$ 
+
 $ 
 $  標準のセクションのメモリオブジェクト属性の定義
 $ 
@@ -123,8 +220,8 @@ $
 $  arch/gcc/ldscript.tfのターゲット依存部
 $ 
 $FUNCTION GENERATE_OUTPUT$
-    OUTPUT_FORMAT("elf32-sh") $NL$
-    OUTPUT_ARCH(sh)           $NL$
+    OUTPUT_FORMAT("elf32-v850-rh850","elf32-v850-rh850","elf32-v850-rh850") $NL$
+    OUTPUT_ARCH(v850-rh850)           $NL$
     STARTUP(start.o)          $NL$
     $NL$
 $END$
@@ -236,7 +333,7 @@ $  共有領域
     $END$
 $END$
 
-$
+$ 
 $  DOMINICTXBの初期化情報を生成
 $ 
 $FUNCTION GENERATE_DOMINICTXB$
@@ -277,6 +374,7 @@ $FUNCTION GENERATE_TSKINICTXB$
         },
     $END$
 $END$
+
 $
 $  リンカのためのセクション記述の生成
 $
@@ -314,6 +412,12 @@ $END$
 
 
 $ 
+$  プロセッサ依存のテンプレートファイルのインクルード
+$ 
+$INCLUDE "v850_gcc/prc.tf"$ 
+$INCLUDE "v850_gcc/ldscript.tf"$ 
+
+$ 
 $  ユーザスタックのサイズチェック
 $ 
 $FOREACH tskid TSK.ID_LIST$
@@ -331,9 +435,6 @@ extern char * const shared_meminib_table[];$NL$
 $NL$
 
 $FILE "kernel_cfg.c"$
-$TOPPERS_SUPPORT_ATT_MOD = 1$
-
-$INCLUDE "v850_gcc/v850es_fk3.tf"$
 $TNUM_SHARED_REGION = 4$
 const uint_t tnum_shared_mem = $TNUM_SHARED_REGION * 2$;$NL$
 char * const shared_meminib_table[$TNUM_SHARED_REGION * 2$] = {$NL$
@@ -347,6 +448,30 @@ char * const shared_meminib_table[$TNUM_SHARED_REGION * 2$] = {$NL$
     $SPC$(&__limit_srpw_all - 4),
 };$NL$
 $NL$
+
+$ 
+$  エミュレートされたCPU例外ハンドラのアドレス
+$ 
+$FILE "kernel_cfg_asm.S"$
+$IF LENGTH(TEXCNO_EMULATE_TEXRTN)$
+    $TAB$.section .rodata_kernel$NL$
+    $TAB$.align 4$NL$
+    $TAB$.global __kernel_emulate_texrtn_handler$NL$
+    $TAB$.extern
+    $IF LENGTH(EXC.EXCHDR[TEXCNO_EMULATE_TEXRTN])$
+        $SPC$_$EXC.EXCHDR[TEXCNO_EMULATE_TEXRTN]$
+    $ELSE$
+        $SPC$__kernel_default_exc_handler
+    $END$
+    $NL$
+
+    __kernel_emulate_texrtn_handler:$NL$
+    $IF LENGTH(EXC.EXCHDR[TEXCNO_EMULATE_TEXRTN])$
+        $TAB$.long _$EXC.EXCHDR[TEXCNO_EMULATE_TEXRTN]$$NL$
+    $ELSE$
+        $TAB$.long __kernel_default_exc_handler$NL$
+    $END$
+$END$
 $IF LENGTH(TEXCNO_EMULATE_RET_TEX)$
     $TAB$.section .rodata_kernel$NL$
     $TAB$.align 4$NL$
@@ -381,4 +506,11 @@ $IF LENGTH(DOM.ID_LIST)$
 $ELSE$
 	const DOMINIB dom_valid_map_table[0];$NL$
 $END$$NL$
-$ $INCLUDE "arch/logtrace/tlv.tf"$
+
+$ 
+$  data, idataセクションの再配置をするためのシェルスクリプトを生成
+$ 
+$IF COPY_IDATA_SECTION == 1$
+    $INCLUDE "section_rename.tf"$
+$END$
+

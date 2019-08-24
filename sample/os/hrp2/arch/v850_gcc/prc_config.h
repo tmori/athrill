@@ -314,15 +314,16 @@ extern void exit_and_dispatch(void);
 extern void call_exit_kernel(void) NoReturn;
 
 /*
- *  タスクコンテキストの初期化
+ *	タスクコンテキストの初期化
  *
- *  タスクが休止状態から実行できる状態に移行する時に呼ばれる．この時点
- *  でスタック領域を使ってはならない．
+ *	タスクが休止状態から実行できる状態に移行する時に呼ばれる．この時点
+ *	でスタック領域を使ってはならない．
  *
- *  activate_contextを，インライン関数ではなくマクロ定義としているのは，
- *  この時点ではTCBが定義されていないためである．
+ *	activate_contextを，インライン関数ではなくマクロ定義としているのは，
+ *	この時点ではTCBが定義されていないためである．
  */
-extern void    start_r(void);
+extern void    start_stask_r(void);
+extern void    start_utask_r(void);
 
 #define activate_context(p_tcb) 										\
 {\

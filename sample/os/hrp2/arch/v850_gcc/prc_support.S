@@ -57,7 +57,30 @@
 	.globl	_set_intpri
 	.globl	_call_texrtn
 	.globl	_ipmflg
-	
+
+
+/*
+ *	タスク起動処理
+ *
+ *	ディスパッチャから、以下の状態でここにくる。
+ *  　・タスクコンテキスト
+ *  　・CPUロック状態
+ *  　・割込み優先度マスク全解除状態
+ *  　・ディスパッチ許可状態
+ *
+ *	ディスパッチャから呼び出されるため，TCBのアドレスはr0に
+ *	入っている
+ */
+	.section .text_kernel
+	.global _start_stask_r
+	.global _start_utask_r
+
+    /* システムタスクの起動処理：HRPと同様 */
+_start_stask_r:
+	di /* TODO */
+	ei /* TODO */
+	br		dispatcher /* TODO */
+
 /*
  *	ディスパッチの開始
  *
@@ -106,7 +129,7 @@ _dispatch:
 	/* スタックと次の起動番地を保存 */
 	Lea		_p_runtsk, ep
 	sld.w	0[ep], ep
-	sst.w	sp, TCB_sp[ep]
+	sst.w	sp, TCB_usp[ep]
 	Lea		dispatch_r, r10
 	sst.w	r10, TCB_pc[ep]
 	
@@ -131,7 +154,7 @@ dispatcher:
 	/* スタックと次の起動番地を復帰 */
 	mov		r22, ep
 	sld.w	TCB_pc[ep], r20
-	sld.w	TCB_sp[ep], sp
+	sld.w	TCB_usp[ep], sp
 #ifdef LOG_DSP_LEAVE
 	ld.w	0[r21] , r6	/* 引数にp_runtskを指定 */
 	jarl	_log_dsp_leave , lp
@@ -533,7 +556,7 @@ ret_int:
 	/* TCBに復帰先の情報を設定 */
 	Lea		_p_runtsk, r10
 	ld.w	0[r10], r10
-	st.w	sp , TCB_sp[r10]
+	st.w	sp , TCB_usp[r10]
 	Lea		ret_int_r, r11
 	st.w	r11 , TCB_pc[r10]
 	

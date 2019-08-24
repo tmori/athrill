@@ -65,7 +65,7 @@ const TCB	TCB_enatex = {
 #ifdef TOPPERS_SUPPORT_OVRHDR
 	0U,						/* leftotm */
 #endif /* TOPPERS_SUPPORT_OVRHDR */
-	{ NULL, 0 }		/* tskctxb */
+	{ NULL, NULL, 0, 0 }		/* tskctxb */
 };
 
 const TCB	TCB_waifbd = {
@@ -85,7 +85,7 @@ const TCB	TCB_waifbd = {
 #ifdef TOPPERS_SUPPORT_OVRHDR
 	0U,						/* leftotm */
 #endif /* TOPPERS_SUPPORT_OVRHDR */
-	{ NULL, 0 }		/* タスクコンテキストブロック */
+	{ NULL, NULL, 0, 0 }		/* tskctxb */
 };
 
 const TCB	TCB_svclevel = {
@@ -105,7 +105,7 @@ const TCB	TCB_svclevel = {
 #ifdef TOPPERS_SUPPORT_OVRHDR
 	0U,						/* leftotm */
 #endif /* TOPPERS_SUPPORT_OVRHDR */
-	{ NULL, 0 },	/* タスクコンテキストブロック */
+	{ NULL, NULL, 0, 0 }		/* tskctxb */
 };
 
 

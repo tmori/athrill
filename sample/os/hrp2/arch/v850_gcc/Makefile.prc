@@ -64,7 +64,7 @@ KERNEL_COBJS	:= $(KERNEL_COBJS) prc_config.o
 #
 #  コンフィギュレータ関連の設定
 #
-CFG2_OUT := kernel_cfg_asm.S $(CFG2_OUT)
+CFG2_OUT := $(CFG2_OUT)
 CFG_ASMOBJS := kernel_cfg_asm.o $(CFG_ASMOBJS)
 CFG_TABS := --cfg1-def-table $(SRCDIR)/arch/v850_gcc/prc_def.csv $(CFG_TABS)
 
