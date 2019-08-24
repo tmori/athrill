@@ -5,7 +5,7 @@
  * 
  *  Copyright (C) 2010 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の(1)〜(4)の条件を満たす場合に限り，本ソフトウェ
+ *  上記著作権者は，以下の(1)~(4)の条件を満たす場合に限り，本ソフトウェ
  *  ア（本ソフトウェアを改変したものを含む．以下同じ）を使用・複製・改
  *  変・再配布（以下，利用と呼ぶ）することを無償で許諾する．
  *  (1) 本ソフトウェアをソースコードの形で利用する場合には，上記の著作
@@ -39,10 +39,74 @@
 #ifndef TARGET_CFG1_OUT_H
 #define TARGET_CFG1_OUT_H
 
-#include "v850_gcc/prc_cfg1_out.h"
+void sta_ker(void){}
 
-const TCB	TCB_waifbd;
+/* 
+ *  オフセットファイルを生成するための定義 
+ */ 
+const uint8_t   MAGIC_1 = 0x12; 
+const uint16_t  MAGIC_2 = 0x1234; 
+const uint32_t  MAGIC_4 = 0x12345678;
 
-const TCB	TCB_svclevel;
+const TCB	TCB_enatex = {
+	{ NULL, NULL },			/* task_queue */
+	NULL,					/* p_tinib */
+	0U,						/* tstat */
+	0U,						/* svclevel */
+	0U,						/* bpriority */
+	0U,						/* priority */
+	false,					/* acqeue */
+	false,					/* wupque */
+	true,					/* enatex */
+	false,					/* waifbd */
+	0U,						/* texprn */
+	NULL,					/* p_winifo */
+	{ NULL, NULL },			/* mutex_queue */
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	0U,						/* leftotm */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+	{ NULL, 0 }		/* tskctxb */
+};
+
+const TCB	TCB_waifbd = {
+	{ NULL, NULL },		/* タスクキュー */
+	NULL,				/* 初期化ブロックへのポインタ */
+	0,					/* タスク状態（内部表現）*/
+	0,					/* 拡張サービスコールのネストレベル */
+	0,					/* ベース優先度（内部表現）*/
+	0,					/* 現在の優先度（内部表現）*/
+	false,				/* 起動要求キューイング */
+	false,				/* 起床要求キューイング */
+	false,				/* タスク例外処理許可状態 */
+	true,				/* 待ち禁止状態 */
+	0,					/* 保留例外要因 */
+	NULL,				/* 待ち情報ブロックへのポインタ */
+	{ NULL, NULL },		/* ロックしているミューテックスのキュー */
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	0U,						/* leftotm */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+	{ NULL, 0 }		/* タスクコンテキストブロック */
+};
+
+const TCB	TCB_svclevel = {
+	{ NULL, NULL },		/* タスクキュー */
+	NULL,				/* 初期化ブロックへのポインタ */
+	0,					/* タスク状態（内部表現）*/
+	1,					/* 拡張サービスコールのネストレベル */
+	0,					/* ベース優先度（内部表現）*/
+	0,					/* 現在の優先度（内部表現）*/
+	false,				/* 起動要求キューイング */
+	false,				/* 起床要求キューイング */
+	false,				/* タスク例外処理許可状態 */
+	false,				/* 待ち禁止状態 */
+	0,					/* 保留例外要因 */
+	NULL,				/* 待ち情報ブロックへのポインタ */
+	{ NULL, NULL },		/* ロックしているミューテックスのキュー */
+#ifdef TOPPERS_SUPPORT_OVRHDR
+	0U,						/* leftotm */
+#endif /* TOPPERS_SUPPORT_OVRHDR */
+	{ NULL, 0 },	/* タスクコンテキストブロック */
+};
+
 
 #endif	/* TARGET_CFG1_OUT_H */
