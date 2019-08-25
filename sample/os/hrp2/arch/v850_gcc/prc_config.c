@@ -295,3 +295,36 @@ void kernel_data_init(void)
 	return;
 }
 
+void software_init_hook(void)
+{
+	return;
+}
+void hardware_init_hook(void)
+{
+	return;
+}
+
+
+/*
+ *  メモリ領域がユーザスタック領域に含まれているかのチェック
+ *
+ *  先頭番地がbaseでサイズがsizeのメモリ領域が，p_tcbで指定されるタスク
+ *  のユーザスタック領域に含まれている場合にtrue，そうでない場合に
+ *  falseを返す．
+ *
+ *  メモリ領域の先頭番地からユーザスタックの底までの長さが
+ *  メモリ領域のサイズよりも大きく，かつ，
+ *  ユーザスタックのサイズよりも小さければ，メモリ領域は，
+ *  ユーザスタックの範囲内である．
+ *
+ */
+bool_t
+within_ustack(const void *base, SIZE size, TCB *p_tcb)
+{
+	SIZE stk_bottom = (SIZE)(p_tcb->p_tinib->tskinictxb.stk_bottom);
+	SIZE len = stk_bottom - (SIZE)base;
+
+	return ((SIZE)base < stk_bottom
+			&& len >= size
+			&& len <= (SIZE)(p_tcb->p_tinib->tskinictxb.stksz));
+}

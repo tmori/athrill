@@ -89,7 +89,7 @@ void target_timer_terminate(intptr_t exinf)
  *  タイマ割込みハンドラ
  */
 void
-target_timer_handler(void)
+_kernel_target_timer_handler_22(void)
 {
 	HwcounterClearInterrupt(INTNO_TIMER);
 

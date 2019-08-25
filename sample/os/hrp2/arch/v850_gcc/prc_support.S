@@ -55,7 +55,7 @@
 
 /* 外部参照宣言 */
 	.globl	_set_intpri
-	.globl	_call_texrtn
+	.globl	_call_texrtn_stask
 	.globl	_ipmflg
 
 
@@ -77,6 +77,11 @@
 
     /* システムタスクの起動処理：HRPと同様 */
 _start_stask_r:
+	di /* TODO */
+	ei /* TODO */
+	br		dispatcher /* TODO */
+
+_start_utask_r:
 	di /* TODO */
 	ei /* TODO */
 	br		dispatcher /* TODO */
@@ -236,7 +241,7 @@ dispatch_r:
 	be		ret_to_task
 
 	/* タスク例外の呼び出し */
-	jarl	_call_texrtn, lp
+	jarl	_call_texrtn_stask, lp
 ret_to_task:
 	mov		sp, ep
 	sld.w	56[ep], r2
@@ -507,7 +512,7 @@ check_texrtn_cond_1:
 	ld.w	TCB_texptn[r11] , r11
 	cmp		r0, r11
 	bz		return_from_int
-	jarl	_call_texrtn , lp
+	jarl	_call_texrtn_stask , lp
 	br		return_from_int
 
 /*

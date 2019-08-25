@@ -79,10 +79,10 @@ _start:
 	 *  は，hardware_init_hook という関数を用意する．
 	 */
 
-	Lea		hardware_init_hook, r1
+	Lea		_hardware_init_hook, r1
 	cmp		r0, r1
 	be		hardware_init_hook_end
-	jarl	hardware_init_hook, lp
+	jarl	_hardware_init_hook, lp
 hardware_init_hook_end:
 
 	/*
@@ -93,10 +93,10 @@ hardware_init_hook_end:
 	 *  よい．
 	 */
 
-	Lea		software_init_hook, r1
+	Lea		_software_init_hook, r1
 	cmp		r0, r1
 	be		software_init_hook_end
-	jarl	software_init_hook, r31
+	jarl	_software_init_hook, r31
 software_init_hook_end:
 
 	/*

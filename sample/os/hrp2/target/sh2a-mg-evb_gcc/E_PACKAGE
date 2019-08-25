@@ -1,6 +1,0 @@
-E_PACKAGE hrp2_sh2a-mg-evb_gcc
-VERSION %date
-
-INCLUDE MANIFEST
-INCLUDE ../../MANIFEST
-INCLUDE ../../arch/sh12a_gcc/MANIFEST

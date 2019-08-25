@@ -263,6 +263,12 @@ $  共有領域
 $   共有リード専用ライト領域全体
     PROVIDE(___start_srpw_all = 0xffffffff);$NL$
     PROVIDE(___limit_srpw_all = 0xffffffff);$NL$
+    $FOREACH tskid TSK.ID_LIST$
+        $IF TSK.DOMAIN[tskid] != TDOM_KERNEL$
+            PROVIDE(___start_user_stack$tskid$ = 0xffffffff);$NL$
+            PROVIDE(___limit_user_stack$tskid$ = 0xffffffff);$NL$
+        $END$
+    $END$
 $END$
 
 $FUNCTION GENERATE_SECTION_FIRST$
@@ -415,7 +421,7 @@ $
 $  プロセッサ依存のテンプレートファイルのインクルード
 $ 
 $INCLUDE "v850_gcc/prc.tf"$ 
-$INCLUDE "v850_gcc/ldscript.tf"$ 
+$INCLUDE "gcc/ldscript.tf"$ 
 
 $ 
 $  ユーザスタックのサイズチェック

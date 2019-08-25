@@ -10,7 +10,7 @@
  *
  *  Copyright (C) 2010,2013 by Meika Sugimoto
  * 
- *  上記著作権者は，以下の (1)〜(4) の条件か，Free Software Foundation 
+ *  上記著作権者は，以下の (1)~(4) の条件か，Free Software Foundation 
  *  によって公表されている GNU General Public License の Version 2 に記
  *  述されている条件を満たす場合に限り，本ソフトウェア（本ソフトウェア
  *  を改変したものを含む．以下同じ）を使用・複製・改変・再配布（以下，
@@ -59,7 +59,7 @@ struct sio_port_control_block {
 	const SIOPINIB	*p_siopinib;	/* 初期化ブロック */
 	intptr_t	exinf;				/* 拡張情報 */
 	bool_t		openflag;			/* オープン済みフラグ */
-	int_t		port_id;			/* ポート番号(0〜) */
+	int_t		port_id;			/* ポート番号(0~) */
 	bool_t		received;			/* 受信有無フラグ */
 };
 
@@ -273,3 +273,18 @@ sio_rx_isr(intptr_t exinf)
 	sio_irdy_rcv(siopcb->exinf);
 }
 
+extern void _kernel_inthdr_45(void);
+extern void _kernel_inthdr_44(void);
+
+void
+_kernel__kernel_inthdr_45_45(void)
+{
+	_kernel_inthdr_45();
+	return;
+}
+void
+_kernel__kernel_inthdr_44_44(void)
+{
+	_kernel_inthdr_44();
+	return;
+}

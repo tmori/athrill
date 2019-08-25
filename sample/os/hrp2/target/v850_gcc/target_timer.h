@@ -42,7 +42,7 @@ Inline bool_t target_timer_probe_int(void)
 }
 
 
-extern void target_timer_handler(void);
+extern void kernel_target_timer_handler(void);
 
 #endif	/* TOPPERS_MACRO_ONLY */
 
