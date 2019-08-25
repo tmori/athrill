@@ -13,4 +13,11 @@ extern bool dbg_serial_getchar_file(uint8 channel, uint8 *data);
 extern bool dbg_serial_putchar_file(uint8 channel, uint8 data);
 extern void dbg_serial_flush_file(uint8 channel);
 
+
+extern Std_ReturnType dbg_serial_init_tcp(uint8 channel_num);
+extern Std_ReturnType dbg_serial_open_tcp(uint8 channel, uint32 server_portno);
+extern bool dbg_serial_getchar_tcp(uint8 channel, uint8 *data);
+extern bool dbg_serial_putchar_tcp(uint8 channel, uint8 data);
+
+
 #endif /* _DBG_TARGET_SERIAL_H_ */
