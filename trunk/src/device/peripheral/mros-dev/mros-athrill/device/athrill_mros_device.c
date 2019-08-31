@@ -181,6 +181,7 @@ int athrill_mros_device_start(void)
 {
 	pthread_t thread;
 
+	set_athrill_task();
 	return pthread_create(&thread, NULL, athrill_mros_device_main, NULL);
 }
 
