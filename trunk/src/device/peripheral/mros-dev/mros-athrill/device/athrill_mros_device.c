@@ -76,7 +76,7 @@ static void athrill_mros_callback(const char *msg)
 		mRosTopicSubBufferType *bp = get_subptr(topic_id, datalen + 1);
 		memcpy(bp->buffer, msg, datalen + 1);
 		bp->buffer[datalen] = '\0';
-		printf("callback:topic_id=%u:datalen=%u: %s\n", topic_id, datalen, bp->buffer);
+		//printf("callback:topic_id=%u:datalen=%u: %s\n", topic_id, datalen, bp->buffer);
 		if (bp->func != NULL) {
 			bp->func(bp->buffer, datalen);
 		}
