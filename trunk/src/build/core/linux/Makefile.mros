@@ -1,0 +1,100 @@
+include Makefile.env
+
+ROOTDIR		:= $(CORE_DIR)
+SRC_ROOT	:= $(ROOTDIR)/device/peripheral/mros-dev/mros-src
+DEV_ROOT	:= $(ROOTDIR)/device/peripheral/mros-dev/mros-athrill
+
+ROS_VERSION	:= kinetic
+
+LIBTARGET	:= libmros.a
+
+IFLAGS	:= -I.
+IFLAGS	+= -I$(SRC_ROOT)/api
+IFLAGS	+= -I$(DEV_ROOT)/api
+IFLAGS	+= -I$(DEV_ROOT)/config
+IFLAGS	+= -I$(DEV_ROOT)/config/os/target/os_asp
+IFLAGS	+= -I$(DEV_ROOT)/target
+IFLAGS	+= -I$(DEV_ROOT)/target/os
+IFLAGS	+= -I$(DEV_ROOT)/device
+IFLAGS	+= -I$(SRC_ROOT)/inc
+IFLAGS	+= -I$(SRC_ROOT)/os/target/os_asp
+IFLAGS	+= -I$(SRC_ROOT)/protocol/cimpl
+IFLAGS	+= -I$(SRC_ROOT)/node/cimpl
+IFLAGS	+= -I$(SRC_ROOT)/topic/cimpl
+IFLAGS	+= -I$(SRC_ROOT)/comm/cimpl/target/lwip
+IFLAGS	+= -I$(SRC_ROOT)/comm/cimpl
+IFLAGS	+= -I$(SRC_ROOT)/packet/cimpl
+IFLAGS	+= -I$(SRC_ROOT)/packet/template/version/$(ROS_VERSION)
+IFLAGS	+= -I$(SRC_ROOT)/packet/cimpl/version/$(ROS_VERSION)
+IFLAGS	+= -I$(SRC_ROOT)/protocol/cimpl
+IFLAGS	+= -I$(SRC_ROOT)/transfer/cimpl
+
+VPATH	:= $(SRC_ROOT)/comm/cimpl/target/lwip
+VPATH	+= $(SRC_ROOT)/comm/cimpl/target/lwip
+VPATH	+= $(SRC_ROOT)/comm/cimpl
+VPATH	+= $(SRC_ROOT)/node/cimpl
+VPATH	+= $(SRC_ROOT)/lib
+VPATH	+= $(SRC_ROOT)/os
+VPATH	+= $(SRC_ROOT)/os/target/os_asp
+VPATH	+= $(SRC_ROOT)/packet/cimpl/version/$(ROS_VERSION)
+VPATH	+= $(SRC_ROOT)/protocol/cimpl
+VPATH	+= $(SRC_ROOT)/topic/cimpl
+VPATH	+= $(SRC_ROOT)/transfer/cimpl
+VPATH	+= $(DEV_ROOT)/api
+VPATH	+= $(DEV_ROOT)
+VPATH	+= $(DEV_ROOT)/target/lwip
+VPATH	+= $(DEV_ROOT)/target/os
+VPATH	+= $(DEV_ROOT)/device
+VPATH	+= $(DEV_ROOT)/config
+VPATH	+= $(DEV_ROOT)/config/os/target/os_asp
+
+CFLAGS	:= $(WFLAGS)
+CFLAGS	+= $(IFLAGS)
+CFLAGS += -DTARGET_ATHRILL 
+CFLAGS += -DLWIP_TRANSPORT_ETHERNET
+
+
+OBJS += ros_cimpl.o
+OBJS += mros_comm_cimpl.o
+OBJS += mros_comm_socket_cimpl.o
+OBJS += mros_comm_tcp_client_cimpl.o
+OBJS += mros_comm_tcp_client_factory_cimpl.o
+OBJS += mros_comm_tcp_server_cimpl.o
+OBJS += mros_memory.o
+OBJS += mros_wait_queue.o
+OBJS += mros_node_cimpl.o
+OBJS += mros_exclusive_area.o
+OBJS += mros_exclusive_ops_linux.o
+OBJS += mros_os.o
+OBJS += mros_packet_decoder_cimpl.o
+OBJS += mros_packet_encoder_cimpl.o
+OBJS += mros_protocol_client_rpc_cimpl.o
+OBJS += mros_protocol_master_cimpl.o
+OBJS += mros_protocol_operation_cimpl.o
+OBJS += mros_protocol_publish_cimpl.o
+OBJS += mros_protocol_server_proc_cimpl.o
+OBJS += mros_protocol_slave_cimpl.o
+OBJS += mros_protocol_subscribe_cimpl.o
+OBJS += mros_topic_data_publisher_cimpl.o
+OBJS += mros_topic_data_subscriber_cimpl.o
+OBJS += mros_topic_cimpl.o
+OBJS += mros_topic_connector_cimpl.o
+OBJS += mros_topic_connector_factory_cimpl.o
+OBJS += mros_name.o
+OBJS += mros_os_config.o
+OBJS += mros_usr_config.o
+OBJS += mros_sys_config.o
+OBJS += lwip_linux.o
+OBJS += os_asp.o
+OBJS += athrill_mros_device.o
+
+all:	$(LIBTARGET)
+
+$(LIBTARGET):	$(OBJS)
+	$(AR) $(AFLAGS) $(LIBTARGET) $(OBJS)
+
+clean:
+	$(RM) -f $(OBJS) $(LIBTARGET)
+
+
+
