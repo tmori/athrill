@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
+#include "cpuemu_ops.h"
+#include "std_errno.h"
 #include "athrill_mros_device.h"
 #include "mros_os_config.h"
 
@@ -154,11 +156,20 @@ static int athrill_mros_device_sub_init(AthrillMrosDevSubReqType *reqs, int req_
 
 static void *athrill_mros_device_main(void *arg)
 {
+	Std_ReturnType ret;
 	int err;
+	char *node_name;
 
 	set_main_task();
 	main_task();
-	ros_init(0, NULL, "athrill_node");
+
+	ret = cpuemu_get_devcfg_string("DEBUG_FUNC_MROS_NODE_NAME", &node_name);
+	if (ret == STD_E_OK) {
+		ros_init(0, NULL, node_name);
+	}
+	else {
+		ros_init(0, NULL, "athrill_node");
+	}
 
 	err = athrill_mros_device_pub_init(athrill_mros_device_register.pub.reqs, athrill_mros_device_register.pub.req_num);
 	if (err != 0) {
