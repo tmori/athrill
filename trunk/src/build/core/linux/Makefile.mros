@@ -9,6 +9,10 @@ ROS_VERSION	:= kinetic
 LIBTARGET	:= libmros.a
 
 IFLAGS	:= -I.
+IFLAGS	+= -I$(ROOTDIR)/inc
+IFLAGS	+= -I$(ROOTDIR)/lib
+IFLAGS	+= -I$(TARGET_DIR)/cpu
+IFLAGS	+= -I$(TARGET_DIR)/cpu/config
 IFLAGS	+= -I$(SRC_ROOT)/api
 IFLAGS	+= -I$(DEV_ROOT)/api
 IFLAGS	+= -I$(DEV_ROOT)/config

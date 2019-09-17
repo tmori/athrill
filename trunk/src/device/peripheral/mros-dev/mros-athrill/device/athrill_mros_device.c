@@ -155,6 +155,7 @@ static int athrill_mros_device_sub_init(AthrillMrosDevSubReqType *reqs, int req_
 static void *athrill_mros_device_main(void *arg)
 {
 	int err;
+
 	set_main_task();
 	main_task();
 	ros_init(0, NULL, "athrill_node");
