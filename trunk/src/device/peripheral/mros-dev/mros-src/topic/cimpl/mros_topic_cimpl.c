@@ -260,7 +260,7 @@ mRosReturnType mros_topic_add_data(mRosTopicIdType id, mRosMemoryListEntryType *
 		return MROS_E_RANGE;
 	}
 	if (TOPIC_OBJ(id).data.queue_head.entry_num >= TOPIC_OBJ(id).data.queue_maxsize) {
-		ROS_WARN("%s %s() %u :WARNING: Removed topic data for queufull(%u).", __FILE__, __FUNCTION__, __LINE__, TOPIC_OBJ(id).data.queue_maxsize);
+		//ROS_WARN("%s %s() %u :WARNING: Removed topic data for queufull(%u).", __FILE__, __FUNCTION__, __LINE__, TOPIC_OBJ(id).data.queue_maxsize);
 		datap = ListEntry_First(TOPIC_OBJ(id).data.queue_head.entries);
 		ListEntry_RemoveEntry(&TOPIC_OBJ(id).data.queue_head, datap);
 		(void)mros_mem_free(datap->data.mgrp, datap);
