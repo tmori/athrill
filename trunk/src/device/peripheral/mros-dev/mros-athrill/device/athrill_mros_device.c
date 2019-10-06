@@ -8,6 +8,7 @@
 #include "std_errno.h"
 #include "athrill_mros_device.h"
 #include "mros_os_config.h"
+#include "mros_sys_config.h"
 
 typedef struct {
 	char 					*buffer;
@@ -154,6 +155,8 @@ static int athrill_mros_device_sub_init(AthrillMrosDevSubReqType *reqs, int req_
 	return 0;
 }
 
+char *mros_master_ipaddr = MROS_MASTER_IPADDR;
+
 static void *athrill_mros_device_main(void *arg)
 {
 	Std_ReturnType ret;
@@ -163,6 +166,7 @@ static void *athrill_mros_device_main(void *arg)
 	set_main_task();
 	main_task();
 
+	(void)cpuemu_get_devcfg_string("DEBUG_FUNC_MROS_MASTER_IPADDR", &mros_master_ipaddr);
 	ret = cpuemu_get_devcfg_string("DEBUG_FUNC_MROS_NODE_NAME", &node_name);
 	if (ret == STD_E_OK) {
 		ros_init(0, NULL, node_name);

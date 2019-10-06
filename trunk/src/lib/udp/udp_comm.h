@@ -16,6 +16,7 @@ typedef struct {
 extern Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *comm);
 extern Std_ReturnType udp_comm_read(UdpCommType *comm);
 extern Std_ReturnType udp_comm_write(UdpCommType *comm);
+extern Std_ReturnType udp_comm_remote_write(UdpCommType *comm, const char *remote_ipaddr);
 extern void udp_server_delete(UdpCommType *comm);
 
 #endif /* _UDP_SERVER_H_ */

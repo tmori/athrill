@@ -37,7 +37,7 @@ static mRosReturnType mros_protocol_master_register_subscriber(mRosProtocolMaste
 
 mRosReturnType mros_protocol_master_init(void)
 {
-	mRosReturnType ret = mros_comm_tcp_client_init(&mros_protocol_master.master_comm, MROS_MASTER_IPADDR, MROS_MASTER_PORT_NO);
+	mRosReturnType ret = mros_comm_tcp_client_init(&mros_protocol_master.master_comm, mros_master_ipaddr, MROS_MASTER_PORT_NO);
 	if (ret != MROS_E_OK) {
 		ROS_ERROR("%s %s() %u ret=%d", __FILE__, __FUNCTION__, __LINE__, ret);
 		return ret;

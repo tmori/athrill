@@ -75,6 +75,32 @@ Std_ReturnType udp_comm_write(UdpCommType *comm)
 
 	return STD_E_OK;
 }
+Std_ReturnType udp_comm_remote_write(UdpCommType *comm, const char *remote_ipaddr)
+{
+	int err;
+	struct target_os_api_sockaddr_type addr;
+
+	err = socket(AF_INET, SOCK_DGRAM, 0);
+	if (err < 0) {
+		return STD_E_INVALID;
+	}
+	comm->clt_sock = err;
+
+	addr.sin_family = AF_INET;
+	addr.sin_port = comm->client_port;
+	addr.sin_addr.target_os_sockaddr_sin_addr = inet_addr(remote_ipaddr);
+
+	err = sendto(comm->clt_sock, comm->write_data.buffer, comm->write_data.len, 0,
+			(struct sockaddr *)&addr, sizeof(addr));
+	if (err != comm->write_data.len) {
+		return STD_E_INVALID;
+	}
+	target_os_api_closesocket(comm->clt_sock);
+	comm->clt_sock = -1;
+
+	return STD_E_OK;
+}
+
 void udp_server_delete(UdpCommType *comm)
 {
 	target_os_api_closesocket(comm->srv_sock);
