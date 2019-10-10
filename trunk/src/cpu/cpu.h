@@ -17,7 +17,9 @@ typedef struct {
 
 typedef struct {
 	OpDecodedCodeType	decoded_code;
+#ifndef ARCH_V850ES_FK3
 	OpCodeId			code_id;
+#endif /* ARCH_V850ES_FK3 */
 	int (*op_exec) (TargetCoreType *cpu);
 } CpuOperationCodeType;
 

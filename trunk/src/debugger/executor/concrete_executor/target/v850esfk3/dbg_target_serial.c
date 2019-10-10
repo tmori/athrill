@@ -425,7 +425,7 @@ static Std_ReturnType file_cache_load(uint8 channel, SerialFileReaderType *rfile
 
 	err = read(rfile->file.fd, (char*)&DbgSerialCacheReadBuffer[channel].buffer[off], read_size);
 	if (err <= 0) {
-		printf("read error:%s err=%d errno=%d size=%d off=%d read_size=%d\n", rfile->file.path, err, errno, buf.st_size, rfile->read_off, read_size);
+		//printf("read error:%s err=%d errno=%d size=%d off=%d read_size=%d\n", rfile->file.path, err, errno, buf.st_size, rfile->read_off, read_size);
 		exit(1);
 	}
 	rfile->read_off += err;
