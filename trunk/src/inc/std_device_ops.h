@@ -6,6 +6,11 @@
 #include <sys/time.h>
 #include <time.h>
 
+static inline uint64 cpuemu_timeval2usec(struct timeval *tv)
+{
+	return ( (tv->tv_sec * 1000000LU) + tv->tv_usec );
+}
+
 static inline void cpuemu_timeval_sub(struct timeval *tv1, struct timeval *tv2, struct timeval *tv_result)
 {
 	tv_result->tv_sec = tv1->tv_sec - tv2->tv_sec;

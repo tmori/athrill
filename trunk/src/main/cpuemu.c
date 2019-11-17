@@ -465,7 +465,12 @@ void *cpuemu_thread_run(void* arg)
 					prev_elaps = elaps;
 				}
 #endif /* OS_LINUX */
-				cpuemu_dev_clock.clock += (cpuemu_dev_clock.min_intr_interval - 1);
+				if (cpuemu_dev_clock.min_intr_interval > 2U) {
+					cpuemu_dev_clock.clock += (cpuemu_dev_clock.min_intr_interval - 1);
+				}
+				else {
+					cpuemu_dev_clock.clock += 1U;
+				}
 			}
 		}
 	}
