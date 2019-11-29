@@ -133,7 +133,7 @@ static mRosTopicConnectorListEntryType *mros_topic_connector_get_node(mRosTopicC
 	mRosNodeEnumType type = mros_node_type(node_id);
 
 	ListEntry_Foreach(&topic_p->data.head[type], entry) {
-		if ((entry->data.value.node_id == node_id)) {
+		if (entry->data.value.node_id == node_id) {
 			return entry;
 		}
 	}
@@ -252,7 +252,7 @@ mRosContainerObjType mros_topic_connector_get_obj(mRosTopicConnectorManagerType 
 	mRosNodeEnumType type = mros_node_type(connector->node_id);
 	{
 		ListEntry_Foreach(&topic_p->data.head[type], p) {
-			if ((p->data.value.node_id == connector->node_id)) {
+			if (p->data.value.node_id == connector->node_id) {
 				entry = p;
 				break;
 			}

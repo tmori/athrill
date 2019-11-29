@@ -45,7 +45,7 @@ void dbg_notify_cpu_clock_supply_start(const TargetCoreType *core)
 		 }
 
 	}
-	else if ((is_debug_mode == TRUE)) {
+	else if (is_debug_mode == TRUE) {
 		need_stop = TRUE;
 	}
 

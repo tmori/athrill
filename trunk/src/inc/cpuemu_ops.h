@@ -42,6 +42,9 @@ extern Std_ReturnType cpuemu_symbol_set(void);
 extern void cpuemu_raise_intr(uint32 intno);
 
 
+/*
+ * the following enum values must be equal MpuAddressGetType(mpu_ops.h).
+ */
 typedef enum {
 	MemoryAddressImplType_ROM = 0,
 	MemoryAddressImplType_RAM,

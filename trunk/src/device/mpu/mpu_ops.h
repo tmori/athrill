@@ -14,6 +14,9 @@ extern Std_ReturnType mpu_put_data32(CoreIdType core_id, uint32 addr, uint32 dat
 extern Std_ReturnType mpu_get_pointer(CoreIdType core_id, uint32 addr, uint8 **data);
 
 
+/*
+ * the following enum values must be equal MemoryAddressImplType(cpuemu_ops.h).
+ */
 typedef enum {
     MpuAddressGetType_ROM = 0,
     MpuAddressGetType_RAM,

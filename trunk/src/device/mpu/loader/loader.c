@@ -112,7 +112,7 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 	CachedOperationCodeType *cached_code = NULL;
 
 	for (i = 0; i < memap->rom_num; i++) {
-		ptr = mpu_address_set_rom_ram(memap->rom[i].type, memap->rom[i].start, memap->rom[i].size * 1024, NULL);
+		ptr = mpu_address_set_rom_ram((MpuAddressGetType)memap->rom[i].type, memap->rom[i].start, memap->rom[i].size * 1024, NULL);
 		if (ptr == NULL) {
 			printf("Invalid elf file: can not load rom addr=0x%x\n", memap->rom[i].start);
 			return STD_E_INVALID;
@@ -120,7 +120,7 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 	}
 	for (i = 0; i < memap->ram_num; i++) {
 		if (memap->ram[i].type != MemoryAddressImplType_MALLOC) {
-			ptr = mpu_address_set_rom_ram(memap->ram[i].type, memap->ram[i].start, memap->ram[i].size * 1024, memap->ram[i].mmap_addr);
+			ptr = mpu_address_set_rom_ram((MpuAddressGetType)memap->ram[i].type, memap->ram[i].start, memap->ram[i].size * 1024, memap->ram[i].mmap_addr);
 			if (ptr == NULL) {
 				printf("Invalid elf file: can not load ram addr=0x%x\n", memap->ram[i].start);
 				return STD_E_INVALID;
@@ -132,7 +132,7 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 			uint32 unit_num = memap->ram[i].size / MPU_MALLOC_REGION_UNIT_SIZE;
 
 			for (j = 0; j < unit_num; j++) {
-				(void)mpu_address_set_rom_ram(memap->ram[i].type, start, MPU_MALLOC_REGION_UNIT_SIZE * 1024, NULL);
+				(void)mpu_address_set_rom_ram((MpuAddressGetType)memap->ram[i].type, start, MPU_MALLOC_REGION_UNIT_SIZE * 1024, NULL);
 				start += (MPU_MALLOC_REGION_UNIT_SIZE * 1024);
 			}
 		}
