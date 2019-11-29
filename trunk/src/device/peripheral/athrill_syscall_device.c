@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include "mpu_malloc.h"
 #include "assert.h"
+#include "target/target_os_api.h"
 
 struct athrill_syscall_functable {
     void (*func) (AthrillSyscallArgType *arg);

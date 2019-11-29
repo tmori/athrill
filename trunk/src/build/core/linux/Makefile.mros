@@ -86,7 +86,6 @@ OBJS += mros_topic_connector_cimpl.o
 OBJS += mros_topic_connector_factory_cimpl.o
 OBJS += mros_name.o
 OBJS += mros_os_config.o
-OBJS += mros_usr_config.o
 OBJS += mros_sys_config.o
 OBJS += lwip_linux.o
 OBJS += os_asp.o

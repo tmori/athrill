@@ -19,10 +19,20 @@
 #define target_os_api_sleep(arg) usleep((arg)*1000)
 #define winsock_init()
 #define winsock_fini()
+#ifdef OS_MAC
+#define PRINT_FMT_UINT64    "%llu"
+#define FMT_UINT64    "llu"
+#define FMT_SINT64    "lld"
+#define PRINT_FMT_SINT64    "%lld"
+#ifndef SOCK_NONBLOCK
+#define SOCK_NONBLOCK O_NONBLOCK
+#endif
+#else
 #define PRINT_FMT_UINT64	"%Lu"
 #define FMT_UINT64	"Lu"
 #define FMT_SINT64	"Ld"
 #define PRINT_FMT_SINT64	"%Ld"
+#endif /* OS_MAC */
 #define target_os_api_sockaddr_type	sockaddr_in
 #define target_os_api_closesocket	close
 #define target_os_api_ioctlsock		ioctl
@@ -53,7 +63,6 @@
  * Sleep
  */
 #define target_os_api_sleep(arg) Sleep(arg)
-
 #define PRINT_FMT_UINT64	"%I64u"
 #define FMT_UINT64	"I64u"
 #define PRINT_FMT_SINT64	"%I64d"

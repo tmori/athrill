@@ -5,6 +5,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#ifdef OS_MAC
+#include <sys/time.h>
+#endif
 typedef unsigned int ip_addr_t;
 
 void lwip_init(void);
@@ -38,6 +41,7 @@ int lwip_write(int s, const void *dataptr, size_t size);
 
 int lwip_select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset,
                 struct timeval *timeout);
+
 int lwip_ioctl(int s, long cmd, void *argp);
 int lwip_fcntl(int s, int cmd, int val);
 struct hostent *lwip_gethostbyname(const char *name);

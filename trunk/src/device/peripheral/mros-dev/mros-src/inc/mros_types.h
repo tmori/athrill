@@ -51,8 +51,11 @@ typedef mros_int32 mRosReturnType;
 #include "mros_os_target.h"
 #define MROS_TASKID_NONE	0U
 
-
+#ifdef OS_MAC
+#define MROS_MATTR_BSS_NOCLR
+#else
 #define MROS_MATTR_BSS_NOCLR __attribute__((section("NC_BSS")))
+#endif
 
 /*
  * Comm dependent data types

@@ -453,8 +453,13 @@ void dbg_std_executor_elaps(void *executor)
 	}
 
 #ifdef OS_LINUX
+#ifdef OS_MAC
+printf("loops "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64" real_time  %ld.%06d\n",
+        elaps.total_clocks, elaps.intr_clocks, elaps.elaps_tv.tv_sec, elaps.elaps_tv.tv_usec);
+#else
 	printf("loops "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64" real_time  %ld.%06ld\n",
 			elaps.total_clocks, elaps.intr_clocks, elaps.elaps_tv.tv_sec, elaps.elaps_tv.tv_usec);
+#endif /* OS_MAC */
 #else
 	printf("loops "PRINT_FMT_UINT64" intc "PRINT_FMT_UINT64"\n", elaps.total_clocks, elaps.intr_clocks);
 #endif /* OS_LINUX */

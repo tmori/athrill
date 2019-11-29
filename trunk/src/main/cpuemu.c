@@ -461,7 +461,11 @@ void *cpuemu_thread_run(void* arg)
 					struct timeval elaps;
 					gettimeofday(&elaps, NULL);
 					cpuemu_timeval_sub(&elaps, &prev_elaps, &result);
-					printf("skip-clock = %llu : %ld sec %ld usec sync_time=%u \n", skipc_usec, result.tv_sec, result.tv_usec, enable_dbg.enable_sync_time);
+#ifdef OS_MAC
+					printf("skip-clock = %llu : %ld sec %d usec sync_time=%d \n", skipc_usec, result.tv_sec, result.tv_usec, enable_dbg.enable_sync_time);
+#else
+                    printf("skip-clock = %llu : %ld sec %ld usec sync_time=%u \n", skipc_usec, result.tv_sec, result.tv_usec, enable_dbg.enable_sync_time);
+#endif
 					prev_elaps = elaps;
 				}
 #endif /* OS_LINUX */
@@ -796,8 +800,12 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 				}
 				memp->mmap_addr = mmap(NULL, memp->size * 1024, (PROT_READ|PROT_WRITE), MAP_SHARED, fd, 0);
 				ASSERT(memp->mmap_addr != NULL);
+#ifdef OS_MAC
+                printf("MMAP(%s filesize=%lld)", filepath, statbuf.st_size);
+#else
 				printf("MMAP(%s filesize=%lu)", filepath, statbuf.st_size);
-				info.fd = fd;
+#endif
+                info.fd = fd;
 				info.addr = CAST_UINT32_TO_ADDR(memcfg_token_container.array[1].body.hex.value);
 				athrill_device_set_mmap_info(&info);
 			}

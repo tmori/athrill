@@ -8,7 +8,6 @@ typedef signed int sys_int32;
 typedef signed short sys_int16;
 typedef signed char sys_int8;
 typedef unsigned int sys_addr;
-typedef int sys_bool;
 #ifndef ATHRILL_FD_SETSIZE
 #define ATHRILL_FD_SETSIZE      64
 #endif /* ATHRILL_FD_SETSIZE */
