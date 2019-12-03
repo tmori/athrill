@@ -1,7 +1,3 @@
-#ifdef OS_MAC
-#else
-typedef int* intptr_t;
-#endif
 #include "kernel.h"
 #include "kernel_cfg.h"
 #include <time.h>

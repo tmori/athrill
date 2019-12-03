@@ -33,4 +33,6 @@ extern void os_unlock_recursive(void);
 
 #define TMAX_TPRI 1
 
+typedef int* mros_intptr_t;
+
 #endif

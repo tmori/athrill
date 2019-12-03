@@ -12,7 +12,7 @@ extern void sub_task(void);
 extern void pub_task(void);
 extern void xml_slv_task(void);
 extern void xml_mas_task(void);
-extern void cyclic_handler(intptr_t exinf);
+extern void cyclic_handler(mros_intptr_t exinf);
 
 /****************************************
  * kernel cfg

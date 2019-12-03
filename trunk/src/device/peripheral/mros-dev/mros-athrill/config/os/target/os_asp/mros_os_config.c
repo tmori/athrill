@@ -136,7 +136,7 @@ void xml_mas_task()
 	return;
 }
 
-void cyclic_handler(intptr_t exinf)
+void cyclic_handler(mros_intptr_t exinf)
 {
 	iwup_tsk(SUB_TASK);
 	return;
