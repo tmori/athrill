@@ -49,6 +49,7 @@ static void elf_dwarf_build_struct_member(DwarfDataStructType *obj, ElfDwarfDieT
 		case DW_AT_decl_file:
 		case DW_AT_decl_line:
 		case DW_AT_decl_column:
+		case DW_AT_artificial:
 		case DW_AT_external:
 			break;
 		default:
