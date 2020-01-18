@@ -525,6 +525,9 @@ static void cpuctrl_set_access(uint32 access_type, uint32 access_addr, uint32 si
 #endif
 		current_access_glid = glid;
 		access_infop = data_access_info_table_gl[glid];
+		if (access_infop == NULL) {
+			continue;
+		}
 		cpuctrl_access_context_add(access_type, access_infop);
 		prev_glid = glid;
 	}
@@ -773,8 +776,15 @@ void cpuctrl_init(void)
 
 	data_access_info_table_gl = malloc(gl_num * sizeof(DataAccessInfoType *));
 	for (i = 0; i < gl_num; i++) {
-		data_access_info[i].region_type = mpu_address_region_type_get(symbol_glid2gladdr(i), NULL);
-		data_access_info_table_gl[i] = &data_access_info[i];
+		uint32 type = mpu_address_region_type_get(symbol_glid2gladdr(i), NULL);
+		if (type != REGION_UNKNOWN) {
+			data_access_info[i].region_type = mpu_address_region_type_get(symbol_glid2gladdr(i), NULL);
+			data_access_info_table_gl[i] = &data_access_info[i];
+		}
+		else {
+			data_access_info[i].region_type = REGION_UNKNOWN;
+			data_access_info_table_gl[i] = NULL;
+		}
 	}
 
 	return;

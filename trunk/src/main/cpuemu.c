@@ -74,7 +74,18 @@ Std_ReturnType cpuemu_symbol_set(void)
 				return STD_E_INVALID;
 			}
 			break;
+		case SYMBOL_TYPE_NOTYPE:
+			if (sym.name[0] != '$') {
+				if (symbol_gl_add(&sym) < 0) {
+					return STD_E_INVALID;
+				}
+				if (symbol_func_add(&sym) < 0) {
+					return STD_E_INVALID;
+				}
+			}
+			break;
 		default:
+			//printf("undefined symbol:%s type:0x%x\n", &elfsym.name[name_index], elfsym.type);
 			break;
 		}
 

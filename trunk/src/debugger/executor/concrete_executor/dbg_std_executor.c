@@ -732,8 +732,10 @@ static void show_all_data_access_info(void)
 
 	for (data_access_glid = 0; data_access_glid < gl_num; data_access_glid++) {
 		DataAccessInfoType *table = cpuctrl_get_func_access_info_table_glid(data_access_glid);
-		if (table[0].head.access_num > 0) {
-			dbg_std_executor_data_access_context(&table[0].head, dbg_data_access_print_csv);
+		if (table != NULL) {
+			if (table[0].head.access_num > 0) {
+				dbg_std_executor_data_access_context(&table[0].head, dbg_data_access_print_csv);
+			}
 		}
 	}
 	return;

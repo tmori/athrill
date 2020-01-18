@@ -225,7 +225,7 @@ MpuAddressRegionEnumType mpu_address_region_type_get(uint32 addr, bool *is_mallo
 			return mpu_address_map.map[i].type;
 		}
 	}
-	printf("%s():search_region:not found error:addr=0x%x\n", __FUNCTION__, addr);
+	//printf("%s():search_region:not found error:addr=0x%x\n", __FUNCTION__, addr);
 	return REGION_UNKNOWN;
 }
 
