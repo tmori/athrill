@@ -43,6 +43,7 @@ void elf_dwarf_build_variable_type(ElfDwarfDieType *die)
 		case DW_AT_specification:
 		case DW_AT_linkage_name:
 		case DW_AT_MIPS_linkage_name:
+		case DW_AT_alignment:
 			break;
 		default:
 			printf("die=0x%x attr_type=0x%x\n", die->offset, attr_type);

@@ -125,6 +125,7 @@ void elf_dwarf_build_subprogram_type(ElfDwarfDieType *die)
 		case DW_AT_MIPS_linkage_name:
 		case DW_AT_unknown_0x2116:
 		case DW_AT_unknown_0x2117:
+		case DW_AT_noreturn:
 #if 0
 		case DW_AT_linkage_name:
 		case DW_AT_main_subprogram:

@@ -153,6 +153,8 @@ typedef enum {
 	DW_AT_enum_class = 0x6d, // flag
 	DW_AT_linkage_name = 0x6e, // string
 
+	DW_AT_noreturn = 0x87,	// flag
+	DW_AT_alignment = 0x88, // constant
 	DW_AT_lo_user = 0x2000,
 	DW_AT_MIPS_linkage_name = 0x2007,
 	DW_AT_unknown_0x2116 = 0x2116,
