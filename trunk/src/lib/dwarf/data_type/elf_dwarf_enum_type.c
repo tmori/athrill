@@ -29,6 +29,8 @@ void elf_dwarf_build_enum_type(ElfDwarfDieType *die)
 		case DW_AT_decl_line:
 		case DW_AT_decl_column:
 		case DW_AT_MIPS_linkage_name:
+		case DW_AT_encoding:
+		case DW_AT_type:
 			break;
 		default:
 			printf("name=0x%x form=%s\n", attr_type, attr->typename);
