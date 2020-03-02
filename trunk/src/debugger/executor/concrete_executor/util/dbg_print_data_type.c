@@ -101,6 +101,24 @@ static void print_base_type_unsigned(uint8 *addr, uint32 size)
 	return;
 }
 
+static void print_base_type_float(uint8 *addr, uint32 size)
+{
+	float32 value32 = 0;
+	float64 value64 = 0;
+	switch (size) {
+	case 4:
+		value32 = elf_get_float32(addr, 0);
+		printf("%lf", value32);
+		break;
+	case 8:
+		value64 = elf_get_float64(addr, 0);
+		printf("%lf", value64);
+		return;
+	default:
+		break;
+	}
+	return;
+}
 static void print_base_type_data(PrintControlType *ctrl, DwarfDataBaseType *obj, uint8 *addr, uint32 off)
 {
 	uint32 type_size = obj->info.size;
@@ -121,6 +139,8 @@ static void print_base_type_data(PrintControlType *ctrl, DwarfDataBaseType *obj,
 		break;
 	case DW_ATE_float:
 		//TODO
+		print_base_type_float(&addr[off], type_size);
+		break;
 	case DW_ATE_complex_float:
 	default:
 		printf("Unknown base type");

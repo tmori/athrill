@@ -11,6 +11,9 @@ typedef unsigned short uint16;
 typedef unsigned int uint32;
 typedef unsigned long long uint64;
 typedef int	bool;
+typedef float float32;
+typedef double float64;
+
 
 typedef uint32 Std_ReturnType;
 

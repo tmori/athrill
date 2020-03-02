@@ -196,6 +196,21 @@ uint32 elf_get_data32(uint8 *elf_data, uint32 off)
 	data |=  ( ((uint32)elf_data[off + 3]) << 24 );
 	return data;
 }
+
+float elf_get_float32(uint8 *elf_data, uint32 off)
+{
+	union {
+		uint32 raw;
+		float32 value;
+	} data;
+	data.raw = 0;
+
+	data.raw |=  ( ((uint32)elf_data[off + 0]) << 0 );
+	data.raw |=  ( ((uint32)elf_data[off + 1]) << 8 );
+	data.raw |=  ( ((uint32)elf_data[off + 2]) << 16 );
+	data.raw |=  ( ((uint32)elf_data[off + 3]) << 24 );
+	return data.value;
+}
 uint64 elf_get_data64(uint8 *elf_data, uint32 off)
 {
 	uint64 *data;
@@ -214,3 +229,20 @@ uint64 elf_get_data64(uint8 *elf_data, uint32 off)
 	return *data;
 }
 
+float64 elf_get_float64(uint8 *elf_data, uint32 off)
+{
+	union {
+		uint8 array[8];
+		float64 value;
+	} data;
+	data.array[0] = elf_data[off + 0];
+	data.array[1] = elf_data[off + 1];
+	data.array[2] = elf_data[off + 2];
+	data.array[3] = elf_data[off + 3];
+	data.array[4] = elf_data[off + 4];
+	data.array[5] = elf_data[off + 5];
+	data.array[6] = elf_data[off + 6];
+	data.array[7] = elf_data[off + 7];
+
+	return data.value;
+}
