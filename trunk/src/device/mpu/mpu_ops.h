@@ -28,6 +28,7 @@ typedef enum {
 
 extern uint8 *mpu_address_set_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 size, void *mmap_addr);
 extern uint8 *mpu_address_get_rom(uint32 addr, uint32 size);
+extern uint8 *mpu_address_get_ram(uint32 addr, uint32 size);
 extern void mpu_address_set_malloc_region(uint32 addr, uint32 size);
 
 #endif /* _MPU_OPS_H_ */

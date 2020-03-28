@@ -130,6 +130,16 @@ uint8 *mpu_address_get_rom(uint32 addr, uint32 size)
 	}
 	return NULL;
 }
+uint8 *mpu_address_get_ram(uint32 addr, uint32 size)
+{
+	MpuAddressRegionType *region = NULL;
+
+	region = mpu_address_search_region(addr, size);
+	if ((region != NULL) && (region->type == GLOBAL_MEMORY)) {
+		return region->data;
+	}
+	return NULL;
+}
 
 uint8 *mpu_address_set_rom_ram(MpuAddressGetType getType, uint32 addr, uint32 size, void *mmap_addr)
 {
