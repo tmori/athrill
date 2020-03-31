@@ -3,7 +3,7 @@
 #define UDP_COMM_BLOCKING		0
 #define UDP_COMM_NONBLOCKING	1
 
-Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *comm)
+Std_ReturnType udp_comm_create_ipaddr(const UdpCommConfigType *config, UdpCommType *comm, const char* my_ipaddr)
 {
 	int err;
 	struct target_os_api_sockaddr_type addr;
@@ -17,7 +17,12 @@ Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *com
 
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(config->server_port);
-	addr.sin_addr.target_os_sockaddr_sin_addr = INADDR_ANY;
+	if (my_ipaddr == NULL) {
+		addr.sin_addr.target_os_sockaddr_sin_addr = INADDR_ANY;
+	}
+	else {
+		addr.sin_addr.target_os_sockaddr_sin_addr = inet_addr(my_ipaddr);
+	}
 
 	err = bind(comm->srv_sock, (struct sockaddr *)&addr, sizeof(addr));
 	if (err < 0) {
@@ -35,6 +40,10 @@ Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *com
 	comm->client_port = htons(config->client_port);
 
 	return STD_E_OK;
+}
+Std_ReturnType udp_comm_create(const UdpCommConfigType *config, UdpCommType *comm)
+{
+	return udp_comm_create_ipaddr(config, comm, NULL);
 }
 
 Std_ReturnType udp_comm_read(UdpCommType *comm)
