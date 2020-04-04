@@ -21,6 +21,12 @@ typedef struct {
 	OpCodeId			code_id;
 #endif /* ARCH_V850ES_FK3 */
 	int (*op_exec) (TargetCoreType *cpu);
+	/*
+	 * not supported yet..
+	 * use this flag if cache region is rewrite by user program.
+	 * then cache reconstruction is needed!!
+	 */
+	bool				is_dirty;
 } CpuOperationCodeType;
 
 typedef struct {
@@ -75,6 +81,27 @@ static inline void virtual_cpu_add_cached_code(CachedOperationCodeType *cached_c
 	virtual_cpu.cached_code = realloc(virtual_cpu.cached_code, virtual_cpu.cached_code_num * (sizeof (CachedOperationCodeType*)));
 	ASSERT(virtual_cpu.cached_code != NULL);
 	virtual_cpu.cached_code[virtual_cpu.cached_code_num - 1] = cached_code;
+	return;
+}
+/*
+ * start_addr: 	unit=byte
+ * memsz: 		unit=byte
+ */
+static inline void virtual_cpu_cache_code_add_with_check(uint32 memsz, uint32 start_addr)
+{
+	CachedOperationCodeType *cached_code = virtual_cpu_get_cached_code(start_addr);
+	if (cached_code != NULL) {
+		return;
+	}
+
+	cached_code = malloc(sizeof(CachedOperationCodeType));
+	ASSERT(cached_code != NULL);
+	cached_code->codes = calloc(memsz, sizeof(CpuOperationCodeType));
+	ASSERT(cached_code->codes != NULL);
+	cached_code->code_start_addr = start_addr;
+	cached_code->code_size = (memsz);
+
+	virtual_cpu_add_cached_code(cached_code);
 	return;
 }
 

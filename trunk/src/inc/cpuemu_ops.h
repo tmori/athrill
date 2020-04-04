@@ -54,9 +54,11 @@ typedef enum {
 
 typedef struct {
 	MemoryAddressImplType type;
-	uint32	start;
-	uint32	size;
+	uint32	start;						/* unit:byte */
+	uint32	size;						/* unit:KB */
 	void *mmap_addr;
+	bool region_executable;				/* X */
+	bool region_elf_load_from_vaddr;	/* V */
 } MemoryAddressType;
 
 typedef struct {

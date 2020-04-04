@@ -71,10 +71,7 @@ int main(int argc, const char *argv[])
 	Std_ReturnType err;
 	CmdOptionType *opt;
 	MemoryAddressMapType memmap;
-	memmap.ram_num = 0;
-	memmap.rom_num = 0;
-	memmap.ram = NULL;
-	memmap.rom = NULL;
+	memset(&memmap, 0, sizeof(MemoryAddressMapType));
 
 	if (argc == 1) {
 		printf("Usage:%s -c<core num> -m <memory config file> [OPTION]... <load_file>\n", "athrill");

@@ -731,6 +731,22 @@ errdone:
 static FileType memcfg_file;
 static char memcfg_buffer[4096];
 static TokenContainerType memcfg_token_container;
+static void analize_memmap_arguments(const TokenContainerType *token, const MemoryAddressMapType *map, MemoryAddressType *memp)
+{
+	int i;
+	if (token->num <= 3) {
+		return;
+	}
+	for (i = 0; i < 2; i++) {
+		if (token->array[3].body.str.str[i] == 'X') {
+			memp->region_executable = TRUE;
+		}
+		else if (token->array[3].body.str.str[i] == 'V') {
+			memp->region_elf_load_from_vaddr = TRUE;
+		}
+	}
+	return;
+}
 Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 {
 	Std_ReturnType err = STD_E_OK;
@@ -764,7 +780,11 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 			printf("ERROR: can not parse data on %s...\n", path);
 			goto errdone;
 		}
-		if (memcfg_token_container.num != 3) {
+		/*
+		 * <memtype>, <startaddr>, <size> [, [opt]+ ]
+		 * opt = {V|X}, V= load from virtual address, X = executable region
+		 */
+		if ((memcfg_token_container.num != 3) && (memcfg_token_container.num != 4)) {
 			printf("ERROR: the token is invalid %s on %s...\n", memcfg_buffer, path);
 			goto errdone;
 		}
@@ -777,6 +797,7 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 			memp->type = MemoryAddressImplType_ROM;
 			memp->size = memcfg_token_container.array[2].body.dec.value;
 			memp->mmap_addr = NULL;
+			analize_memmap_arguments(&memcfg_token_container, map, memp);
 		}
 		else if (!strcmp("RAM", (char*)memcfg_token_container.array[0].body.str.str)) {
 			printf("RAM");
@@ -787,6 +808,7 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 			memp->type = MemoryAddressImplType_RAM;
 			memp->size = memcfg_token_container.array[2].body.dec.value;
 			memp->mmap_addr = NULL;
+			analize_memmap_arguments(&memcfg_token_container, map, memp);
 		}
 #ifdef OS_LINUX
 		else if (!strcmp("MMAP", (char*)memcfg_token_container.array[0].body.str.str)) {
@@ -823,6 +845,7 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 #else
 				printf("MMAP(%s filesize=%lu)", filepath, statbuf.st_size);
 #endif
+				analize_memmap_arguments(&memcfg_token_container, map, memp);
                 info.fd = fd;
 				info.addr = CAST_UINT32_TO_ADDR(memcfg_token_container.array[1].body.hex.value);
 				athrill_device_set_mmap_info(&info);
@@ -841,6 +864,7 @@ Std_ReturnType cpuemu_load_memmap(const char *path, MemoryAddressMapType *map)
 				printf("ERROR: Invalid MALLOC size(%u). The size must be multiples of 10MB.\n", memp->size);
 				goto errdone;
 			}
+			analize_memmap_arguments(&memcfg_token_container, map, memp);
 			printf("MALLOC");
 		}
 #endif /* OS_LINUX */

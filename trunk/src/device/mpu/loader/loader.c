@@ -103,20 +103,64 @@ static Std_ReturnType Elf_Check(const Elf32_Ehdr *elf_image)
 	return STD_E_OK;
 }
 
+static void set_malloc_region(MemoryAddressMapType *memap, uint32 i)
+{
+	int j;
+	uint32 start = memap->ram[i].start;
+	uint32 unit_num = memap->ram[i].size / MPU_MALLOC_REGION_UNIT_SIZE;
+
+	for (j = 0; j < unit_num; j++) {
+		mpu_address_set_malloc_region(start, MPU_MALLOC_REGION_UNIT_SIZE * 1024);
+		start += (MPU_MALLOC_REGION_UNIT_SIZE * 1024);
+	}
+	return;
+}
+static void set_cache_code_from_map(const MemoryAddressType *memory_map)
+{
+	if (memory_map->region_executable != FALSE) {
+		virtual_cpu_cache_code_add_with_check((memory_map->size * 1024), memory_map->start);
+		printf("MEMSETTING SET CACHE RIGION:addr=0x%x size=%u [KB]\n", memory_map->start, memory_map->size);
+	}
+	return;
+}
+static void set_cache_code_from_elf(const Elf32_Ehdr *elf_image)
+{
+	uint32 i;
+	Elf32_Phdr *phdr;
+	for (i = 0; i < elf_image->e_phnum; i++) {
+		phdr = (Elf32_Phdr*) (
+				((uint8_t*)elf_image)
+				+ elf_image->e_phoff
+				+ (elf_image->e_phentsize * i)
+				);
+		//printf("p_type=0x%x\n", phdr->p_type);
+		//printf("p_paddr=0x%x\n", phdr->p_paddr);
+		//printf("p_flags=0x%x\n", phdr->p_flags);
+		if ((phdr->p_flags & (PF_X)) == PF_X) {
+			virtual_cpu_cache_code_add_with_check(phdr->p_memsz, phdr->p_vaddr);
+			printf("ELF SET CACHE RIGION:addr=0x%x size=%u [KB]\n", phdr->p_vaddr, phdr->p_memsz / 1024);
+		}
+	}
+	return;
+}
+
 static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddressMapType *memap)
 {
 	Std_ReturnType err;
 	uint32_t i;
 	Elf32_Phdr *phdr;
 	uint8 *ptr = NULL;
-	CachedOperationCodeType *cached_code = NULL;
 
+	/*
+	 * alloc memory region
+	 */
 	for (i = 0; i < memap->rom_num; i++) {
 		ptr = mpu_address_set_rom_ram((MpuAddressGetType)memap->rom[i].type, memap->rom[i].start, memap->rom[i].size * 1024, NULL);
 		if (ptr == NULL) {
 			printf("Invalid elf file: can not load rom addr=0x%x\n", memap->rom[i].start);
 			return STD_E_INVALID;
 		}
+		set_cache_code_from_map(&memap->rom[i]);
 	}
 	for (i = 0; i < memap->ram_num; i++) {
 		if (memap->ram[i].type != MemoryAddressImplType_MALLOC) {
@@ -136,41 +180,26 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 				start += (MPU_MALLOC_REGION_UNIT_SIZE * 1024);
 			}
 		}
+		set_cache_code_from_map(&memap->ram[i]);
 	}
 	for (i = 0; i < memap->ram_num; i++) {
 		if (memap->ram[i].type == MemoryAddressImplType_MALLOC) {
-			int j;
-			uint32 start = memap->ram[i].start;
-			uint32 unit_num = memap->ram[i].size / MPU_MALLOC_REGION_UNIT_SIZE;
-
-			for (j = 0; j < unit_num; j++) {
-				mpu_address_set_malloc_region(start, MPU_MALLOC_REGION_UNIT_SIZE * 1024);
-				start += (MPU_MALLOC_REGION_UNIT_SIZE * 1024);
-			}
+			set_malloc_region(memap, i);
 		}
 	}
-
+	/*
+	 * set cache from elf file.
+	 */
+	set_cache_code_from_elf(elf_image);
+	/*
+	 * load program from elf file.
+	 */
 	for (i = 0; i < elf_image->e_phnum; i++) {
 		phdr = (Elf32_Phdr*) (
 				((uint8_t*)elf_image)
 				+ elf_image->e_phoff
 				+ (elf_image->e_phentsize * i)
 				);
-		//printf("p_type=0x%x\n", phdr->p_type);
-		//printf("p_paddr=0x%x\n", phdr->p_paddr);
-		//printf("p_flags=0x%x\n", phdr->p_flags);
-		if ((phdr->p_flags & (PF_X)) == PF_X) {
-
-			cached_code = malloc(sizeof(CachedOperationCodeType));
-			ASSERT(cached_code != NULL);
-			cached_code->codes = calloc(phdr->p_memsz, sizeof(CpuOperationCodeType));
-			ASSERT(cached_code->codes != NULL);
-			cached_code->code_start_addr = phdr->p_vaddr;
-			cached_code->code_size = (phdr->p_memsz);
-
-			virtual_cpu_add_cached_code(cached_code);
-			cached_code = NULL;
-		}
 		if (phdr->p_type != PT_LOAD) {
 			continue;
 		}
@@ -192,7 +221,6 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 				phdr->p_filesz);
 
 		printf("Elf loading was succeeded:0x%x - 0x%x : %u.%u KB\n", phdr->p_paddr, phdr->p_paddr + phdr->p_memsz, phdr->p_filesz/1024, phdr->p_filesz % 1024);
-
 	}
 	return 0;
 }
