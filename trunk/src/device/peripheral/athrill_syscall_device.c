@@ -149,8 +149,8 @@ static void athrill_syscall_bind(AthrillSyscallArgType *arg)
 
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = PF_INET;
-    server_addr.sin_addr.s_addr = htonl(sockaddrp->sin_addr);
-    server_addr.sin_port = htons(sockaddrp->sin_port);
+    server_addr.sin_addr.s_addr = (sockaddrp->sin_addr);
+    server_addr.sin_port = (sockaddrp->sin_port);
 
     int ret = bind(arg->body.api_bind.sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr));
     if (ret < 0) {
@@ -221,8 +221,8 @@ static void athrill_syscall_connect(AthrillSyscallArgType *arg)
     }
     memset(&client_addr, 0, sizeof(client_addr));
     client_addr.sin_family = PF_INET;
-    client_addr.sin_addr.s_addr = htonl(sockaddrp->sin_addr);
-    client_addr.sin_port = htons(sockaddrp->sin_port);
+    client_addr.sin_addr.s_addr = (sockaddrp->sin_addr);
+    client_addr.sin_port = (sockaddrp->sin_port);
 
     int ret = connect(arg->body.api_connect.sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr));
     if (ret < 0) {
