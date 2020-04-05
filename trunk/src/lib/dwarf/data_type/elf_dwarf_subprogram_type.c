@@ -49,6 +49,7 @@ static void elf_dwarf_build_subprogram_variable(DwarfDataSubprogramType *obj, El
 		case DW_AT_artificial:
 		case DW_AT_specification:
 		case DW_AT_MIPS_linkage_name:
+		case DW_AT_linkage_name:
 		case DW_AT_unknown_0x2137:
 			break;
 		default:

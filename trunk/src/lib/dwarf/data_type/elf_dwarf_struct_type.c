@@ -50,6 +50,7 @@ static void elf_dwarf_build_struct_member(DwarfDataStructType *obj, ElfDwarfDieT
 		case DW_AT_decl_line:
 		case DW_AT_decl_column:
 		case DW_AT_artificial:
+		case DW_AT_const_value:
 		case DW_AT_external:
 			break;
 		default:
@@ -113,6 +114,11 @@ static void elf_dwarf_build_struct_method(DwarfDataStructType *obj, ElfDwarfDieT
 		case DW_AT_explicit:
 		case DW_AT_linkage_name:
 		case DW_AT_artificial:
+		case DW_AT_virtuality:
+		case DW_AT_containing_type:
+		case DW_AT_vtable_elem_location:
+		case DW_AT_const_value:
+		case DW_AT_encoding:
 		case DW_AT_unknown_0x2117:
 			break;
 		default:
@@ -175,6 +181,7 @@ void elf_dwarf_build_struct_type(ElfDwarfDieType *die)
 		case DW_AT_declaration:
 		case DW_AT_accessibility:
 		case DW_AT_linkage_name:
+		case DW_AT_containing_type:
 		case DW_AT_MIPS_linkage_name:
 			break;
 		default:
