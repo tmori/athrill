@@ -156,6 +156,10 @@ static void elf_dwarf_loc_compile_fbreg(DwarfDataSubprogramType *subprogram, Dwa
 
 bool printLocalValueV850(DwarfDataSubprogramType *subprogram, DwarfLocalVariableType *localVariable, uint32 pc, uint32 funcaddr, uint32 *vaddr)
 {
+	if (localVariable->DW_AT_location == NULL) {
+		printf("Not Supported: DW_AT_location symbol=%s\n", localVariable->name);
+		return FALSE;
+	}
 	switch (localVariable->DW_AT_location->type) {
 	case DW_FORM_block1:
 		switch (localVariable->DW_AT_location->encoded.op.ops[0]) {

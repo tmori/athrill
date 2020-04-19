@@ -84,6 +84,7 @@ static void athrill_syscall_socket(AthrillSyscallArgType *arg)
 {
     int sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if (sockfd < 0) {
+    	printf("ERROR:%s(): errno=%d\n", __FUNCTION__, errno);
         return;
     }
     arg->ret_value = sockfd;
