@@ -160,6 +160,7 @@ typedef enum {
 	DW_AT_unknown_0x2116 = 0x2116,
 	DW_AT_unknown_0x2117 = 0x2117,
 	DW_AT_unknown_0x2137 = 0x2137,
+	DW_AT_unknown_0x211a = 0x211a,
 	DW_AT_hi_user = 0x3fff,
 } DwAtType;
 
