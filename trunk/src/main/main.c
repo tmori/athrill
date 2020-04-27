@@ -20,6 +20,20 @@
 #include <signal.h>
 #endif
 
+/*
+ * version: X.Y.Z
+ *  X: generation
+ *  Y: function
+ *  Z: bug fix, small changes
+ */
+#define ATHRILL_CORE_VERSION "1.0.0"
+
+#ifndef ATHRILL_TARGET_ARCH
+#define ATHRILL_TARGET_ARCH "UNKNOWN"
+#define ATHRILL_TARGET_VERSION "0.0.0"
+#endif
+
+
 static void do_cui(void)
 {
 	DbgCmdExecutorType *res;
@@ -47,7 +61,6 @@ retry:
 	}
 }
 
-
 /*
  * コマンドオプション仕様
  * -i		インタラクションモード
@@ -74,6 +87,9 @@ int main(int argc, const char *argv[])
 	memset(&memmap, 0, sizeof(MemoryAddressMapType));
 
 	if (argc == 1) {
+		printf("Athrill is licensed under the TOPPERS License Agreement (http://www.toppers.jp/en/license.html).\n");
+		printf("ARCH:%s (VERSION CORE:%s TARGET:%s)\n\n", ATHRILL_TARGET_ARCH, ATHRILL_CORE_VERSION, ATHRILL_TARGET_VERSION);
+
 		printf("Usage:%s -c<core num> -m <memory config file> [OPTION]... <load_file>\n", "athrill");
 		printf(" %-30s : set core num. if -c is not set, core num = 2.\n", "-c");
 		printf(" %-30s : execute on the interaction mode. if -i is not set, execute on the background mode.\n", "-i");
