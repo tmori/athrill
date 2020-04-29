@@ -5,7 +5,7 @@
 #include "assert.h"
 #include <string.h>
 
-#define ATHRILL_MEM_ENTRY_SIZE	(10240 * 1024)
+#define ATHRILL_MEM_ENTRY_SIZE	(10240 * 1024 * 4)
 typedef struct {
 	uint32 free_start;
 	uint32 freesize;
