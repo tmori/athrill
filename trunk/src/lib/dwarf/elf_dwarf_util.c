@@ -1,4 +1,5 @@
 #include "elf_dwarf_util.h"
+#include "athrill_memory.h"
 #include "assert.h"
 #include <string.h>
 #include <stdlib.h>
@@ -51,7 +52,6 @@ sint32 elf_dwarf_decode_sleb128(uint8 *ptr, uint32 *size)
 void elf_array_realloc(ElfPointerArrayType *array)
 {
 	void *new_ptr;
-
 	if (array->current_array_size >= array->max_array_size) {
 		array->max_array_size += ELF_POINTER_ARRAY_SIZE_UNIT;
 		new_ptr = realloc(array->data, (array->max_array_size * sizeof(void*)));
@@ -71,7 +71,7 @@ extern void elf_array_add_entry(ElfPointerArrayType *array, void *entry)
 }
 ElfPointerArrayType *elf_array_alloc(void)
 {
-	ElfPointerArrayType *array = malloc(sizeof(ElfPointerArrayType));
+	ElfPointerArrayType *array = athrill_mem_alloc(sizeof(ElfPointerArrayType));
 	ASSERT(array != NULL);
 	array->current_array_size = 0;
 	array->max_array_size = 0;
@@ -83,7 +83,7 @@ ElfPointerArrayType *elf_array_alloc(void)
 void *elf_obj_alloc(uint32 size)
 {
 	void *obj;
-	obj = malloc(size);
+	obj = athrill_mem_alloc(size);
 	ASSERT(obj != NULL);
 	memset(obj, 0, size);
 	return obj;
@@ -91,7 +91,7 @@ void *elf_obj_alloc(uint32 size)
 
 DwarfUint32ArrayType *dwarf_uint32_array_alloc(void)
 {
-	DwarfUint32ArrayType *array = malloc(sizeof(DwarfUint32ArrayType));
+	DwarfUint32ArrayType *array = athrill_mem_alloc(sizeof(DwarfUint32ArrayType));
 	ASSERT(array != NULL);
 	array->current_array_size = 0;
 	array->max_array_size = 0;

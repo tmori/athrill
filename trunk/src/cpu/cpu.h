@@ -5,6 +5,7 @@
 #include "cpu_config.h"
 #include "target_cpu.h"
 #include "assert.h"
+#include "athrill_memory.h"
 
 typedef struct {
 	/*
@@ -94,9 +95,9 @@ static inline void virtual_cpu_cache_code_add_with_check(uint32 memsz, uint32 st
 		return;
 	}
 
-	cached_code = malloc(sizeof(CachedOperationCodeType));
+	cached_code = athrill_mem_alloc(sizeof(CachedOperationCodeType));
 	ASSERT(cached_code != NULL);
-	cached_code->codes = calloc(memsz, sizeof(CpuOperationCodeType));
+	cached_code->codes = athrill_mem_calloc(memsz, sizeof(CpuOperationCodeType));
 	ASSERT(cached_code->codes != NULL);
 	cached_code->code_start_addr = start_addr;
 	cached_code->code_size = (memsz);

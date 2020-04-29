@@ -19,6 +19,7 @@
 #ifdef OS_LINUX
 #include <signal.h>
 #endif
+#include "athrill_memory.h"
 
 /*
  * version: X.Y.Z
@@ -26,13 +27,14 @@
  *  Y: function
  *  Z: bug fix, small changes
  */
-#define ATHRILL_CORE_VERSION "1.0.0"
+#define ATHRILL_CORE_VERSION "1.1.0"
 
 #ifndef ATHRILL_TARGET_ARCH
 #define ATHRILL_TARGET_ARCH "UNKNOWN"
 #define ATHRILL_TARGET_VERSION "0.0.0"
 #endif
 
+AthrillMemHeadType athrill_mem_head = { NULL, NULL };
 
 static void do_cui(void)
 {
