@@ -174,7 +174,7 @@ do {    \
 #define ATHRILL_SYSCALL_SOCKET_PROTOCOL_ZERO   0
 static inline sys_int32 athrill_posix_socket(sys_int32 domain, sys_int32 type, sys_int32 protocol)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_SOCKET;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -189,7 +189,7 @@ static inline sys_int32 athrill_posix_socket(sys_int32 domain, sys_int32 type, s
 
 static inline sys_int32 athrill_posix_sense(sys_int32 sockfd, AthrillSyscallApiIdType api_id)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_SENSE;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -212,7 +212,7 @@ static inline sys_int32 athrill_posix_sense(sys_int32 sockfd, AthrillSyscallApiI
 
 static inline sys_int32 athrill_posix_bind(sys_int32 sockfd, const struct sys_sockaddr_in *addr, sys_uint32 addrlen)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_BIND;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -227,7 +227,7 @@ static inline sys_int32 athrill_posix_bind(sys_int32 sockfd, const struct sys_so
 
 static inline sys_int32 athrill_posix_listen(sys_int32 sockfd, sys_int32 backlog)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_LISTEN;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -241,7 +241,7 @@ static inline sys_int32 athrill_posix_listen(sys_int32 sockfd, sys_int32 backlog
 
 static inline sys_int32 athrill_posix_accept(sys_int32 sockfd, struct sys_sockaddr_in *addr, sys_uint32 *addrlen)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_ACCEPT;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -256,7 +256,7 @@ static inline sys_int32 athrill_posix_accept(sys_int32 sockfd, struct sys_sockad
 
 static inline sys_int32 athrill_posix_connect(sys_int32 sockfd, const struct sys_sockaddr_in *addr, sys_uint32 addrlen)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_CONNECT;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -271,7 +271,7 @@ static inline sys_int32 athrill_posix_connect(sys_int32 sockfd, const struct sys
 
 static inline sys_int32 athrill_posix_select(sys_int32 nfds, sys_fd_set *readfds, sys_fd_set *writefds, sys_fd_set *exceptfds)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_SELECT;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -288,7 +288,7 @@ static inline sys_int32 athrill_posix_select(sys_int32 nfds, sys_fd_set *readfds
 #define ATHRILL_POSIX_MSG_DONTWAIT 0
 static inline sys_uint32 athrill_posix_send(sys_int32 sockfd, const sys_addr buf, sys_uint32 len, sys_int32 flags)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_SEND;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -303,7 +303,7 @@ static inline sys_uint32 athrill_posix_send(sys_int32 sockfd, const sys_addr buf
 }
 static inline sys_uint32 athrill_posix_recv(sys_int32 sockfd, sys_addr buf, sys_uint32 len, sys_int32 flags)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_RECV;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -320,7 +320,7 @@ static inline sys_uint32 athrill_posix_recv(sys_int32 sockfd, sys_addr buf, sys_
 #define ATHRILL_POSIX_SHUT_RDWR 0
 static inline sys_int32 athrill_posix_shutdown(sys_int32 sockfd, sys_int32 how)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
 
     args.api_id = SYS_API_ID_SHUTDOWN;
     args.ret_value = SYS_API_ERR_INVAL;
@@ -334,7 +334,7 @@ static inline sys_int32 athrill_posix_shutdown(sys_int32 sockfd, sys_int32 how)
 
 static inline sys_int32 athrill_posix_system(sys_uint32 id)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
     args.api_id = SYS_API_ID_SYSTEM;
     args.ret_value = SYS_API_ERR_INVAL;
     args.body.api_system.id = id;
@@ -346,7 +346,7 @@ static inline sys_int32 athrill_posix_system(sys_uint32 id)
 
 static inline sys_addr athrill_posix_malloc(sys_uint32 size)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
     args.api_id = SYS_API_ID_MALLOC;
     args.ret_value = SYS_API_ERR_INVAL;
     args.body.api_malloc.size = size;
@@ -357,7 +357,7 @@ static inline sys_addr athrill_posix_malloc(sys_uint32 size)
 }
 static inline sys_addr athrill_posix_calloc(sys_uint32 nmemb, sys_uint32 size)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
     args.api_id = SYS_API_ID_CALLOC;
     args.ret_value = SYS_API_ERR_INVAL;
     args.body.api_calloc.nmemb = nmemb;
@@ -369,7 +369,7 @@ static inline sys_addr athrill_posix_calloc(sys_uint32 nmemb, sys_uint32 size)
 }
 static inline sys_addr athrill_posix_realloc(sys_addr ptr, sys_uint32 size)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
     args.api_id = SYS_API_ID_REALLOC;
     args.ret_value = SYS_API_ERR_INVAL;
     args.body.api_realloc.ptr = ptr;
@@ -381,7 +381,7 @@ static inline sys_addr athrill_posix_realloc(sys_addr ptr, sys_uint32 size)
 }
 static inline void athrill_posix_free(sys_addr ptr)
 {
-    AthrillSyscallArgType args;
+    volatile AthrillSyscallArgType args;
     args.api_id = SYS_API_ID_FREE;
     args.ret_value = SYS_API_ERR_INVAL;
     args.body.api_free.ptr = ptr;
