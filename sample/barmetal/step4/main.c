@@ -41,10 +41,4 @@ void data_init(void)
 	for (;p_rom < e_rom; p_ram++, p_rom++) {
 		*p_ram = *p_rom;
 	}
-	float x = 123.1 * 11.5;
-	float y = sinf(x);
-	float z = 11.5 / y;
-	if (z == 0.0) {
-		return;
-	}
 }
