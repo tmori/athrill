@@ -508,7 +508,7 @@ static void athrill_syscall_open_r(AthrillSyscallArgType *arg)
     ASSERT(err == 0);
     fd = open(getVirtualFileName(file_name,buf), flags, mode); 
 
-    printf("open_r file=%s real_path=%s mode=%x fd=%d",file_name,buf,mode,fd);
+    printf("open_r file=%s real_path=%s mode=%x fd=%d\n",file_name,buf,mode,fd);
 
     arg->ret_value = fd;
 
@@ -542,7 +542,7 @@ static void athrill_syscall_write_r(AthrillSyscallArgType *arg)
 
     arg->ret_value = write(fd, buf, size);
 
-    printf("read_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d\n",fd,arg->body.api_write_r.buf,buf,size,arg->ret_value);
+    printf("write_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d\n",fd,arg->body.api_write_r.buf,buf,size,arg->ret_value);
 
     return;
 
