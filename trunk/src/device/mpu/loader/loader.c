@@ -148,6 +148,7 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 {
 	Std_ReturnType err;
 	uint32_t i;
+	Elf32_Phdr *phdr;
 	uint8 *ptr = NULL;
 
 	/*
@@ -190,23 +191,15 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 	 * set cache from elf file.
 	 */
 	set_cache_code_from_elf(elf_image);
-
-	Elf32_Shdr *shstr = (Elf32_Shdr*) ((uint8_t*)elf_image
-					+ elf_image->e_shoff
-					+ (elf_image->e_shentsize * elf_image->e_shstrndx));
-	char *strtab = (char*) elf_image + shstr->sh_offset;
-
-
 	/*
 	 * load program from elf file.
 	 */
 	for (i = 0; i < elf_image->e_phnum; i++) {
-			Elf32_Phdr *phdr = (Elf32_Phdr*) (
+		phdr = (Elf32_Phdr*) (
 				((uint8_t*)elf_image)
 				+ elf_image->e_phoff
 				+ (elf_image->e_phentsize * i)
 				);
-		printf("HEADER TYPE=%d addr=0x%x size=0x%x memsz=0x%x offser=0x%x vaddr=%x",phdr->p_type,phdr->p_paddr,phdr->p_filesz,phdr->p_memsz,phdr->p_offset,phdr->p_vaddr);
 		if (phdr->p_type != PT_LOAD) {
 			continue;
 		}
@@ -214,54 +207,20 @@ static Std_ReturnType Elf_LoadProgram(const Elf32_Ehdr *elf_image, MemoryAddress
 		 * ROM領域のみロードする．
 		 */
 		ptr = mpu_address_get_rom(phdr->p_paddr, phdr->p_filesz);
-		if ( ptr ) {
-			err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, phdr->p_paddr, &ptr);
-			if (err != STD_E_OK) {
-				printf("Invalid elf file: can not load addr=0x%x\n", phdr->p_paddr);
-				return STD_E_INVALID;
-			}
+		if (ptr == NULL) {
+			continue;
+		}
+		err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, phdr->p_paddr, &ptr);
+		if (err != STD_E_OK) {
+			printf("Invalid elf file: can not load addr=0x%x\n", phdr->p_paddr);
+			return STD_E_INVALID;
+		}
 
-			memcpy(ptr,
+		memcpy(ptr,
 				( ((uint8_t*)elf_image) + phdr->p_offset ),
 				phdr->p_filesz);
 
-			printf("Elf loading was succeeded:0x%x - 0x%x : %u.%u KB\n", phdr->p_paddr, phdr->p_paddr + phdr->p_memsz, phdr->p_filesz/1024, phdr->p_filesz % 1024);
-		} else {
-			/* copy data section in this page*/
-			for (i = 0; i < elf_image->e_shnum; i++) {
-				Elf32_Shdr *shdr = (Elf32_Shdr*) (
-					((uint8_t*)elf_image)
-					+ elf_image->e_shoff
-					+ (elf_image->e_shentsize * i)
-					);
-				char *section_name = strtab +shdr->sh_name;
-		printf("HEADER name=%s TYPE=%d addr=0x%x offset=0x%x size=0x%x\n",
-			section_name, shdr->sh_type,shdr->sh_addr,shdr->sh_offset,shdr->sh_size);
-
-				// copy the section start with ".data"
-				if ( !memcmp(section_name,".data",5) ) {
-					if ( shdr->sh_addr >= phdr->p_vaddr && shdr->sh_addr < phdr->p_vaddr + phdr->p_memsz) {
-					unsigned int off = shdr->sh_addr - phdr->p_vaddr;
-					Elf32_Addr data_addr = phdr->p_paddr + off;		
-
-					err = mpu_get_pointer(CPU_CONFIG_CORE_ID_0, data_addr, &ptr);
-					if (err != STD_E_OK) {
-						printf("Invalid elf file: data can not be loaded addr=0x%x\n", shdr->sh_addr);
-						return STD_E_INVALID;
-					}
-
-					memcpy(ptr,
-						( ((uint8_t*)elf_image) + shdr->sh_offset ),
-						shdr->sh_size);
-
-					printf("Elf Data loading was succeeded:0x%x - 0x%x : %u.%u KB\n", data_addr, data_addr + shdr->sh_size, shdr->sh_size/1024, shdr->sh_size % 1024);
-					}
-				}
-			}
-		}
+		printf("Elf loading was succeeded:0x%x - 0x%x : %u.%u KB\n", phdr->p_paddr, phdr->p_paddr + phdr->p_memsz, phdr->p_filesz/1024, phdr->p_filesz % 1024);
 	}
-
-
-	
 	return 0;
 }
