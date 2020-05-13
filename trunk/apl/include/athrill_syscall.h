@@ -105,6 +105,35 @@ struct api_arg_free {
     sys_addr ptr;
 };
 
+struct api_arg_open_r {
+    sys_addr file_name;
+    sys_int32 flags;
+    sys_int32 mode;
+};
+
+struct api_arg_read_r {
+    sys_int32 fd;
+    sys_addr buf;
+    sys_uint32 size;
+};
+
+struct api_arg_write_r {
+    sys_int32 fd;
+    sys_addr buf;
+    sys_uint32 size;
+};
+
+struct api_arg_close_r {
+    sys_int32 fd;
+};
+
+struct api_arg_lseek_r {
+    sys_int32 fd;
+    sys_uint32 offset;
+    sys_int32 whence;
+};
+
+
 struct api_arg_fopen {
     sys_addr file_name;
     sys_addr mode;
@@ -162,13 +191,12 @@ typedef enum {
     SYS_API_ID_REALLOC,
     SYS_API_ID_FREE,
     // Add for ETRbocon
-    SYS_API_ID_FOPEN,
-    SYS_API_ID_FCLOSE,
-    SYS_API_ID_FREAD,
-    SYS_API_ID_FWRITE,
-    SYS_API_ID_FSEEK,
+    SYS_API_ID_OPEN_R,
+    SYS_API_ID_READ_R,
+    SYS_API_ID_WRITE_R,
+    SYS_API_ID_CLOSE_R,
+    SYS_API_ID_LSEEK_R,
     SYS_API_ID_SET_VIRTFS_TOP,
-    SYS_API_ID_FFLUSH,
     SYS_API_ID_NUM,
 } AthrillSyscallApiIdType;
 
@@ -205,13 +233,12 @@ typedef struct {
         struct api_arg_calloc api_calloc;
         struct api_arg_realloc api_realloc;
         struct api_arg_free api_free;
-        struct api_arg_fopen api_fopen;
-        struct api_arg_fclose api_fclose;
-        struct api_arg_fread api_fread;
-        struct api_arg_fwrite api_fwrite;
-        struct api_arg_fseek api_fseek;
+        struct api_arg_open_r api_open_r;
+        struct api_arg_read_r api_read_r;
+        struct api_arg_write_r api_write_r;
+        struct api_arg_close_r api_close_r;
+        struct api_arg_lseek_r api_lseek_r;
         struct api_arg_set_virtfs_top api_set_virtfs_top;
-        struct api_arg_fflush api_fflush;
 
     } body;
 } AthrillSyscallArgType;
@@ -459,78 +486,79 @@ static inline void athrill_posix_free(sys_addr ptr)
     return;
 }
 
-static inline void* athrill_posix_fopen(const sys_addr file_name, const sys_addr mode)
+static inline int athrill_newlib_open_r(const char *file, int flags, int mode)
 {
     volatile AthrillSyscallArgType args;
-    args.api_id = SYS_API_ID_FOPEN;
-    args.ret_value = 0;
-    args.body.api_fopen.rptr = 0;
-    args.body.api_fopen.file_name = file_name;
-    args.body.api_fopen.mode = mode;
-
-    ATHRILL_SYSCALL(&args);
-
-    return (void*)args.body.api_fopen.rptr;
-}
-
-static inline sys_int32 athrill_posix_fclose(sys_addr fp)
-{
-    volatile AthrillSyscallArgType args;
-    args.api_id = SYS_API_ID_FCLOSE;
-    args.ret_value = 0;
-    args.body.api_fclose.fp = fp;
+    args.api_id = SYS_API_ID_OPEN_R;
+    args.ret_value = -1;
+    args.body.api_open_r.file_name = (sys_addr)file;
+    args.body.api_open_r.flags = flags;
+    args.body.api_open_r.mode = mode;
 
     ATHRILL_SYSCALL(&args);
 
     return args.ret_value;
+
 }
 
-static inline sys_int32 athrill_posix_fread(sys_addr buf, sys_int32 size, sys_int32 n, sys_addr fp)
+static inline int athrill_newlib_read_r(int fd, char *buf, sys_uint32 cnt)
 {
     volatile AthrillSyscallArgType args;
-    
-    args.api_id = SYS_API_ID_FREAD;
-    args.ret_value = 0;
-    args.body.api_fread.buf = buf;
-    args.body.api_fread.size = size;
-    args.body.api_fread.n = n;
-    args.body.api_fread.fp = fp;
+    args.api_id = SYS_API_ID_READ_R;
+    args.ret_value = -1;
+    args.body.api_read_r.fd = fd;
+    args.body.api_read_r.buf = (sys_addr)buf;
+    args.body.api_read_r.size = (sys_uint32)cnt;
 
     ATHRILL_SYSCALL(&args);
 
     return args.ret_value;
+
 }
 
-static inline sys_int32 athrill_posix_fwrite(sys_addr buf, sys_int32 size, sys_int32 n, sys_addr fp)
+static inline int athrill_newlib_write_r(int fd, const char *buf, sys_uint32 cnt)
 {
     volatile AthrillSyscallArgType args;
-    
-    args.api_id = SYS_API_ID_FWRITE;
-    args.ret_value = 0;
-    args.body.api_fwrite.buf = buf;
-    args.body.api_fwrite.size = size;
-    args.body.api_fwrite.n = n;
-    args.body.api_fwrite.fp = fp;
+    args.api_id = SYS_API_ID_WRITE_R;
+    args.ret_value = -1;
+    args.body.api_write_r.fd = fd;
+    args.body.api_write_r.buf = (sys_addr)buf;
+    args.body.api_write_r.size = (sys_uint32)cnt;
 
     ATHRILL_SYSCALL(&args);
 
     return args.ret_value;
+
 }
 
-static inline sys_int32 athrill_posix_fseek(sys_addr fp, sys_int32 offset, sys_int32 origin)
+static inline int athrill_newlib_close_r(int fd)
 {
     volatile AthrillSyscallArgType args;
-    
-    args.api_id = SYS_API_ID_FSEEK;
-    args.ret_value = 0;
-    args.body.api_fseek.fp = fp;
-    args.body.api_fseek.offset = offset;
-    args.body.api_fseek.origin = origin;
+    args.api_id = SYS_API_ID_CLOSE_R;
+    args.ret_value = -1;
+    args.body.api_close_r.fd = fd;
 
     ATHRILL_SYSCALL(&args);
 
     return args.ret_value;
+
 }
+
+static inline int athrill_newlib_lseek_r(int fd, sys_int32 offset, int whence)
+{
+    volatile AthrillSyscallArgType args;
+    args.api_id = SYS_API_ID_LSEEK_R;
+    args.ret_value = -1;
+    args.body.api_lseek_r.fd = fd;
+    args.body.api_lseek_r.offset = offset;
+    args.body.api_lseek_r.whence = whence;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.ret_value;
+
+}
+
 
 static inline sys_int32 athrill_set_virtfs_top(sys_addr top_dir)
 {
@@ -545,19 +573,6 @@ static inline sys_int32 athrill_set_virtfs_top(sys_addr top_dir)
     return args.ret_value;
 }
 
-static inline sys_int32 athrill_posix_fflush(sys_addr fp)
-{
-    volatile AthrillSyscallArgType args;
-    
-    args.api_id = SYS_API_ID_FFLUSH;
-    args.ret_value = 0;
-
-    args.body.api_fflush.fp = fp;
-
-    ATHRILL_SYSCALL(&args);
-
-    return args.ret_value;
-}
 
 
 #endif /* ATHRILL_SYSCALL_DEVICE */

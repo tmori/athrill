@@ -41,6 +41,13 @@ static void athrill_syscall_calloc(AthrillSyscallArgType *arg);
 static void athrill_syscall_realloc(AthrillSyscallArgType *arg);
 static void athrill_syscall_free(AthrillSyscallArgType *arg);
 
+static void athrill_syscall_open_r(AthrillSyscallArgType *arg);
+static void athrill_syscall_read_r(AthrillSyscallArgType *arg);
+static void athrill_syscall_write_r(AthrillSyscallArgType *arg);
+static void athrill_syscall_close_r(AthrillSyscallArgType *arg);
+static void athrill_syscall_lseek_r(AthrillSyscallArgType *arg);
+
+
 static void athrill_syscall_fopen(AthrillSyscallArgType *arg);
 static void athrill_syscall_fclose(AthrillSyscallArgType *arg);
 static void athrill_syscall_fread(AthrillSyscallArgType *arg);
@@ -69,13 +76,12 @@ static struct athrill_syscall_functable syscall_table[SYS_API_ID_NUM] = {
     { athrill_syscall_realloc },
     { athrill_syscall_free },
 
-    { athrill_syscall_fopen },
-    { athrill_syscall_fclose },
-    { athrill_syscall_fread },
-    { athrill_syscall_fwrite },
-    { athrill_syscall_fseek },
+    { athrill_syscall_open_r },
+    { athrill_syscall_read_r },
+    { athrill_syscall_write_r },
+    { athrill_syscall_close_r },
+    { athrill_syscall_lseek_r },
     { athrill_syscall_set_virtfs_top },
-    { athrill_syscall_fflush }
 };
 
 void athrill_syscall_device(uint32 addr)
@@ -482,103 +488,84 @@ static char *getVirtualFileName(const char *file_name, char *buf)
     return buf;
 }
 
-static inline FILE *get_fp_from_virtfp(sys_addr virt_fp)
-{
-    Std_ReturnType err;
-    FILE **real_fp_area;
-    err = mpu_get_pointer(0U, virt_fp,(uint8**)&real_fp_area);
-
-    return *real_fp_area;
-
-}
-
-static void athrill_syscall_fopen(AthrillSyscallArgType *arg)
+static void athrill_syscall_open_r(AthrillSyscallArgType *arg)
 {
     Std_ReturnType err;
     char *file_name;
-    char *mode;
+    int mode = arg->body.api_open_r.mode;
     char buf[255];
-    FILE *fp;
-    uint32 virt_fp;
+    int flags = arg->body.api_open_r.flags;
+    int fd;
 
-    err = mpu_get_pointer(0U, arg->body.api_fopen.file_name,(uint8**)&file_name);
+    err = mpu_get_pointer(0U, arg->body.api_open_r.file_name,(uint8**)&file_name);
     ASSERT(err == 0);
-    err = mpu_get_pointer(0U, arg->body.api_fopen.mode,(uint8**)&mode);
-    ASSERT(err == 0);
-    fp = fopen(getVirtualFileName(file_name,buf),mode);
-    if ( fp ) {
-        // valid file pointer
-        // to fit fp in 32bit memory, allocate FILE* memory(8byte) in application
-        virt_fp = mpu_malloc_get_memory(sizeof(FILE *));
-        char *real;
-        err = mpu_get_pointer(0U, virt_fp, (uint8 **)&real);
-        memcpy(real, &fp, sizeof(FILE*));
-        arg->body.api_fopen.rptr = (sys_addr)virt_fp;       
-    } else {
-        arg->body.api_fopen.rptr = 0;
-    }
-    //printf("filename=%s mode=%s fp=%p virt_fp=0x%x\n",buf,mode,fp,arg->body.api_fopen.rptr);
+    fd = open(getVirtualFileName(file_name,buf), flags, mode); 
 
-    return;
-}
+    //printf("open_r file=%s real_path=%s mode=%x fd=%d\n",file_name,buf,mode,fd);
 
-static void athrill_syscall_fclose(AthrillSyscallArgType *arg)
-{
-    FILE *fp = get_fp_from_virtfp(arg->body.api_fclose.fp);
-
-    //printf("fclose fp=%p virt_fp=0x%x \n",fp,arg->body.api_fclose.fp);
-
-    arg->ret_value = fclose(fp);
-
-    mpu_malloc_rel_memory(arg->body.api_fclose.fp);
+    arg->ret_value = fd;
 
     return;
 
 }
-
-static void athrill_syscall_fread(AthrillSyscallArgType *arg)
+static void athrill_syscall_read_r(AthrillSyscallArgType *arg)
 {
     Std_ReturnType err;
     char *buf;
-    size_t size = (size_t)arg->body.api_fread.size;
-    size_t n = (size_t)arg->body.api_fread.n;
-    FILE *fp = get_fp_from_virtfp(arg->body.api_fread.fp);
+    int fd = arg->body.api_read_r.fd;
+    size_t size = (size_t)arg->body.api_read_r.size;
 
-    err = mpu_get_pointer(0U, arg->body.api_fread.buf,(uint8**)&buf);
-    ASSERT(err == 0);
+    err = mpu_get_pointer(0U, arg->body.api_read_r.buf,(uint8**)&buf);
 
-    arg->ret_value = fread( buf, size, n, fp);
+    arg->ret_value = read(fd, buf, size);
+    //printf("read_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d\n",fd,arg->body.api_read_r.buf,buf,size,arg->ret_value);
 
     return;
+
 }
 
-static void athrill_syscall_fwrite(AthrillSyscallArgType *arg)
+static void athrill_syscall_write_r(AthrillSyscallArgType *arg)
 {
     Std_ReturnType err;
     char *buf;
-    size_t size = (size_t)arg->body.api_fwrite.size;
-    size_t n = (size_t)arg->body.api_fwrite.n;
-    FILE *fp = get_fp_from_virtfp(arg->body.api_fwrite.fp);
+    int fd = arg->body.api_write_r.fd;
+    size_t size = (size_t)arg->body.api_write_r.size;
 
-    err = mpu_get_pointer(0U, arg->body.api_fwrite.buf,(uint8**)&buf);
-    ASSERT(err == 0);
+    err = mpu_get_pointer(0U, arg->body.api_write_r.buf,(uint8**)&buf);
 
-  //  printf("fwrite data=%s size=%d n=%d fp=%p",buf,size,n,fp);
+    arg->ret_value = write(fd, buf, size);
 
-    arg->ret_value = fwrite( buf, size, n, fp);
+    //printf("write_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d\n",fd,arg->body.api_write_r.buf,buf,size,arg->ret_value);
 
     return;
 
 }
-static void athrill_syscall_fseek(AthrillSyscallArgType *arg)
+static void athrill_syscall_close_r(AthrillSyscallArgType *arg)
 {
-    Std_ReturnType err;
-    FILE *fp = get_fp_from_virtfp(arg->body.api_fseek.fp);
-    long offset = (long)arg->body.api_fseek.offset;
-    int origin = arg->body.api_fseek.origin;
+    int fd = arg->body.api_close_r.fd;
+    arg->ret_value = close(fd);
 
-    arg->ret_value = fseek(fp,offset,origin);
+    //printf("close_r fd=%d ret=%d\n",fd,arg->ret_value);
+
+    return;
+
 }
+
+static void athrill_syscall_lseek_r(AthrillSyscallArgType *arg)
+{
+    int fd = arg->body.api_lseek_r.fd;
+    off_t offset = arg->body.api_lseek_r.offset;
+    int whence = arg->body.api_lseek_r.whence;
+
+    arg->ret_value = lseek( fd, (size_t)offset, whence );
+
+    //printf("lseek_r fd=%d offset=%d whence=%d ret=%d\n", fd, offset, whence, arg->ret_value);
+
+    return;
+}
+
+
+
 static void athrill_syscall_set_virtfs_top(AthrillSyscallArgType *arg)
 {
     arg->ret_value = -1;
@@ -602,19 +589,10 @@ static void athrill_syscall_set_virtfs_top(AthrillSyscallArgType *arg)
             strcpy(buf,top_dir);
             virtual_file_top = buf;
             arg->ret_value = 0;
+            printf("SYSCAL]set_virtfs_top success path=%s",top_dir);
+
         }
     }
     return;
 }
 
-static void athrill_syscall_fflush(AthrillSyscallArgType *arg)
-{
-    uint32 virt_fp = arg->body.api_fflush.fp;
-    FILE *fp = get_fp_from_virtfp(virt_fp);
-
-//    printf("fflush fp=%p virt_fp=0x%x \n",fp,virt_fp);    
-
-    arg->ret_value = fflush(fp);
-
-    return;    
-}
