@@ -172,6 +172,29 @@ struct api_arg_fflush {
     sys_addr fp;
 };
 
+struct api_arg_ev3_opendir {
+    sys_addr path;
+    // output
+    sys_int32 dirid; // 8byte area to keep DIR pointer. caller must prepare the memory
+};
+
+// This function is different from original read dir. So, this api named ev3_readdir.
+struct api_arg_ev3_readdir {
+    sys_int32 dirid;
+    // output
+    sys_uint32 size;
+    sys_uint16 date;
+    sys_uint16 time;
+    sys_int8 is_dir;
+    sys_int8 is_readonly;
+    sys_int8 is_hidden;
+    sys_int8 name[255+1];
+};
+
+struct api_arg_ev3_closedir {
+    sys_int32 dirid;
+};
+
 
 typedef enum {
     SYS_API_ID_NONE = 0,
@@ -197,6 +220,9 @@ typedef enum {
     SYS_API_ID_CLOSE_R,
     SYS_API_ID_LSEEK_R,
     SYS_API_ID_SET_VIRTFS_TOP,
+    SYS_API_ID_EV3_OPENDIR,
+    SYS_API_ID_EV3_READDIR,
+    SYS_API_ID_EV3_CLOSEDIR,
     SYS_API_ID_NUM,
 } AthrillSyscallApiIdType;
 
@@ -239,11 +265,17 @@ typedef struct {
         struct api_arg_close_r api_close_r;
         struct api_arg_lseek_r api_lseek_r;
         struct api_arg_set_virtfs_top api_set_virtfs_top;
+        struct api_arg_ev3_opendir api_ev3_opendir;
+        struct api_arg_ev3_readdir api_ev3_readdir;
+        struct api_arg_ev3_closedir api_ev3_closedir;
 
     } body;
 } AthrillSyscallArgType;
 
 #ifndef ATHRILL_SYSCALL_DEVICE
+
+#include "ev3api.h"
+#include "string.h"
 extern sys_addr athrill_device_func_call __attribute__ ((section(".athrill_device_section")));
 
 
@@ -574,6 +606,60 @@ static inline sys_int32 athrill_set_virtfs_top(sys_addr top_dir)
 }
 
 
+static inline sys_int32 athrill_ev3_opendir(sys_addr path)
+{
+    volatile AthrillSyscallArgType args;
+
+    // allocate 64bit memory for store DIR * pointer
+    args.api_id = SYS_API_ID_EV3_OPENDIR;
+    args.ret_value = 0;
+    args.body.api_ev3_opendir.path = path;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.body.api_ev3_opendir.dirid;
+
+}
+
+static inline sys_int32 athrill_ev3_readdir(sys_int32 dirid, fileinfo_t *fileinfo)
+{
+    volatile AthrillSyscallArgType args;
+
+    // allocate 64bit memory for store DIR * pointer
+    args.api_id = SYS_API_ID_EV3_READDIR;
+    args.ret_value = 0;
+    args.body.api_ev3_readdir.dirid = dirid;
+
+    ATHRILL_SYSCALL(&args);
+
+    if ( args.ret_value != E_OK ) return args.ret_value;
+
+    fileinfo->date = args.body.api_ev3_readdir.date;
+    fileinfo->is_dir = args.body.api_ev3_readdir.is_dir;
+    fileinfo->is_hidden = args.body.api_ev3_readdir.is_hidden;
+    fileinfo->is_readonly = args.body.api_ev3_readdir.is_readonly;
+    strncpy(fileinfo->name,(char*)args.body.api_ev3_readdir.name, TMAX_FILENAME_LEN);
+    fileinfo->size = args.body.api_ev3_readdir.size;
+    fileinfo->time = args.body.api_ev3_readdir.time;
+
+    return E_OK;
+
+}
+
+static inline sys_int32 athrill_ev3_close(sys_int32 dirid)
+{
+    volatile AthrillSyscallArgType args;
+
+    // allocate 64bit memory for store DIR * pointer
+    args.api_id = SYS_API_ID_EV3_CLOSEDIR;
+    args.ret_value = 0;
+    args.body.api_ev3_closedir.dirid = dirid;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.ret_value;
+
+}
 
 #endif /* ATHRILL_SYSCALL_DEVICE */
 
