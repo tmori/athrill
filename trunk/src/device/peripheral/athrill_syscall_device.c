@@ -504,11 +504,16 @@ static void athrill_syscall_open_r(AthrillSyscallArgType *arg)
 }
 static void athrill_syscall_read_r(AthrillSyscallArgType *arg)
 {
+    Std_ReturnType err;
     char *buf;
     int fd = arg->body.api_read_r.fd;
     size_t size = (size_t)arg->body.api_read_r.size;
 
     err = mpu_get_pointer(0U, arg->body.api_read_r.buf,(uint8**)&buf);
+    if (err != STD_E_OK) {
+    	arg->ret_value = err;
+		return;
+    }
 
     arg->ret_value = read(fd, buf, size);
     //printf("read_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d\n",fd,arg->body.api_read_r.buf,buf,size,arg->ret_value);
@@ -519,12 +524,16 @@ static void athrill_syscall_read_r(AthrillSyscallArgType *arg)
 
 static void athrill_syscall_write_r(AthrillSyscallArgType *arg)
 {
+    Std_ReturnType err;
     char *buf;
     int fd = arg->body.api_write_r.fd;
     size_t size = (size_t)arg->body.api_write_r.size;
 
     err = mpu_get_pointer(0U, arg->body.api_write_r.buf,(uint8**)&buf);
-
+    if (err != STD_E_OK) {
+    	arg->ret_value = err;
+		return;
+    }
     arg->ret_value = write(fd, buf, size);
 
     //printf("write_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d\n",fd,arg->body.api_write_r.buf,buf,size,arg->ret_value);
