@@ -48,13 +48,7 @@ static void athrill_syscall_close_r(AthrillSyscallArgType *arg);
 static void athrill_syscall_lseek_r(AthrillSyscallArgType *arg);
 
 
-static void athrill_syscall_fopen(AthrillSyscallArgType *arg);
-static void athrill_syscall_fclose(AthrillSyscallArgType *arg);
-static void athrill_syscall_fread(AthrillSyscallArgType *arg);
-static void athrill_syscall_fwrite(AthrillSyscallArgType *arg);
-static void athrill_syscall_fseek(AthrillSyscallArgType *arg);
 static void athrill_syscall_set_virtfs_top(AthrillSyscallArgType *arg);
-static void athrill_syscall_fflush(AthrillSyscallArgType *arg);
 
 
 
@@ -510,7 +504,6 @@ static void athrill_syscall_open_r(AthrillSyscallArgType *arg)
 }
 static void athrill_syscall_read_r(AthrillSyscallArgType *arg)
 {
-    Std_ReturnType err;
     char *buf;
     int fd = arg->body.api_read_r.fd;
     size_t size = (size_t)arg->body.api_read_r.size;
@@ -526,7 +519,6 @@ static void athrill_syscall_read_r(AthrillSyscallArgType *arg)
 
 static void athrill_syscall_write_r(AthrillSyscallArgType *arg)
 {
-    Std_ReturnType err;
     char *buf;
     int fd = arg->body.api_write_r.fd;
     size_t size = (size_t)arg->body.api_write_r.size;
