@@ -47,14 +47,7 @@ static void athrill_syscall_write_r(AthrillSyscallArgType *arg);
 static void athrill_syscall_close_r(AthrillSyscallArgType *arg);
 static void athrill_syscall_lseek_r(AthrillSyscallArgType *arg);
 
-
-static void athrill_syscall_fopen(AthrillSyscallArgType *arg);
-static void athrill_syscall_fclose(AthrillSyscallArgType *arg);
-static void athrill_syscall_fread(AthrillSyscallArgType *arg);
-static void athrill_syscall_fwrite(AthrillSyscallArgType *arg);
-static void athrill_syscall_fseek(AthrillSyscallArgType *arg);
 static void athrill_syscall_set_virtfs_top(AthrillSyscallArgType *arg);
-static void athrill_syscall_fflush(AthrillSyscallArgType *arg);
 
 static void athrill_syscall_ev3_opendir(AthrillSyscallArgType *arg);
 static void athrill_syscall_ev3_readdir(AthrillSyscallArgType *arg);
@@ -606,6 +599,7 @@ static void athrill_syscall_set_virtfs_top(AthrillSyscallArgType *arg)
 
 #include <sys/types.h>
 #include <dirent.h>
+#include <time.h>
 
 struct dir_element {
     int is_used;
@@ -700,7 +694,7 @@ static void athrill_syscall_ev3_readdir(AthrillSyscallArgType *arg)
         char *name;
         errno = 0;
         struct dirent *dir_ent;
-        while ( dir_ent = readdir(dirp) ) {
+        while ( (dir_ent = readdir(dirp)) ) {
             if ( strcmp(dir_ent->d_name,".") && strcmp(dir_ent->d_name,"..") ) break;
         }
         if ( dir_ent ) {
