@@ -134,42 +134,33 @@ struct api_arg_lseek_r {
 };
 
 
-struct api_arg_fopen {
-    sys_addr file_name;
-    sys_addr mode;
-    sys_addr rptr;
-};
-
-struct api_arg_fclose {
-    sys_addr fp;
-};
-
-struct api_arg_fread {
-    sys_addr buf;
-    sys_uint32 size;
-    sys_uint32 n;
-    sys_addr fp;
-};
-
-struct api_arg_fwrite {
-    sys_addr buf;
-    sys_uint32 size;
-    sys_uint32 n;
-    sys_addr fp;
-};
-
-struct api_arg_fseek {
-    sys_addr  fp;
-    sys_int32 offset;
-    sys_int32 origin;   
-};
-
 struct api_arg_set_virtfs_top {
     sys_addr top_dir;
 };
 
 struct api_arg_fflush {
     sys_addr fp;
+};
+
+struct api_arg_ev3_opendir {
+    sys_addr path;
+    // output
+    sys_int32 dirid; // 8byte area to keep DIR pointer. caller must prepare the memory
+};
+
+// This function is different from original read dir. So, this api named ev3_readdir.
+struct api_arg_ev3_readdir {
+    sys_int32 dirid;
+    // output
+    sys_uint32 size;
+    sys_uint16 date;
+    sys_uint16 time;
+    sys_uint8  attrib;
+    sys_addr  name;
+};
+
+struct api_arg_ev3_closedir {
+    sys_int32 dirid;
 };
 
 
@@ -197,6 +188,9 @@ typedef enum {
     SYS_API_ID_CLOSE_R,
     SYS_API_ID_LSEEK_R,
     SYS_API_ID_SET_VIRTFS_TOP,
+    SYS_API_ID_EV3_OPENDIR,
+    SYS_API_ID_EV3_READDIR,
+    SYS_API_ID_EV3_CLOSEDIR,
     SYS_API_ID_NUM,
 } AthrillSyscallApiIdType;
 
@@ -239,11 +233,18 @@ typedef struct {
         struct api_arg_close_r api_close_r;
         struct api_arg_lseek_r api_lseek_r;
         struct api_arg_set_virtfs_top api_set_virtfs_top;
+        struct api_arg_ev3_opendir api_ev3_opendir;
+        struct api_arg_ev3_readdir api_ev3_readdir;
+        struct api_arg_ev3_closedir api_ev3_closedir;
 
     } body;
 } AthrillSyscallArgType;
 
 #ifndef ATHRILL_SYSCALL_DEVICE
+
+#include "ev3api.h"
+#include "string.h"
+#include "driver_interface_filesys.h"
 extern sys_addr athrill_device_func_call __attribute__ ((section(".athrill_device_section")));
 
 
@@ -574,6 +575,58 @@ static inline sys_int32 athrill_set_virtfs_top(sys_addr top_dir)
 }
 
 
+static inline sys_int32 athrill_ev3_opendir(sys_addr path)
+{
+    volatile AthrillSyscallArgType args;
+
+    // allocate 64bit memory for store DIR * pointer
+    args.api_id = SYS_API_ID_EV3_OPENDIR;
+    args.ret_value = 0;
+    args.body.api_ev3_opendir.path = path;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.body.api_ev3_opendir.dirid;
+
+}
+
+static inline sys_int32 athrill_ev3_readdir(sys_int32 dirid, fatfs_filinfo_t *fileinfo)
+{
+    volatile AthrillSyscallArgType args;
+
+    // allocate 64bit memory for store DIR * pointer
+    args.api_id = SYS_API_ID_EV3_READDIR;
+    args.ret_value = 0;
+    args.body.api_ev3_readdir.dirid = dirid;
+    args.body.api_ev3_readdir.name = (sys_addr)fileinfo->fname;
+
+    ATHRILL_SYSCALL(&args);
+
+    if ( args.ret_value != E_OK ) return args.ret_value;
+
+    fileinfo->fsize = args.body.api_ev3_readdir.size;
+    fileinfo->fdate = args.body.api_ev3_readdir.date;
+    fileinfo->ftime = args.body.api_ev3_readdir.time;
+    fileinfo->fattrib = args.body.api_ev3_readdir.attrib;
+
+    return E_OK;
+
+}
+
+static inline sys_int32 athrill_ev3_closedir(sys_int32 dirid)
+{
+    volatile AthrillSyscallArgType args;
+
+    // allocate 64bit memory for store DIR * pointer
+    args.api_id = SYS_API_ID_EV3_CLOSEDIR;
+    args.ret_value = 0;
+    args.body.api_ev3_closedir.dirid = dirid;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.ret_value;
+
+}
 
 #endif /* ATHRILL_SYSCALL_DEVICE */
 

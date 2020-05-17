@@ -47,8 +47,11 @@ static void athrill_syscall_write_r(AthrillSyscallArgType *arg);
 static void athrill_syscall_close_r(AthrillSyscallArgType *arg);
 static void athrill_syscall_lseek_r(AthrillSyscallArgType *arg);
 
-
 static void athrill_syscall_set_virtfs_top(AthrillSyscallArgType *arg);
+
+static void athrill_syscall_ev3_opendir(AthrillSyscallArgType *arg);
+static void athrill_syscall_ev3_readdir(AthrillSyscallArgType *arg);
+static void athrill_syscall_ev3_closedir(AthrillSyscallArgType *arg);
 
 
 
@@ -76,6 +79,10 @@ static struct athrill_syscall_functable syscall_table[SYS_API_ID_NUM] = {
     { athrill_syscall_close_r },
     { athrill_syscall_lseek_r },
     { athrill_syscall_set_virtfs_top },
+
+    { athrill_syscall_ev3_opendir },
+    { athrill_syscall_ev3_readdir },
+    { athrill_syscall_ev3_closedir },
 };
 
 void athrill_syscall_device(uint32 addr)
@@ -597,3 +604,173 @@ static void athrill_syscall_set_virtfs_top(AthrillSyscallArgType *arg)
     return;
 }
 
+#include <sys/types.h>
+#include <dirent.h>
+#include <time.h>
+
+struct dir_element {
+    int is_used;
+    char path[256+20]; // 20 for virtual topdir
+    DIR *dir;
+};
+// this variable asuume that bss area is cleared with NULL
+static struct dir_element dir_table[10]; // MAX 10
+
+#define ENDOF(table) (table + sizeof(table)/sizeof(table[0]))
+#define GETDIRID(p) (sys_int32)(p-dir_table +1 )
+static struct dir_element *get_free_dir(void)
+{
+    struct dir_element *p;
+    // TODO:thread safe
+    for ( p = dir_table; p < ENDOF(dir_table); p++ ) {
+        if ( !p->is_used ) {
+            break;
+        }
+    }
+    if ( p == ENDOF(dir_table) ) return 0;
+
+    // found free space;
+    p->is_used = 1;
+    return p;
+}
+
+static struct dir_element* GETDIR(sys_int32 dirid)
+{
+    dirid--; // convert to index;
+    ASSERT( dirid >= 0 && dirid < sizeof(dir_table)/sizeof(dir_table[0]));
+    return dir_table+dirid;
+}
+
+static void release_dir(struct dir_element *p)
+{
+    p->is_used = 0;
+}
+
+static void athrill_syscall_ev3_opendir(AthrillSyscallArgType *arg)
+{
+    char *path = 0;
+    char buf[256];
+    struct dir_element *p = get_free_dir();
+
+    ASSERT(virtual_file_top);
+
+    if ( !p ) {
+        arg->ret_value = -34; // E_NOID
+    } else {
+        Std_ReturnType err = mpu_get_pointer(0U, arg->body.api_ev3_opendir.path,(uint8**)&path);
+        ASSERT(err == 0);
+        p->dir = opendir(getVirtualFileName(path,buf));
+
+        if ( !p->dir ) {
+            switch( errno ) {
+                case EACCES:
+                case EBADF:
+                case ENOTDIR:
+                    arg->ret_value = -17; // E_PAR
+                    break;
+                default:
+                    arg->ret_value = -17; // E_PAR
+                    break;   
+            }
+            release_dir(p);
+        } else {
+            arg->ret_value = 0;
+            arg->body.api_ev3_opendir.dirid = GETDIRID(p);
+            strcpy(p->path,buf);
+        }
+    }
+
+    // printf("ev3_opendir path=%s real_path=%s ret=%d dirid=%d\n",path,buf,arg->ret_value,arg->body.api_ev3_opendir.dirid);
+
+    return;
+
+}
+        
+static void athrill_syscall_ev3_readdir(AthrillSyscallArgType *arg)
+{
+    int dirid = arg->body.api_ev3_readdir.dirid;
+    struct dir_element  *de= GETDIR(dirid);
+    char path[255];
+
+    path[0] = 0;
+    if ( !de) {
+        arg->ret_value = -18; // E_ID
+    } else {
+        Std_ReturnType err;
+        DIR *dirp = de->dir;
+        char *name;
+        errno = 0;
+        struct dirent *dir_ent;
+        while ( (dir_ent = readdir(dirp)) ) {
+            if ( strcmp(dir_ent->d_name,".") && strcmp(dir_ent->d_name,"..") ) break;
+        }
+        if ( dir_ent ) {
+            err = mpu_get_pointer(0U, (uint32)arg->body.api_ev3_readdir.name,(uint8**)&name);
+            ASSERT(err == 0);
+
+            strcpy(name, dir_ent->d_name);
+
+            strcpy(path,de->path);
+            strcat(path,"/");
+            strcat(path,name);
+            struct stat stat_buf;
+            if ( stat(path, &stat_buf) == 0 ) {
+                // TODO: fix date/time handling
+                struct tm *my_tm = localtime(&stat_buf.st_mtime);
+                arg->body.api_ev3_readdir.date = my_tm->tm_yday;
+                arg->body.api_ev3_readdir.time = my_tm->tm_hour * 60*60 + my_tm->tm_min*60 + my_tm->tm_sec;
+                arg->body.api_ev3_readdir.size = stat_buf.st_size;
+                arg->body.api_ev3_readdir.attrib = 0;
+                if ( S_ISDIR(stat_buf.st_mode) ) arg->body.api_ev3_readdir.attrib |= ((1 << 0)); // TA_FILE_DIR
+                // TODO: TA_FILE_HID,TA_FILE_RDO
+                arg->ret_value = 0;
+            } else {
+                arg->ret_value = -5; // E_SYS
+            }
+        } else {
+            switch (errno) {
+                case 0:
+                    arg->ret_value = -41; // E_OBJ
+                    break;
+                case EBADF:
+                default:
+                    arg->ret_value = -18; // E_ID
+                    break;
+            }
+        }
+    }
+    /*
+    if ( arg->ret_value == 0 ) {
+        printf("ev3readdir dirid=%d ret=%d name=%s size=%d attrib=%d date=%d time=%d\n",
+        dirid, arg->ret_value, path,arg->body.api_ev3_readdir.size, arg->body.api_ev3_readdir.attrib,
+         arg->body.api_ev3_readdir.date,  arg->body.api_ev3_readdir.time);
+    } else {
+        printf("ev3readdir dirid=%d ret=%d path=%s errno=0x%x\n",
+           dirid,  arg->ret_value , path, errno);
+    }
+    */
+   return;
+}
+
+
+static void athrill_syscall_ev3_closedir(AthrillSyscallArgType *arg)
+{
+    int dirid = arg->body.api_ev3_closedir.dirid;
+    struct dir_element  *de= GETDIR(dirid);
+
+    int ret = closedir(de->dir);
+
+    if ( ret == 0) {
+        // Success
+        release_dir(de);
+        arg->ret_value = 0; // E_OK
+    } else {
+        arg->ret_value = -18; // E_ID
+        
+    }
+
+//    printf("ev3closedir dirid=%d ret=%d", dirid, arg->ret_value );
+    return;
+
+
+}
