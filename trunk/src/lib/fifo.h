@@ -12,6 +12,9 @@ typedef struct {
 	uint8  *bufferp;
 } FifoType;
 
+#define FIFO_IS_EMPTY(fifop)	((fifop)->count == 0)
+#define FIFO_IS_FULL(fifop)	((fifop)->count >= (fifop)->buffer_size)
+
 
 extern FifoType *fifo_create(uint32 buffer_size);
 extern Std_ReturnType fifo_put_char(FifoType *fifop, uint8 data);
