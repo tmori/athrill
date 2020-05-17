@@ -6,6 +6,7 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 
 Std_ReturnType tcp_socket_open(TcpSocketType *sock)
 {

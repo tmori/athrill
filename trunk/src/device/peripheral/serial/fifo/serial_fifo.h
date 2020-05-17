@@ -4,7 +4,7 @@
 #include "std_types.h"
 #include "cpu.h"
 #include "std_device_ops.h"
-#include "fifo.h"
+#include "comm_buffer.h"
 
 #define SERIAL_FIFO_MAX_CHANNEL_NUM					8U
 
@@ -90,12 +90,12 @@ typedef struct {
 	 * read: cpu
 	 * write: external device
 	 */
-	FifoType *rp;
+	CommFifoBufferType rd;
 	/*
 	 * read: external device
 	 * write: cpu
 	 */
-	FifoType *wp;
+	CommFifoBufferType wr;
 } AthrillSerialFifoType;
 extern void athrill_device_get_serial_fifo_buffer(uint32 channel, AthrillSerialFifoType **serial_fifop);
 

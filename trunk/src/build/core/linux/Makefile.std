@@ -16,7 +16,6 @@ CFLAGS	+= $(IFLAGS)
 
 OBJS	:=	hash.o
 OBJS	+=	token.o
-OBJS	+=	fifo.o
 OBJS	+=	file.o
 OBJS	+=	winsock_wrapper.o
 OBJS	+=	udp_comm.o

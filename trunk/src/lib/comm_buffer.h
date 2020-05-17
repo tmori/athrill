@@ -17,6 +17,9 @@ extern Std_ReturnType comm_fifo_buffer_get(CommFifoBufferType *fifop, char* data
 extern void comm_fifo_buffer_close(CommFifoBufferType *fifop);
 extern void comm_fifo_buffer_destroy(CommFifoBufferType *fifop);
 
+#define COMM_FIFO_IS_EMPTY(fifop)	((fifop)->count == 0)
+#define COMM_FIFO_IS_FULL(fifop)	((fifop)->count >= (fifop)->max_size)
+
 typedef struct {
 	uint32	max_size;
 	char*	data;
