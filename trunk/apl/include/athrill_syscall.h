@@ -134,36 +134,6 @@ struct api_arg_lseek_r {
 };
 
 
-struct api_arg_fopen {
-    sys_addr file_name;
-    sys_addr mode;
-    sys_addr rptr;
-};
-
-struct api_arg_fclose {
-    sys_addr fp;
-};
-
-struct api_arg_fread {
-    sys_addr buf;
-    sys_uint32 size;
-    sys_uint32 n;
-    sys_addr fp;
-};
-
-struct api_arg_fwrite {
-    sys_addr buf;
-    sys_uint32 size;
-    sys_uint32 n;
-    sys_addr fp;
-};
-
-struct api_arg_fseek {
-    sys_addr  fp;
-    sys_int32 offset;
-    sys_int32 origin;   
-};
-
 struct api_arg_set_virtfs_top {
     sys_addr top_dir;
 };
@@ -185,10 +155,8 @@ struct api_arg_ev3_readdir {
     sys_uint32 size;
     sys_uint16 date;
     sys_uint16 time;
-    sys_int8 is_dir;
-    sys_int8 is_readonly;
-    sys_int8 is_hidden;
-    sys_int8 name[255+1];
+    sys_uint8  attrib;
+    sys_addr  name;
 };
 
 struct api_arg_ev3_closedir {
@@ -276,6 +244,7 @@ typedef struct {
 
 #include "ev3api.h"
 #include "string.h"
+#include "driver_interface_filesys.h"
 extern sys_addr athrill_device_func_call __attribute__ ((section(".athrill_device_section")));
 
 
@@ -621,7 +590,7 @@ static inline sys_int32 athrill_ev3_opendir(sys_addr path)
 
 }
 
-static inline sys_int32 athrill_ev3_readdir(sys_int32 dirid, fileinfo_t *fileinfo)
+static inline sys_int32 athrill_ev3_readdir(sys_int32 dirid, fatfs_filinfo_t *fileinfo)
 {
     volatile AthrillSyscallArgType args;
 
@@ -629,24 +598,22 @@ static inline sys_int32 athrill_ev3_readdir(sys_int32 dirid, fileinfo_t *fileinf
     args.api_id = SYS_API_ID_EV3_READDIR;
     args.ret_value = 0;
     args.body.api_ev3_readdir.dirid = dirid;
+    args.body.api_ev3_readdir.name = (sys_addr)fileinfo->fname;
 
     ATHRILL_SYSCALL(&args);
 
     if ( args.ret_value != E_OK ) return args.ret_value;
 
-    fileinfo->date = args.body.api_ev3_readdir.date;
-    fileinfo->is_dir = args.body.api_ev3_readdir.is_dir;
-    fileinfo->is_hidden = args.body.api_ev3_readdir.is_hidden;
-    fileinfo->is_readonly = args.body.api_ev3_readdir.is_readonly;
-    strncpy(fileinfo->name,(char*)args.body.api_ev3_readdir.name, TMAX_FILENAME_LEN);
-    fileinfo->size = args.body.api_ev3_readdir.size;
-    fileinfo->time = args.body.api_ev3_readdir.time;
+    fileinfo->fsize = args.body.api_ev3_readdir.size;
+    fileinfo->fdate = args.body.api_ev3_readdir.date;
+    fileinfo->ftime = args.body.api_ev3_readdir.time;
+    fileinfo->fattrib = args.body.api_ev3_readdir.attrib;
 
     return E_OK;
 
 }
 
-static inline sys_int32 athrill_ev3_close(sys_int32 dirid)
+static inline sys_int32 athrill_ev3_closedir(sys_int32 dirid)
 {
     volatile AthrillSyscallArgType args;
 
