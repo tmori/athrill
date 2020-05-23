@@ -19,6 +19,7 @@
 #include "mpu_malloc.h"
 #include "assert.h"
 #include "target/target_os_api.h"
+#include "cpuemu_ops.h"
 
 struct athrill_syscall_functable {
     void (*func) (AthrillSyscallArgType *arg);
@@ -53,6 +54,9 @@ static void athrill_syscall_ev3_opendir(AthrillSyscallArgType *arg);
 static void athrill_syscall_ev3_readdir(AthrillSyscallArgType *arg);
 static void athrill_syscall_ev3_closedir(AthrillSyscallArgType *arg);
 
+static void athrill_syscall_ev3_serial_open(AthrillSyscallArgType *arg);
+
+
 
 
 static struct athrill_syscall_functable syscall_table[SYS_API_ID_NUM] = {
@@ -83,6 +87,8 @@ static struct athrill_syscall_functable syscall_table[SYS_API_ID_NUM] = {
     { athrill_syscall_ev3_opendir },
     { athrill_syscall_ev3_readdir },
     { athrill_syscall_ev3_closedir },
+
+    { athrill_syscall_ev3_serial_open },
 };
 
 void athrill_syscall_device(uint32 addr)
@@ -480,14 +486,57 @@ static void athrill_syscall_free(AthrillSyscallArgType *arg)
     return;
 }
 
-const char *virtual_file_top;
+static int create_directory(const char* dir)
+{
+    int ret = 0;
+
+    if ( (mkdir(dir,0777) == -1) && (errno != EEXIST) ) {
+        printf("create_directory() mkdir failed path=%s errno=0x%x",
+            dir, errno);
+        ret = -1;
+    } 
+    return ret;
+}
+
+
+
+char *virtual_file_top = 0;
 static char *getVirtualFileName(const char *file_name, char *buf)
 {
+    if ( !virtual_file_top ) {
+        virtual_file_top = "_ev3rtfs";
+        cpuemu_get_devcfg_string("DEVICE_CONFIG_VIRTFS_TOP",&virtual_file_top);
+        create_directory(virtual_file_top);
+    }
     strcpy(buf,virtual_file_top);
     strcat(buf,"/");
     strcat(buf,file_name);
     return buf;
 }
+
+// T.B.D. assume fd is not used so much
+#define SPECIAL_FD_NUM (1024)
+static int special_fd_table[SPECIAL_FD_NUM] = {0};
+inline int get_correspond_fd(int fd)
+{
+	ASSERT( 0<= fd && fd < SPECIAL_FD_NUM);
+    if ( special_fd_table[fd] ) {
+        return special_fd_table[fd];
+    }
+	return fd;
+}
+inline int set_correspond_fd(int fd, int curresponding_fd)
+{
+	ASSERT( 0<= fd && fd < SPECIAL_FD_NUM);	
+	return special_fd_table[fd] = curresponding_fd;
+}
+
+inline int is_stream_fd(int fd)
+{
+    return get_correspond_fd(fd) != fd;
+}
+
+
 
 static void athrill_syscall_open_r(AthrillSyscallArgType *arg)
 {
@@ -522,9 +571,26 @@ static void athrill_syscall_read_r(AthrillSyscallArgType *arg)
 		return;
     }
 
-    arg->ret_value = read(fd, buf, size);
-    //printf("read_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d\n",fd,arg->body.api_read_r.buf,buf,size,arg->ret_value);
+    // if fd has corresponding fd(for write), it is stream
+    int is_stream = is_stream_fd(fd);
 
+    int ret = read(fd, buf, size);
+    if ( ret == 0 && is_stream ) {
+        // this is stream. treat as EAGAIN
+        ret = -1;
+        errno = EAGAIN;
+    }
+
+    arg->ret_value = ret;
+    arg->ret_errno = 0;
+
+    if ( ret == -1 ) {
+        if ( (errno == EAGAIN) || (errno == ESPIPE) ) {
+            arg->ret_errno = SYS_API_ERR_AGAIN;
+        }
+    }        
+    //printf("read_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d errno=%d ret_errno=%d\n",fd,arg->body.api_read_r.buf,buf,size,arg->ret_value,errno, arg->ret_errno);
+    
     return;
 
 }
@@ -541,9 +607,13 @@ static void athrill_syscall_write_r(AthrillSyscallArgType *arg)
     	arg->ret_value = err;
 		return;
     }
-    arg->ret_value = write(fd, buf, size);
 
-    //printf("write_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d\n",fd,arg->body.api_write_r.buf,buf,size,arg->ret_value);
+
+	int actual_fd = get_correspond_fd(fd);
+
+    arg->ret_value = write(actual_fd, buf, size);
+
+    //printf("write_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d errno=%d\n",actual_fd,arg->body.api_write_r.buf,buf,size,arg->ret_value,errno);
 
     return;
 
@@ -551,12 +621,19 @@ static void athrill_syscall_write_r(AthrillSyscallArgType *arg)
 static void athrill_syscall_close_r(AthrillSyscallArgType *arg)
 {
     int fd = arg->body.api_close_r.fd;
+
+	int correspondig_fd = get_correspond_fd(fd);
+	if ( correspondig_fd != fd) {
+		close(correspondig_fd);
+		// clear corresponding fd
+		set_correspond_fd(fd,0);
+	}
+
     arg->ret_value = close(fd);
 
     //printf("close_r fd=%d ret=%d\n",fd,arg->ret_value);
 
     return;
-
 }
 
 static void athrill_syscall_lseek_r(AthrillSyscallArgType *arg)
@@ -573,7 +650,7 @@ static void athrill_syscall_lseek_r(AthrillSyscallArgType *arg)
 }
 
 
-
+/* Old implementation */
 static void athrill_syscall_set_virtfs_top(AthrillSyscallArgType *arg)
 {
     arg->ret_value = -1;
@@ -652,8 +729,6 @@ static void athrill_syscall_ev3_opendir(AthrillSyscallArgType *arg)
     char buf[256];
     struct dir_element *p = get_free_dir();
 
-    ASSERT(virtual_file_top);
-
     if ( !p ) {
         arg->ret_value = -34; // E_NOID
     } else {
@@ -680,7 +755,7 @@ static void athrill_syscall_ev3_opendir(AthrillSyscallArgType *arg)
         }
     }
 
-    // printf("ev3_opendir path=%s real_path=%s ret=%d dirid=%d\n",path,buf,arg->ret_value,arg->body.api_ev3_opendir.dirid);
+//    printf("ev3_opendir path=%s real_path=%s ret=%d dirid=%d\n",path,buf,arg->ret_value,arg->body.api_ev3_opendir.dirid);
 
     return;
 
@@ -772,5 +847,76 @@ static void athrill_syscall_ev3_closedir(AthrillSyscallArgType *arg)
 //    printf("ev3closedir dirid=%d ret=%d", dirid, arg->ret_value );
     return;
 
+}
+
+static int create_pipe(const char *path, int is_read )
+{
+    struct stat stat_buf;
+    int ret;
+    if ( stat(path, &stat_buf) == 0 ) {
+        // as pipe name exist, remove it first
+        int tmp_fd = open(path, O_RDONLY|O_NONBLOCK);
+        char buf[255];
+
+        // clear pipe
+        do {
+            ret = read(tmp_fd,buf,sizeof(buf));
+        } while ( ret > 0 );
+        close(tmp_fd);
+    } else {
+         ret = mkfifo(path, 0666);
+    }
+    int mode = (is_read ? O_RDONLY : O_RDWR );
+    int fd = open(path,  mode | O_NONBLOCK);
+    //printf("open: path=%s fd=%d errno=%d\n",path,fd,errno);
+
+    return fd;
+}
+
+static int create_pipe_pair(const char *path)
+{
+    char path_out[255];
+    char path_in[255];
+
+    strcpy(path_out,path);
+    strcat(path_out,"_out");
+    strcpy(path_in,path);
+    strcat(path_in,"_in");
+
+    int fd_out = create_pipe( path_out, FALSE); 
+    int fd_in  = create_pipe( path_in, TRUE );
+
+    set_correspond_fd(fd_in, fd_out);
+
+    return fd_in;
+}
+
+static void athrill_syscall_ev3_serial_open(AthrillSyscallArgType *arg)
+{
+    Std_ReturnType err;
+    char *path_base;
+    char *path;
+    int fd;
+    sys_int32 port = arg->body.api_ev3_serial_open.port;
+
+    if ( port == SYS_SERIAL_DEFAULT ) {
+        fd = 0;
+    } else if ( port == SYS_SERIAL_UART ) {
+        path_base ="__ev3rt_uart"; // UART Default name
+        (void)cpuemu_get_devcfg_string("DEVICE_CONFIG_UART_BASENAME",&path_base);
+        fd = create_pipe_pair(path_base);
+    } else if ( port == SYS_SERIAL_BT ) {
+        path_base ="__ev3rt_bt"; // BT Default name
+        (void)cpuemu_get_devcfg_string("DEVICE_CONFIG_BT_BASENAME",&path_base);
+        fd = create_pipe_pair(path_base);
+
+    } else {
+        fd = -1;
+    }
+ 
+    arg->ret_value = fd;
+
+    //printf("ev3_serial_open() port=%d fd=%d¥n",port,fd);
+    return;
 
 }
