@@ -578,7 +578,7 @@ static void athrill_syscall_read_r(AthrillSyscallArgType *arg)
     if ( ret == 0 && is_stream ) {
         // this is stream. treat as EAGAIN
         ret = -1;
-        errno = EAGAIN;
+        errno = 0; // this means EOS
     }
 
     arg->ret_value = ret;
@@ -589,7 +589,7 @@ static void athrill_syscall_read_r(AthrillSyscallArgType *arg)
             arg->ret_errno = SYS_API_ERR_AGAIN;
         }
     }        
-    //printf("read_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d errno=%d ret_errno=%d\n",fd,arg->body.api_read_r.buf,buf,size,arg->ret_value,errno, arg->ret_errno);
+//    printf("read_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d errno=%d ret_errno=%d\n",fd,arg->body.api_read_r.buf,buf,size,arg->ret_value,errno, arg->ret_errno);
     
     return;
 
@@ -613,7 +613,7 @@ static void athrill_syscall_write_r(AthrillSyscallArgType *arg)
 
     arg->ret_value = write(actual_fd, buf, size);
 
-    //printf("write_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d errno=%d\n",actual_fd,arg->body.api_write_r.buf,buf,size,arg->ret_value,errno);
+//    printf("write_r fd=%d buf=0x%x(real:%p) size=%zu ret=%d errno=%d\n",actual_fd,arg->body.api_write_r.buf,buf,size,arg->ret_value,errno);
 
     return;
 
@@ -714,7 +714,9 @@ static struct dir_element *get_free_dir(void)
 static struct dir_element* GETDIR(sys_int32 dirid)
 {
     dirid--; // convert to index;
-    ASSERT( dirid >= 0 && dirid < sizeof(dir_table)/sizeof(dir_table[0]));
+    if (!( dirid >= 0 && dirid < sizeof(dir_table)/sizeof(dir_table[0]))) {
+        return 0;
+    }
     return dir_table+dirid;
 }
 
@@ -741,10 +743,10 @@ static void athrill_syscall_ev3_opendir(AthrillSyscallArgType *arg)
                 case EACCES:
                 case EBADF:
                 case ENOTDIR:
-                    arg->ret_value = -17; // E_PAR
+                    arg->body.api_ev3_opendir.dirid = -17; // E_PAR
                     break;
                 default:
-                    arg->ret_value = -17; // E_PAR
+                    arg->body.api_ev3_opendir.dirid = -17; // E_PAR
                     break;   
             }
             release_dir(p);
@@ -832,6 +834,11 @@ static void athrill_syscall_ev3_closedir(AthrillSyscallArgType *arg)
 {
     int dirid = arg->body.api_ev3_closedir.dirid;
     struct dir_element  *de= GETDIR(dirid);
+
+    if ( !de ) {
+        arg->ret_value = -18; // E_ID
+        return;
+    }
 
     int ret = closedir(de->dir);
 
