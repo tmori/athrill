@@ -2,6 +2,7 @@
 #include "assert.h"
 #include "mpu_ops.h"
 #include "cpuemu_ops.h"
+#include "device.h"
 
 static AthrillSerialFifoType athrill_serial_fifo[SERIAL_FIFO_MAX_CHANNEL_NUM];
 static uint32 serial_fifo_base_addr = 0x0;
@@ -142,7 +143,6 @@ static void do_serial_fifo_cpu_write(uint32 channel)
 	mpu_get_data8(0U, SERIAL_FIFO_WRITE_CMD_ADDR(serial_fifo_base_addr, channel), &cmd);
 	if (cmd == SERIAL_FIFO_WRITE_CMD_MOVE) {
 		mpu_get_data8(0U, SERIAL_FIFO_WRITE_PTR_ADDR(serial_fifo_base_addr, channel), &data);
-		printf("input [%c]\n", data);
 		(void)comm_fifo_buffer_add(&athrill_serial_fifo[channel].wr_dev_buffer, (const char*)&data, 1, &res);
 		mpu_put_data8(0U, SERIAL_FIFO_WRITE_CMD_ADDR(serial_fifo_base_addr, channel), SERIAL_FIFO_WRITE_CMD_NONE);
 	}
