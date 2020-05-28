@@ -34,19 +34,22 @@
 
 #define SERIAL_FIFO_WRITE_CMD_NONE				0x0
 #define SERIAL_FIFO_WRITE_CMD_MOVE				0x1
+#define SERIAL_FIFO_WRITE_CMD_TX				0x2
 
 /*
  *  cpu write example:
- *  	while (1) {
+ *  	while (res > 0) {
  *  		status = dev_read(status_addr);
  *  		if (status == 0x0) {
  *	 			dev_write(ptr_addr, data);
  *	 			dev_write(cmd_addr, 0x1);
+ *	 			res--;
  * 			}
  * 			else { busy..
  * 				break;
  * 			}
  * 		}
+ * 		dev_write(cmd_addr, 0x2);
  */
 
 
@@ -85,17 +88,25 @@
 
 extern void athrill_device_init_serial_fifo(void);
 extern void athrill_device_supply_clock_serial_fifo(DeviceClockType *dev_clock);
+#define SERIAL_FIFO_RD_BUFFER_LEN	16U
+#define SERIAL_FIFO_WR_BUFFER_LEN	16U
 typedef struct {
 	/*
 	 * read: cpu
 	 * write: external device
 	 */
-	CommFifoBufferType rd;
+	CommFifoBufferType 	rd;
+	CommFifoBufferType	rd_dev_buffer;
+	uint32				rd_intno;
+	uint32				rd_intoff;
 	/*
 	 * read: external device
 	 * write: cpu
 	 */
-	CommFifoBufferType wr;
+	CommFifoBufferType 	wr;
+	CommFifoBufferType	wr_dev_buffer;
+	uint32				wr_intno;
+	uint32				wr_intoff;
 } AthrillSerialFifoType;
 extern void athrill_device_get_serial_fifo_buffer(uint32 channel, AthrillSerialFifoType **serial_fifop);
 

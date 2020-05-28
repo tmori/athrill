@@ -26,8 +26,30 @@ void athrill_device_init_serial_fifo(void)
 			printf("%s=%u\n", serial_fifo_param_buffer, buffer_size);
 			ret = comm_fifo_buffer_create(buffer_size, &athrill_serial_fifo[i].rd);
 			ASSERT(ret == STD_E_OK);
+			ret = comm_fifo_buffer_create(SERIAL_FIFO_RD_BUFFER_LEN, &athrill_serial_fifo[i].rd_dev_buffer);
+			ASSERT(ret == STD_E_OK);
+
 			ret = comm_fifo_buffer_create(buffer_size, &athrill_serial_fifo[i].wr);
 			ASSERT(ret == STD_E_OK);
+			ret = comm_fifo_buffer_create(SERIAL_FIFO_WR_BUFFER_LEN, &athrill_serial_fifo[i].wr_dev_buffer);
+			ASSERT(ret == STD_E_OK);
+
+			snprintf(serial_fifo_param_buffer, sizeof(serial_fifo_param_buffer), "DEVICE_CONFIG_SERIAL_FILFO_%d_RD_INTNO", i);
+			ret = cpuemu_get_devcfg_value(serial_fifo_param_buffer, &athrill_serial_fifo[i].rd_intno);
+			ASSERT(ret == STD_E_OK);
+			printf("%s=%u\n", serial_fifo_param_buffer, athrill_serial_fifo[i].rd_intno);
+			snprintf(serial_fifo_param_buffer, sizeof(serial_fifo_param_buffer), "DEVICE_CONFIG_SERIAL_FILFO_%d_WR_INTNO", i);
+			ret = cpuemu_get_devcfg_value(serial_fifo_param_buffer, &athrill_serial_fifo[i].wr_intno);
+			ASSERT(ret == STD_E_OK);
+			printf("%s=%u\n", serial_fifo_param_buffer, athrill_serial_fifo[i].wr_intno);
+			snprintf(serial_fifo_param_buffer, sizeof(serial_fifo_param_buffer), "DEVICE_CONFIG_SERIAL_FILFO_%d_RD_INTOFF", i);
+			ret = cpuemu_get_devcfg_value(serial_fifo_param_buffer, &athrill_serial_fifo[i].rd_intoff);
+			ASSERT(ret == STD_E_OK);
+			printf("%s=%u\n", serial_fifo_param_buffer, athrill_serial_fifo[i].rd_intoff);
+			snprintf(serial_fifo_param_buffer, sizeof(serial_fifo_param_buffer), "DEVICE_CONFIG_SERIAL_FILFO_%d_WR_INTOFF", i);
+			ret = cpuemu_get_devcfg_value(serial_fifo_param_buffer, &athrill_serial_fifo[i].wr_intoff);
+			ASSERT(ret == STD_E_OK);
+			printf("%s=%u\n", serial_fifo_param_buffer, athrill_serial_fifo[i].wr_intoff);
 		}
 		else {
 			athrill_serial_fifo[i].rd.data = NULL;
@@ -54,6 +76,9 @@ static void do_serial_fifo_cpu_read(uint32 channel)
 	else {
 		//found data
 		mpu_put_data8(0U, SERIAL_FIFO_READ_STATUS_ADDR(serial_fifo_base_addr, channel), SERIAL_FIFO_READ_STATUS_DATA_IN);
+		if (athrill_serial_fifo[channel].rd.count >= athrill_serial_fifo[channel].rd_intoff) {
+			device_raise_int(athrill_serial_fifo[channel].rd_intno);
+		}
 	}
 	/*
 	 * check command and move data
@@ -69,6 +94,34 @@ static void do_serial_fifo_cpu_read(uint32 channel)
 
 	return;
 }
+static void do_serial_fifo_cpu_write_tx(uint32 channel)
+{
+	Std_ReturnType err;
+	uint32 i;
+	uint8 data;
+	uint32 res;
+
+	for (i = 0; i < athrill_serial_fifo[channel].wr_dev_buffer.count; i++) {
+		if (COMM_FIFO_IS_FULL(&athrill_serial_fifo[channel].wr)) {
+			break;
+		}
+		err = comm_fifo_buffer_get(&athrill_serial_fifo[channel].wr_dev_buffer, (char*)&data, 1, &res);
+		if (err == STD_E_OK) {
+			(void)comm_fifo_buffer_add(&athrill_serial_fifo[channel].wr, (const char*)&data, 1, &res);
+		}
+		else {
+			break;
+		}
+	}
+	if (athrill_serial_fifo[channel].wr_dev_buffer.count <= athrill_serial_fifo[channel].wr_intoff) {
+		device_raise_int(athrill_serial_fifo[channel].wr_intno);
+	}
+	if (athrill_serial_fifo[channel].wr_dev_buffer.count == 0) {
+		mpu_put_data8(0U, SERIAL_FIFO_WRITE_CMD_ADDR(serial_fifo_base_addr, channel), SERIAL_FIFO_WRITE_CMD_NONE);
+	}
+	return;
+}
+
 static void do_serial_fifo_cpu_write(uint32 channel)
 {
 	uint8 data;
@@ -77,7 +130,7 @@ static void do_serial_fifo_cpu_write(uint32 channel)
 	/*
 	 * status
 	 */
-	if (!COMM_FIFO_IS_FULL(&athrill_serial_fifo[channel].wr)) {
+	if (!COMM_FIFO_IS_FULL(&athrill_serial_fifo[channel].wr_dev_buffer)) {
 		mpu_put_data8(0U, SERIAL_FIFO_WRITE_STATUS_ADDR(serial_fifo_base_addr, channel), SERIAL_FIFO_WRITE_STATUS_CAN_DATA);
 	}
 	else {
@@ -87,11 +140,14 @@ static void do_serial_fifo_cpu_write(uint32 channel)
 	 * check command and move data
 	 */
 	mpu_get_data8(0U, SERIAL_FIFO_WRITE_CMD_ADDR(serial_fifo_base_addr, channel), &cmd);
-	if (cmd == SERIAL_FIFO_READ_CMD_MOVE) {
+	if (cmd == SERIAL_FIFO_WRITE_CMD_MOVE) {
 		mpu_get_data8(0U, SERIAL_FIFO_WRITE_PTR_ADDR(serial_fifo_base_addr, channel), &data);
 		printf("input [%c]\n", data);
-		(void)comm_fifo_buffer_add(&athrill_serial_fifo[channel].wr, (const char*)&data, 1, &res);
+		(void)comm_fifo_buffer_add(&athrill_serial_fifo[channel].wr_dev_buffer, (const char*)&data, 1, &res);
 		mpu_put_data8(0U, SERIAL_FIFO_WRITE_CMD_ADDR(serial_fifo_base_addr, channel), SERIAL_FIFO_WRITE_CMD_NONE);
+	}
+	else if (cmd == SERIAL_FIFO_WRITE_CMD_TX) {
+		do_serial_fifo_cpu_write_tx(channel);
 	}
 	return;
 }
