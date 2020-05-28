@@ -5,6 +5,7 @@
 #include "cpu.h"
 #include "std_device_ops.h"
 #include "comm_buffer.h"
+#include "athrill_mpthread.h"
 
 #define SERIAL_FIFO_MAX_CHANNEL_NUM					8U
 
@@ -107,6 +108,14 @@ typedef struct {
 	CommFifoBufferType	wr_dev_buffer;
 	uint32				wr_intno;
 	uint32				wr_intoff;
+
+	/*
+	 * for serial ext thread info
+	 */
+	MpthrIdType			rx_thread;
+	char				*rx_serial_fifopath;
+	MpthrIdType			tx_thread;
+	char				*tx_serial_fifopath;
 } AthrillSerialFifoType;
 extern void athrill_device_get_serial_fifo_buffer(uint32 channel, AthrillSerialFifoType **serial_fifop);
 
