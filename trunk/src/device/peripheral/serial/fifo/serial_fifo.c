@@ -281,6 +281,10 @@ static Std_ReturnType serial_fifo_rx_thread_do_proc(MpthrIdType id)
 	ASSERT(fd >= 0);
 
 	while (TRUE) {
+		if (COMM_FIFO_IS_FULL(&athrill_serial_fifo[ch].rd)) {
+			target_os_api_sleep(500);// 500msec
+			continue;
+		}
 		ret = read(fd, (void*)&data, 1);
 		if (ret <= 0) {
 			target_os_api_sleep(500);// 500msec
