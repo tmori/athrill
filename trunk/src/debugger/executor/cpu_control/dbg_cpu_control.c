@@ -244,6 +244,10 @@ void cpuctrl_set_func_log_trace(uint32 coreId, uint32 pc, uint32 sp)
 	}
 	return;
 }
+uint32 cpuctrl_get_func_log_trace_num(uint32 coreId)
+{
+	return dbg_func_log_trace[coreId].lognum;
+}
 
 char *cpuctrl_get_func_log_trace_info(uint32 coreId, uint32 bt_number, uint32 *funcpcoff, uint32 *funcid, uint32 *sp)
 {

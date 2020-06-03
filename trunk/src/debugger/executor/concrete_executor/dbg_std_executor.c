@@ -649,9 +649,14 @@ void dbg_std_executor_func_trace(void *executor)
 	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	DbgCmdExecutorFuncTraceType *parsed_args = (DbgCmdExecutorFuncTraceType *)(arg->parsed_args);
 	uint32 coreId;
+	uint32 bt_number = parsed_args->bt_number;
 
 	for (coreId = 0; coreId < cpu_config_get_core_id_num(); coreId++) {
-		for (i = (parsed_args->bt_number - 1); i >= 0; i--) {
+		uint32 lognum = cpuctrl_get_func_log_trace_num(coreId);
+		if (bt_number > lognum) {
+			bt_number = lognum;
+		}
+		for (i = (bt_number - 1); i >= 0; i--) {
 			funcname = cpuctrl_get_func_log_trace_info(coreId, i, &funcpcoff, &funcid, &sp);
 			if (funcname == NULL) {
 				break;
