@@ -78,13 +78,18 @@ void dbg_cpu_callback_start(uint32 pc, uint32 sp)
 }
 
 typedef struct {
+	uint32 sp;
+	uint32 funcid;
+	uint32 funcoff;
+	uint32 funcpc;
+	char *funcname;
+} DbgFuncLogTraceEntryType;
+
+typedef struct {
 	uint32	current;
 	uint32	lognum;
-	uint32	sp[DBG_FUNCLOG_TRACE_SIZE];
-	uint32	funcid[DBG_FUNCLOG_TRACE_SIZE];
-	uint32	funcoff[DBG_FUNCLOG_TRACE_SIZE];
-	uint32	funcpc[DBG_FUNCLOG_TRACE_SIZE];
-	char 	*funcname[DBG_FUNCLOG_TRACE_SIZE];
+	uint32	logmax;
+	DbgFuncLogTraceEntryType *entry_array;
 } DbgFuncLogTraceType;
 
 static DbgFuncLogTraceType dbg_func_log_trace[CPU_CONFIG_CORE_NUM];
@@ -205,6 +210,23 @@ DataAccessInfoType *cpuctrl_get_func_access_info_table_glid(uint32 glid)
 {
 	return data_access_info_table_gl[glid];
 }
+static void cpuctrl_init_func_log_trace(void)
+{
+	uint32 coreId;
+	uint32 entry_num = DBG_FUNCLOG_TRACE_SIZE;
+
+	(void)cpuemu_get_devcfg_value("DEBUG_FUNC_FT_LOG_SIZE", (uint32*)&entry_num);
+	printf("DEBUG_FUNC_FT_LOG_SIZE=%u\n", entry_num);
+
+	for (coreId = 0; coreId < cpu_config_get_core_id_num(); coreId++) {
+		dbg_func_log_trace[coreId].entry_array = malloc(sizeof(DbgFuncLogTraceEntryType) * entry_num);
+		ASSERT(dbg_func_log_trace[coreId].entry_array != NULL);
+		dbg_func_log_trace[coreId].logmax = entry_num;
+		dbg_func_log_trace[coreId].lognum = 0;
+		dbg_func_log_trace[coreId].current = 0;
+	}
+	return;
+}
 
 void cpuctrl_set_func_log_trace(uint32 coreId, uint32 pc, uint32 sp)
 {
@@ -222,11 +244,11 @@ void cpuctrl_set_func_log_trace(uint32 coreId, uint32 pc, uint32 sp)
 
 	if (dbg_func_log_trace[coreId].lognum > 0) {
 		inx = dbg_func_log_trace[coreId].current;
-		if (dbg_func_log_trace[coreId].funcpc[inx] == funcpc) {
+		if (dbg_func_log_trace[coreId].entry_array[inx].funcpc == funcpc) {
 			return;
 		}
 		next = inx + 1;
-		if (next >= DBG_FUNCLOG_TRACE_SIZE) {
+		if (next >= dbg_func_log_trace[coreId].logmax) {
 			next = 0;
 		}
 	} else {
@@ -234,12 +256,12 @@ void cpuctrl_set_func_log_trace(uint32 coreId, uint32 pc, uint32 sp)
 	}
 
 	dbg_func_log_trace[coreId].current = next;
-	dbg_func_log_trace[coreId].sp[next] = sp;
-	dbg_func_log_trace[coreId].funcid[next] = funcid;
-	dbg_func_log_trace[coreId].funcoff[next] = pc - funcpc;
-	dbg_func_log_trace[coreId].funcname[next] = funcname;
-	dbg_func_log_trace[coreId].funcpc[next] = funcpc;
-	if (dbg_func_log_trace[coreId].lognum < DBG_FUNCLOG_TRACE_SIZE) {
+	dbg_func_log_trace[coreId].entry_array[next].sp = sp;
+	dbg_func_log_trace[coreId].entry_array[next].funcid = funcid;
+	dbg_func_log_trace[coreId].entry_array[next].funcoff = pc - funcpc;
+	dbg_func_log_trace[coreId].entry_array[next].funcname = funcname;
+	dbg_func_log_trace[coreId].entry_array[next].funcpc = funcpc;
+	if (dbg_func_log_trace[coreId].lognum < dbg_func_log_trace[coreId].logmax) {
 		dbg_func_log_trace[coreId].lognum++;
 	}
 	return;
@@ -252,7 +274,7 @@ uint32 cpuctrl_get_func_log_trace_num(uint32 coreId)
 char *cpuctrl_get_func_log_trace_info(uint32 coreId, uint32 bt_number, uint32 *funcpcoff, uint32 *funcid, uint32 *sp)
 {
 	int off;
-	if (bt_number >= DBG_FUNCLOG_TRACE_SIZE) {
+	if (bt_number >= dbg_func_log_trace[coreId].logmax) {
 		return NULL;
 	}
 	if (bt_number >= dbg_func_log_trace[coreId].lognum) {
@@ -263,12 +285,12 @@ char *cpuctrl_get_func_log_trace_info(uint32 coreId, uint32 bt_number, uint32 *f
 		off = dbg_func_log_trace[coreId].current - bt_number;
 	}
 	else {
-		off = DBG_FUNCLOG_TRACE_SIZE - (bt_number - dbg_func_log_trace[coreId].current);
+		off = dbg_func_log_trace[coreId].logmax - (bt_number - dbg_func_log_trace[coreId].current);
 	}
-	*sp = dbg_func_log_trace[coreId].sp[off];
-	*funcid = dbg_func_log_trace[coreId].funcid[off];
-	*funcpcoff = dbg_func_log_trace[coreId].funcoff[off];
-	return dbg_func_log_trace[coreId].funcname[off];
+	*sp = dbg_func_log_trace[coreId].entry_array[off].sp;
+	*funcid = dbg_func_log_trace[coreId].entry_array[off].funcid;
+	*funcpcoff = dbg_func_log_trace[coreId].entry_array[off].funcoff;
+	return dbg_func_log_trace[coreId].entry_array[off].funcname;
 
 }
 
@@ -759,6 +781,8 @@ typedef struct {
 } CpuProfileCurrentInfoType;
 static CpuProfileCurrentInfoType CpuProfileCurrentInfo[CPU_CONFIG_CORE_NUM];
 
+static void cpuctrl_init_func_log_trace(void);
+
 void cpuctrl_init(void)
 {
 	uint32 i;
@@ -793,6 +817,7 @@ void cpuctrl_init(void)
 			data_access_info_table_gl[i] = NULL;
 		}
 	}
+	cpuctrl_init_func_log_trace();
 
 	return;
 }
