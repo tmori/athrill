@@ -636,16 +636,54 @@ void dbg_std_executor_info_cpu(void *executor)
 	return;
 }
 
-void dbg_std_executor_func_trace(void *executor)
+static void dbg_std_executor_fun_trace_toward_older(uint32 coreId, uint32 bt_number)
 {
 	int i;
-	uint32 funcid;
 	uint32 funcpcoff;
+	uint32 funcid;
 	char *funcname;
 	uint32 sp;
 	uint32 glid;
 	uint32 gladdr;
 	char *stackp;
+
+	for (i = (bt_number - 1); i >= 0; i--) {
+		funcname = cpuctrl_get_func_log_trace_info(coreId, i, &funcpcoff, &funcid, &sp);
+		if (funcname == NULL) {
+			break;
+		}
+		glid = symbol_addr2glid(sp, &gladdr);
+		stackp = symbol_glid2glname(glid);
+		printf("core%d: <%-30s(0x%03x)> [%3u] <0x%03x> %s\n", coreId, stackp, sp - gladdr, i, funcpcoff, funcname);
+	}
+	return;
+}
+static void dbg_std_executor_fun_trace_toward_newer(uint32 coreId, uint32 bt_number)
+{
+	int i;
+	uint32 funcpcoff;
+	uint32 funcid;
+	char *funcname;
+	uint32 sp;
+	uint32 glid;
+	uint32 gladdr;
+	char *stackp;
+	uint32 lognum = cpuctrl_get_func_log_trace_num(coreId);
+
+	for (i = 0; i < bt_number; i++) {
+		funcname = cpuctrl_get_func_log_trace_info(coreId, i, &funcpcoff, &funcid, &sp);
+		if (funcname == NULL) {
+			break;
+		}
+		glid = symbol_addr2glid(sp, &gladdr);
+		stackp = symbol_glid2glname(glid);
+		printf("core%d: <%-30s(0x%03x)> [%3u] <0x%03x> %s\n", coreId, stackp, sp - gladdr, (lognum - 1 - i), funcpcoff, funcname);
+	}
+	return;
+}
+
+void dbg_std_executor_func_trace(void *executor)
+{
 	DbgCmdExecutorType *arg = (DbgCmdExecutorType *)executor;
 	DbgCmdExecutorFuncTraceType *parsed_args = (DbgCmdExecutorFuncTraceType *)(arg->parsed_args);
 	uint32 coreId;
@@ -656,14 +694,11 @@ void dbg_std_executor_func_trace(void *executor)
 		if (bt_number > lognum) {
 			bt_number = lognum;
 		}
-		for (i = (bt_number - 1); i >= 0; i--) {
-			funcname = cpuctrl_get_func_log_trace_info(coreId, i, &funcpcoff, &funcid, &sp);
-			if (funcname == NULL) {
-				break;
-			}
-			glid = symbol_addr2glid(sp, &gladdr);
-			stackp = symbol_glid2glname(glid);
-			printf("core%d: <%-30s(0x%03x)> [%3u] <0x%03x> %s\n", coreId, stackp, sp - gladdr, i, funcpcoff, funcname);
+		if (parsed_args->bt_way == FALSE) {
+			dbg_std_executor_fun_trace_toward_older(coreId, bt_number);
+		}
+		else {
+			dbg_std_executor_fun_trace_toward_newer(coreId, bt_number);
 		}
 	}
 	CUI_PRINTF((CPU_PRINT_BUF(), CPU_PRINT_BUF_LEN(), "OK\n"));

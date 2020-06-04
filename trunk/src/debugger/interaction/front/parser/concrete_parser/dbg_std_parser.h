@@ -93,6 +93,7 @@ extern DbgCmdExecutorType *dbg_parse_info_cpu(DbgCmdExecutorType *arg, const Tok
 
 typedef struct {
 	uint32 				bt_number;
+	bool				bt_way; /* FALSE: latest, TRUE: oldest */
 } DbgCmdExecutorFuncTraceType;
 extern DbgCmdExecutorType *dbg_parse_func_trace(DbgCmdExecutorType *arg, const TokenContainerType *token_container);
 

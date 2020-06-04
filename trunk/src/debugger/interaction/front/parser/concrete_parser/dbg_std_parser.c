@@ -841,7 +841,13 @@ extern DbgCmdExecutorType *dbg_parse_func_trace(DbgCmdExecutorType *arg, const T
 {
 	DbgCmdExecutorFuncTraceType *parsed_args = (DbgCmdExecutorFuncTraceType *)arg->parsed_args;
 
-	if (token_container->num != 2) {
+	if (token_container->num == 2) {
+		parsed_args->bt_way = FALSE;
+	}
+	else if (token_container->num == 3) {
+		parsed_args->bt_way = TRUE;
+	}
+	else {
 		return NULL;
 	}
 
@@ -1178,11 +1184,15 @@ static const DbgCmdHelpType help_list = {
 			{
 					.name = &func_trace_string,
 					.name_shortcut = NULL,
-					.opt_num = 1,
+					.opt_num = 2,
 					.opts = {
 							{
 									.semantics = "ft <number>",
-									.description = "show function trace log(show size=<number>)",
+									.description = "show function trace log(show size=<number>) from latest log",
+							},
+							{
+									.semantics = "ft <number> r",
+									.description = "show function trace log(show size=<number>) from oldest log",
 							},
 					},
 			},
