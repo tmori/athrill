@@ -163,6 +163,16 @@ struct api_arg_ev3_closedir {
     sys_int32 dirid;
 };
 
+enum {
+    SYS_SERIAL_DEFAULT = 0,
+    SYS_SERIAL_UART = 1,
+    SYS_SERIAL_BT = 2
+};
+
+struct api_arg_ev3_serial_open {
+    sys_int32 port;
+};
+
 
 typedef enum {
     SYS_API_ID_NONE = 0,
@@ -191,6 +201,7 @@ typedef enum {
     SYS_API_ID_EV3_OPENDIR,
     SYS_API_ID_EV3_READDIR,
     SYS_API_ID_EV3_CLOSEDIR,
+    SYS_API_ID_EV3_SERIAL_OPEN,
     SYS_API_ID_NUM,
 } AthrillSyscallApiIdType;
 
@@ -211,6 +222,7 @@ typedef enum {
 typedef struct {
     sys_uint32 api_id;
     sys_int32 ret_value;
+    sys_int32 ret_errno;
     union {
         struct api_arg_socket api_socket;
         struct api_arg_sense api_sense;
@@ -236,6 +248,7 @@ typedef struct {
         struct api_arg_ev3_opendir api_ev3_opendir;
         struct api_arg_ev3_readdir api_ev3_readdir;
         struct api_arg_ev3_closedir api_ev3_closedir;
+        struct api_arg_ev3_serial_open api_ev3_serial_open;
 
     } body;
 } AthrillSyscallArgType;
@@ -245,6 +258,7 @@ typedef struct {
 #include "ev3api.h"
 #include "string.h"
 #include "driver_interface_filesys.h"
+#include <errno.h>
 extern sys_addr athrill_device_func_call __attribute__ ((section(".athrill_device_section")));
 
 
@@ -512,7 +526,7 @@ static inline int athrill_newlib_read_r(int fd, char *buf, sys_uint32 cnt)
     args.body.api_read_r.size = (sys_uint32)cnt;
 
     ATHRILL_SYSCALL(&args);
-
+    errno = args.ret_errno;
     return args.ret_value;
 
 }
@@ -621,6 +635,20 @@ static inline sys_int32 athrill_ev3_closedir(sys_int32 dirid)
     args.api_id = SYS_API_ID_EV3_CLOSEDIR;
     args.ret_value = 0;
     args.body.api_ev3_closedir.dirid = dirid;
+
+    ATHRILL_SYSCALL(&args);
+
+    return args.ret_value;
+
+}
+
+static inline sys_int32 athrill_ev3_serial_open(sys_int32 port)
+{
+    volatile AthrillSyscallArgType args;
+
+    args.api_id = SYS_API_ID_EV3_SERIAL_OPEN;
+    args.ret_value = 0;
+    args.body.api_ev3_serial_open.port = (sys_addr)port;
 
     ATHRILL_SYSCALL(&args);
 
