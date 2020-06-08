@@ -15,6 +15,14 @@ static uint32 serial_fifo_base_addr = 0x0;
 static void serial_fifo_thread_start(uint32 channel);
 
 static char serial_fifo_param_buffer[256];
+
+typedef struct {
+	uint32 fd;
+} AthrillSerialFifoCounterType;
+static AthrillSerialFifoCounterType serial_fifo_counter = {
+	.fd = 1024,
+};
+
 void athrill_device_init_serial_fifo(void)
 {
 	uint32 i;
@@ -26,11 +34,18 @@ void athrill_device_init_serial_fifo(void)
 		return;
 	}
 	printf("DEVICE_CONFIG_SERIAL_FILFO_BASE_ADDR=0x%x\n", serial_fifo_base_addr);
+	(void)cpuemu_get_devcfg_value("DEVICE_CONFIG_SERIAL_FIFO_FD", &serial_fifo_counter.fd);
+	printf("DEVICE_CONFIG_SERIAL_FIFO_FD=%u\n", serial_fifo_counter.fd);
+
 	for (i = 0; i < SERIAL_FIFO_MAX_CHANNEL_NUM; i++) {
 		memset(serial_fifo_param_buffer, 0, sizeof(serial_fifo_param_buffer));
 		snprintf(serial_fifo_param_buffer, sizeof(serial_fifo_param_buffer), "DEVICE_CONFIG_SERIAL_FILFO_%d_SIZE", i);
 		ret = cpuemu_get_devcfg_value(serial_fifo_param_buffer, &buffer_size);
 		if (ret == STD_E_OK) {
+			athrill_serial_fifo[i].rd_raise_delay_count = 0;
+			athrill_serial_fifo[i].rd_raise_intr = FALSE;
+			athrill_serial_fifo[i].wr_raise_delay_count = 0;
+			athrill_serial_fifo[i].wr_raise_intr = FALSE;
 			printf("%s=%u\n", serial_fifo_param_buffer, buffer_size);
 			ret = comm_fifo_buffer_create(buffer_size, &athrill_serial_fifo[i].rd);
 			ASSERT(ret == STD_E_OK);
@@ -86,7 +101,11 @@ static void do_serial_fifo_cpu_read(uint32 channel)
 		//found data
 		mpu_put_data8(0U, SERIAL_FIFO_READ_STATUS_ADDR(serial_fifo_base_addr, channel), SERIAL_FIFO_READ_STATUS_DATA_IN);
 		if (athrill_serial_fifo[channel].rd.count >= athrill_serial_fifo[channel].rd_intoff) {
-			device_raise_int(athrill_serial_fifo[channel].rd_intno);
+			//device_raise_int(athrill_serial_fifo[channel].rd_intno);
+			if (athrill_serial_fifo[channel].rd_raise_intr == FALSE) {
+				athrill_serial_fifo[channel].rd_raise_delay_count = serial_fifo_counter.fd;
+				athrill_serial_fifo[channel].rd_raise_intr = TRUE;
+			}
 		}
 	}
 	/*
@@ -138,7 +157,9 @@ static void do_serial_fifo_cpu_write_tx(uint32 channel)
 	mpthread_unlock(athrill_serial_fifo[channel].tx_thread);
 	if (athrill_serial_fifo[channel].wr_dev_buffer.count <= athrill_serial_fifo[channel].wr_intoff) {
 		//printf("do_serial_fifo_cpu_write_tx:raise interrupt\n");
-		device_raise_int(athrill_serial_fifo[channel].wr_intno);
+		//device_raise_int(athrill_serial_fifo[channel].wr_intno);
+		athrill_serial_fifo[channel].wr_raise_delay_count = serial_fifo_counter.fd;
+		athrill_serial_fifo[channel].wr_raise_intr = TRUE;
 	}
 	if (athrill_serial_fifo[channel].wr_dev_buffer.count == 0) {
 		mpu_put_data8(0U, SERIAL_FIFO_WRITE_CMD_ADDR(serial_fifo_base_addr, channel), SERIAL_FIFO_WRITE_CMD_NONE);
@@ -175,7 +196,31 @@ static void do_serial_fifo_cpu_write(uint32 channel)
 	}
 	return;
 }
-
+static void do_serial_fifo_cpu_intr(uint32 channel)
+{
+	if (athrill_serial_fifo[channel].rd_raise_intr == TRUE) {
+		if (athrill_serial_fifo[channel].rd_raise_delay_count == 0) {
+			device_raise_int(athrill_serial_fifo[channel].rd_intno);
+			athrill_serial_fifo[channel].rd_raise_intr = FALSE;
+			//printf("do_serial_fifo_cpu_intr:RX raise interrupt(%d)\n", athrill_serial_fifo[channel].rd_intno);
+		}
+		else {
+			athrill_serial_fifo[channel].rd_raise_delay_count--;
+			//printf("do_serial_fifo_cpu_intr:RX rd_raise_delay_count(%d)\n", athrill_serial_fifo[channel].rd_raise_delay_count);
+		}
+	}
+	if (athrill_serial_fifo[channel].wr_raise_intr == TRUE) {
+		if (athrill_serial_fifo[channel].wr_raise_delay_count == 0) {
+			device_raise_int(athrill_serial_fifo[channel].wr_intno);
+			athrill_serial_fifo[channel].wr_raise_intr = FALSE;
+			//printf("do_serial_fifo_cpu_intr:TX raise interrupt(%d)\n", athrill_serial_fifo[channel].wr_intno);
+		}
+		else {
+			athrill_serial_fifo[channel].wr_raise_delay_count--;
+		}
+	}
+	return;
+}
 void athrill_device_supply_clock_serial_fifo(DeviceClockType *dev_clock)
 {
 	uint32 i;
@@ -188,6 +233,7 @@ void athrill_device_supply_clock_serial_fifo(DeviceClockType *dev_clock)
 		}
 		do_serial_fifo_cpu_read(i);
 		do_serial_fifo_cpu_write(i);
+		do_serial_fifo_cpu_intr(i);
 	}
 	return;
 }

@@ -100,6 +100,8 @@ typedef struct {
 	CommFifoBufferType	rd_dev_buffer;
 	uint32				rd_intno;
 	uint32				rd_intoff;
+	uint32				rd_raise_delay_count;
+	bool				rd_raise_intr;
 	/*
 	 * read: external device
 	 * write: cpu
@@ -108,6 +110,8 @@ typedef struct {
 	CommFifoBufferType	wr_dev_buffer;
 	uint32				wr_intno;
 	uint32				wr_intoff;
+	uint32				wr_raise_delay_count;
+	bool				wr_raise_intr;
 
 	/*
 	 * for serial ext thread info
