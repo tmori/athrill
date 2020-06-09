@@ -1,3 +1,11 @@
+注意:  
+本リポジトリは [toppers/athrill](https://github.com/toppers/athrill) に移動し，Archiveに設定しました．今後はここでの管理・更新は行いません．  
+今後の開発状況やIssue・PRのフィードバックは，下記リポジトリを参照してください．
+
+  * https://github.com/toppers/athrill
+
+
+
 athrill
 =======
 
