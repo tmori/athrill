@@ -78,7 +78,9 @@ void athrill_device_init_serial_fifo(void)
 			snprintf(serial_fifo_param_buffer, sizeof(serial_fifo_param_buffer), "DEVICE_CONFIG_SERIAL_FILFO_%d_EXDEV_ENABLE", i);
 			(void)cpuemu_get_devcfg_value(serial_fifo_param_buffer, &enable_external_device);
 			printf("%s=%u\n", serial_fifo_param_buffer, enable_external_device);
+			athrill_serial_fifo[i].is_extdev = enable_external_device;
 			if (enable_external_device == FALSE) {
+				printf("start default serial thread:%d\n", i);
 				serial_fifo_thread_start(i);
 			}
 		}
@@ -283,6 +285,9 @@ static Std_ReturnType serial_fifo_tx_thread_do_proc(MpthrIdType id)
 		if (athrill_serial_fifo[ch].wr.data == NULL) {
 			continue;
 		}
+		if (athrill_serial_fifo[ch].is_extdev == TRUE) {
+			continue;
+		}
 		if (athrill_serial_fifo[ch].tx_thread == id) {
 			break;
 		}
@@ -304,10 +309,10 @@ static Std_ReturnType serial_fifo_tx_thread_do_proc(MpthrIdType id)
 			target_os_api_sleep(100);// 100msec
 			continue;
 		}
-		mpthread_lock(athrill_serial_fifo[ch].rx_thread);
+		mpthread_lock(athrill_serial_fifo[ch].tx_thread);
 		err = comm_fifo_buffer_get(&athrill_serial_fifo[ch].wr, (char*)&data, 1, &res);
 		ASSERT(err == STD_E_OK);
-		mpthread_unlock(athrill_serial_fifo[ch].rx_thread);
+		mpthread_unlock(athrill_serial_fifo[ch].tx_thread);
 
 		ret = write(fd, (void*)&data, 1);
 		if (ret <= 0) {
@@ -329,6 +334,9 @@ static Std_ReturnType serial_fifo_rx_thread_do_proc(MpthrIdType id)
 		if (athrill_serial_fifo[ch].rd.data == NULL) {
 			continue;
 		}
+		if (athrill_serial_fifo[ch].is_extdev == TRUE) {
+			continue;
+		}
 		if (athrill_serial_fifo[ch].rx_thread == id) {
 			break;
 		}
@@ -340,7 +348,7 @@ static Std_ReturnType serial_fifo_rx_thread_do_proc(MpthrIdType id)
 		fd = open(athrill_serial_fifo[ch].rx_serial_fifopath, O_RDONLY);
 		if (fd < 0) {
 			target_os_api_sleep(1000);// 1000msec
-			printf("ERROR: can not open fifo(%s)\n", athrill_serial_fifo[ch].rx_serial_fifopath);
+			printf("ERROR: serial can not open fifo(%s)\n", athrill_serial_fifo[ch].rx_serial_fifopath);
 		}
 	}
 	ASSERT(fd >= 0);

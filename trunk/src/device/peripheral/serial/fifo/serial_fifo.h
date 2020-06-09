@@ -92,6 +92,7 @@ extern void athrill_device_supply_clock_serial_fifo(DeviceClockType *dev_clock);
 #define SERIAL_FIFO_RD_BUFFER_LEN	16U
 #define SERIAL_FIFO_WR_BUFFER_LEN	16U
 typedef struct {
+	bool				is_extdev;
 	/*
 	 * read: cpu
 	 * write: external device
