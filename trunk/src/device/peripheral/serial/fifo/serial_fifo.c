@@ -42,6 +42,7 @@ void athrill_device_init_serial_fifo(void)
 		snprintf(serial_fifo_param_buffer, sizeof(serial_fifo_param_buffer), "DEVICE_CONFIG_SERIAL_FILFO_%d_SIZE", i);
 		ret = cpuemu_get_devcfg_value(serial_fifo_param_buffer, &buffer_size);
 		if (ret == STD_E_OK) {
+			uint32 enable_external_device = FALSE;
 			athrill_serial_fifo[i].rd_raise_delay_count = 0;
 			athrill_serial_fifo[i].rd_raise_intr = FALSE;
 			athrill_serial_fifo[i].wr_raise_delay_count = 0;
@@ -73,7 +74,13 @@ void athrill_device_init_serial_fifo(void)
 			ret = cpuemu_get_devcfg_value(serial_fifo_param_buffer, &athrill_serial_fifo[i].wr_intoff);
 			ASSERT(ret == STD_E_OK);
 			printf("%s=%u\n", serial_fifo_param_buffer, athrill_serial_fifo[i].wr_intoff);
-			serial_fifo_thread_start(i);
+
+			snprintf(serial_fifo_param_buffer, sizeof(serial_fifo_param_buffer), "DEVICE_CONFIG_SERIAL_FILFO_%d_EXDEV_ENABLE", i);
+			(void)cpuemu_get_devcfg_value(serial_fifo_param_buffer, &enable_external_device);
+			printf("%s=%u\n", serial_fifo_param_buffer, enable_external_device);
+			if (enable_external_device == FALSE) {
+				serial_fifo_thread_start(i);
+			}
 		}
 		else {
 			athrill_serial_fifo[i].rd.data = NULL;
